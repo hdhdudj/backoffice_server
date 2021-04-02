@@ -28,6 +28,7 @@ nbdist/
 /build/
 /bin/
 target/
+bin/
  
 
 
