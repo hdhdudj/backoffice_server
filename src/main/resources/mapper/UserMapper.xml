@@ -7,7 +7,7 @@
           #{user.username},
           #{user.email},
           #{user.password},
-          #{user.bio},	`
+          #{user.bio},	
           #{user.image}
         )
     </insert>

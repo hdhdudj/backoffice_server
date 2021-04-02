@@ -56,6 +56,8 @@ public class UsersApi {
 	public ResponseEntity createUser(@Valid @RequestBody RegisterParam registerParam, BindingResult bindingResult) {
 		checkInput(registerParam, bindingResult);
 
+		System.out.println(defaultImage);
+
 		User user = new User(registerParam.getEmail(), registerParam.getUsername(),
 				encryptService.encrypt(registerParam.getPassword()), "", defaultImage);
 		userRepository.save(user);
