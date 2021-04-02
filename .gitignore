@@ -1,7 +1,5 @@
 .gradle
 /build/
-/bin/
-bin/
 !gradle/wrapper/gradle-wrapper.jar
 
 ### STS ###
@@ -25,6 +23,12 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+
+# Directories #
+build/
+bin/
+target/
+ 
 
 
 ### properties ###
