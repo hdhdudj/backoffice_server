@@ -55,6 +55,12 @@ public class GoodsApi {
 	public ResponseEntity insertGoods(@RequestBody GoodsRequestData goodsRequestData) {
 		logger.debug("insert goods");
 		
+		HashMap<String, Object> arr = new HashMap<String, Object>();
+		arr.put("seqName", "seq_ITASRT");
+		HashMap<String, Object> x1 = commonRepository.getSequence(arr);
+		System.out.println("x1 = " + x1.get("nextval"));
+		
+		goodsRequestData.setAssortId((long)x1.get("nextval"));
 		Boolean b = goodsRepository.insertGoods(goodsRequestData);
 		
 		ApiResponseMessage res = null;

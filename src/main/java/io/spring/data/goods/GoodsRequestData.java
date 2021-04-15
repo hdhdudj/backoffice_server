@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GoodsRequestData {
-	private int assortId;
+	private long assortId;
 	private String regDt;
 	private String regId;
 	private String updId;
