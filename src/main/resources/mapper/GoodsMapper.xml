@@ -11,21 +11,87 @@
     
 	<insert id="insertGoods">
 		<![CDATA[ 
-		insert into itasrt
+		insert into  itasrt
 		(assort_id
 		
-		,reg_id
 		,reg_dt
+		,reg_id
 		,upd_id
 		,upd_dt
+		
+		,assort_nm 
+		,assort_color
+		,disp_category_id
+		,brand_id
+		,origin
+		,manufacture_nm
+		,assort_model
+		,tax_gb
+		,assort_state
+		,shortage_yn
+		,sell_sta_dt 
+		,sell_end_dt
+		,local_price
+		,local_sale
+		,deli_price
+		,margin
+		,vendor_id 
+		
+		,mdRrp
+		,mdYear
+		,mdTax
+		,mdVatrate
+		,mdDiscountRate
+		,mdGoodsVatrate
+		
+		
+		,buyWhere
+		,buySupplyDiscount
+		,buyRrpIncrement
+		,buyTax
+		,mdMargin
+		,buyExchangeRate
 		)
 		
 		values(
-		#{assortId},
-		#{regId},
-		#{regDt},
-		#{updId},
-		#{updDt}
+		#{assortId}
+				
+		,#{regDt}
+		,#{regId}
+		,#{updId}
+		,#{updDt}
+		
+		,#{assortNm}
+		,#{assortColor}
+		,#{dispCategory}
+		,#{brandId}
+		,#{origin}
+		,#{manufactureNm}
+		,#{assortModel}
+		,#{taxGb}
+		,#{assortState}
+		,#{shortageYn}
+		,#{sellSta}
+		,#{sellEnd}
+		,#{localPrice}
+		,#{localSale}
+		,#{deliPrice}
+		,#{margin}
+		,#{vendorId}
+		
+		,#{mdRrp}
+		,#{mdYear}
+		,#{mdTax}
+		,#{mdVatrate}
+		,#{mdDiscountRate}
+		,#{mdGoodsVatrate}
+		
+		,#{buyWhere}
+		,#{buySupplyDiscount}
+		,#{buyRrpIncrement}
+		,#{buyTax}
+		,#{mdMargin}
+		,#{buyExchangeRate}
 		)
 		]]>
 	</insert>
