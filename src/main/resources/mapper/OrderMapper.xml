@@ -11,7 +11,7 @@
 		,bb.status_cd
 		,cc.cust_nm
 		,cc.cust_tel
-		,bb.goods_id
+		,bb.assort_id
 		,bb.goods_nm
 		,bb.option_info
 		,bb.qty
@@ -41,7 +41,7 @@
 		</if>
 		<if test='goodsId != null'>
 			<![CDATA[
-				and  bb.goods_id = #{goodsId}
+				and  bb.assort_id = #{assortId}
 			]]>
 		</if>	
 		<if test='custNm != null'>

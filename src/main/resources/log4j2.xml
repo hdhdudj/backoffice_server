@@ -35,12 +35,12 @@
             <AppenderRef ref="console"  />
             <AppenderRef ref="file"  />
         </logger>
-        <!-- 
+         
 		 <Root level="info" additivity="false" >
 		   <AppenderRef ref="console" />
 		   <AppenderRef ref="file" />
 		  </Root>
-         -->
+         
  		
     </Loggers>
 </Configuration>
