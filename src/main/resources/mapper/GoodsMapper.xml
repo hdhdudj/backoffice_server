@@ -2,11 +2,33 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.spring.infrastructure.mybatis.mapper.GoodsMapper">
 
-<select id="selectGoodsListByCondition" resultType="HashMap">
-<![CDATA[ 
-select 
-]]>
-</select>
+
+   <select id="selectGoodsListAll" resultType="HashMap">
+    	<![CDATA[
+		select * from itasrt 		
+    	]]>
+    </select>
+    
+	<insert id="insertGoods">
+		<![CDATA[ 
+		insert into itasrt
+		(assort_id
+		
+		,reg_id
+		,reg_dt
+		,upd_id
+		,upd_dt
+		)
+		
+		values(
+		#{assortId},
+		#{regId},
+		#{regDt},
+		#{updId},
+		#{updDt}
+		)
+		]]>
+	</insert>
 
 
 </mapper>
