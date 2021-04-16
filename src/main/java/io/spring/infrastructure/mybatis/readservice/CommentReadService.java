@@ -1,6 +1,6 @@
 package io.spring.infrastructure.mybatis.readservice;
 
-import io.spring.application.data.CommentData;
+import io.spring.model.CommentData;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
