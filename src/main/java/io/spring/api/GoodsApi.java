@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.spring.core.common.CommonRepository;
+import io.spring.core.goods.GoodsJpaRepository;
 import io.spring.core.goods.GoodsRepository;
 import io.spring.data.goods.GoodsRequestData;
+import io.spring.data.goods.Itasrt;
 import io.spring.infrastructure.util.ApiResponseMessage;
 
 @RestController
@@ -25,12 +27,14 @@ public class GoodsApi {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
 	private GoodsRepository goodsRepository;
+	private GoodsJpaRepository goodsJpaRepository;
 	private CommonRepository commonRepository;
 	
 	@Autowired
-	public GoodsApi(GoodsRepository goodsRepository, CommonRepository commonRepository) {
+	public GoodsApi(GoodsRepository goodsRepository, CommonRepository commonRepository, GoodsJpaRepository goodsJpaRepository) {
 		this.goodsRepository = goodsRepository;
 		this.commonRepository = commonRepository;
+		this.goodsJpaRepository = goodsJpaRepository;
 	}
 	
 	@RequestMapping(path = "/select")
@@ -52,7 +56,7 @@ public class GoodsApi {
 	}
 	
 	@RequestMapping(path = "/insert")
-	public ResponseEntity insertGoods(@RequestBody GoodsRequestData goodsRequestData) {
+	public ResponseEntity insertGoodsMyBatis(@RequestBody GoodsRequestData goodsRequestData) {
 		logger.debug("insert goods");
 		
 		HashMap<String, Object> arr = new HashMap<String, Object>();
@@ -64,6 +68,29 @@ public class GoodsApi {
 		Boolean b = goodsRepository.insertGoods(goodsRequestData);
 		
 		ApiResponseMessage res = null;
+		
+		
+		return null;
+	}
+	
+	
+	@RequestMapping(path = "/insertbyjpa")
+	public ResponseEntity insertGoodsJpa(@RequestBody Itasrt itasrt) {
+		logger.debug("insert goods by jpa");
+		
+		HashMap<String, Object> arr = new HashMap<String, Object>();
+		arr.put("seqName", "seq_ITASRT");
+		HashMap<String, Object> x1 = commonRepository.getSequence(arr);
+		System.out.println("x1 = " + x1.get("nextval"));
+		
+		itasrt.setAssortId((long)x1.get("nextval"));
+		
+		goodsJpaRepository.save(itasrt);
+		
+//		goodsRequestData.setAssortId((long)x1.get("nextval"));
+//		Boolean b = goodsRepository.insertGoods(goodsRequestData);
+		
+//		ApiResponseMessage res = null;
 		
 		
 		return null;
