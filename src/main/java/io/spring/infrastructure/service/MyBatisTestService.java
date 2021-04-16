@@ -1,4 +1,4 @@
-package io.spring.infrastructure.repository;
+package io.spring.infrastructure.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,11 +11,11 @@ import io.spring.core.user.TestRepository;
 import io.spring.infrastructure.mybatis.mapper.TestMapper;
 
 @Repository
-public class MyBatisTestRepository implements TestRepository {
+public class MyBatisTestService implements TestRepository {
 	private final TestMapper testMapper;
 
 	@Autowired
-	public MyBatisTestRepository(TestMapper testMapper) {
+	public MyBatisTestService(TestMapper testMapper) {
 		this.testMapper = testMapper;
 	}
 

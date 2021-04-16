@@ -1,4 +1,4 @@
-package io.spring.infrastructure.repository;
+package io.spring.infrastructure.service;
 
 import io.spring.core.article.Article;
 import io.spring.core.article.ArticleRepository;
@@ -10,10 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Repository
-public class MyBatisArticleRepository implements ArticleRepository {
+public class MyBatisArticleService implements ArticleRepository {
     private ArticleMapper articleMapper;
 
-    public MyBatisArticleRepository(ArticleMapper articleMapper) {
+    public MyBatisArticleService(ArticleMapper articleMapper) {
         this.articleMapper = articleMapper;
     }
 

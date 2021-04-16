@@ -1,4 +1,4 @@
-package io.spring.infrastructure.service;
+package io.spring.infrastructure.util;
 
 import io.spring.core.user.EncryptService;
 import org.springframework.stereotype.Service;

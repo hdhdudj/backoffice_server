@@ -1,4 +1,4 @@
-package io.spring.infrastructure.repository;
+package io.spring.infrastructure.service;
 
 import io.spring.core.favorite.ArticleFavorite;
 import io.spring.core.favorite.ArticleFavoriteRepository;
@@ -9,11 +9,11 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public class MyBatisArticleFavoriteRepository implements ArticleFavoriteRepository {
+public class MyBatisArticleFavoriteService implements ArticleFavoriteRepository {
     private ArticleFavoriteMapper mapper;
 
     @Autowired
-    public MyBatisArticleFavoriteRepository(ArticleFavoriteMapper mapper) {
+    public MyBatisArticleFavoriteService(ArticleFavoriteMapper mapper) {
         this.mapper = mapper;
     }
 

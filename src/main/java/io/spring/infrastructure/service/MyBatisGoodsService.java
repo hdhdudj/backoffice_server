@@ -1,4 +1,4 @@
-package io.spring.infrastructure.repository;
+package io.spring.infrastructure.service;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,11 +11,11 @@ import io.spring.data.goods.GoodsRequestData;
 import io.spring.infrastructure.mybatis.mapper.GoodsMapper;
 
 @Repository
-public class MyBatisGoodsRepository implements GoodsRepository {
+public class MyBatisGoodsService implements GoodsRepository {
 	private final GoodsMapper goodsMapper;
 	
 	@Autowired
-	public MyBatisGoodsRepository(GoodsMapper goodsMapper) {
+	public MyBatisGoodsService(GoodsMapper goodsMapper) {
 		this.goodsMapper = goodsMapper;
 	}
 	

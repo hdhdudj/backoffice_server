@@ -1,4 +1,4 @@
-package io.spring.infrastructure.repository;
+package io.spring.infrastructure.service;
 
 import java.util.HashMap;
 
@@ -9,11 +9,11 @@ import io.spring.core.common.CommonRepository;
 import io.spring.infrastructure.mybatis.mapper.CommonMapper;
 
 @Repository
-public class MyBatisCommonRepository implements CommonRepository {
+public class MyBatisCommonService implements CommonRepository {
 	private final CommonMapper commonMapper;
 
 	@Autowired
-	public MyBatisCommonRepository(CommonMapper commonMapper) {
+	public MyBatisCommonService(CommonMapper commonMapper) {
 		this.commonMapper = commonMapper;
 	}
 

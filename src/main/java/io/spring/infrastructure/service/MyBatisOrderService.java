@@ -1,4 +1,4 @@
-package io.spring.infrastructure.repository;
+package io.spring.infrastructure.service;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,11 +10,11 @@ import io.spring.core.order.OrderRepository;
 import io.spring.infrastructure.mybatis.mapper.OrderMapper;
 
 @Repository
-public class MyBatisOrderRepository implements OrderRepository {
+public class MyBatisOrderService implements OrderRepository {
 	private final OrderMapper orderMapper;
 
 	@Autowired
-	public MyBatisOrderRepository(OrderMapper orderMapper) {
+	public MyBatisOrderService(OrderMapper orderMapper) {
 		this.orderMapper = orderMapper;
 	}
 

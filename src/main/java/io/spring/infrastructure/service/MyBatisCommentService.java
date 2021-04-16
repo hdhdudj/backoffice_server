@@ -1,4 +1,4 @@
-package io.spring.infrastructure.repository;
+package io.spring.infrastructure.service;
 
 import io.spring.core.comment.Comment;
 import io.spring.core.comment.CommentRepository;
@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class MyBatisCommentRepository implements CommentRepository {
+public class MyBatisCommentService implements CommentRepository {
     private CommentMapper commentMapper;
 
     @Autowired
-    public MyBatisCommentRepository(CommentMapper commentMapper) {
+    public MyBatisCommentService(CommentMapper commentMapper) {
         this.commentMapper = commentMapper;
     }
 

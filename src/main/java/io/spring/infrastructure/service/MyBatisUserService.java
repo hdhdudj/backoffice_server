@@ -1,4 +1,4 @@
-package io.spring.infrastructure.repository;
+package io.spring.infrastructure.service;
 
 import io.spring.core.user.FollowRelation;
 import io.spring.core.user.User;
@@ -10,11 +10,11 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public class MyBatisUserRepository implements UserRepository {
+public class MyBatisUserService implements UserRepository {
     private final UserMapper userMapper;
 
     @Autowired
-    public MyBatisUserRepository(UserMapper userMapper) {
+    public MyBatisUserService(UserMapper userMapper) {
         this.userMapper = userMapper;
     }
 
