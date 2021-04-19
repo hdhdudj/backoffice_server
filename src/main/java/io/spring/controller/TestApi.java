@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
 
-import io.spring.core.user.Test;
-import io.spring.core.user.TestRepository;
+import io.spring.dao.user.Test;
+import io.spring.dao.user.TestRepository;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.ApiResponseMessageWithTuiGrid;
 import io.swagger.annotations.Api;

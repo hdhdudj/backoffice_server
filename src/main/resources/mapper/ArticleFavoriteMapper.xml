@@ -14,7 +14,7 @@
           from article_favorites AF
           where AF.article_id = #{articleId} and AF.user_id = #{userId}
     </select>
-    <resultMap id="articleFavorite" type="io.spring.core.favorite.ArticleFavorite">
+    <resultMap id="articleFavorite" type="io.spring.dao.favorite.ArticleFavorite">
         <result column="articleFavoriteArticleId" property="articleId"/>
         <result column="articleFavoriteUserId" property="userId"/>
     </resultMap>

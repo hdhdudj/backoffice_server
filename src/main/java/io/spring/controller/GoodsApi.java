@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.spring.core.common.CommonRepository;
-import io.spring.core.goods.JpaGoodsRepository;
-import io.spring.core.goods.MyBatisGoodsDao;
+import io.spring.dao.common.CommonRepository;
+import io.spring.dao.goods.JpaGoodsRepository;
+import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.model.goods.GoodsRequestData;
 import io.spring.model.goods.Itasrt;
 import io.spring.infrastructure.util.ApiResponseMessage;

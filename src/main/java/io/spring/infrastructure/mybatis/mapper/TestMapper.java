@@ -5,7 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import io.spring.core.user.Test;
+import io.spring.dao.user.Test;
 
 @Mapper
 public interface TestMapper {

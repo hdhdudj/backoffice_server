@@ -2,7 +2,7 @@ package io.spring.service;
 
 import io.spring.model.CommentData;
 import io.spring.infrastructure.mybatis.readservice.UserRelationshipQueryService;
-import io.spring.core.user.User;
+import io.spring.dao.user.User;
 import io.spring.infrastructure.mybatis.readservice.CommentReadService;
 import org.springframework.stereotype.Service;
 

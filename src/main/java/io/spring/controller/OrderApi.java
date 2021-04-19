@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.spring.core.common.CommonRepository;
-import io.spring.core.order.MyBatisOrderDao;
+import io.spring.dao.common.CommonRepository;
+import io.spring.dao.order.MyBatisOrderDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
 
 

@@ -1,7 +1,7 @@
 package io.spring.infrastructure.util.security;
 
-import io.spring.core.service.JwtService;
-import io.spring.core.user.UserRepository;
+import io.spring.dao.service.JwtService;
+import io.spring.dao.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;

@@ -25,7 +25,7 @@
         from comments
         where id = #{id} and article_id = #{articleId}
     </select>
-    <resultMap id="comment" type="io.spring.core.comment.Comment">
+    <resultMap id="comment" type="io.spring.dao.comment.Comment">
         <id column="commentId" property="id"/>
         <result column="commentBody" property="body"/>
         <result column="commentUserId" property="userId"/>

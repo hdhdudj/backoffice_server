@@ -3,7 +3,7 @@ package io.spring.service;
 import io.spring.model.ProfileData;
 import io.spring.model.UserData;
 import io.spring.infrastructure.mybatis.readservice.UserReadService;
-import io.spring.core.user.User;
+import io.spring.dao.user.User;
 import io.spring.infrastructure.mybatis.readservice.UserRelationshipQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

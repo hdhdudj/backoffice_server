@@ -1,7 +1,7 @@
 package io.spring.infrastructure.mybatis.readservice;
 
 import io.spring.service.data.ArticleFavoriteCount;
-import io.spring.core.user.User;
+import io.spring.dao.user.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
