@@ -5,7 +5,7 @@ import io.spring.infrastructure.util.exception.InvalidRequestException;
 import io.spring.service.Page;
 import io.spring.service.ArticleQueryService;
 import io.spring.dao.article.Article;
-import io.spring.dao.article.ArticleRepository;
+import io.spring.dao.article.ArticleDao;
 import io.spring.dao.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,12 +26,12 @@ import java.util.HashMap;
 
 @RestController
 @RequestMapping(path = "/articles")
-public class ArticlesApi {
-    private ArticleRepository articleRepository;
+public class ArticlesController {
+    private ArticleDao articleRepository;
     private ArticleQueryService articleQueryService;
 
     @Autowired
-    public ArticlesApi(ArticleRepository articleRepository, ArticleQueryService articleQueryService) {
+    public ArticlesController(ArticleDao articleRepository, ArticleQueryService articleQueryService) {
         this.articleRepository = articleRepository;
         this.articleQueryService = articleQueryService;
     }

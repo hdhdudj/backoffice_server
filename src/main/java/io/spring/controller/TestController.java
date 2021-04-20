@@ -36,11 +36,11 @@ import lombok.NoArgsConstructor;
 
 @RestController
 @Api(value = "test api", tags = "test")
-public class TestApi {
+public class TestController {
 	private TestRepository testRepository;
 
 	@Autowired
-	public TestApi(TestRepository testRepository) {
+	public TestController(TestRepository testRepository) {
 		this.testRepository = testRepository;
 	}
 

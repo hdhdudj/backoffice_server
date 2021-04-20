@@ -20,7 +20,7 @@ import io.spring.infrastructure.util.ApiResponseMessage;
 
 @RestController
 @RequestMapping(value = "/goods")
-public class GoodsApi {
+public class GoodsController {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
 	private MyBatisGoodsDao goodsRepository;
@@ -28,7 +28,7 @@ public class GoodsApi {
 	private CommonRepository commonRepository;
 	
 	@Autowired
-	public GoodsApi(MyBatisGoodsDao goodsRepository, CommonRepository commonRepository, JpaGoodsRepository jpaGoodsRepository) {
+	public GoodsController(MyBatisGoodsDao goodsRepository, CommonRepository commonRepository, JpaGoodsRepository jpaGoodsRepository) {
 		this.goodsRepository = goodsRepository;
 		this.commonRepository = commonRepository;
 		this.jpaGoodsRepository = jpaGoodsRepository;

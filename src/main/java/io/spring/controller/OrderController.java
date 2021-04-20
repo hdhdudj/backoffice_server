@@ -19,7 +19,7 @@ import io.spring.infrastructure.util.ApiResponseMessage;
 
 @RestController
 @RequestMapping(value = "/order")
-public class OrderApi {
+public class OrderController {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -27,7 +27,7 @@ public class OrderApi {
 	private CommonRepository commonRepository;
 
 	@Autowired
-	public OrderApi(MyBatisOrderDao myBatisOrderDao, CommonRepository commonRepository) {
+	public OrderController(MyBatisOrderDao myBatisOrderDao, CommonRepository commonRepository) {
 		this.myBatisOrderDao = myBatisOrderDao;
 		this.commonRepository = commonRepository;
 	}

@@ -2,7 +2,7 @@ package io.spring.dao.article;
 
 import java.util.Optional;
 
-public interface ArticleRepository {
+public interface ArticleDao {
 
     void save(Article article);
 

@@ -21,12 +21,12 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "profiles/{username}")
-public class ProfileApi {
+public class ProfileController {
     private ProfileQueryService profileQueryService;
     private UserRepository userRepository;
 
     @Autowired
-    public ProfileApi(ProfileQueryService profileQueryService, UserRepository userRepository) {
+    public ProfileController(ProfileQueryService profileQueryService, UserRepository userRepository) {
         this.profileQueryService = profileQueryService;
         this.userRepository = userRepository;
     }

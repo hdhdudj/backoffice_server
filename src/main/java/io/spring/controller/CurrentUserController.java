@@ -28,12 +28,12 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/user")
-public class CurrentUserApi {
+public class CurrentUserController {
     private UserQueryService userQueryService;
     private UserRepository userRepository;
 
     @Autowired
-    public CurrentUserApi(UserQueryService userQueryService, UserRepository userRepository) {
+    public CurrentUserController(UserQueryService userQueryService, UserRepository userRepository) {
         this.userQueryService = userQueryService;
         this.userRepository = userRepository;
     }

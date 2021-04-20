@@ -4,7 +4,7 @@ import io.spring.infrastructure.util.exception.ResourceNotFoundException;
 import io.spring.model.ArticleData;
 import io.spring.service.ArticleQueryService;
 import io.spring.dao.article.Article;
-import io.spring.dao.article.ArticleRepository;
+import io.spring.dao.article.ArticleDao;
 import io.spring.dao.favorite.ArticleFavorite;
 import io.spring.dao.favorite.ArticleFavoriteRepository;
 import io.spring.dao.user.User;
@@ -21,15 +21,15 @@ import java.util.HashMap;
 
 @RestController
 @RequestMapping(path = "articles/{slug}/favorite")
-public class ArticleFavoriteApi {
+public class ArticleFavoriteController {
     private ArticleFavoriteRepository articleFavoriteRepository;
-    private ArticleRepository articleRepository;
+    private ArticleDao articleRepository;
     private ArticleQueryService articleQueryService;
 
     @Autowired
-    public ArticleFavoriteApi(ArticleFavoriteRepository articleFavoriteRepository,
-                              ArticleRepository articleRepository,
-                              ArticleQueryService articleQueryService) {
+    public ArticleFavoriteController(ArticleFavoriteRepository articleFavoriteRepository,
+                                     ArticleDao articleRepository,
+                                     ArticleQueryService articleQueryService) {
         this.articleFavoriteRepository = articleFavoriteRepository;
         this.articleRepository = articleRepository;
         this.articleQueryService = articleQueryService;

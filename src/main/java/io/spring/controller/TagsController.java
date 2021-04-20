@@ -11,11 +11,11 @@ import java.util.HashMap;
 
 @RestController
 @RequestMapping(path = "tags")
-public class TagsApi {
+public class TagsController {
     private TagsQueryService tagsQueryService;
 
     @Autowired
-    public TagsApi(TagsQueryService tagsQueryService) {
+    public TagsController(TagsQueryService tagsQueryService) {
         this.tagsQueryService = tagsQueryService;
     }
 

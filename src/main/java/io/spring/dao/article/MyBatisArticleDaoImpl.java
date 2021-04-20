@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Repository
-public class MyBatisArticleDaoImpl implements ArticleRepository {
+public class MyBatisArticleDaoImpl implements ArticleDao {
     private ArticleMapper articleMapper;
 
     public MyBatisArticleDaoImpl(ArticleMapper articleMapper) {

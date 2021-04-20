@@ -34,7 +34,7 @@ import lombok.NoArgsConstructor;
 
 
 @RestController
-public class UsersApi {
+public class UsersController {
 	private UserRepository userRepository;
 	private UserQueryService userQueryService;
 	private String defaultImage;
@@ -42,8 +42,8 @@ public class UsersApi {
 	private JwtService jwtService;
 
 	@Autowired
-	public UsersApi(UserRepository userRepository, UserQueryService userQueryService, EncryptService encryptService,
-			@Value("${image.default}") String defaultImage, JwtService jwtService) {
+	public UsersController(UserRepository userRepository, UserQueryService userQueryService, EncryptService encryptService,
+						   @Value("${image.default}") String defaultImage, JwtService jwtService) {
 		this.userRepository = userRepository;
 		this.userQueryService = userQueryService;
 		this.encryptService = encryptService;

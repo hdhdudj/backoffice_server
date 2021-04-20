@@ -6,7 +6,7 @@ import io.spring.infrastructure.util.exception.ResourceNotFoundException;
 import io.spring.dao.service.AuthorizationService;
 import io.spring.model.ArticleData;
 import io.spring.service.ArticleQueryService;
-import io.spring.dao.article.ArticleRepository;
+import io.spring.dao.article.ArticleDao;
 import io.spring.dao.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,12 +27,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/articles/{slug}")
-public class ArticleApi {
+public class ArticleController {
     private ArticleQueryService articleQueryService;
-    private ArticleRepository articleRepository;
+    private ArticleDao articleRepository;
 
     @Autowired
-    public ArticleApi(ArticleQueryService articleQueryService, ArticleRepository articleRepository) {
+    public ArticleController(ArticleQueryService articleQueryService, ArticleDao articleRepository) {
         this.articleQueryService = articleQueryService;
         this.articleRepository = articleRepository;
     }

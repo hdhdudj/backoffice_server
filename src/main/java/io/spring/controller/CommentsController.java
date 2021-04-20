@@ -8,7 +8,7 @@ import io.spring.dao.service.AuthorizationService;
 import io.spring.model.CommentData;
 import io.spring.service.CommentQueryService;
 import io.spring.dao.article.Article;
-import io.spring.dao.article.ArticleRepository;
+import io.spring.dao.article.ArticleDao;
 import io.spring.dao.comment.Comment;
 import io.spring.dao.comment.CommentRepository;
 import io.spring.dao.user.User;
@@ -34,15 +34,15 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/articles/{slug}/comments")
-public class CommentsApi {
-    private ArticleRepository articleRepository;
+public class CommentsController {
+    private ArticleDao articleRepository;
     private CommentRepository commentRepository;
     private CommentQueryService commentQueryService;
 
     @Autowired
-    public CommentsApi(ArticleRepository articleRepository,
-                       CommentRepository commentRepository,
-                       CommentQueryService commentQueryService) {
+    public CommentsController(ArticleDao articleRepository,
+                              CommentRepository commentRepository,
+                              CommentQueryService commentQueryService) {
         this.articleRepository = articleRepository;
         this.commentRepository = commentRepository;
         this.commentQueryService = commentQueryService;
