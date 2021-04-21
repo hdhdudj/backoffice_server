@@ -1,4 +1,4 @@
-package io.spring.dao.service;
+package io.spring.service;
 
 import io.spring.dao.article.Article;
 import io.spring.dao.comment.Comment;

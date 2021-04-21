@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 import io.spring.infrastructure.util.exception.InvalidRequestException;
 import io.spring.infrastructure.util.exception.NoAuthorizationException;
 import io.spring.infrastructure.util.exception.ResourceNotFoundException;
-import io.spring.dao.service.AuthorizationService;
+import io.spring.service.AuthorizationService;
 import io.spring.model.CommentData;
 import io.spring.service.CommentQueryService;
 import io.spring.dao.article.Article;
-import io.spring.dao.article.ArticleDao;
+import io.spring.dao.article.MyBatisArticleDao;
 import io.spring.dao.comment.Comment;
-import io.spring.dao.comment.CommentRepository;
+import io.spring.dao.comment.MyBatisCommentDao;
 import io.spring.dao.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,16 +35,16 @@ import java.util.Map;
 @RestController
 @RequestMapping(path = "/articles/{slug}/comments")
 public class CommentsController {
-    private ArticleDao articleRepository;
-    private CommentRepository commentRepository;
+    private MyBatisArticleDao articleRepository;
+    private MyBatisCommentDao myBatisCommentDao;
     private CommentQueryService commentQueryService;
 
     @Autowired
-    public CommentsController(ArticleDao articleRepository,
-                              CommentRepository commentRepository,
+    public CommentsController(MyBatisArticleDao articleRepository,
+                              MyBatisCommentDao myBatisCommentDao,
                               CommentQueryService commentQueryService) {
         this.articleRepository = articleRepository;
-        this.commentRepository = commentRepository;
+        this.myBatisCommentDao = myBatisCommentDao;
         this.commentQueryService = commentQueryService;
     }
 
@@ -58,7 +58,7 @@ public class CommentsController {
             throw new InvalidRequestException(bindingResult);
         }
         Comment comment = new Comment(newCommentParam.getBody(), user.getId(), article.getId());
-        commentRepository.save(comment);
+        myBatisCommentDao.save(comment);
         return ResponseEntity.status(201).body(commentResponse(commentQueryService.findById(comment.getId(), user).get()));
     }
 
@@ -77,11 +77,11 @@ public class CommentsController {
                                         @PathVariable("id") String commentId,
                                         @AuthenticationPrincipal User user) {
         Article article = findArticle(slug);
-        return commentRepository.findById(article.getId(), commentId).map(comment -> {
+        return myBatisCommentDao.findById(article.getId(), commentId).map(comment -> {
             if (!AuthorizationService.canWriteComment(user, article, comment)) {
                 throw new NoAuthorizationException();
             }
-            commentRepository.remove(comment);
+            myBatisCommentDao.remove(comment);
             return ResponseEntity.noContent().build();
         }).orElseThrow(ResourceNotFoundException::new);
     }

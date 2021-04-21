@@ -9,11 +9,11 @@ import org.springframework.stereotype.Repository;
 import io.spring.infrastructure.mybatis.mapper.OrderMapper;
 
 @Repository
-public class MyBatisMyBatisOrderDaoImpl implements MyBatisOrderDao {
+public class MyBatisOrderDaoImpl implements MyBatisOrderDao {
 	private final OrderMapper orderMapper;
 
 	@Autowired
-	public MyBatisMyBatisOrderDaoImpl(OrderMapper orderMapper) {
+	public MyBatisOrderDaoImpl(OrderMapper orderMapper) {
 		this.orderMapper = orderMapper;
 	}
 

@@ -24,7 +24,7 @@ import io.spring.infrastructure.util.exception.InvalidRequestException;
 import io.spring.service.UserQueryService;
 import io.spring.model.UserData;
 import io.spring.model.UserWithToken;
-import io.spring.dao.service.JwtService;
+import io.spring.service.JwtService;
 import io.spring.dao.user.EncryptService;
 import io.spring.dao.user.User;
 import io.spring.dao.user.UserRepository;

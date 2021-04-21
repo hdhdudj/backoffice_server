@@ -3,10 +3,10 @@ package io.spring.controller;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import io.spring.infrastructure.util.exception.NoAuthorizationException;
 import io.spring.infrastructure.util.exception.ResourceNotFoundException;
-import io.spring.dao.service.AuthorizationService;
+import io.spring.service.AuthorizationService;
 import io.spring.model.ArticleData;
 import io.spring.service.ArticleQueryService;
-import io.spring.dao.article.ArticleDao;
+import io.spring.dao.article.MyBatisArticleDao;
 import io.spring.dao.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,10 +29,10 @@ import java.util.Map;
 @RequestMapping(path = "/articles/{slug}")
 public class ArticleController {
     private ArticleQueryService articleQueryService;
-    private ArticleDao articleRepository;
+    private MyBatisArticleDao articleRepository;
 
     @Autowired
-    public ArticleController(ArticleQueryService articleQueryService, ArticleDao articleRepository) {
+    public ArticleController(ArticleQueryService articleQueryService, MyBatisArticleDao articleRepository) {
         this.articleQueryService = articleQueryService;
         this.articleRepository = articleRepository;
     }

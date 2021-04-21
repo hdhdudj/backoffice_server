@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public class MyBatisArticleFavoriteDaoImpl implements ArticleFavoriteRepository {
+public class MyBatisArticleFavoriteDaoImpl implements MyBatisArticleFavoriteDao {
     private ArticleFavoriteMapper mapper;
 
     @Autowired

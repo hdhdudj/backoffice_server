@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class MyBatisCommentDaoImpl implements CommentRepository {
+public class MyBatisCommentDaoImpl implements MyBatisCommentDao {
     private CommentMapper commentMapper;
 
     @Autowired

@@ -4,9 +4,9 @@ import io.spring.infrastructure.util.exception.ResourceNotFoundException;
 import io.spring.model.ArticleData;
 import io.spring.service.ArticleQueryService;
 import io.spring.dao.article.Article;
-import io.spring.dao.article.ArticleDao;
+import io.spring.dao.article.MyBatisArticleDao;
 import io.spring.dao.favorite.ArticleFavorite;
-import io.spring.dao.favorite.ArticleFavoriteRepository;
+import io.spring.dao.favorite.MyBatisArticleFavoriteDao;
 import io.spring.dao.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,15 +22,15 @@ import java.util.HashMap;
 @RestController
 @RequestMapping(path = "articles/{slug}/favorite")
 public class ArticleFavoriteController {
-    private ArticleFavoriteRepository articleFavoriteRepository;
-    private ArticleDao articleRepository;
+    private MyBatisArticleFavoriteDao myBatisArticleFavoriteDao;
+    private MyBatisArticleDao articleRepository;
     private ArticleQueryService articleQueryService;
 
     @Autowired
-    public ArticleFavoriteController(ArticleFavoriteRepository articleFavoriteRepository,
-                                     ArticleDao articleRepository,
+    public ArticleFavoriteController(MyBatisArticleFavoriteDao myBatisArticleFavoriteDao,
+                                     MyBatisArticleDao articleRepository,
                                      ArticleQueryService articleQueryService) {
-        this.articleFavoriteRepository = articleFavoriteRepository;
+        this.myBatisArticleFavoriteDao = myBatisArticleFavoriteDao;
         this.articleRepository = articleRepository;
         this.articleQueryService = articleQueryService;
     }
@@ -40,7 +40,7 @@ public class ArticleFavoriteController {
                                           @AuthenticationPrincipal User user) {
         Article article = getArticle(slug);
         ArticleFavorite articleFavorite = new ArticleFavorite(article.getId(), user.getId());
-        articleFavoriteRepository.save(articleFavorite);
+        myBatisArticleFavoriteDao.save(articleFavorite);
         return responseArticleData(articleQueryService.findBySlug(slug, user).get());
     }
 
@@ -48,8 +48,8 @@ public class ArticleFavoriteController {
     public ResponseEntity unfavoriteArticle(@PathVariable("slug") String slug,
                                             @AuthenticationPrincipal User user) {
         Article article = getArticle(slug);
-        articleFavoriteRepository.find(article.getId(), user.getId()).ifPresent(favorite -> {
-            articleFavoriteRepository.remove(favorite);
+        myBatisArticleFavoriteDao.find(article.getId(), user.getId()).ifPresent(favorite -> {
+            myBatisArticleFavoriteDao.remove(favorite);
         });
         return responseArticleData(articleQueryService.findBySlug(slug, user).get());
     }

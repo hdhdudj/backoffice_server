@@ -2,7 +2,6 @@ package io.spring.dao.common;
 
 import java.util.HashMap;
 
-public interface CommonRepository {
+public interface MyBatisCommonDao {
 	HashMap<String, Object> getSequence(HashMap<String, Object> param);
-
 }

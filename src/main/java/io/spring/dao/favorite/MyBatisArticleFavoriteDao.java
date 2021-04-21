@@ -2,7 +2,7 @@ package io.spring.dao.favorite;
 
 import java.util.Optional;
 
-public interface ArticleFavoriteRepository {
+public interface MyBatisArticleFavoriteDao {
     void save(ArticleFavorite articleFavorite);
 
     Optional<ArticleFavorite> find(String articleId, String userId);

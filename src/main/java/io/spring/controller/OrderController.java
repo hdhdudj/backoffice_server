@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.spring.dao.common.CommonRepository;
+import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.order.MyBatisOrderDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
 
@@ -24,12 +24,12 @@ public class OrderController {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	private MyBatisOrderDao myBatisOrderDao;
-	private CommonRepository commonRepository;
+	private MyBatisCommonDao myBatisCommonDao;
 
 	@Autowired
-	public OrderController(MyBatisOrderDao myBatisOrderDao, CommonRepository commonRepository) {
+	public OrderController(MyBatisOrderDao myBatisOrderDao, MyBatisCommonDao myBatisCommonDao) {
 		this.myBatisOrderDao = myBatisOrderDao;
-		this.commonRepository = commonRepository;
+		this.myBatisCommonDao = myBatisCommonDao;
 	}
 
 	@RequestMapping(path = "/orders", method = RequestMethod.GET)

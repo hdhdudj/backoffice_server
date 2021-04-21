@@ -2,7 +2,7 @@ package io.spring.service;
 
 import io.spring.model.ArticleData;
 import io.spring.model.ArticleDataList;
-import io.spring.service.data.ArticleFavoriteCount;
+import io.spring.model.ArticleFavoriteCount;
 import io.spring.dao.user.User;
 import io.spring.infrastructure.mybatis.readservice.ArticleFavoritesReadService;
 import io.spring.infrastructure.mybatis.readservice.ArticleReadService;

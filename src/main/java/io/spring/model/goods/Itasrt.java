@@ -7,13 +7,45 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+/**
+ *  ITASRT table의 Entity
+ *  ITASRT : 상품 정보 table
+ */
+
 @Entity
 @Table(name = "itasrt")
 @Getter
 @Setter
 public class Itasrt {
+
+	public Itasrt() {
+
+	}
+
+	public Itasrt(GoodsRequestData goodsRequestData){
+		this.assortId = goodsRequestData.getAssortId();
+		this.assortNm = goodsRequestData.getAssortNm();
+		this.assortColor = goodsRequestData.getAssortColor();
+		this.brandId = goodsRequestData.getBrandId();
+		this.origin = goodsRequestData.getOrigin();
+		this.manufactureNm = goodsRequestData.getManufactureNm();
+		this.assortModel = goodsRequestData.getAssortModel();
+		this.taxGb = goodsRequestData.getTaxGb();
+
+		SimpleDateFormat format = new SimpleDateFormat ( "yyyy-MM-dd HH:mm:ss");
+		Date time = new Date();
+		String time1 = format.format(time);
+
+		this.regDt = time1;
+		this.updDt = time1;
+		this.regId = "123"; // 추후 추가
+		this.updId = "123"; // 추후 추가
+	}
+
 	@Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long assortId;
 	private String assortNm;
 	private String assortDnm;

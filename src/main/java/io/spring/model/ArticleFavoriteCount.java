@@ -1,4 +1,4 @@
-package io.spring.service.data;
+package io.spring.model;
 
 import lombok.Value;
 

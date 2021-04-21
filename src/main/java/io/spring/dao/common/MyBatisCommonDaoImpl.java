@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import io.spring.infrastructure.mybatis.mapper.CommonMapper;
 
 @Repository
-public class MyBatisCommonDaoImpl implements CommonRepository {
+public class MyBatisCommonDaoImpl implements MyBatisCommonDao {
 	private final CommonMapper commonMapper;
 
 	@Autowired
