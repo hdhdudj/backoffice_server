@@ -1,10 +1,10 @@
-package io.spring.model.goods;
+package io.spring.model.goods.entity;
 
+import io.spring.model.goods.GoodsRequestData;
+import io.spring.model.goods.idclass.ItvariId;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @Entity
 @Table(name = "itasrd")
@@ -24,9 +24,9 @@ public class Itasrd {
     }
 
     @Id
-    private long assortId;
+    private String assortId;
     @Id
-    private int seq;
+    private String seq;
 
     private String ordDetCd;
     private String memo;

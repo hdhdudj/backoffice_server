@@ -1,15 +1,10 @@
-package io.spring.model.goods;
+package io.spring.model.goods.entity;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.google.gson.JsonObject;
+import io.spring.model.goods.GoodsRequestData;
+import io.spring.model.goods.idclass.ItvariId;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "itvari")
@@ -22,7 +17,7 @@ public class Itvari {
 
     /**
      *
-     * @param attribute
+     * @param attributes
      * {
      *    "color": [
      *            "빨강",
@@ -44,7 +39,7 @@ public class Itvari {
     }
 
     @Id
-    private long assortId;
+    private String assortId;
     @Id
     private String seq;
     private String optionGb;

@@ -1,22 +1,35 @@
 package io.spring.service.goods;
 
 import io.spring.dao.common.MyBatisCommonDao;
+import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.dao.goods.jparep.JpaItasrdRepository;
 import io.spring.dao.goods.jparep.JpaItasrtRepository;
+import io.spring.dao.goods.jparep.JpaItitmmRepository;
 import io.spring.dao.goods.jparep.JpaItvariRepository;
 import io.spring.model.goods.GoodsRequestData;
-import io.spring.model.goods.Itasrd;
-import io.spring.model.goods.Itasrt;
+import io.spring.model.goods.entity.Itasrd;
+import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.goods.entity.Ititmm;
+import io.spring.model.goods.entity.Itvari;
+import org.flywaydb.core.internal.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class JpaGoodsService {
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final String colorGb = "01";
+    private final String sizeGb = "02";
+    private final String seqStartCd = "001";
+    private final String itemIdStartCd = "0001";
+
+    private final String seqStr = "seq";
+
     @Autowired
     private JpaItasrtRepository jpaItasrtRepository;
     @Autowired
@@ -24,7 +37,11 @@ public class JpaGoodsService {
     @Autowired
     private MyBatisCommonDao myBatisCommonDao;
     @Autowired
+    private MyBatisGoodsDao myBatisGoodsDao;
+    @Autowired
     private JpaItasrdRepository jpaItasrdRepository;
+    @Autowired
+    private JpaItitmmRepository jpaItitmmRepository;
 
     public List<Itasrt> findAll() {
         List<Itasrt> goods = new ArrayList<>();
@@ -44,41 +61,110 @@ public class JpaGoodsService {
     public long save(Itasrt goods) {
         HashMap<String, Object> arr = new HashMap<String, Object>();
 
-        arr.put("seqName", "seq_ITASRT");
-        HashMap<String, Object> x1 = myBatisCommonDao.getSequence(arr);
-        goods.setAssortId((long)x1.get("nextval"));
-
+        if(goods.getAssortId() == null || goods.getAssortId() == ""){
+            arr.put("seqName", "seq_ITASRT");
+            HashMap<String, Object> x1 = myBatisCommonDao.getSequence(arr);
+            String assortId = StringUtils.leftPad(Long.toString((long)x1.get("nextval")), 9, '0');
+            goods.setAssortId(assortId);
+            goods.setLocalSale("");
+        }
         jpaItasrtRepository.save(goods);
 
-        return goods.getAssortId();
+        return Long.parseLong(goods.getAssortId());
     }
 
-    public Itasrd save(Itasrd goods) {
+    public void save(GoodsRequestData goodsRequestData) {
         HashMap<String, Object> arr = new HashMap<String, Object>();
 
-        arr.put("seqName", "assort_id_ITASRD");
-        HashMap<String, Object> x1 = myBatisCommonDao.getSequence(arr);
-        goods.setAssortId((long)x1.get("nextval"));
+        Itasrd itasrd = new Itasrd(goodsRequestData);
+        String seq = Integer.toString((int)Double.parseDouble(myBatisGoodsDao.selectMaxSeqItasrd(goodsRequestData)));
+        if(seq == null){
+            seq = itemIdStartCd;
+        }
+        else {
+            seq = StringUtils.leftPad(seq, 4, '0');
+        }
+        itasrd.setSeq(seq);
 
-        arr.put("seqName", "seq_ITASRD");
-        HashMap<String, Object> x2 = myBatisCommonDao.getSequence(arr);
-        goods.setSeq(Long.valueOf((long)x2.get("nextval")).intValue());
-
-        jpaItasrdRepository.save(goods);
-
-        return goods;
+        jpaItasrdRepository.save(itasrd);
     }
 
     public void saveItvariList(GoodsRequestData goodsRequestData) {
-        for (GoodsRequestData.Attributes item : goodsRequestData.getAttributes()) {
-            if(item.getSize().size() > 0){ // size 목록일 경우
+//        Optional<List<String>> optionList1 = Optional.empty();
+        List<GoodsRequestData.Attributes> attributes = goodsRequestData.getAttributes();
+        for(GoodsRequestData.Attributes item : attributes){
+            List<GoodsRequestData.SeqAndValue> colors = item.getColor();
+            List<GoodsRequestData.SeqAndValue> sizes = item.getSize();
+            if(colors != null){
+                for (int j = 0; j < colors.size() ; j++) {
+                    Itvari itvari = new Itvari(goodsRequestData);
+                    String seq = colors.get(j).getSeq();
+                    if(seq == null || seq.equals("")){
+                        String maxSeq = Integer.toString((int)Double.parseDouble(myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData)));
+                        logger.debug(maxSeq);
+                        String seqRes = maxSeq == null? seqStartCd: StringUtils.leftPad(maxSeq, 3, '0');
+                        logger.debug(StringUtils.leftPad(maxSeq, 3, '0'));
+                        seq = seqRes;
+                    }
+                    itvari.setSeq(seq);
+                    itvari.setOptionNm(colors.get(j).getValue());
+                    itvari.setOptionGb(colorGb);
+                    jpaItvariRepository.save(itvari);
+                }
             }
-            else if(item.getColor().size() > 0){ // color 목록일 경우
-
+            else if(sizes != null){
+                for (int i = 0; i < sizes.size() ; i++) {
+                    Itvari itvari = new Itvari(goodsRequestData);
+                    String seq = sizes.get(i).getSeq();
+                    if(seq == null || seq.equals("")){
+                        String maxSeq = Integer.toString((int)Double.parseDouble(myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData)));
+                        String seqRes = maxSeq == null? seqStartCd: StringUtils.leftPad(maxSeq, 3, '0');
+                        seq = seqRes;
+                    }
+                    itvari.setSeq(seq);
+                    itvari.setOptionNm(sizes.get(i).getValue());
+                    itvari.setOptionGb(sizeGb);
+                    jpaItvariRepository.save(itvari);
+                }
             }
         }
+    }
 
-//        jpaItvariRepository.save(goods);
+    public void saveItemList(GoodsRequestData goodsRequestData) {
+        List<GoodsRequestData.Items> itemList = goodsRequestData.getItems();
+        for (GoodsRequestData.Items item : itemList ) {
+            Ititmm ititmm = new Ititmm(goodsRequestData);
+            String color = item.getColor();
+            String size = item.getSize();
+            item.setAssortId(goodsRequestData.getAssortId());
+            HashMap<String, Object> resMap;
+            if(color != null){
+                item.setOptionNm(color);
+                resMap = myBatisGoodsDao.selectOneSeqOptionGb(item);
+                ititmm.setVariationGb1(colorGb);
+                ititmm.setVariationSeq1((String)resMap.get(seqStr));
+            }
+            if(size != null){
+                item.setOptionNm(size);
+                resMap = myBatisGoodsDao.selectOneSeqOptionGb(item);
+                ititmm.setVariationGb2(sizeGb);
+                ititmm.setVariationSeq2((String)resMap.get(seqStr));
+            }
+            String startItemId = myBatisGoodsDao.selectMaxItemIdItitmm(goodsRequestData);
+
+            if(startItemId == null || startItemId.equals("")){
+                startItemId = itemIdStartCd;
+            }
+            else{
+                String maxSeq = Integer.toString((int)Double.parseDouble(startItemId));
+                String seqRes = maxSeq == null? seqStartCd: StringUtils.leftPad(maxSeq, 4, '0');
+                startItemId = seqRes;
+            }
+            ititmm.setMaxCnt("111");
+            ititmm.setItemId(startItemId);
+            ititmm.setAddPrice(item.getAddPrice());
+            jpaItitmmRepository.save(ititmm);
+        }
     }
 
     public void updateById(Long goodsId, Itasrt goods) {

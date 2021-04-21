@@ -1,11 +1,5 @@
 package io.spring.model.goods;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;
@@ -13,13 +7,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter
 public class GoodsRequestData {
 	// itasrt, itvari, itasrd 공통
-	private long assortId;
+	private String assortId;
 	private String regDt;
 	private String regId;
 	private String updId;
@@ -64,19 +57,30 @@ public class GoodsRequestData {
 		private String size;
 		@SerializedName("addPrice")
 		@Expose
-		private Integer addPrice;
+		private String addPrice;
+		private String optionNm;
+		private String assortId;
 	}
 
 	@Data
 	public static class Attributes {
 		@SerializedName("color")
 		@Expose
-		private List<String> color;
+		private List<SeqAndValue> color;
 		@SerializedName("size")
 		@Expose
-		private List<String> size;
+		private List<SeqAndValue> size;
 	}
 
+	@Data
+	public static class SeqAndValue{
+		@SerializedName("seq")
+		@Expose
+		private String seq;
+		@SerializedName("value")
+		@Expose
+		private String value;
+	}
 //	@JsonProperty("attributes") @JsonSerialize(using = ToStringSerializer.class)
 //	private String attributes;
 //	@JsonProperty("items") @JsonSerialize(using = ToStringSerializer.class)

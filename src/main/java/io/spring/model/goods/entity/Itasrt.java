@@ -1,12 +1,12 @@
-package io.spring.model.goods;
+package io.spring.model.goods.entity;
+
+import io.spring.model.goods.GoodsRequestData;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import lombok.Getter;
-import lombok.Setter;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -46,7 +46,7 @@ public class Itasrt {
 	}
 
 	@Id
-	private long assortId;
+	private String assortId;
 	private String assortNm;
 	private String assortDnm;
 	private String assortEnm;
