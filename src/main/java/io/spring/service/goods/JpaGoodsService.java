@@ -153,13 +153,13 @@ public class JpaGoodsService {
             String size = item.getSize();
             item.setAssortId(goodsRequestData.getAssortId());
             HashMap<String, Object> resMap;
-            if(color != null){
+            if(color != null){ // color 요소가 있는 경우
                 item.setOptionNm(color);
                 resMap = myBatisGoodsDao.selectOneSeqOptionGb(item);
                 ititmm.setVariationGb1(colorGb);
                 ititmm.setVariationSeq1((String)resMap.get(seqStr));
             }
-            if(size != null){
+            if(size != null){ // size 요소가 있는 경우
                 item.setOptionNm(size);
                 resMap = myBatisGoodsDao.selectOneSeqOptionGb(item);
                 ititmm.setVariationGb2(sizeGb);
