@@ -66,7 +66,6 @@ public class GoodsController {
 		
 		ApiResponseMessage res = null;
 		
-		
 		return null;
 	}
 	
@@ -75,18 +74,27 @@ public class GoodsController {
 	public ResponseEntity insertGoodsJpa(@RequestBody GoodsRequestData goodsRequestData) {
 		logger.debug("insert goods by jpa");
 		Itasrt itasrt = new Itasrt(goodsRequestData);
+		// itasrt에 goods 정보 저장
 		long assortId = jpaGoodsService.save(itasrt);
 		goodsRequestData.setAssortId(StringUtils.leftPad(Long.toString(assortId), 9, '0'));
 
+		// itasrd에 연관 정보 저장
 		jpaGoodsService.save(goodsRequestData);
 
-		// assort_id별 옵션요소 저장(색상, 사이즈)
+		// itvari에 assort_id별 옵션요소 저장(색상, 사이즈)
 		jpaGoodsService.saveItvariList(goodsRequestData);
 
-		// assort_id별 item 저장
+		// ititmm에 assort_id별 item 저장
 		jpaGoodsService.saveItemList(goodsRequestData);
 		ApiResponseMessage res = null;
 
-		return null;
+//		if(r.size() > 0) {
+//			res = new ApiResponseMessage<List<HashMap<String, Object>>>("SUCCESS","", r);
+//		}
+//		else {
+//			res = new ApiResponseMessage<List<HashMap<String, Object>>>("ERROR", "����Ÿ ����", null);
+//		}
+
+		return ResponseEntity.ok(res);
 	}
 }

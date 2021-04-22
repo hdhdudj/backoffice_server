@@ -2,19 +2,20 @@ package io.spring.model.goods.entity;
 
 import io.spring.model.goods.GoodsRequestData;
 import io.spring.model.goods.idclass.ItvariId;
-import lombok.Data;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "itasrd")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @IdClass(ItvariId.class)
 public class Itasrd {
-
-    public Itasrd(){
-
-    }
 
     public Itasrd(GoodsRequestData goodsRequestData){
         this.assortId = goodsRequestData.getAssortId();

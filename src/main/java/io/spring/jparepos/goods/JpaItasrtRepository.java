@@ -1,4 +1,4 @@
-package io.spring.dao.goods.jparep;
+package io.spring.jparepos.goods;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

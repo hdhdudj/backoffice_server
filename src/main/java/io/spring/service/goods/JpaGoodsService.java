@@ -2,10 +2,10 @@ package io.spring.service.goods;
 
 import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.goods.MyBatisGoodsDao;
-import io.spring.dao.goods.jparep.JpaItasrdRepository;
-import io.spring.dao.goods.jparep.JpaItasrtRepository;
-import io.spring.dao.goods.jparep.JpaItitmmRepository;
-import io.spring.dao.goods.jparep.JpaItvariRepository;
+import io.spring.jparepos.goods.JpaItasrdRepository;
+import io.spring.jparepos.goods.JpaItasrtRepository;
+import io.spring.jparepos.goods.JpaItitmmRepository;
+import io.spring.jparepos.goods.JpaItvariRepository;
 import io.spring.model.goods.GoodsRequestData;
 import io.spring.model.goods.entity.Itasrd;
 import io.spring.model.goods.entity.Itasrt;
@@ -25,8 +25,8 @@ public class JpaGoodsService {
 
     private final String colorGb = "01";
     private final String sizeGb = "02";
-    private final String seqStartCd = "001";
-    private final String itemIdStartCd = "0001";
+    private final String threeStartCd = "001";
+    private final String fourStartCd = "0001";
 
     private final String seqStr = "seq";
 
@@ -65,8 +65,9 @@ public class JpaGoodsService {
             arr.put("seqName", "seq_ITASRT");
             HashMap<String, Object> x1 = myBatisCommonDao.getSequence(arr);
             String assortId = StringUtils.leftPad(Long.toString((long)x1.get("nextval")), 9, '0');
+            logger.debug("nextVal : ", assortId);
             goods.setAssortId(assortId);
-            goods.setLocalSale("");
+            // 입력값에 assort_id가 없어서 새로 채번하는 경우 sequence_data table의 sequence_cur_value도 update 필요
         }
         jpaItasrtRepository.save(goods);
 
@@ -77,12 +78,12 @@ public class JpaGoodsService {
         HashMap<String, Object> arr = new HashMap<String, Object>();
 
         Itasrd itasrd = new Itasrd(goodsRequestData);
-        String seq = Integer.toString((int)Double.parseDouble(myBatisGoodsDao.selectMaxSeqItasrd(goodsRequestData)));
+        String seq = myBatisGoodsDao.selectMaxSeqItasrd(goodsRequestData);
         if(seq == null){
-            seq = itemIdStartCd;
+            seq = fourStartCd;
         }
         else {
-            seq = StringUtils.leftPad(seq, 4, '0');
+            seq = StringUtils.leftPad(Integer.toString((int)Double.parseDouble(seq)), 4, '0');
         }
         itasrd.setSeq(seq);
 
@@ -102,7 +103,7 @@ public class JpaGoodsService {
                     if(seq == null || seq.equals("")){
                         String maxSeq = Integer.toString((int)Double.parseDouble(myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData)));
                         logger.debug(maxSeq);
-                        String seqRes = maxSeq == null? seqStartCd: StringUtils.leftPad(maxSeq, 3, '0');
+                        String seqRes = maxSeq == null? threeStartCd : StringUtils.leftPad(maxSeq, 3, '0');
                         logger.debug(StringUtils.leftPad(maxSeq, 3, '0'));
                         seq = seqRes;
                     }
@@ -118,7 +119,7 @@ public class JpaGoodsService {
                     String seq = sizes.get(i).getSeq();
                     if(seq == null || seq.equals("")){
                         String maxSeq = Integer.toString((int)Double.parseDouble(myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData)));
-                        String seqRes = maxSeq == null? seqStartCd: StringUtils.leftPad(maxSeq, 3, '0');
+                        String seqRes = maxSeq == null? threeStartCd : StringUtils.leftPad(maxSeq, 3, '0');
                         seq = seqRes;
                     }
                     itvari.setSeq(seq);
@@ -153,14 +154,14 @@ public class JpaGoodsService {
             String startItemId = myBatisGoodsDao.selectMaxItemIdItitmm(goodsRequestData);
 
             if(startItemId == null || startItemId.equals("")){
-                startItemId = itemIdStartCd;
+                startItemId = fourStartCd;
             }
             else{
                 String maxSeq = Integer.toString((int)Double.parseDouble(startItemId));
-                String seqRes = maxSeq == null? seqStartCd: StringUtils.leftPad(maxSeq, 4, '0');
+                String seqRes = maxSeq == null? threeStartCd : StringUtils.leftPad(maxSeq, 4, '0');
                 startItemId = seqRes;
             }
-            ititmm.setMaxCnt("111");
+//            ititmm.setMaxCnt("111");
             ititmm.setItemId(startItemId);
             ititmm.setAddPrice(item.getAddPrice());
             jpaItitmmRepository.save(ititmm);

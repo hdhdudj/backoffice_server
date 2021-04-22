@@ -28,6 +28,9 @@ public class MyBatisGoodsDaoImpl implements MyBatisGoodsDao {
 	}
 
 	@Override
+	public String selectMaxSeqItasrt(GoodsRequestData goodsRequestData){return goodsMapper.selectMaxSeqItasrt(goodsRequestData);}
+
+	@Override
 	public String selectMaxSeqItvari(GoodsRequestData goodsRequestData){ return goodsMapper.selectMaxSeqItvari(goodsRequestData);}
 
 	@Override

@@ -1,4 +1,4 @@
-package io.spring.dao.goods.jparep;
+package io.spring.jparepos.goods;
 
 import io.spring.model.goods.entity.Itvari;
 import io.spring.model.goods.idclass.ItvariId;

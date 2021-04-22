@@ -20,4 +20,6 @@ public interface GoodsMapper {
     HashMap<String, Object> selectOneSeqOptionGb(GoodsRequestData.Items items);
 
     String selectMaxItemIdItitmm(GoodsRequestData goodsRequestData);
+
+    String selectMaxSeqItasrt(GoodsRequestData goodsRequestData);
 }

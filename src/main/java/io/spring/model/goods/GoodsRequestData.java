@@ -2,7 +2,6 @@ package io.spring.model.goods;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +10,8 @@ import java.util.List;
 @Getter
 @Setter
 public class GoodsRequestData {
+	private String code;
+	private String message;
 	// itasrt, itvari, itasrd 공통
 	private String assortId;
 	private String regDt;
@@ -47,7 +48,8 @@ public class GoodsRequestData {
 	@Expose
 	private List<Attributes> attributes;
 
-	@Data
+	@Getter
+	@Setter
 	public static class Items{
 		@SerializedName("color")
 		@Expose
@@ -62,7 +64,8 @@ public class GoodsRequestData {
 		private String assortId;
 	}
 
-	@Data
+	@Getter
+	@Setter
 	public static class Attributes {
 		@SerializedName("color")
 		@Expose
@@ -72,7 +75,8 @@ public class GoodsRequestData {
 		private List<SeqAndValue> size;
 	}
 
-	@Data
+	@Getter
+	@Setter
 	public static class SeqAndValue{
 		@SerializedName("seq")
 		@Expose

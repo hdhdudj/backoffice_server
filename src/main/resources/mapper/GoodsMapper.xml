@@ -9,6 +9,12 @@
     	]]>
     </select>
 
+	<select id="selectMaxSeqItasrt" resultType="string">
+    	<![CDATA[
+		select max(seq)+1 seq from itasrt where assort_id = #{assortId}
+		]]>
+    </select>
+
 	<select id="selectMaxSeqItvari" resultType="string">
     	<![CDATA[
 		select max(seq)+1 seq from itvari where assort_id = #{assortId}

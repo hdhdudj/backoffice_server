@@ -11,6 +11,8 @@ public interface MyBatisGoodsDao {
 	
 	Boolean insertGoods(GoodsRequestData goodsRequestData);
 
+	String selectMaxSeqItasrt(GoodsRequestData goodsRequestData);
+
 	String selectMaxSeqItvari(GoodsRequestData goodsRequestData);
 
 	String selectMaxSeqItasrd(GoodsRequestData goodsRequestData);

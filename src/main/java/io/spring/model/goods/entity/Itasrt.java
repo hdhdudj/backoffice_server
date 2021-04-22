@@ -1,7 +1,9 @@
 package io.spring.model.goods.entity;
 
 import io.spring.model.goods.GoodsRequestData;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Entity;
@@ -19,11 +21,8 @@ import java.util.Date;
 @Table(name = "itasrt")
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Itasrt {
-
-	public Itasrt() {
-
-	}
 
 	public Itasrt(GoodsRequestData goodsRequestData){
 		this.assortId = goodsRequestData.getAssortId();
