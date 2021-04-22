@@ -2,15 +2,13 @@ package io.spring.service.goods;
 
 import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.goods.MyBatisGoodsDao;
-import io.spring.jparepos.goods.JpaItasrdRepository;
-import io.spring.jparepos.goods.JpaItasrtRepository;
-import io.spring.jparepos.goods.JpaItitmmRepository;
-import io.spring.jparepos.goods.JpaItvariRepository;
+import io.spring.jparepos.goods.*;
 import io.spring.model.goods.GoodsRequestData;
 import io.spring.model.goods.entity.Itasrd;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.goods.entity.Itvari;
+import io.spring.model.sequence.entity.SequenceData;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +25,12 @@ public class JpaGoodsService {
     private final String sizeGb = "02";
     private final String threeStartCd = "001";
     private final String fourStartCd = "0001";
+    private final String nineStartCd = "000000001";
 
     private final String seqStr = "seq";
+    private final String seqItasrtStr = "seq_ITASRT";
+    private final String seqNameStr = "seqName";
+    private final String nextvalStr = "nextval";
 
     @Autowired
     private JpaItasrtRepository jpaItasrtRepository;
@@ -42,6 +44,8 @@ public class JpaGoodsService {
     private JpaItasrdRepository jpaItasrdRepository;
     @Autowired
     private JpaItitmmRepository jpaItitmmRepository;
+    @Autowired
+    private JpaSequenceDataRepository jpaSequenceDataRepository;
 
     public List<Itasrt> findAll() {
         List<Itasrt> goods = new ArrayList<>();
@@ -58,23 +62,33 @@ public class JpaGoodsService {
         jpaItasrtRepository.deleteById(goodsId);
     }
 
-    public long save(Itasrt goods) {
+    public String saveItasrt(GoodsRequestData goodsRequestData) {
+        Itasrt itasrt = new Itasrt(goodsRequestData);
         HashMap<String, Object> arr = new HashMap<String, Object>();
 
-        if(goods.getAssortId() == null || goods.getAssortId() == ""){
-            arr.put("seqName", "seq_ITASRT");
+        String assortId = goodsRequestData.getAssortId();
+        if(assortId == null || assortId.trim().equals("")){ // 입력값에 assort id가 없는 경우 (신규입력)
+            arr.put(seqNameStr, seqItasrtStr);
             HashMap<String, Object> x1 = myBatisCommonDao.getSequence(arr);
-            String assortId = StringUtils.leftPad(Long.toString((long)x1.get("nextval")), 9, '0');
-            logger.debug("nextVal : ", assortId);
-            goods.setAssortId(assortId);
-            // 입력값에 assort_id가 없어서 새로 채번하는 경우 sequence_data table의 sequence_cur_value도 update 필요
+            logger.debug("nextVal : ", x1.get(nextvalStr));
+            assortId = StringUtils.leftPad(Long.toString((long)x1.get(nextvalStr)), 9, '0');
+            itasrt.setAssortId(assortId);
+            goodsRequestData.setAssortId(assortId);
         }
-        jpaItasrtRepository.save(goods);
+        else{ // 입력값에 assort id가 있는 경우 (기존 정보 수정)
+            // 입력값에 assort_id가 없어서 새로 채번하는 경우 sequence_data table의 sequence_cur_value도 update 필요
+            Optional<SequenceData> returnSequenceData = jpaSequenceDataRepository.findById(seqItasrtStr);
+            SequenceData sequenceData = returnSequenceData.get();
+            sequenceData.setSequenceCurValue(assortId);
+            jpaSequenceDataRepository.save(sequenceData);
+        }
 
-        return Long.parseLong(goods.getAssortId());
+        jpaItasrtRepository.save(itasrt);
+
+        return itasrt.getAssortId();
     }
 
-    public void save(GoodsRequestData goodsRequestData) {
+    public void saveItasrd(GoodsRequestData goodsRequestData) {
         HashMap<String, Object> arr = new HashMap<String, Object>();
 
         Itasrd itasrd = new Itasrd(goodsRequestData);
@@ -175,5 +189,16 @@ public class JpaGoodsService {
             e.get().setAssortNm(goods.getAssortNm());
             jpaItasrtRepository.save(goods);
         }
+    }
+
+    public void initTables(){
+        jpaItasrdRepository.deleteAll();
+        jpaItasrtRepository.deleteAll();
+        jpaItitmmRepository.deleteAll();
+        jpaItvariRepository.deleteAll();
+        Optional<SequenceData> op = jpaSequenceDataRepository.findById("seq_ITASRT");
+        SequenceData seq = op.get();
+        seq.setSequenceCurValue("0");
+        jpaSequenceDataRepository.save(seq);
     }
 }

@@ -4,7 +4,6 @@ import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.model.goods.GoodsRequestData;
-import io.spring.model.goods.entity.Itasrt;
 import io.spring.service.goods.JpaGoodsService;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
@@ -73,13 +72,11 @@ public class GoodsController {
 	@RequestMapping(path = "/inserttest")
 	public ResponseEntity insertGoodsJpa(@RequestBody GoodsRequestData goodsRequestData) {
 		logger.debug("insert goods by jpa");
-		Itasrt itasrt = new Itasrt(goodsRequestData);
 		// itasrt에 goods 정보 저장
-		long assortId = jpaGoodsService.save(itasrt);
-		goodsRequestData.setAssortId(StringUtils.leftPad(Long.toString(assortId), 9, '0'));
+		jpaGoodsService.saveItasrt(goodsRequestData);
 
 		// itasrd에 연관 정보 저장
-		jpaGoodsService.save(goodsRequestData);
+		jpaGoodsService.saveItasrd(goodsRequestData);
 
 		// itvari에 assort_id별 옵션요소 저장(색상, 사이즈)
 		jpaGoodsService.saveItvariList(goodsRequestData);
@@ -96,5 +93,11 @@ public class GoodsController {
 //		}
 
 		return ResponseEntity.ok(res);
+	}
+
+	// table 초기화용
+	@RequestMapping(path = "/inittables")
+	public void initTables(){
+		jpaGoodsService.initTables();
 	}
 }
