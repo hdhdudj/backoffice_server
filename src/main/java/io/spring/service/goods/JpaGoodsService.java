@@ -115,10 +115,13 @@ public class JpaGoodsService {
                     Itvari itvari = new Itvari(goodsRequestData);
                     String seq = colors.get(j).getSeq();
                     if(seq == null || seq.equals("")){
-                        String maxSeq = Integer.toString((int)Double.parseDouble(myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData)));
+                        String maxSeq =  myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData);
+                        if(maxSeq != null){
+                            maxSeq = Integer.toString((int)Double.parseDouble(myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData)));
+                        }
                         logger.debug(maxSeq);
                         String seqRes = maxSeq == null? threeStartCd : StringUtils.leftPad(maxSeq, 3, '0');
-                        logger.debug(StringUtils.leftPad(maxSeq, 3, '0'));
+                        logger.debug(StringUtils.leftPad(seqRes, 3, '0'));
                         seq = seqRes;
                     }
                     itvari.setSeq(seq);

@@ -4,6 +4,7 @@ import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.model.goods.GoodsRequestData;
+import io.spring.model.goods.GoodsResponseData;
 import io.spring.service.goods.JpaGoodsService;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
@@ -85,7 +86,7 @@ public class GoodsController {
 
 		// ititmm에 assort_id별 item 저장
 		jpaGoodsService.saveItemList(goodsRequestData);
-		ApiResponseMessage res = null;
+		ApiResponseMessage res = new ApiResponseMessage("ok", "success", new GoodsResponseData(goodsRequestData));
 
 //		if(r.size() > 0) {
 //			res = new ApiResponseMessage<List<HashMap<String, Object>>>("SUCCESS","", r);
