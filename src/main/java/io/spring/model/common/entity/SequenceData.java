@@ -5,14 +5,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SequenceData {
+@NamedStoredProcedureQuery(name = "nextval",
+        procedureName = "nextval",
+        parameters = {
+                @StoredProcedureParameter(mode = ParameterMode.IN, name = "seqName", type = String.class),
+                @StoredProcedureParameter(mode = ParameterMode.OUT, name = "seq", type = String.class),
+        })
+public class SequenceData implements Serializable {
     @Id
     private String sequenceName;
     private String sequenceIncrement;

@@ -35,6 +35,9 @@ public class JpaCommonService {
         HashMap<String, Object> arr = new HashMap<String, Object>();
 
         arr.put(seqNameStr, seqItasrtStr);
+//        String res = jpaSequenceDataRepository.nextVal(seqItasrtStr);
+//        System.out.println(res + "-------------------");
+
         HashMap<String, Object> x1 = myBatisCommonDao.getSequence(arr); // max + 1 해서 옴
         logger.debug("nextVal : ", x1.get(nextvalStr));
         String assortId = StringUtils.leftPad(Long.toString((long)x1.get(nextvalStr)), 9, '0');
