@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 
 @Service
@@ -25,7 +26,7 @@ public class JpaCommonService {
     private final String seqNameStr = "seqName";
     private final String nextvalStr = "nextval";
 
-    public String getAssortId(GoodsRequestData goodsRequestData) {
+    public String getAssortId(@NotNull GoodsRequestData goodsRequestData) {
         if (goodsRequestData.getAssortId() != null && !goodsRequestData.getAssortId().equals("")) { // 기존 리퀘스트에 assort id가 존재하는 경우 그대로 돌려보냄
             return goodsRequestData.getAssortId();
         }
