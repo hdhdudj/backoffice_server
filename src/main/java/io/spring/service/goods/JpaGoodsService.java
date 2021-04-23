@@ -79,7 +79,7 @@ public class JpaGoodsService {
         List<Ititmm> ititmmList = this.saveItemList(goodsRequestData);
 
         List<GoodsResponseData.Attributes> attributesList = makeGoodsResponseAttributes(goodsRequestData.getAssortId(), itvariList);
-        List<GoodsResponseData.Items> itemsList = makeGoodsResponseItems(goodsRequestData.getAssortId(), ititmmList)
+        List<GoodsResponseData.Items> itemsList = makeGoodsResponseItems(goodsRequestData.getAssortId(), ititmmList);
         return makeGoodsResponseData(goodsRequestData, attributesList, itemsList);
     }
 
@@ -92,7 +92,8 @@ public class JpaGoodsService {
     }
 
     private GoodsResponseData makeGoodsResponseData(GoodsRequestData goodsRequestData, List<GoodsResponseData.Attributes> attributesList, List<GoodsResponseData.Items> itemsList){
-        GoodsResponseData goodsResponseData = GoodsResponseData.builder().goodsRequestData();
+        GoodsResponseData goodsResponseData = GoodsResponseData.builder().goodsRequestData(goodsRequestData)
+                .attributesList(attributesList).itemsList(itemsList).build();
 
         return goodsResponseData;
     }

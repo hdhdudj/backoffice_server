@@ -1,9 +1,5 @@
 package io.spring.model.goods;
 
-import io.spring.model.goods.entity.Itasrd;
-import io.spring.model.goods.entity.Itasrt;
-import io.spring.model.goods.entity.Ititmm;
-import io.spring.model.goods.entity.Itvari;
 import lombok.*;
 
 import java.util.List;
@@ -13,7 +9,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GoodsResponseData {
     @Builder
-    public GoodsResponseData(GoodsRequestData goodsRequestData, Itasrt itasrt, Itasrd itasrd, Itvari itvari, Ititmm ititmm){
+    public GoodsResponseData(GoodsRequestData goodsRequestData, List<Attributes> attributesList, List<Items> itemsList){
         this.assortId = goodsRequestData.getAssortId();
         this.assortNm = goodsRequestData.getAssortNm();
         this.assortColor = goodsRequestData.getAssortColor();
@@ -24,6 +20,8 @@ public class GoodsResponseData {
         this.taxGb = goodsRequestData.getTaxGb();
         this.longDesc = goodsRequestData.getLongDesc();
         this.shortDesc = goodsRequestData.getShortDesc();
+        this.attributesList = attributesList;
+        this.itemsList = itemsList;
     }
 
     private String assortId;
@@ -37,7 +35,7 @@ public class GoodsResponseData {
     private String longDesc;
     private String shortDesc;
     private List<Attributes> attributesList;
-    private List<Items> items;
+    private List<Items> itemsList;
 
     @Getter
     @Setter
