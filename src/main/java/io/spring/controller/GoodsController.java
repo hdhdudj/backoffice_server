@@ -73,16 +73,13 @@ public class GoodsController {
 	@RequestMapping(path = "/inserttest")
 	public ResponseEntity insertGoodsJpa(@RequestBody GoodsRequestData goodsRequestData) {
 		logger.debug("insert goods by jpa");
+		GoodsResponseData responseObj = jpaGoodsService.sequenceInsertGoods(goodsRequestData);
 
-		ApiResponseMessage res = new ApiResponseMessage("ok", "success", new GoodsResponseData(goodsRequestData));
+		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseObj);
 
-//		if(r.size() > 0) {
-//			res = new ApiResponseMessage<List<HashMap<String, Object>>>("SUCCESS","", r);
-//		}
-//		else {
-//			res = new ApiResponseMessage<List<HashMap<String, Object>>>("ERROR", "����Ÿ ����", null);
-//		}
-
+		if(responseObj == null){
+			return null;
+		}
 		return ResponseEntity.ok(res);
 	}
 

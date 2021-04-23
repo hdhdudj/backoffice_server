@@ -1,9 +1,10 @@
 package io.spring.model.goods;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import io.spring.model.goods.entity.Itasrd;
+import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.goods.entity.Ititmm;
+import io.spring.model.goods.entity.Itvari;
+import lombok.*;
 
 import java.util.List;
 
@@ -11,7 +12,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GoodsResponseData {
-    public GoodsResponseData(GoodsRequestData goodsRequestData){
+    @Builder
+    public GoodsResponseData(GoodsRequestData goodsRequestData, Itasrt itasrt, Itasrd itasrd, Itvari itvari, Ititmm ititmm){
         this.assortId = goodsRequestData.getAssortId();
         this.assortNm = goodsRequestData.getAssortNm();
         this.assortColor = goodsRequestData.getAssortColor();
@@ -39,7 +41,7 @@ public class GoodsResponseData {
 
     @Getter
     @Setter
-    class Attributes{
+    public class Attributes{
         private String seq;
         private String optionNm;
         private String variationGb;
@@ -47,7 +49,7 @@ public class GoodsResponseData {
 
     @Getter
     @Setter
-    class Items{
+    public class Items{
         private String itemId;
         private String color;
         private String size;

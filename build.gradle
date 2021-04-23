@@ -18,7 +18,7 @@ repositories {
 
 configurations {
     compileOnly.extendsFrom annotationProcessor
-    
+
   all {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }    
@@ -58,7 +58,7 @@ dependencies {
 
 
 
-    //runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'com.h2database:h2'
    	runtimeOnly 'mysql:mysql-connector-java'
 
     compileOnly 'org.projectlombok:lombok'
