@@ -5,6 +5,7 @@ import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.model.goods.GoodsRequestData;
 import io.spring.model.goods.GoodsResponseData;
+import io.spring.service.common.JpaCommonService;
 import io.spring.service.goods.JpaGoodsService;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
@@ -26,12 +27,14 @@ public class GoodsController {
 	private MyBatisGoodsDao goodsRepository;
 	private MyBatisCommonDao myBatisCommonDao;
 	private JpaGoodsService jpaGoodsService;
+	private JpaCommonService jpaCommonService;
 
 	@Autowired
-	public GoodsController(MyBatisGoodsDao goodsRepository, MyBatisCommonDao myBatisCommonDao, JpaGoodsService jpaGoodsService) {
+	public GoodsController(MyBatisGoodsDao goodsRepository, MyBatisCommonDao myBatisCommonDao, JpaGoodsService jpaGoodsService, JpaCommonService jpaCommonService) {
 		this.goodsRepository = goodsRepository;
 		this.myBatisCommonDao = myBatisCommonDao;
 		this.jpaGoodsService = jpaGoodsService;
+		this.jpaCommonService = jpaCommonService;
 	}
 	
 	@RequestMapping(path = "/select")
@@ -73,6 +76,8 @@ public class GoodsController {
 	@RequestMapping(path = "/inserttest")
 	public ResponseEntity insertGoodsJpa(@RequestBody GoodsRequestData goodsRequestData) {
 		logger.debug("insert goods by jpa");
+
+		goodsRequestData.setAssortId(jpaCommonService.getAssortId(goodsRequestData)); // assort id 채번
 		GoodsResponseData responseObj = jpaGoodsService.sequenceInsertGoods(goodsRequestData);
 
 		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseObj);
