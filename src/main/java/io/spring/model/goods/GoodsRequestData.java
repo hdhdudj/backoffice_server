@@ -60,8 +60,8 @@ public class GoodsRequestData {
 	private List<Items> items;
 
 	// ititmd
-	private String sellSta;
-	private String sellEnd;
+	private Date sellSta;
+	private Date sellEnd;
 
 	// itvari
 	private String optionGb;

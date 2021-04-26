@@ -1,9 +1,13 @@
 package io.spring.model.goods.idclass;
 
 import io.spring.model.goods.GoodsRequestData;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.Date;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ItasrnId implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -18,6 +22,6 @@ public class ItasrnId implements Serializable {
     private String historyGb;
     private String vendorId;
     private String assortId;
-    private String effEndDt;
-    private String effStaDt;
+    private Date effEndDt;
+    private Date effStaDt;
 }

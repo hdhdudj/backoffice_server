@@ -23,8 +23,8 @@ public class Ititmd {
     public Ititmd(GoodsRequestData goodsRequestData, Ititmm ititmm){
         this.assortId = ititmm.getAssortId();
         this.itemId = ititmm.getItemId();
-        this.effStaDt = goodsRequestData.getSellSta();
-        this.effEndDt = goodsRequestData.getSellEnd();
+        this.effStaDt = new Date();//goodsRequestData.getSellSta();
+        this.effEndDt = new Date();//goodsRequestData.getSellEnd();
         this.shortYn = ititmm.getShortYn();
     }
     @Id
@@ -32,9 +32,9 @@ public class Ititmd {
     @Id
     private String itemId;
     @Id
-    private String effEndDt;
+    private Date effEndDt;
     @Id
-    private String effStaDt;
+    private Date effStaDt;
     private String shortYn;
 
     private String regId;

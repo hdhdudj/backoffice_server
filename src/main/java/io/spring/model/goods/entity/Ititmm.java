@@ -23,8 +23,8 @@ import java.util.Date;
 @IdClass(ItitmmId.class)
 public class Ititmm {
 
-    public Ititmm(GoodsRequestData goodsRequestData, GoodsRequestData.Items items){
-        this.assortId = goodsRequestData.getAssortId();
+    public Ititmm(String assortId, GoodsRequestData.Items items){
+        this.assortId = assortId;
 
         this.shortYn = items.getShortYn();
         this.addPrice = items.getAddPrice();

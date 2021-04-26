@@ -8,8 +8,7 @@ import io.spring.model.common.entity.SequenceData;
 import io.spring.model.goods.GoodsRequestData;
 import io.spring.model.goods.GoodsResponseData;
 import io.spring.model.goods.entity.*;
-import io.spring.model.goods.idclass.ItasrdId;
-import io.spring.model.goods.idclass.ItasrnId;
+import io.spring.model.goods.idclass.*;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +17,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class JpaGoodsService {
@@ -147,6 +149,7 @@ public class JpaGoodsService {
         ItasrnId itasrnId = new ItasrnId(goodsRequestData);
         Itasrn itasrn = jpaItasrnRepository.findById(itasrnId).orElseGet(() -> new Itasrn(goodsRequestData));
         itasrn.setLocalSale(goodsRequestData.getLocalSale());
+        itasrn.setShortageYn(goodsRequestData.getShortageYn());
         jpaItasrnRepository.save(itasrn);
         return itasrn;
     }
@@ -171,7 +174,6 @@ public class JpaGoodsService {
             itasrd.setOrdDetCd(gbTwo);
             itasrd.setTextHtmlGb(gbOne);
         }
-
         jpaItasrdRepository.save(itasrd);
 
         return itasrd;
@@ -195,7 +197,6 @@ public class JpaGoodsService {
             List<GoodsRequestData.SeqAndValue> sizes = item.getSize();
             if(colors != null){
                 for (int j = 0; j < colors.size() ; j++) {
-                    Itvari itvari = new Itvari(goodsRequestData);
                     String seq = colors.get(j).getSeq();
                     if(seq == null || seq.equals("")){
                         String maxSeq = plusOne(jpaItvariRepository.findMaxSeqByAssortId(goodsRequestData.getAssortId())); //myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData)
@@ -208,9 +209,12 @@ public class JpaGoodsService {
                         logger.debug(StringUtils.leftPad(seqRes, 3, '0'));
                         seq = seqRes;
                     }
+                    Itvari itvari = jpaItvariRepository.findById(new ItvariId(goodsRequestData.getAssortId(), seq)).orElseGet(()->new Itvari(goodsRequestData));
+
                     itvari.setSeq(seq);
                     itvari.setOptionNm(colors.get(j).getValue());
                     itvari.setOptionGb(colorGb);
+                    itvari.setUpdDt(new Date());
                     jpaItvariRepository.save(itvari);
                     itvariList.add(itvari);
                 }
@@ -227,6 +231,7 @@ public class JpaGoodsService {
                     itvari.setSeq(seq);
                     itvari.setOptionNm(sizes.get(i).getValue());
                     itvari.setOptionGb(sizeGb);
+                    itvari.setUpdDt(new Date());
                     jpaItvariRepository.save(itvari);
                     itvariList.add(itvari);
                 }
@@ -240,20 +245,21 @@ public class JpaGoodsService {
         List<GoodsRequestData.Items> itemList = goodsRequestData.getItems();
         List<Ititmm> itemsList = new ArrayList<>();
         for (GoodsRequestData.Items item : itemList) {
-            Ititmm ititmm = new Ititmm(goodsRequestData, item);
             String color = item.getColor();
             String size = item.getSize();
             item.setAssortId(goodsRequestData.getAssortId());
+            Ititmm ititmm = null;
             if(color != null){ // color 요소가 있는 경우
                 item.setOptionNm(color);
-//                System.out.println(item.getAssortId() " " item.getOptionNm() + " " + );
                 Itvari itvari = jpaItvariRepository.findByAssortIdAndOptionNm(goodsRequestData.getAssortId(), item.getOptionNm());//myBatisGoodsDao.selectOneSeqOptionGb(item);
+                ititmm = jpaItitmmRepository.findById(new ItitmmId(goodsRequestData.getAssortId(), itvari.getSeq())).orElseGet(()->new Ititmm(goodsRequestData.getAssortId(), item));
                 ititmm.setVariationGb1(colorGb);
                 ititmm.setVariationSeq1((String)itvari.getSeq());
             }
             if(size != null){ // size 요소가 있는 경우
                 item.setOptionNm(size);
                 Itvari itvari = jpaItvariRepository.findByAssortIdAndOptionNm(goodsRequestData.getAssortId(), item.getOptionNm());//myBatisGoodsDao.selectOneSeqOptionGb(item);
+                ititmm = jpaItitmmRepository.findById(new ItitmmId(goodsRequestData.getAssortId(), itvari.getSeq())).orElseGet(()->new Ititmm(goodsRequestData.getAssortId(), item));
                 ititmm.setVariationGb2(sizeGb);
                 ititmm.setVariationSeq2((String)itvari.getSeq());
             }
@@ -268,9 +274,11 @@ public class JpaGoodsService {
                 String seqRes = maxSeq == null? threeStartCd : StringUtils.leftPad(maxSeq, 4, '0');
                 startItemId = seqRes;
             }
-//            ititmm.setMaxCnt("111");
+            if(ititmm == null){
+                ititmm = new Ititmm(goodsRequestData.getAssortId(), item);
+            }
             ititmm.setItemId(startItemId);
-//            ititmm.setAddPrice(item.getAddPrice());
+            ititmm.setUpdDt(new Date());
             jpaItitmmRepository.save(ititmm);
             itemsList.add(ititmm);
         }
@@ -281,7 +289,12 @@ public class JpaGoodsService {
     private List<Ititmd> saveItemOptionList(GoodsRequestData goodsRequestData, List<Ititmm> ititmmList) {
         List<Ititmd> ititmdList = new ArrayList<>();
         for (Ititmm item: ititmmList) {
-            Ititmd ititmd = new Ititmd(goodsRequestData, item);
+            Ititmd ititmd = jpaItitmdRepository.findById(new ItitmdId(goodsRequestData, item.getItemId())).orElseGet(()->new Ititmd(goodsRequestData, item));//new Ititmd(goodsRequestData, item);
+            ititmd.setItemId(item.getItemId());
+            ititmd.setEffStaDt(new Date()); // 임시로..
+            ititmd.setEffEndDt(new Date());
+            ititmd.setShortYn(item.getShortYn());
+            ititmd.setUpdDt(new Date());
             ititmdList.add(ititmd);
             jpaItitmdRepository.save(ititmd);
         }
