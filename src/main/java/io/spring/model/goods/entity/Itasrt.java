@@ -39,8 +39,8 @@ public class Itasrt {
 //
 //		this.regDt = time1;
 //		this.updDt = time1;
-		this.regId = "123"; // 추후 추가
-		this.updId = "123"; // 추후 추가
+//		this.regId = "123";
+//		this.updId = "123";
 	}
 
 	@Id

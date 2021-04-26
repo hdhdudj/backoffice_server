@@ -17,7 +17,7 @@ import javax.persistence.*;
 @IdClass(ItasrnId.class)
 public class Itasrn {
     public Itasrn(GoodsRequestData goodsRequestData){
-        // goodsRequestData가 필요한가..?
+        this.localSale = goodsRequestData.getLocalSale();
     }
     @Id
     private String historyGb;

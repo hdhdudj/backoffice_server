@@ -17,8 +17,11 @@ import javax.persistence.*;
 @IdClass(ItitmmId.class)
 public class Ititmm {
 
-    public Ititmm(GoodsRequestData goodsRequestData){
+    public Ititmm(GoodsRequestData goodsRequestData, GoodsRequestData.Items items){
         this.assortId = goodsRequestData.getAssortId();
+
+        this.shortYn = items.getShortYn();
+        this.addPrice = items.getAddPrice();
     }
     @Id
     private String assortId;

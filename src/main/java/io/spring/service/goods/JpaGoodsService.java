@@ -3,10 +3,7 @@ package io.spring.service.goods;
 import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
-import io.spring.jparepos.goods.JpaItasrdRepository;
-import io.spring.jparepos.goods.JpaItasrtRepository;
-import io.spring.jparepos.goods.JpaItitmmRepository;
-import io.spring.jparepos.goods.JpaItvariRepository;
+import io.spring.jparepos.goods.*;
 import io.spring.model.common.entity.SequenceData;
 import io.spring.model.goods.GoodsRequestData;
 import io.spring.model.goods.GoodsResponseData;
@@ -38,6 +35,8 @@ public class JpaGoodsService {
 
     @Autowired
     private JpaItasrtRepository jpaItasrtRepository;
+    @Autowired
+    private JpaItasrnRepository jpaItasrnRepository;
     @Autowired
     private JpaItvariRepository jpaItvariRepository;
     @Autowired
@@ -73,7 +72,7 @@ public class JpaGoodsService {
         // itasrt에 goods 정보 저장
         Itasrt itasrt = this.saveItasrt(goodsRequestData);
         // itsrn에 goods 이력 저장
-        this.saveItasrn(goodsRequestData);
+        Itasrn itasrn = this.saveItasrn(goodsRequestData);
         // itasrd에 연관 정보 저장
         Itasrd itasrd = this.saveItasrd(goodsRequestData);
         // itvari에 assort_id별 옵션요소 저장(색상, 사이즈)
@@ -81,11 +80,14 @@ public class JpaGoodsService {
         // ititmm에 assort_id별 item 저장
         List<Ititmm> ititmmList = this.saveItemList(goodsRequestData);
         // ititmd에 item 이력 저장
+        List<Ititmd> ititmdList = this.saveItemOptionList(goodsRequestData, ititmmList);
 
         List<GoodsResponseData.Attributes> attributesList = makeGoodsResponseAttributes(goodsRequestData.getAssortId(), itvariList);
         List<GoodsResponseData.Items> itemsList = makeGoodsResponseItems(goodsRequestData.getAssortId(), ititmmList);
         return makeGoodsResponseData(goodsRequestData, attributesList, itemsList);
     }
+
+
 
     private List<GoodsResponseData.Attributes> makeGoodsResponseAttributes(String assortId, List<Itvari> itvariList){
         return null;
@@ -107,7 +109,7 @@ public class JpaGoodsService {
     }
 
 //    @Transactional
-    public Itasrt saveItasrt(GoodsRequestData goodsRequestData) {
+    private Itasrt saveItasrt(GoodsRequestData goodsRequestData) {
         Itasrt itasrt = new Itasrt(goodsRequestData);
 //        HashMap<String, Object> arr = new HashMap<String, Object>();
 //
@@ -133,11 +135,13 @@ public class JpaGoodsService {
         return itasrt;
     }
 
-    public void saveItasrn(GoodsRequestData goodsRequestData){
+    private Itasrn saveItasrn(GoodsRequestData goodsRequestData){
         Itasrn itasrn = new Itasrn(goodsRequestData);
+        jpaItasrnRepository.save(itasrn);
+        return itasrn;
     }
 
-    public Itasrd saveItasrd(GoodsRequestData goodsRequestData) {
+    private Itasrd saveItasrd(GoodsRequestData goodsRequestData) {
         HashMap<String, Object> arr = new HashMap<String, Object>();
 
         Itasrd itasrd = new Itasrd(goodsRequestData);
@@ -155,7 +159,7 @@ public class JpaGoodsService {
         return itasrd;
     }
 
-    public List<Itvari> saveItvariList(GoodsRequestData goodsRequestData) {
+    private List<Itvari> saveItvariList(GoodsRequestData goodsRequestData) {
 //        Optional<List<String>> optionList1 = Optional.empty();
         List<GoodsRequestData.Attributes> attributes = goodsRequestData.getAttributes();
         List<Itvari> itvariList = new ArrayList<>();
@@ -205,11 +209,11 @@ public class JpaGoodsService {
         return itvariList;
     }
 
-    public List<Ititmm> saveItemList(GoodsRequestData goodsRequestData) {
+    private List<Ititmm> saveItemList(GoodsRequestData goodsRequestData) {
         List<GoodsRequestData.Items> itemList = goodsRequestData.getItems();
         List<Ititmm> itemsList = new ArrayList<>();
         for (GoodsRequestData.Items item : itemList ) {
-            Ititmm ititmm = new Ititmm(goodsRequestData);
+            Ititmm ititmm = new Ititmm(goodsRequestData, item);
             String color = item.getColor();
             String size = item.getSize();
             item.setAssortId(goodsRequestData.getAssortId());
@@ -239,12 +243,21 @@ public class JpaGoodsService {
             }
 //            ititmm.setMaxCnt("111");
             ititmm.setItemId(startItemId);
-            ititmm.setAddPrice(item.getAddPrice());
-            jpaItitmmRepository.save(ititmm);
+//            ititmm.setAddPrice(item.getAddPrice());
+//            jpaItitmmRepository.save(ititmm);
             itemsList.add(ititmm);
         }
 
         return itemsList;
+    }
+
+    private List<Ititmd> saveItemOptionList(GoodsRequestData goodsRequestData, List<Ititmm> ititmmList) {
+        List<Ititmd> ititmdList = new ArrayList<>();
+        for (Ititmm item: ititmmList) {
+            Ititmd ititmd = new Ititmd(goodsRequestData, item);
+            ititmdList.add(ititmd);
+        }
+        return ititmdList;
     }
 
     public void updateById(Long goodsId, Itasrt goods) {
@@ -256,6 +269,7 @@ public class JpaGoodsService {
         }
     }
 
+    // table 초기화용 함수(test할 때 편하려고..)
     public void initTables(){
         jpaItasrdRepository.deleteAll();
         jpaItasrtRepository.deleteAll();
@@ -267,12 +281,12 @@ public class JpaGoodsService {
         jpaSequenceDataRepository.save(seq);
     }
 
-    // 유틸 함수 : "009"를 받아 int화해서 1을 더한 후 10으로 return
+    // 유틸 함수 : "009"를 받아 정수화해서 1을 더한 후 "010"으로 return
     private String plusOne(String calcNeedStringNumber){ // 들어온 string의 숫자는 정수여야 함
         if(calcNeedStringNumber == null){
             return null;
         }
-        String calcRes = StringUtils.leftPad(Integer.toString((int)Double.parseDouble(calcNeedStringNumber) + 1), 4, '0');
+        String calcRes = StringUtils.leftPad(Long.toString((long)Double.parseDouble(calcNeedStringNumber) + 1), 4, '0');
         return calcRes;
     }
 }

@@ -18,8 +18,11 @@ import javax.persistence.IdClass;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @IdClass(ItitmdId.class)
 public class Ititmd {
-    public Ititmd(GoodsRequestData goodsRequestData){
-
+    public Ititmd(GoodsRequestData goodsRequestData, Ititmm ititmm){
+        this.assortId = ititmm.getAssortId();
+        this.itemId = ititmm.getItemId();
+        this.effStaDt = goodsRequestData.getSellSta();
+        this.effEndDt = goodsRequestData.getSellEnd();
     }
     @Id
     private String assortId;

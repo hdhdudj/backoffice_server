@@ -28,6 +28,9 @@ public class GoodsRequestData {
 	private String assortModel;
 	private String taxGb;
 
+	//itasrn
+	private String localSale;
+
 	// itasrd
 	private String longDesc;
 	private String shortDesc;
@@ -36,6 +39,10 @@ public class GoodsRequestData {
 	@SerializedName("items")
 	@Expose
 	private List<Items> items;
+
+	// ititmd
+	private String sellSta;
+	private String sellEnd;
 
 	// itvari
 	private String optionGb;
@@ -58,10 +65,11 @@ public class GoodsRequestData {
 		@Expose
 		private String size;
 		@SerializedName("addPrice")
-		@Expose
+		@Expose // object 중 해당 값이 null일 경우, json으로 만들 필드를 자동 생략
 		private String addPrice;
 		private String optionNm;
 		private String assortId;
+		private String shortYn;
 	}
 
 	@Getter
@@ -94,8 +102,7 @@ public class GoodsRequestData {
 //	private String shortageYn;
 //	private String sellSta;
 //	private String sellEnd;
-//	private String localPrice;
-//	private String localSale;
+//	private String localPrice;private String localSale;
 //	private String deliPrice;
 //	private String margin;
 //	private String vendorId;
