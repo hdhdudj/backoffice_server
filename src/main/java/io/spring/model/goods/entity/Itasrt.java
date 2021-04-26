@@ -5,11 +5,13 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Date;
 
 /**
  *  ITASRT table의 Entity
@@ -32,15 +34,21 @@ public class Itasrt {
 		this.manufactureNm = goodsRequestData.getManufactureNm();
 		this.assortModel = goodsRequestData.getAssortModel();
 		this.taxGb = goodsRequestData.getTaxGb();
-
-//		SimpleDateFormat format = new SimpleDateFormat ( "yyyy-MM-dd HH:mm:ss");
-//		Date time = new Date();
-//		String time1 = format.format(time);
-//
-//		this.regDt = time1;
-//		this.updDt = time1;
-//		this.regId = "123";
-//		this.updId = "123";
+		this.assortState = goodsRequestData.getAssortState();
+		this.shortageYn = goodsRequestData.getShortageYn();
+		this.localPrice = goodsRequestData.getLocalPrice();
+		this.deliPrice = goodsRequestData.getDeliPrice();
+		this.margin = goodsRequestData.getMargin();
+		this.vendorId = goodsRequestData.getVendorId();
+		this.mdRrp = goodsRequestData.getMdRrp();
+		this.mdYear = goodsRequestData.getMdYear();
+		this.mdTax = goodsRequestData.getMdTax();
+		this.mdVatrate = goodsRequestData.getMdVatrate();
+		this.mdDiscountRate = goodsRequestData.getMdDiscountRate();
+		this.mdGoodsVatrate = goodsRequestData.getMdGoodsVatrate();
+		this.buyWhere = goodsRequestData.getBuyWhere();
+		this.mdMargin = goodsRequestData.getMdMargin();
+		this.buyExchangeRate = goodsRequestData.getBuyExchangeRate();
 	}
 
 	@Id
@@ -48,10 +56,10 @@ public class Itasrt {
 
 	private String regId;
 	private String updId;
-	@Column(name = "reg_dt", nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-	private String regDt;
-	@Column(name = "upd_dt", nullable = false, updatable = false, insertable = false, columnDefinition = "ON UPDATE CURRENT_TIMESTAMP")
-	private String updDt;
+	@CreationTimestamp
+	private Date regDt;
+	@UpdateTimestamp
+	private Date updDt;
 
 	private String assortNm;
 	private String assortDnm;

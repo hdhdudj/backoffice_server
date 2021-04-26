@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -14,10 +15,10 @@ public class GoodsRequestData {
 	private String message;
 	// itasrt, itvari, itasrd 공통
 	private String assortId;
-	private String regDt;
+	private Date regDt;
 	private String regId;
 	private String updId;
-	private String updDt;
+	private Date updDt;
 
 	// itasrt
 	private String assortNm;
@@ -27,13 +28,31 @@ public class GoodsRequestData {
 	private String manufactureNm;
 	private String assortModel;
 	private String taxGb;
+	private String assortState;
+	private String shortageYn;
+	private String localPrice;
+	private String deliPrice;
+	private String margin;
+	private String vendorId;
+	private String mdRrp;
+	private String mdYear;
+	private String mdTax;
+	private String mdVatrate;
+	private String mdDiscountRate;
+	private String mdGoodsVatrate;
+	private String buyWhere;
+	private String buySupplyDiscount;
+	private String buyRrpIncrement;
+	private String buyTax;
+	private String mdMargin;
+	private String buyExchangeRate;
 
 	//itasrn
 	private String localSale;
 
 	// itasrd
-	private String longDesc;
-	private String shortDesc;
+	private String longDesc; // html (메모 상세)
+	private String shortDesc; // text (메모 간략)
 
 	// ititmm
 	@SerializedName("items")
@@ -93,29 +112,7 @@ public class GoodsRequestData {
 		@Expose
 		private String value;
 	}
-//	@JsonProperty("attributes") @JsonSerialize(using = ToStringSerializer.class)
 //	private String attributes;
-//	@JsonProperty("items") @JsonSerialize(using = ToStringSerializer.class)
 //	private String items;
 //	private String dispCategory;
-//	private String assortState;
-//	private String shortageYn;
-//	private String sellSta;
-//	private String sellEnd;
-//	private String localPrice;private String localSale;
-//	private String deliPrice;
-//	private String margin;
-//	private String vendorId;
-//	private String mdRrp;
-//	private String mdYear;
-//	private String mdTax;
-//	private String mdVatrate;
-//	private String mdDiscountRate;
-//	private String mdGoodsVatrate;
-//	private String buyWhere;
-//	private String buySupplyDiscount;
-//	private String buyRrpIncrement;
-//	private String buyTax;
-//	private String mdMargin;
-//	private String buyExchangeRate;
 }

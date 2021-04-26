@@ -8,6 +8,8 @@ import io.spring.model.common.entity.SequenceData;
 import io.spring.model.goods.GoodsRequestData;
 import io.spring.model.goods.GoodsResponseData;
 import io.spring.model.goods.entity.*;
+import io.spring.model.goods.idclass.ItasrdId;
+import io.spring.model.goods.idclass.ItasrnId;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import javax.persistence.EntityManager;
+import java.util.*;
 
 @Service
 public class JpaGoodsService {
@@ -48,7 +48,12 @@ public class JpaGoodsService {
     @Autowired
     private JpaItitmmRepository jpaItitmmRepository;
     @Autowired
+    private JpaItitmdRepository jpaItitmdRepository;
+    @Autowired
     private JpaSequenceDataRepository jpaSequenceDataRepository;
+    @Autowired
+    private EntityManager em;
+
 
     public List<Itasrt> findAll() {
         List<Itasrt> goods = new ArrayList<>();
@@ -56,7 +61,7 @@ public class JpaGoodsService {
         return goods;
     }
 
-    public Optional<Itasrt> findById(Long goodsId) {
+    public Optional<Itasrt> findById(String goodsId) {
         Optional<Itasrt> goods = jpaItasrtRepository.findById(goodsId);
         return goods;
     }
@@ -104,47 +109,47 @@ public class JpaGoodsService {
         return goodsResponseData;
     }
 
-    public void deleteById(Long goodsId) {
+    public void deleteById(String goodsId) {
         jpaItasrtRepository.deleteById(goodsId);
     }
 
 //    @Transactional
     private Itasrt saveItasrt(GoodsRequestData goodsRequestData) {
-        Itasrt itasrt = new Itasrt(goodsRequestData);
-//        HashMap<String, Object> arr = new HashMap<String, Object>();
-//
-//        String assortId = goodsRequestData.getAssortId();
-//        if(assortId == null || assortId.trim().equals("")){ // 입력값에 assort id가 없는 경우 (신규입력)
-//            arr.put(seqNameStr, seqItasrtStr);
-//            HashMap<String, Object> x1 = myBatisCommonDao.getSequence(arr); // max + 1 해서 옴
-//            logger.debug("nextVal : ", x1.get(nextvalStr));
-//            assortId = StringUtils.leftPad(Long.toString((long)x1.get(nextvalStr)), 9, '0');
-//            itasrt.setAssortId(assortId);
-//            goodsRequestData.setAssortId(assortId);
-//        }
-//        else{ // 입력값에 assort id가 있는 경우 (기존 정보 수정)
-//            // 입력값에 assort_id가 없어서 새로 채번하는 경우 sequence_data table의 sequence_cur_value도 update 필요 (필요없는 기능, 삭제)
-//            Optional<SequenceData> returnSequenceData = jpaSequenceDataRepository.findById(seqItasrtStr);
-//            SequenceData sequenceData = returnSequenceData.get();
-//            sequenceData.setSequenceCurValue(assortId);
-////            jpaSequenceDataRepository.save(sequenceData);
-//        }
-
+        Itasrt itasrt = jpaItasrtRepository.findById(goodsRequestData.getAssortId()).orElseGet(() -> new Itasrt(goodsRequestData));
+//        itasrt.setUpdDt(new Date());
+        itasrt.setAssortNm(goodsRequestData.getAssortNm());
+        itasrt.setAssortColor(goodsRequestData.getAssortColor());
+        itasrt.setBrandId(goodsRequestData.getBrandId());
+        itasrt.setOrigin(goodsRequestData.getOrigin());
+        itasrt.setManufactureNm(goodsRequestData.getManufactureNm());
+        itasrt.setAssortModel(goodsRequestData.getAssortModel());
+        itasrt.setShortageYn(goodsRequestData.getShortageYn());
+        itasrt.setLocalPrice(goodsRequestData.getLocalPrice());
+        itasrt.setDeliPrice(goodsRequestData.getDeliPrice());
+        itasrt.setMargin(goodsRequestData.getMargin());
+        itasrt.setVendorId(goodsRequestData.getVendorId());
+        itasrt.setMdRrp(goodsRequestData.getMdRrp());
+        itasrt.setMdYear(goodsRequestData.getMdYear());
+        itasrt.setMdTax(goodsRequestData.getMdTax());
+        itasrt.setMdVatrate(goodsRequestData.getMdVatrate());
+        itasrt.setMdDiscountRate(goodsRequestData.getMdDiscountRate());
+        itasrt.setMdGoodsVatrate(goodsRequestData.getMdGoodsVatrate());
+        itasrt.setBuyWhere(goodsRequestData.getBuyWhere());
+        itasrt.setMdMargin(goodsRequestData.getMdMargin());
+        itasrt.setBuyExchangeRate(goodsRequestData.getBuyExchangeRate());
         jpaItasrtRepository.save(itasrt);
-
         return itasrt;
     }
 
     private Itasrn saveItasrn(GoodsRequestData goodsRequestData){
-        Itasrn itasrn = new Itasrn(goodsRequestData);
+        ItasrnId itasrnId = new ItasrnId(goodsRequestData);
+        Itasrn itasrn = jpaItasrnRepository.findById(itasrnId).orElseGet(() -> new Itasrn(goodsRequestData));
+        itasrn.setLocalSale(goodsRequestData.getLocalSale());
         jpaItasrnRepository.save(itasrn);
         return itasrn;
     }
 
     private Itasrd saveItasrd(GoodsRequestData goodsRequestData) {
-        HashMap<String, Object> arr = new HashMap<String, Object>();
-
-        Itasrd itasrd = new Itasrd(goodsRequestData);
         String seq = plusOne(jpaItasrdRepository.findMaxSeqByAssortId(goodsRequestData.getAssortId())); //myBatisGoodsDao.selectMaxSeqItasrd(goodsRequestData);
         if(seq == null){
             seq = fourStartCd;
@@ -152,15 +157,26 @@ public class JpaGoodsService {
         else {
             seq = StringUtils.leftPad(Integer.toString((int)Double.parseDouble(seq)), 4, '0');
         }
-        itasrd.setSeq(seq);
+        Itasrd itasrd = jpaItasrdRepository.findById(new ItasrdId(goodsRequestData.getAssortId(), seq)).orElseGet(() -> new Itasrd(goodsRequestData));
+        itasrd.setLo
+
 
         jpaItasrdRepository.save(itasrd);
 
-        return itasrd;
+        return newEntity;
     }
 
     private List<Itvari> saveItvariList(GoodsRequestData goodsRequestData) {
-//        Optional<List<String>> optionList1 = Optional.empty();
+//        Itasrd itasrd = em.find(Itasrd.class, goodsRequestData.getAssortId());
+//        if(itasrd == null){
+//            itasrd = new Itasrd(goodsRequestData);
+//            jpaItasrdRepository.save(itasrd);
+//            return itasrd;
+//        }
+//        Date regDt = itasrd.getRegDt();
+//        goodsRequestData.setRegDt(regDt);
+//        Itasrd newEntity = new Itasrd(goodsRequestData);
+        //
         List<GoodsRequestData.Attributes> attributes = goodsRequestData.getAttributes();
         List<Itvari> itvariList = new ArrayList<>();
         for(GoodsRequestData.Attributes item : attributes){
@@ -256,11 +272,12 @@ public class JpaGoodsService {
         for (Ititmm item: ititmmList) {
             Ititmd ititmd = new Ititmd(goodsRequestData, item);
             ititmdList.add(ititmd);
+            jpaItitmdRepository.save(ititmd);
         }
         return ititmdList;
     }
 
-    public void updateById(Long goodsId, Itasrt goods) {
+    public void updateById(String goodsId, Itasrt goods) {
         Optional<Itasrt> e = jpaItasrtRepository.findById(goodsId);
         if (e.isPresent()) {
             e.get().setAssortId(goods.getAssortId());
@@ -276,6 +293,7 @@ public class JpaGoodsService {
         jpaItasrnRepository.deleteAll();
         jpaItitmmRepository.deleteAll();
         jpaItvariRepository.deleteAll();
+        jpaItitmdRepository.deleteAll();
         Optional<SequenceData> op = jpaSequenceDataRepository.findById("seq_ITASRT");
         SequenceData seq = op.get();
         seq.setSequenceCurValue("0");

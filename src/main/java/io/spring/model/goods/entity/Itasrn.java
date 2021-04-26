@@ -6,9 +6,13 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.*;
-import java.text.SimpleDateFormat;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
 import java.util.Date;
 
 @Entity
@@ -19,16 +23,17 @@ import java.util.Date;
 @IdClass(ItasrnId.class)
 public class Itasrn {
     public Itasrn(GoodsRequestData goodsRequestData){
+        this.historyGb = "01"; // default 값
+        this.vendorId = "000001";
+        
         this.assortId = goodsRequestData.getAssortId();
         this.localSale = goodsRequestData.getLocalSale();
-        // 밑의 것들은 추후에
-        SimpleDateFormat sDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
-        this.effEndDt = sDate.format(new Date());
-        this.effStaDt = sDate.format(new Date());
-        this.historyGb = "";
-
-        this.vendorId = "";
+        // 밑의 것들은 추후에...
+//        SimpleDateFormat sDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+        this.effEndDt = new Date();
+        this.effStaDt = new Date();//sDate.format(new Date());
     }
+
     @Id
     private String historyGb;
     @Id
@@ -36,9 +41,9 @@ public class Itasrn {
     @Id
     private String assortId;
     @Id
-    private String effEndDt;
+    private Date effEndDt;
     @Id
-    private String effStaDt;
+    private Date effStaDt;
     private String addDeliGb;
     private String bonusReserve;
     private String callDisLimit;
@@ -82,10 +87,10 @@ public class Itasrn {
     private String vendorTrGb;
     private String weight;
 
-    @Column(name = "reg_dt", nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private String regDt;
-    @Column(name = "upd_dt", nullable = false, updatable = false, insertable = false, columnDefinition = "ON UPDATE CURRENT_TIMESTAMP")
-    private String updDt;
+    @CreationTimestamp
+    private Date regDt;
+    @UpdateTimestamp
+    private Date updDt;
     private String updId;
     private String regId;
 }

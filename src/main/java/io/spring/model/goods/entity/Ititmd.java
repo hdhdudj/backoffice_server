@@ -6,11 +6,13 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import java.util.Date;
 
 @Entity
 @Getter
@@ -23,6 +25,7 @@ public class Ititmd {
         this.itemId = ititmm.getItemId();
         this.effStaDt = goodsRequestData.getSellSta();
         this.effEndDt = goodsRequestData.getSellEnd();
+        this.shortYn = ititmm.getShortYn();
     }
     @Id
     private String assortId;
@@ -36,8 +39,8 @@ public class Ititmd {
 
     private String regId;
     private String updId;
-    @Column(name = "reg_dt", nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private String regDt;
-    @Column(name = "upd_dt", nullable = false, updatable = false, insertable = false, columnDefinition = "ON UPDATE CURRENT_TIMESTAMP")
-    private String updDt;
+    @CreationTimestamp
+    private Date regDt;
+    @UpdateTimestamp
+    private Date updDt;
 }

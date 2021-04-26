@@ -6,8 +6,14 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+import java.util.Date;
 
 @Entity
 @Table(name = "itvari")
@@ -50,10 +56,10 @@ public class Itvari {
     private String variationGb;
     private String delYn;
 
-    @Column(name = "reg_dt", nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private String regDt;
-    @Column(name = "upd_dt", nullable = false, updatable = false, insertable = false, columnDefinition = "ON UPDATE CURRENT_TIMESTAMP")
-    private String updDt;
+    @CreationTimestamp
+    private Date regDt;
+    @UpdateTimestamp
+    private Date updDt;
     private String regId;
     private String updId;
 }

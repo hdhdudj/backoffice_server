@@ -1,20 +1,16 @@
 package io.spring.service.common;
 
-import java.util.HashMap;
-
-import javax.persistence.EntityManager;
-import javax.validation.constraints.NotNull;
-
+import io.spring.dao.common.MyBatisCommonDao;
+import io.spring.jparepos.common.JpaSequenceDataRepository;
+import io.spring.model.goods.GoodsRequestData;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import io.spring.dao.common.MyBatisCommonDao;
-import io.spring.jparepos.common.JpaSequenceDataRepository;
-import io.spring.model.goods.GoodsRequestData;
-import io.spring.model.goods.entity.Itasrt;
+import javax.persistence.EntityManager;
+import javax.validation.constraints.NotNull;
 
 @Service
 public class JpaCommonService {
@@ -33,26 +29,23 @@ public class JpaCommonService {
     private final String nextvalStr = "nextval";
 
     public String getAssortId(@NotNull GoodsRequestData goodsRequestData) {
-		if (goodsRequestData.getAssortId() != null && !goodsRequestData.getAssortId().equals("")) { // 湲곗〈 由ы�섏뒪�듃�뿉
-																									// assort id媛�
-																									// 議댁옱�븯�뒗 寃쎌슦 洹몃�濡�
-																									// �룎�젮蹂대깂
+		if (goodsRequestData.getAssortId() != null && !goodsRequestData.getAssortId().equals("")) { // 기존 리퀘스트에 assort id가 존재하는 경우 그대로 돌려보냄
             return goodsRequestData.getAssortId();
         }
-		// 湲곗〈 由ы�섏뒪�듃�뿉 assort id媛� 議댁옱�븯吏� �븡�뒗 寃쎌슦
-        Itasrt itasrt = new Itasrt(goodsRequestData);
-        HashMap<String, Object> arr = new HashMap<String, Object>();
-
-        arr.put(seqNameStr, seqItasrtStr);
-//        String res = jpaSequenceDataRepository.nextVal(seqItasrtStr);
-//        System.out.println(res + "-------------------");
-
-		HashMap<String, Object> x1 = myBatisCommonDao.getSequence(arr); // max + 1 �빐�꽌 �샂
-        logger.debug("nextVal : ", x1.get(nextvalStr));
-        String assortId = StringUtils.leftPad(Long.toString((long)x1.get(nextvalStr)), 9, '0');
-        itasrt.setAssortId(assortId);
-		Object r = em1.createNativeQuery("SELECT nextval('seq_ITASRT')").getSingleResult();
-        return assortId;
+		// 기존 리퀘스트에 assort id가 존재하지 않는 경우
+//        Itasrt itasrt = new Itasrt(goodsRequestData);
+//        HashMap<String, Object> arr = new HashMap<String, Object>();
+//
+//        arr.put(seqNameStr, seqItasrtStr);
+////        String res = jpaSequenceDataRepository.nextVal(seqItasrtStr);
+////        System.out.println(res + "-------------------");
+//
+//		HashMap<String, Object> x1 = myBatisCommonDao.getSequence(arr); // max + 1 �빐�꽌 �샂
+//        String assortId = StringUtils.leftPad(Long.toString((long)x1.get(nextvalStr)), 9, '0');
+//        itasrt.setAssortId(assortId);
+		Object r = em1.createNativeQuery("SELECT nextval('" + seqItasrtStr + "')").getSingleResult(); // jpa로 부르기
+        logger.debug("nextVal : ", r.toString());
+        return StringUtils.leftPad(r.toString(), 9, '0');
     }
 
 

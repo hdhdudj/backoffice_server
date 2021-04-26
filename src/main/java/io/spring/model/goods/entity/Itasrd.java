@@ -1,27 +1,34 @@
 package io.spring.model.goods.entity;
 
 import io.spring.model.goods.GoodsRequestData;
-import io.spring.model.goods.idclass.ItvariId;
+import io.spring.model.goods.idclass.ItasrdId;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+import java.util.Date;
 
 @Entity
 @Table(name = "itasrd")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@IdClass(ItvariId.class)
+@IdClass(ItasrdId.class)
 public class Itasrd {
 
     public Itasrd(GoodsRequestData goodsRequestData){
         this.assortId = goodsRequestData.getAssortId();
 
-        this.regId = "123"; // 추후 추가
-        this.updId = "123"; // 추후 추가
+        this.long
+//        this.regId = "123"; // 추후 추가
+//        this.updId = "123"; // 추후 추가
     }
 
     @Id
@@ -37,8 +44,8 @@ public class Itasrd {
 
     private String regId;
     private String updId;
-    @Column(name = "reg_dt", nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private String regDt;
-    @Column(name = "upd_dt", nullable = false, updatable = false, insertable = false, columnDefinition = "ON UPDATE CURRENT_TIMESTAMP")
-    private String updDt;
+    @CreationTimestamp
+    private Date regDt;
+    @UpdateTimestamp
+    private Date updDt;
 }
