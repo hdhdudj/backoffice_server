@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.order.MyBatisOrderDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
+import io.spring.service.common.JpaCommonService;
 
 
 @RestController
@@ -26,10 +27,14 @@ public class OrderController {
 	private MyBatisOrderDao myBatisOrderDao;
 	private MyBatisCommonDao myBatisCommonDao;
 
+	private JpaCommonService jpaCommonService;
+
 	@Autowired
-	public OrderController(MyBatisOrderDao myBatisOrderDao, MyBatisCommonDao myBatisCommonDao) {
+	public OrderController(MyBatisOrderDao myBatisOrderDao, MyBatisCommonDao myBatisCommonDao,
+			JpaCommonService jpaCommonService) {
 		this.myBatisOrderDao = myBatisOrderDao;
 		this.myBatisCommonDao = myBatisCommonDao;
+		this.jpaCommonService = jpaCommonService;
 	}
 
 	@RequestMapping(path = "/orders", method = RequestMethod.GET)
@@ -78,6 +83,10 @@ public class OrderController {
 		logger.debug(channelGb);
 		logger.debug(orderFromDt);
 		logger.debug(orderEndDt);
+
+		long rx = jpaCommonService.getSequence("seq_TMPSEQ");
+
+		System.out.println("rx = " + rx);
 
 		HashMap<String, Object> h = new HashMap<String, Object>();
 
