@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Entity
 @Getter
@@ -17,7 +19,15 @@ import javax.persistence.*;
 @IdClass(ItasrnId.class)
 public class Itasrn {
     public Itasrn(GoodsRequestData goodsRequestData){
+        this.assortId = goodsRequestData.getAssortId();
         this.localSale = goodsRequestData.getLocalSale();
+        // 밑의 것들은 추후에
+        SimpleDateFormat sDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+        this.effEndDt = sDate.format(new Date());
+        this.effStaDt = sDate.format(new Date());
+        this.historyGb = "";
+
+        this.vendorId = "";
     }
     @Id
     private String historyGb;

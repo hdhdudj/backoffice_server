@@ -36,8 +36,8 @@ public class Itvari {
         this.imgYn = goodsRequestData.getImgYn();
         this.variationGb = goodsRequestData.getVariationGb();
 
-        this.regId = "123"; // 추후 추가
-        this.updId = "123"; // 추후 추가
+//        this.regId = "123"; // 추후 추가
+//        this.updId = "123"; // 추후 추가
     }
 
     @Id

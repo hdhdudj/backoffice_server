@@ -171,10 +171,10 @@ public class JpaGoodsService {
                     Itvari itvari = new Itvari(goodsRequestData);
                     String seq = colors.get(j).getSeq();
                     if(seq == null || seq.equals("")){
-                        String maxSeq = plusOne(jpaItvariRepository.findMaxSeqByAssortId(goodsRequestData.getAssortId()));//myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData);
+                        String maxSeq = plusOne(jpaItvariRepository.findMaxSeqByAssortId(goodsRequestData.getAssortId())); //myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData)
 //                        System.out.println("------------------"+ maxSeq);
                         if(maxSeq != null){
-                            maxSeq = Integer.toString((int)Double.parseDouble(plusOne(jpaItvariRepository.findMaxSeqByAssortId(goodsRequestData.getAssortId()))));//myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData)));
+                            maxSeq = Long.toString((long)Double.parseDouble(plusOne(jpaItvariRepository.findMaxSeqByAssortId(goodsRequestData.getAssortId())))); //myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData)
                         }
                         logger.debug(maxSeq);
                         String seqRes = maxSeq == null? threeStartCd : StringUtils.leftPad(maxSeq, 3, '0');
@@ -193,7 +193,7 @@ public class JpaGoodsService {
                     Itvari itvari = new Itvari(goodsRequestData);
                     String seq = sizes.get(i).getSeq();
                     if(seq == null || seq.equals("")){
-                        String maxSeq = Integer.toString((int)Double.parseDouble(plusOne(jpaItvariRepository.findMaxSeqByAssortId(goodsRequestData.getAssortId()))));//myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData)));
+                        String maxSeq = Long.toString((long)Double.parseDouble(plusOne(jpaItvariRepository.findMaxSeqByAssortId(goodsRequestData.getAssortId()))));//myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData)
                         String seqRes = maxSeq == null? threeStartCd : StringUtils.leftPad(maxSeq, 3, '0');
                         seq = seqRes;
                     }
@@ -212,7 +212,7 @@ public class JpaGoodsService {
     private List<Ititmm> saveItemList(GoodsRequestData goodsRequestData) {
         List<GoodsRequestData.Items> itemList = goodsRequestData.getItems();
         List<Ititmm> itemsList = new ArrayList<>();
-        for (GoodsRequestData.Items item : itemList ) {
+        for (GoodsRequestData.Items item : itemList) {
             Ititmm ititmm = new Ititmm(goodsRequestData, item);
             String color = item.getColor();
             String size = item.getSize();
@@ -220,18 +220,18 @@ public class JpaGoodsService {
             if(color != null){ // color 요소가 있는 경우
                 item.setOptionNm(color);
 //                System.out.println(item.getAssortId() " " item.getOptionNm() + " " + );
-                Itvari itvari = jpaItvariRepository.findByAssortIdAndOptionNm(item.getAssortId(), item.getOptionNm());//yBatisGoodsDao.selectOneSeqOptionGb(item);
+                Itvari itvari = jpaItvariRepository.findByAssortIdAndOptionNm(goodsRequestData.getAssortId(), item.getOptionNm());//myBatisGoodsDao.selectOneSeqOptionGb(item);
                 ititmm.setVariationGb1(colorGb);
                 ititmm.setVariationSeq1((String)itvari.getSeq());
             }
             if(size != null){ // size 요소가 있는 경우
                 item.setOptionNm(size);
-                Itvari itvari = jpaItvariRepository.findByAssortIdAndOptionNm(item.getAssortId(), item.getOptionNm());//myBatisGoodsDao.selectOneSeqOptionGb(item);
+                Itvari itvari = jpaItvariRepository.findByAssortIdAndOptionNm(goodsRequestData.getAssortId(), item.getOptionNm());//myBatisGoodsDao.selectOneSeqOptionGb(item);
                 ititmm.setVariationGb2(sizeGb);
                 ititmm.setVariationSeq2((String)itvari.getSeq());
             }
 //            System.out.println("ㅡㅡㅡㅡㅡㅡ"+jpaItitmmRepository.findMaxItemIdByAssortId(item.getAssortId()));
-            String startItemId = plusOne(jpaItitmmRepository.findMaxItemIdByAssortId(item.getAssortId()));//myBatisGoodsDao.selectMaxItemIdItitmm(goodsRequestData);
+            String startItemId = plusOne(jpaItitmmRepository.findMaxItemIdByAssortId(goodsRequestData.getAssortId()));//myBatisGoodsDao.selectMaxItemIdItitmm(goodsRequestData);
 
             if(startItemId == null || startItemId.equals("")){
                 startItemId = fourStartCd;
@@ -244,7 +244,7 @@ public class JpaGoodsService {
 //            ititmm.setMaxCnt("111");
             ititmm.setItemId(startItemId);
 //            ititmm.setAddPrice(item.getAddPrice());
-//            jpaItitmmRepository.save(ititmm);
+            jpaItitmmRepository.save(ititmm);
             itemsList.add(ititmm);
         }
 
@@ -273,6 +273,7 @@ public class JpaGoodsService {
     public void initTables(){
         jpaItasrdRepository.deleteAll();
         jpaItasrtRepository.deleteAll();
+        jpaItasrnRepository.deleteAll();
         jpaItitmmRepository.deleteAll();
         jpaItvariRepository.deleteAll();
         Optional<SequenceData> op = jpaSequenceDataRepository.findById("seq_ITASRT");
