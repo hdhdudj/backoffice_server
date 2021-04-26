@@ -171,10 +171,10 @@ public class JpaGoodsService {
                     Itvari itvari = new Itvari(goodsRequestData);
                     String seq = colors.get(j).getSeq();
                     if(seq == null || seq.equals("")){
-                        String maxSeq = plusOne(jpaItvariRepository.findMaxSeqByAssortId(itvari.getAssortId()));//myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData);
+                        String maxSeq = plusOne(jpaItvariRepository.findMaxSeqByAssortId(goodsRequestData.getAssortId()));//myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData);
 //                        System.out.println("------------------"+ maxSeq);
                         if(maxSeq != null){
-                            maxSeq = Integer.toString((int)Double.parseDouble(plusOne(jpaItvariRepository.findMaxSeqByAssortId(itvari.getAssortId()))));//myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData)));
+                            maxSeq = Integer.toString((int)Double.parseDouble(plusOne(jpaItvariRepository.findMaxSeqByAssortId(goodsRequestData.getAssortId()))));//myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData)));
                         }
                         logger.debug(maxSeq);
                         String seqRes = maxSeq == null? threeStartCd : StringUtils.leftPad(maxSeq, 3, '0');
@@ -193,7 +193,7 @@ public class JpaGoodsService {
                     Itvari itvari = new Itvari(goodsRequestData);
                     String seq = sizes.get(i).getSeq();
                     if(seq == null || seq.equals("")){
-                        String maxSeq = Integer.toString((int)Double.parseDouble(plusOne(jpaItvariRepository.findMaxSeqByAssortId(itvari.getAssortId()))));//myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData)));
+                        String maxSeq = Integer.toString((int)Double.parseDouble(plusOne(jpaItvariRepository.findMaxSeqByAssortId(goodsRequestData.getAssortId()))));//myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData)));
                         String seqRes = maxSeq == null? threeStartCd : StringUtils.leftPad(maxSeq, 3, '0');
                         seq = seqRes;
                     }
