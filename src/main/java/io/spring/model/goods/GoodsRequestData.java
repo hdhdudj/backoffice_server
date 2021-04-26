@@ -51,8 +51,8 @@ public class GoodsRequestData {
 	private String localSale;
 
 	// itasrd
-	private String longDesc; // html (메모 상세)
-	private String shortDesc; // text (메모 간략)
+	private String longDesc; // html (메모 상세) - long memo
+	private String shortDesc; // text (메모 간략) - short memo
 
 	// ititmm
 	@SerializedName("items")

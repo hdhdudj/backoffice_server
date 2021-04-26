@@ -25,8 +25,6 @@ public class Itasrd {
 
     public Itasrd(GoodsRequestData goodsRequestData){
         this.assortId = goodsRequestData.getAssortId();
-
-        this.long
 //        this.regId = "123"; // 추후 추가
 //        this.updId = "123"; // 추후 추가
     }

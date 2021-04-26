@@ -29,6 +29,8 @@ public class JpaGoodsService {
     private final String threeStartCd = "001";
     private final String fourStartCd = "0001";
     private final String nineStartCd = "000000001";
+    private final String gbOne = "01";
+    private final String gbTwo = "02";
 
 
 
@@ -158,12 +160,21 @@ public class JpaGoodsService {
             seq = StringUtils.leftPad(Integer.toString((int)Double.parseDouble(seq)), 4, '0');
         }
         Itasrd itasrd = jpaItasrdRepository.findById(new ItasrdId(goodsRequestData.getAssortId(), seq)).orElseGet(() -> new Itasrd(goodsRequestData));
-        itasrd.setLo
-
+        itasrd.setSeq(seq);
+        if(goodsRequestData.getShortDesc() != null && !goodsRequestData.getShortDesc().trim().equals("")){
+            itasrd.setMemo(goodsRequestData.getShortDesc());
+            itasrd.setOrdDetCd(gbOne);
+            itasrd.setTextHtmlGb(gbTwo);
+        }
+        if(goodsRequestData.getLongDesc() != null && !goodsRequestData.getLongDesc().trim().equals("")){
+            itasrd.setMemo(goodsRequestData.getShortDesc());
+            itasrd.setOrdDetCd(gbTwo);
+            itasrd.setTextHtmlGb(gbOne);
+        }
 
         jpaItasrdRepository.save(itasrd);
 
-        return newEntity;
+        return itasrd;
     }
 
     private List<Itvari> saveItvariList(GoodsRequestData goodsRequestData) {
