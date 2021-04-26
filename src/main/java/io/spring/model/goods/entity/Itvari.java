@@ -49,11 +49,11 @@ public class Itvari {
     private String optionNm;
     private String variationGb;
     private String delYn;
-    private String regId;
-    private String updId;
 
     @Column(name = "reg_dt", nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private String regDt;
-    @Column(name = "upd_dt", nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "upd_dt", nullable = false, updatable = false, insertable = false, columnDefinition = "ON UPDATE CURRENT_TIMESTAMP")
     private String updDt;
+    private String regId;
+    private String updId;
 }

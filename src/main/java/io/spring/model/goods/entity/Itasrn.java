@@ -1,15 +1,13 @@
 package io.spring.model.goods.entity;
 
+import io.spring.model.goods.GoodsRequestData;
 import io.spring.model.goods.idclass.ItasrnId;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -18,6 +16,9 @@ import javax.persistence.Table;
 @Table(name = "itasrn")
 @IdClass(ItasrnId.class)
 public class Itasrn {
+    public Itasrn(GoodsRequestData goodsRequestData){
+        // goodsRequestData가 필요한가..?
+    }
     @Id
     private String historyGb;
     @Id
@@ -70,8 +71,11 @@ public class Itasrn {
     private String templateId;
     private String vendorTrGb;
     private String weight;
+
+    @Column(name = "reg_dt", nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private String regDt;
-    private String regId;
-    private String updId;
+    @Column(name = "upd_dt", nullable = false, updatable = false, insertable = false, columnDefinition = "ON UPDATE CURRENT_TIMESTAMP")
     private String updDt;
+    private String updId;
+    private String regId;
 }

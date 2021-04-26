@@ -10,10 +10,7 @@ import io.spring.jparepos.goods.JpaItvariRepository;
 import io.spring.model.common.entity.SequenceData;
 import io.spring.model.goods.GoodsRequestData;
 import io.spring.model.goods.GoodsResponseData;
-import io.spring.model.goods.entity.Itasrd;
-import io.spring.model.goods.entity.Itasrt;
-import io.spring.model.goods.entity.Ititmm;
-import io.spring.model.goods.entity.Itvari;
+import io.spring.model.goods.entity.*;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,16 +62,25 @@ public class JpaGoodsService {
         return goods;
     }
 
+    /**
+     * goods 정보 insert 시퀀스 함수
+     * Pecan 21-04-26
+     * @param goodsRequestData
+     * @return GoodsResponseData
+     */
     @Transactional
     public GoodsResponseData sequenceInsertGoods(GoodsRequestData goodsRequestData){
         // itasrt에 goods 정보 저장
         Itasrt itasrt = this.saveItasrt(goodsRequestData);
+        // itsrn에 goods 이력 저장
+        this.saveItasrn(goodsRequestData);
         // itasrd에 연관 정보 저장
         Itasrd itasrd = this.saveItasrd(goodsRequestData);
         // itvari에 assort_id별 옵션요소 저장(색상, 사이즈)
         List<Itvari> itvariList = this.saveItvariList(goodsRequestData);
         // ititmm에 assort_id별 item 저장
         List<Ititmm> ititmmList = this.saveItemList(goodsRequestData);
+        // ititmd에 item 이력 저장
 
         List<GoodsResponseData.Attributes> attributesList = makeGoodsResponseAttributes(goodsRequestData.getAssortId(), itvariList);
         List<GoodsResponseData.Items> itemsList = makeGoodsResponseItems(goodsRequestData.getAssortId(), ititmmList);
@@ -100,7 +106,7 @@ public class JpaGoodsService {
         jpaItasrtRepository.deleteById(goodsId);
     }
 
-    @Transactional
+//    @Transactional
     public Itasrt saveItasrt(GoodsRequestData goodsRequestData) {
         Itasrt itasrt = new Itasrt(goodsRequestData);
 //        HashMap<String, Object> arr = new HashMap<String, Object>();
@@ -127,11 +133,15 @@ public class JpaGoodsService {
         return itasrt;
     }
 
+    public void saveItasrn(GoodsRequestData goodsRequestData){
+        Itasrn itasrn = new Itasrn(goodsRequestData);
+    }
+
     public Itasrd saveItasrd(GoodsRequestData goodsRequestData) {
         HashMap<String, Object> arr = new HashMap<String, Object>();
 
         Itasrd itasrd = new Itasrd(goodsRequestData);
-        String seq = myBatisGoodsDao.selectMaxSeqItasrd(goodsRequestData);
+        String seq = plusOne(jpaItasrdRepository.findMaxSeqByAssortId(goodsRequestData.getAssortId())); //myBatisGoodsDao.selectMaxSeqItasrd(goodsRequestData);
         if(seq == null){
             seq = fourStartCd;
         }

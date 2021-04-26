@@ -6,11 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  *  ITASRT table의 Entity
@@ -34,18 +33,26 @@ public class Itasrt {
 		this.assortModel = goodsRequestData.getAssortModel();
 		this.taxGb = goodsRequestData.getTaxGb();
 
-		SimpleDateFormat format = new SimpleDateFormat ( "yyyy-MM-dd HH:mm:ss");
-		Date time = new Date();
-		String time1 = format.format(time);
-
-		this.regDt = time1;
-		this.updDt = time1;
+//		SimpleDateFormat format = new SimpleDateFormat ( "yyyy-MM-dd HH:mm:ss");
+//		Date time = new Date();
+//		String time1 = format.format(time);
+//
+//		this.regDt = time1;
+//		this.updDt = time1;
 		this.regId = "123"; // 추후 추가
 		this.updId = "123"; // 추후 추가
 	}
 
 	@Id
 	private String assortId;
+
+	private String regId;
+	private String updId;
+	@Column(name = "reg_dt", nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+	private String regDt;
+	@Column(name = "upd_dt", nullable = false, updatable = false, insertable = false, columnDefinition = "ON UPDATE CURRENT_TIMESTAMP")
+	private String updDt;
+
 	private String assortNm;
 	private String assortDnm;
 	private String assortEnm;
@@ -137,10 +144,6 @@ public class Itasrt {
 	private String storageId;
 	private String optionGb;
 	private String shopSaleGb;
-	private String regId;
-	private String regDt;
-	private String updId;
-	private String updDt;
 	private String sendbackPayGb;
 	private String sendbackChangeYn;
 	private String directPathNrgCd;
