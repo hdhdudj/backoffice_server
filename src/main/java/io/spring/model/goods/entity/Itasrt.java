@@ -42,7 +42,7 @@ public class Itasrt {
 		this.shortageYn = goodsRequestData.getShortageYn();
 		this.brandId = goodsRequestData.getBrandId();
 		this.dispCategoryId = goodsRequestData.getDispCategoryId();
-		this.siteGb = goodsRequestData.getSiteGb();
+		this.siteGb = "01";
 		this.asVendorId = goodsRequestData.getAsVendorId();
 		this.manufactureNm = goodsRequestData.getManufactureNm();
 //		this.deliPrice = goodsRequestData.getDeliPrice();

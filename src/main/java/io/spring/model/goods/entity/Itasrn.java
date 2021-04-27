@@ -29,7 +29,6 @@ public class Itasrn {
         
         this.assortId = goodsRequestData.getAssortId();
         this.localSale = goodsRequestData.getLocalSale();
-        // 밑의 것들은 추후에...
         try
         {
             this.effEndDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("9999-12-31 23:59:59"); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
@@ -50,6 +49,16 @@ public class Itasrn {
     private Date effEndDt;
     @Id
     private Date effStaDt;
+
+    @CreationTimestamp
+    private Date regDt;
+    @UpdateTimestamp
+    private Date updDt;
+    @Column(nullable = true)
+    private Long updId;
+    @Column(nullable = true)
+    private Long regId;
+
     @Column(nullable = true)
     private float localSale;
     private String shortageYn;
@@ -93,13 +102,4 @@ public class Itasrn {
 //    private String templateId;
 //    private String vendorTrGb;
 //    private String weight;
-
-    @CreationTimestamp
-    private Date regDt;
-    @UpdateTimestamp
-    private Date updDt;
-    @Column(nullable = true)
-    private Long updId;
-    @Column(nullable = true)
-    private Long regId;
 }
