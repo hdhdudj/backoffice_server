@@ -200,7 +200,6 @@ public class JpaGoodsService {
                     String seq = colors.get(j).getSeq();
                     if(seq == null || seq.equals("")){
                         String maxSeq = plusOne(jpaItvariRepository.findMaxSeqByAssortId(goodsRequestData.getAssortId())); //myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData)
-//                        System.out.println("------------------"+ maxSeq);
                         if(maxSeq != null){
                             maxSeq = Long.toString((long)Double.parseDouble(plusOne(jpaItvariRepository.findMaxSeqByAssortId(goodsRequestData.getAssortId())))); //myBatisGoodsDao.selectMaxSeqItvari(goodsRequestData)
                         }
