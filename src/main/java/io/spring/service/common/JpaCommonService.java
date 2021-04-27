@@ -40,7 +40,7 @@ public class JpaCommonService {
 ////        String res = jpaSequenceDataRepository.nextVal(seqItasrtStr);
 ////        System.out.println(res + "-------------------");
 //
-//		HashMap<String, Object> x1 = myBatisCommonDao.getSequence(arr); // max + 1 �빐�꽌 �샂
+//		HashMap<String, Object> x1 = myBatisCommonDao.getSequence(arr); // max + 1 리턴
 //        String assortId = StringUtils.leftPad(Long.toString((long)x1.get(nextvalStr)), 9, '0');
 //        itasrt.setAssortId(assortId);
 		Object r = em1.createNativeQuery("SELECT nextval('" + seqItasrtStr + "')").getSingleResult(); // jpa로 부르기

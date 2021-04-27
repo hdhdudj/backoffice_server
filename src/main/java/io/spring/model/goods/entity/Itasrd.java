@@ -9,10 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -25,6 +22,10 @@ public class Itasrd {
 
     public Itasrd(GoodsRequestData goodsRequestData){
         this.assortId = goodsRequestData.getAssortId();
+        this.ordDetCd = "01";
+//        this.memo = goodsRequestData.getMemo();
+        this.delYn = "02";
+//        this.textHtmlGb = goodsRequestData.getTextHtmlGb();
 //        this.regId = "123"; // 추후 추가
 //        this.updId = "123"; // 추후 추가
     }
@@ -40,8 +41,10 @@ public class Itasrd {
     private String textHtmlGb;
     private String memo2;
 
-    private String regId;
-    private String updId;
+    @Column(nullable = true)
+    private Long regId;
+    @Column(nullable = true)
+    private Long updId;
     @CreationTimestamp
     private Date regDt;
     @UpdateTimestamp

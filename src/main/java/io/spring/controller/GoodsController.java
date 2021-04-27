@@ -78,7 +78,7 @@ public class GoodsController {
 		logger.debug("insert goods by jpa");
 
 		goodsRequestData.setAssortId(jpaCommonService.getAssortId(goodsRequestData)); // assort id 채번
-		GoodsResponseData responseObj = jpaGoodsService.sequenceInsertGoods(goodsRequestData);
+		GoodsResponseData responseObj = jpaGoodsService.sequenceInsertOrUpdateGoods(goodsRequestData);
 
 		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseObj);
 

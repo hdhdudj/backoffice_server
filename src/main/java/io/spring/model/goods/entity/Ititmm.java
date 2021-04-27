@@ -9,10 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -35,22 +32,25 @@ public class Ititmm {
     private String itemId;
     private String itemNm;
     private String shortYn;
-    private String minCnt;
-    private String maxCnt;
-    private String dayDeliCnt;
-    private String totDeliCnt;
     private String variationGb1;
     private String variationSeq1;
     private String variationGb2;
     private String variationSeq2;
-    private String setYn;
-    private String regId;
-    private String updId;
+    private String addPrice;
+    @Column(nullable = true)
+    private Long regId;
+    @Column(nullable = true)
+    private Long updId;
     @CreationTimestamp
     private Date regDt;
     @UpdateTimestamp
     private Date updDt;
-    private String orderLmtYn;
-    private String orderLmtCnt;
-    private String addPrice;
+
+//    private String orderLmtYn;
+//    private String orderLmtCnt;
+//    private String minCnt;
+//    private String maxCnt;
+//    private String dayDeliCnt;
+//    private String totDeliCnt;
+//    private String setYn;
 }

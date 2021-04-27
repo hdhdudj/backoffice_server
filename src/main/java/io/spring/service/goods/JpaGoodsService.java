@@ -1,7 +1,5 @@
 package io.spring.service.goods;
 
-import io.spring.dao.common.MyBatisCommonDao;
-import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.goods.*;
 import io.spring.model.common.entity.SequenceData;
@@ -24,13 +22,13 @@ import java.util.Optional;
 
 @Service
 public class JpaGoodsService {
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final String colorGb = "01";
     private final String sizeGb = "02";
     private final String threeStartCd = "001";
     private final String fourStartCd = "0001";
-    private final String nineStartCd = "000000001";
+//    private final String nineStartCd = "000000001";
     private final String gbOne = "01";
     private final String gbTwo = "02";
 
@@ -43,10 +41,10 @@ public class JpaGoodsService {
     private JpaItasrnRepository jpaItasrnRepository;
     @Autowired
     private JpaItvariRepository jpaItvariRepository;
-    @Autowired
-    private MyBatisCommonDao myBatisCommonDao;
-    @Autowired
-    private MyBatisGoodsDao myBatisGoodsDao;
+//    @Autowired
+//    private MyBatisCommonDao myBatisCommonDao;
+//    @Autowired
+//    private MyBatisGoodsDao myBatisGoodsDao;
     @Autowired
     private JpaItasrdRepository jpaItasrdRepository;
     @Autowired
@@ -77,7 +75,7 @@ public class JpaGoodsService {
      * @return GoodsResponseData
      */
     @Transactional
-    public GoodsResponseData sequenceInsertGoods(GoodsRequestData goodsRequestData){
+    public GoodsResponseData sequenceInsertOrUpdateGoods(GoodsRequestData goodsRequestData){
         // itasrt에 goods 정보 저장
         Itasrt itasrt = this.saveItasrt(goodsRequestData);
         // itsrn에 goods 이력 저장
@@ -95,8 +93,6 @@ public class JpaGoodsService {
         List<GoodsResponseData.Items> itemsList = makeGoodsResponseItems(goodsRequestData.getAssortId(), ititmmList);
         return makeGoodsResponseData(goodsRequestData, attributesList, itemsList);
     }
-
-
 
     private List<GoodsResponseData.Attributes> makeGoodsResponseAttributes(String assortId, List<Itvari> itvariList){
         return null;
@@ -131,7 +127,6 @@ public class JpaGoodsService {
         itasrt.setLocalPrice(goodsRequestData.getLocalPrice());
         itasrt.setDeliPrice(goodsRequestData.getDeliPrice());
         itasrt.setMargin(goodsRequestData.getMargin());
-        itasrt.setVendorId(goodsRequestData.getVendorId());
         itasrt.setMdRrp(goodsRequestData.getMdRrp());
         itasrt.setMdYear(goodsRequestData.getMdYear());
         itasrt.setMdTax(goodsRequestData.getMdTax());
@@ -180,16 +175,6 @@ public class JpaGoodsService {
     }
 
     private List<Itvari> saveItvariList(GoodsRequestData goodsRequestData) {
-//        Itasrd itasrd = em.find(Itasrd.class, goodsRequestData.getAssortId());
-//        if(itasrd == null){
-//            itasrd = new Itasrd(goodsRequestData);
-//            jpaItasrdRepository.save(itasrd);
-//            return itasrd;
-//        }
-//        Date regDt = itasrd.getRegDt();
-//        goodsRequestData.setRegDt(regDt);
-//        Itasrd newEntity = new Itasrd(goodsRequestData);
-        //
         List<GoodsRequestData.Attributes> attributes = goodsRequestData.getAttributes();
         List<Itvari> itvariList = new ArrayList<>();
         for(GoodsRequestData.Attributes item : attributes){
@@ -311,12 +296,12 @@ public class JpaGoodsService {
 
     // table 초기화용 함수(test할 때 편하려고..)
     public void initTables(){
-        jpaItasrdRepository.deleteAll();
         jpaItasrtRepository.deleteAll();
+        jpaItasrdRepository.deleteAll();
         jpaItasrnRepository.deleteAll();
         jpaItitmmRepository.deleteAll();
-        jpaItvariRepository.deleteAll();
         jpaItitmdRepository.deleteAll();
+        jpaItvariRepository.deleteAll();
         Optional<SequenceData> op = jpaSequenceDataRepository.findById("seq_ITASRT");
         SequenceData seq = op.get();
         seq.setSequenceCurValue("0");

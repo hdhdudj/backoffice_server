@@ -9,10 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -25,23 +22,30 @@ public class Itvari {
 
     /**
      *
-     * @param attributes
+     * @param goodsRequestData
      * {
      *    "color": [
-     *            "빨강",
-     *            "파랑",
-     *            "노랑"
+     *         {
+     *           "seq": "001",
+     *           "value": "빨강"
+     *         },        
+     *         {
+     *           "seq": "002",
+     *           "value": "파랑"
+     *         },
+     *         {
+     *           "seq": "003",
+     *           "value": "노랑"
+     *         }
      *             ]
      * }
      */
     public Itvari(GoodsRequestData goodsRequestData){
-        this.optionGb = goodsRequestData.getOptionGb();
-        this.optionNm = goodsRequestData.getOptionNm();
-        this.seq = goodsRequestData.getSeq();
         this.assortId = goodsRequestData.getAssortId();
-        this.imgYn = goodsRequestData.getImgYn();
-        this.variationGb = goodsRequestData.getVariationGb();
-
+        this.delYn = "02";
+//        this.optionGb = goodsRequestData.getOptionGb();
+//        this.imgYn = goodsRequestData.getImgYn();
+//        this.optionNm = goodsRequestData.getOptionNm();
 //        this.regId = "123"; // 추후 추가
 //        this.updId = "123"; // 추후 추가
     }
@@ -50,6 +54,7 @@ public class Itvari {
     private String assortId;
     @Id
     private String seq;
+
     private String optionGb;
     private String imgYn;
     private String optionNm;
@@ -60,6 +65,8 @@ public class Itvari {
     private Date regDt;
     @UpdateTimestamp
     private Date updDt;
-    private String regId;
-    private String updId;
+    @Column(nullable = true)
+    private Long regId;
+    @Column(nullable = true)
+    private Long updId;
 }

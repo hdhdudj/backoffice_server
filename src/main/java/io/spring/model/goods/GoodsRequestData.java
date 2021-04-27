@@ -22,33 +22,43 @@ public class GoodsRequestData {
 
 	// itasrt
 	private String assortNm;
-	private String assortColor;
-	private String brandId;
-	private String origin;
-	private String manufactureNm;
 	private String assortModel;
-	private String taxGb;
-	private String assortState;
-	private String shortageYn;
-	private String localPrice;
-	private String deliPrice;
 	private String margin;
-	private String vendorId;
-	private String mdRrp;
-	private String mdYear;
+	private String taxGb;
+	private String assortGb;
+	private String assortState;
+	private Float asWidth;
+	private Float asLength;
+	private Float asHeight;
+	private Float weight;
+	private String origin;
+	private String shortageYn; // itasrn에도
+	private String brandId;
+	private String dispCategoryId;
+	private String siteGb;
+	private String asVendorId;
+	private String manufactureNm;
+	private Float deliPrice;
+	private Float localPrice;
+	private Float localSale; // itasrn에도 들어감
+	private String assortColor;
+	private Date sellStaDt;
+	private Date sellEndDt;
+	private Float mdRrp;
 	private String mdTax;
-	private String mdVatrate;
-	private String mdDiscountRate;
-	private String mdGoodsVatrate;
+	private String mdYear;
+	private Float mdMargin;
+	private Float mdVatrate;
+	private Float mdOfflinePrice;
+	private Float mdOnlinePrice;
+	private Float mdGoodsVatrate;
 	private String buyWhere;
-	private String buySupplyDiscount;
-	private String buyRrpIncrement;
 	private String buyTax;
-	private String mdMargin;
-	private String buyExchangeRate;
-
-	//itasrn
-	private String localSale;
+	private Float buySupplyDiscount;
+	private Float buyRrpIncrement;
+	private Float buyExchangeRate;
+	private String sizeType;
+	private Float mdDiscountRate;
 
 	// itasrd
 	private String longDesc; // html (메모 상세) - long memo
@@ -60,20 +70,13 @@ public class GoodsRequestData {
 	private List<Items> items;
 
 	// ititmd
-	private Date sellSta;
-	private Date sellEnd;
 
 	// itvari
-	private String optionGb;
-	private String optionNm;
-	private String seq;
-	private String imgYn;
-	private String delYn;
-	private String variationGb;
 	@SerializedName("attributes")
 	@Expose
 	private List<Attributes> attributes;
 
+	// ititmm
 	@Getter
 	@Setter
 	public static class Items{
@@ -112,6 +115,16 @@ public class GoodsRequestData {
 		@Expose
 		private String value;
 	}
+
+//	private String optionGb;
+//	private String optionNm;
+//	private String seq;
+//	private String imgYn;
+//	private String delYn;
+//	private String variationGb;
+//	private String memo;
+//	private String textHtmlGb;
+//	private String memo2;
 //	private String attributes;
 //	private String items;
 //	private String dispCategory;
