@@ -100,15 +100,11 @@ public class GoodsRequestData {
 	@Getter
 	@Setter
 	public static class Items{
-		@SerializedName("color")
-		private String color;
-		@SerializedName("size")
-		private String size;
-		@SerializedName("addPrice")
+//		private String assortId;
+		private String itemId;
 //		@Expose // object 중 해당 값이 null일 경우, json으로 만들 필드를 자동 생략
+		private String value;
 		private String addPrice;
-		private String optionNm;
-		private String assortId;
 		private String shortYn;
 	}
 
