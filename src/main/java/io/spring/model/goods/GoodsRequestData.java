@@ -23,6 +23,7 @@ public class GoodsRequestData {
 	// itasrt
 	private String assortNm;
 	private String assortModel;
+	private String optionGbNm;
 	private Float margin;
 	private String taxGb;
 	private String assortGb;
@@ -100,13 +101,11 @@ public class GoodsRequestData {
 	@Setter
 	public static class Items{
 		@SerializedName("color")
-		@Expose
 		private String color;
 		@SerializedName("size")
-		@Expose
 		private String size;
 		@SerializedName("addPrice")
-		@Expose // object 중 해당 값이 null일 경우, json으로 만들 필드를 자동 생략
+//		@Expose // object 중 해당 값이 null일 경우, json으로 만들 필드를 자동 생략
 		private String addPrice;
 		private String optionNm;
 		private String assortId;
@@ -116,24 +115,21 @@ public class GoodsRequestData {
 	@Getter
 	@Setter
 	public static class Attributes {
-		@SerializedName("color")
-		@Expose
-		private List<SeqAndValue> color;
-		@SerializedName("size")
-		@Expose
-		private List<SeqAndValue> size;
+		private Long seq;
+		private String value;
+		private String variationGb;
 	}
 
-	@Getter
-	@Setter
-	public static class SeqAndValue{
-		@SerializedName("seq")
-		@Expose
-		private String seq;
-		@SerializedName("value")
-		@Expose
-		private String value;
-	}
+//	@Getter
+//	@Setter
+//	public static class SeqAndValue{
+//		@SerializedName("seq")
+//		@Expose
+//		private String seq;
+//		@SerializedName("value")
+//		@Expose
+//		private String value;
+//	}
 
 //	private String optionGb;
 //	private String optionNm;

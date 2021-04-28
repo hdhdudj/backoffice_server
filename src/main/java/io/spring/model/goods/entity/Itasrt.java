@@ -135,6 +135,8 @@ public class Itasrt {
 	private String sizeType;
 	@Column(nullable = true)
 	private Float mdDiscountRate;
+	private String optionGbName;
+	private String optionUseYn;
 
 //	private String assortDnm;
 //	private String assortEnm;

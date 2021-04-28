@@ -1,7 +1,6 @@
 package io.spring.model.goods.entity;
 
 import io.spring.model.goods.GoodsRequestData;
-import io.spring.model.goods.idclass.ItasrnId;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +19,6 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "itasrn")
-@IdClass(ItasrnId.class)
 public class Itasrn {
     private final static Logger logger = LoggerFactory.getLogger(Itasrn.class);
     public Itasrn(GoodsRequestData goodsRequestData){
@@ -38,14 +36,11 @@ public class Itasrn {
         }
         this.effStaDt = new Date();// 오늘날짜
     }
-
     @Id
+    private Long seq;
     private String historyGb;
-    @Id
     private String vendorId;
-    @Id
     private String assortId;
-    @Id
     private Date effStaDt;
 //    @Id
 //    private String seq;

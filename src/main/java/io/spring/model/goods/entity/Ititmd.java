@@ -1,7 +1,5 @@
 package io.spring.model.goods.entity;
 
-import io.spring.model.goods.GoodsRequestData;
-import io.spring.model.goods.idclass.ItitmdId;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -22,7 +19,6 @@ import java.util.Date;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@IdClass(ItitmdId.class)
 public class Ititmd {
     private final static Logger logger = LoggerFactory.getLogger(Ititmd.class);
     public Ititmd(Ititmm ititmm){
@@ -39,12 +35,11 @@ public class Ititmd {
         this.shortYn = ititmm.getShortYn();
     }
     @Id
+    private Long seq;
+
     private String assortId;
-    @Id
     private String itemId;
-    @Id
     private Date effEndDt;
-    @Id
     private Date effStaDt;
     private String shortYn;
 

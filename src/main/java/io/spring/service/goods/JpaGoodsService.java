@@ -6,8 +6,6 @@ import io.spring.model.common.entity.SequenceData;
 import io.spring.model.goods.GoodsRequestData;
 import io.spring.model.goods.GoodsResponseData;
 import io.spring.model.goods.entity.*;
-import io.spring.model.goods.idclass.ItitmdId;
-import io.spring.model.goods.idclass.ItitmmId;
 import io.spring.model.goods.idclass.ItvariId;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
@@ -259,14 +257,14 @@ public class JpaGoodsService {
             if(color != null){ // color 요소가 있는 경우
                 item.setOptionNm(color);
                 Itvari itvari = jpaItvariRepository.findByAssortIdAndOptionNm(goodsRequestData.getAssortId(), item.getOptionNm());//myBatisGoodsDao.selectOneSeqOptionGb(item);
-                ititmm = jpaItitmmRepository.findById(new ItitmmId(goodsRequestData.getAssortId(), itvari.getSeq())).orElseGet(()->new Ititmm(goodsRequestData.getAssortId(), item));
+                ititmm = jpaItitmmRepository.findById().orElseGet(()->new Ititmm(goodsRequestData.getAssortId(), item));
                 ititmm.setVariationGb1(colorGb);
                 ititmm.setVariationSeq1((String)itvari.getSeq());
             }
             if(size != null){ // size 요소가 있는 경우
                 item.setOptionNm(size);
                 Itvari itvari = jpaItvariRepository.findByAssortIdAndOptionNm(goodsRequestData.getAssortId(), item.getOptionNm());//myBatisGoodsDao.selectOneSeqOptionGb(item);
-                ititmm = jpaItitmmRepository.findById(new ItitmmId(goodsRequestData.getAssortId(), itvari.getSeq())).orElseGet(()->new Ititmm(goodsRequestData.getAssortId(), item));
+                ititmm = jpaItitmmRepository.findById().orElseGet(()->new Ititmm(goodsRequestData.getAssortId(), item));
                 ititmm.setVariationGb2(sizeGb);
                 ititmm.setVariationSeq2(itvari.getSeq());
             }
