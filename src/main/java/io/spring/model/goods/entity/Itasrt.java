@@ -82,7 +82,7 @@ public class Itasrt {
 
 	private String assortNm;
 	private String assortModel;
-	private String margin;
+	private Float margin;
 	private String taxGb;
 	private String assortGb;
 	private String assortState;

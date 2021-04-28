@@ -25,7 +25,7 @@ import java.util.Date;
 @IdClass(ItitmdId.class)
 public class Ititmd {
     private final static Logger logger = LoggerFactory.getLogger(Ititmd.class);
-    public Ititmd(GoodsRequestData goodsRequestData, Ititmm ititmm){
+    public Ititmd(Ititmm ititmm){
         this.assortId = ititmm.getAssortId();
         this.itemId = ititmm.getItemId();
         try

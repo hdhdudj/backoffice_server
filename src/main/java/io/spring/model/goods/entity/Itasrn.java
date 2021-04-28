@@ -46,10 +46,11 @@ public class Itasrn {
     @Id
     private String assortId;
     @Id
-    private Date effEndDt;
-    @Id
     private Date effStaDt;
+//    @Id
+//    private String seq;
 
+    private Date effEndDt;
     @CreationTimestamp
     private Date regDt;
     @UpdateTimestamp
@@ -60,7 +61,7 @@ public class Itasrn {
     private Long regId;
 
     @Column(nullable = true)
-    private float localSale;
+    private Float localSale;
     private String shortageYn;
 //    private String addDeliGb;
 //    private String bonusReserve;

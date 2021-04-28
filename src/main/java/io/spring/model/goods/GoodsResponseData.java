@@ -32,8 +32,8 @@ public class GoodsResponseData {
     private String manufactureNm;
     private String assortModel;
     private String taxGb;
-    private String longDesc;
-    private String shortDesc;
+    private GoodsRequestData.LongDesc longDesc;
+    private GoodsRequestData.ShortDesc shortDesc;
     private List<Attributes> attributesList;
     private List<Items> itemsList;
 

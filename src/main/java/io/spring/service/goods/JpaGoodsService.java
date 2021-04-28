@@ -6,7 +6,9 @@ import io.spring.model.common.entity.SequenceData;
 import io.spring.model.goods.GoodsRequestData;
 import io.spring.model.goods.GoodsResponseData;
 import io.spring.model.goods.entity.*;
-import io.spring.model.goods.idclass.*;
+import io.spring.model.goods.idclass.ItitmdId;
+import io.spring.model.goods.idclass.ItitmmId;
+import io.spring.model.goods.idclass.ItvariId;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class JpaGoodsService {
@@ -141,15 +141,36 @@ public class JpaGoodsService {
     }
 
     private Itasrn saveItasrn(GoodsRequestData goodsRequestData){
-        ItasrnId itasrnId = new ItasrnId(goodsRequestData);
-        Itasrn itasrn = jpaItasrnRepository.findById(itasrnId).orElseGet(() -> new Itasrn(goodsRequestData));
+//        ItasrnId itasrnId = new ItasrnId(goodsRequestData);
+        Date effEndDt = null;
+        try
+        {
+            effEndDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("9999-12-31 23:59:59"); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
+        }
+        catch (Exception e){
+            logger.debug(e.getMessage());
+        }
+        Itasrn itasrn = jpaItasrnRepository.findByAssortIdAndEffEndDt(goodsRequestData.getAssortId(), effEndDt);
+        if(itasrn == null){ // insert
+            itasrn = new Itasrn(goodsRequestData);
+        }
+        else{ // update
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(new Date());
+            cal.add(Calendar.SECOND, -1);
+            itasrn.setEffEndDt(cal.getTime());
+//            saveItasrn(goodsRequestData);
+        }
         itasrn.setLocalSale(goodsRequestData.getLocalSale());
         itasrn.setShortageYn(goodsRequestData.getShortageYn());
         jpaItasrnRepository.save(itasrn);
         return itasrn;
     }
 
+    // 메모 저장 테이블
     private Itasrd saveItasrd(GoodsRequestData goodsRequestData) {
+        Itasrd itasrd = jpaItasrdRepository.findByAssortId(goodsRequestData.getAssortId());
+        if(itasrd == null){itasrd = new Itasrd(goodsRequestData);}
         String seq = plusOne(jpaItasrdRepository.findMaxSeqByAssortId(goodsRequestData.getAssortId())); //myBatisGoodsDao.selectMaxSeqItasrd(goodsRequestData);
         if(seq == null){
             seq = fourStartCd;
@@ -157,19 +178,21 @@ public class JpaGoodsService {
         else {
             seq = StringUtils.leftPad(Integer.toString((int)Double.parseDouble(seq)), 4, '0');
         }
-        Itasrd itasrd = jpaItasrdRepository.findById(new ItasrdId(goodsRequestData.getAssortId(), seq)).orElseGet(() -> new Itasrd(goodsRequestData));
         itasrd.setSeq(seq);
-        if(goodsRequestData.getShortDesc() != null && !goodsRequestData.getShortDesc().trim().equals("")){
-            itasrd.setMemo(goodsRequestData.getShortDesc());
+        if(goodsRequestData.getShortDesc() != null && !goodsRequestData.getShortDesc().getValue().trim().equals("")){
+            itasrd.setMemo(goodsRequestData.getShortDesc().getValue().trim());
             itasrd.setOrdDetCd(gbOne);
             itasrd.setTextHtmlGb(gbTwo);
+            jpaItasrdRepository.save(itasrd);
+            itasrd = new Itasrd(goodsRequestData);
+            itasrd.setSeq(StringUtils.leftPad(plusOne(seq), 4 ,'0'));
         }
-        if(goodsRequestData.getLongDesc() != null && !goodsRequestData.getLongDesc().trim().equals("")){
-            itasrd.setMemo(goodsRequestData.getShortDesc());
+        if(goodsRequestData.getLongDesc() != null && !goodsRequestData.getLongDesc().getValue().trim().equals("")){
+            itasrd.setMemo(goodsRequestData.getLongDesc().getValue().trim());
             itasrd.setOrdDetCd(gbTwo);
             itasrd.setTextHtmlGb(gbOne);
+            jpaItasrdRepository.save(itasrd);
         }
-        jpaItasrdRepository.save(itasrd);
 
         return itasrd;
     }
@@ -245,7 +268,7 @@ public class JpaGoodsService {
                 Itvari itvari = jpaItvariRepository.findByAssortIdAndOptionNm(goodsRequestData.getAssortId(), item.getOptionNm());//myBatisGoodsDao.selectOneSeqOptionGb(item);
                 ititmm = jpaItitmmRepository.findById(new ItitmmId(goodsRequestData.getAssortId(), itvari.getSeq())).orElseGet(()->new Ititmm(goodsRequestData.getAssortId(), item));
                 ititmm.setVariationGb2(sizeGb);
-                ititmm.setVariationSeq2((String)itvari.getSeq());
+                ititmm.setVariationSeq2(itvari.getSeq());
             }
 //            System.out.println("ㅡㅡㅡㅡㅡㅡ"+jpaItitmmRepository.findMaxItemIdByAssortId(item.getAssortId()));
             String startItemId = plusOne(jpaItitmmRepository.findMaxItemIdByAssortId(goodsRequestData.getAssortId()));//myBatisGoodsDao.selectMaxItemIdItitmm(goodsRequestData);
@@ -273,10 +296,19 @@ public class JpaGoodsService {
     private List<Ititmd> saveItemOptionList(GoodsRequestData goodsRequestData, List<Ititmm> ititmmList) {
         List<Ititmd> ititmdList = new ArrayList<>();
         for (Ititmm item: ititmmList) {
-            Ititmd ititmd = jpaItitmdRepository.findById(new ItitmdId(goodsRequestData, item.getItemId())).orElseGet(()->new Ititmd(goodsRequestData, item));//new Ititmd(goodsRequestData, item);
+            Ititmd ititmd = jpaItitmdRepository.findById(new ItitmdId(goodsRequestData, item.getItemId())).orElseGet(()->null);//new Ititmd(goodsRequestData, item);
+            if(ititmd == null){
+                ititmd = new Ititmd(item);
+            }
+            else{
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(new Date());
+                cal.add(Calendar.SECOND, -1);
+                ititmd.setEffEndDt(cal.getTime());
+            }
             ititmd.setItemId(item.getItemId());
-            ititmd.setEffStaDt(new Date()); // 임시로..
-            ititmd.setEffEndDt(new Date());
+//            ititmd.setEffStaDt(new Date()); // 임시로..
+//            ititmd.setEffEndDt(new Date());
             ititmd.setShortYn(item.getShortYn());
             ititmd.setUpdDt(new Date());
             ititmdList.add(ititmd);
@@ -296,14 +328,14 @@ public class JpaGoodsService {
 
     // table 초기화용 함수(test할 때 편하려고..)
     public void initTables(){
+        Optional<SequenceData> op = jpaSequenceDataRepository.findById("seq_ITASRT");
+        SequenceData seq = op.get();
         jpaItasrtRepository.deleteAll();
         jpaItasrdRepository.deleteAll();
         jpaItasrnRepository.deleteAll();
         jpaItitmmRepository.deleteAll();
         jpaItitmdRepository.deleteAll();
         jpaItvariRepository.deleteAll();
-        Optional<SequenceData> op = jpaSequenceDataRepository.findById("seq_ITASRT");
-        SequenceData seq = op.get();
         seq.setSequenceCurValue("0");
         jpaSequenceDataRepository.save(seq);
     }

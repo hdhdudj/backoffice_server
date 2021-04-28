@@ -22,8 +22,8 @@ public class Itasrd {
 
     public Itasrd(GoodsRequestData goodsRequestData){
         this.assortId = goodsRequestData.getAssortId();
-        this.ordDetCd = "01";
-//        this.memo = goodsRequestData.getMemo();
+//        this.ordDetCd = "01";
+//        this.memo = goodsRequestData.get
         this.delYn = "02";
 //        this.textHtmlGb = goodsRequestData.getTextHtmlGb();
 //        this.regId = "123"; // 추후 추가

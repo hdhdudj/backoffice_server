@@ -23,7 +23,7 @@ public class GoodsRequestData {
 	// itasrt
 	private String assortNm;
 	private String assortModel;
-	private String margin;
+	private Float margin;
 	private String taxGb;
 	private String assortGb;
 	private String assortState;
@@ -61,8 +61,27 @@ public class GoodsRequestData {
 	private Float mdDiscountRate;
 
 	// itasrd
-	private String longDesc; // html (메모 상세) - long memo
-	private String shortDesc; // text (메모 간략) - short memo
+
+	private LongDesc longDesc; // html (메모 상세) - long memo
+	private ShortDesc shortDesc; // text (메모 간략) - short memo
+	public class Description{
+		private String seq;
+		private String ordDetCd;
+		private String memo;
+	}
+
+	@Getter
+	@Setter
+	public class ShortDesc{
+		private String seq;
+		private String value;
+	}
+	@Setter
+	@Getter
+	public class LongDesc{
+		private String seq;
+		private String value;
+	}
 
 	// ititmm
 	@SerializedName("items")
