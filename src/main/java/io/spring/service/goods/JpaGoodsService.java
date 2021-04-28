@@ -77,8 +77,8 @@ public class JpaGoodsService {
         Itasrt itasrt = this.saveItasrt(goodsRequestData);
         // itsrn에 goods 이력 저장
         Itasrn itasrn = this.saveItasrn(goodsRequestData);
-        // itasrd에 연관 정보 저장
-        Itasrd itasrd = this.saveItasrd(goodsRequestData);
+        // itasrd에 문구 저장
+        List<Itasrd> itasrd = this.saveItasrd(goodsRequestData);
         // itvari에 assort_id별 옵션요소 저장(색상, 사이즈)
         List<Itvari> itvariList = this.saveItvariList(goodsRequestData);
         // ititmm에 assort_id별 item 저장
@@ -165,34 +165,26 @@ public class JpaGoodsService {
     }
 
     // 메모 저장 테이블
-    private Itasrd saveItasrd(GoodsRequestData goodsRequestData) {
-        Itasrd itasrd = jpaItasrdRepository.findByAssortId(goodsRequestData.getAssortId());
-        
-//        if(itasrd == null){itasrd = new Itasrd(goodsRequestData);}
-//        String seq = plusOne(jpaItasrdRepository.findMaxSeqByAssortId(goodsRequestData.getAssortId()), 4); //myBatisGoodsDao.selectMaxSeqItasrd(goodsRequestData);
-//        if(seq == null){
-//            seq = fourStartCd;
-//        }
-//        else {
-//            seq = StringUtils.leftPad(Integer.toString((int)Double.parseDouble(seq)), 4, '0');
-//        }
-//        itasrd.setSeq(seq);
-//        if(goodsRequestData.getShortDesc() != null && !goodsRequestData.getShortDesc().getValue().trim().equals("")){
-//            itasrd.setMemo(goodsRequestData.getShortDesc().getValue().trim());
-//            itasrd.setOrdDetCd(gbOne);
-//            itasrd.setTextHtmlGb(gbTwo);
-//            jpaItasrdRepository.save(itasrd);
-//            itasrd = new Itasrd(goodsRequestData);
-//            itasrd.setSeq(StringUtils.leftPad(plusOne(seq, 4), 4 ,'0'));
-//        }
-//        if(goodsRequestData.getLongDesc() != null && !goodsRequestData.getLongDesc().getValue().trim().equals("")){
-//            itasrd.setMemo(goodsRequestData.getLongDesc().getValue().trim());
-//            itasrd.setOrdDetCd(gbTwo);
-//            itasrd.setTextHtmlGb(gbOne);
-//            jpaItasrdRepository.save(itasrd);
-//        }
-
-        return itasrd;
+    private List<Itasrd> saveItasrd(GoodsRequestData goodsRequestData) {
+        List<GoodsRequestData.Description> descriptionList = goodsRequestData.getDescription();
+        List<Itasrd> itasrdList = new ArrayList<>();
+        for (int i = 0; i < descriptionList.size() ; i++) {
+            Itasrd itasrd = new Itasrd(goodsRequestData);
+            String seq = (jpaItasrdRepository.findMaxSeqByAssortId(goodsRequestData.getAssortId()));
+            if(seq == null || seq.trim().equals("")){
+                seq = fourStartCd;
+            }
+            else{
+                seq = plusOne(seq, 4);
+            }
+            itasrd.setSeq(seq);
+            itasrd.setOrdDetCd(descriptionList.get(i).getOrdDetCd());
+            itasrd.setMemo(descriptionList.get(i).getMemo());
+            itasrd.setTextHtmlGb(descriptionList.get(i).getTextHtmlGb());
+            jpaItasrdRepository.save(itasrd);
+            itasrdList.add(itasrd);
+        }
+        return itasrdList;
     }
 
     private List<Itvari> saveItvariList(GoodsRequestData goodsRequestData) {

@@ -62,26 +62,14 @@ public class GoodsRequestData {
 	private Float mdDiscountRate;
 
 	// itasrd
-
-	private LongDesc longDesc; // html (메모 상세) - long memo
-	private ShortDesc shortDesc; // text (메모 간략) - short memo
-	public class Description{
+	private List<Description> description; // html (메모 상세) - long memo, text (메모 간략) - short memo
+	@Getter
+	@Setter
+	public static class Description{
 		private String seq;
 		private String ordDetCd;
+		private String textHtmlGb;
 		private String memo;
-	}
-
-	@Getter
-	@Setter
-	public class ShortDesc{
-		private String seq;
-		private String value;
-	}
-	@Setter
-	@Getter
-	public class LongDesc{
-		private String seq;
-		private String value;
 	}
 
 	// ititmm

@@ -18,8 +18,7 @@ public class GoodsResponseData {
         this.manufactureNm = goodsRequestData.getManufactureNm();
         this.assortModel = goodsRequestData.getAssortModel();
         this.taxGb = goodsRequestData.getTaxGb();
-        this.longDesc = goodsRequestData.getLongDesc();
-        this.shortDesc = goodsRequestData.getShortDesc();
+        this.description = goodsRequestData.getDescription();
         this.attributesList = attributesList;
         this.itemsList = itemsList;
     }
@@ -32,8 +31,7 @@ public class GoodsResponseData {
     private String manufactureNm;
     private String assortModel;
     private String taxGb;
-    private GoodsRequestData.LongDesc longDesc;
-    private GoodsRequestData.ShortDesc shortDesc;
+    private List<GoodsRequestData.Description> description;
     private List<Attributes> attributesList;
     private List<Items> itemsList;
 
