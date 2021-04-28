@@ -37,6 +37,7 @@ public class Itasrn {
         this.effStaDt = new Date();// 오늘날짜
     }
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seq;
     private String historyGb;
     private String vendorId;

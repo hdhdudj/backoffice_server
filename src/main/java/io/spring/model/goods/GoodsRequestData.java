@@ -111,7 +111,7 @@ public class GoodsRequestData {
 	@Getter
 	@Setter
 	public static class Attributes {
-		private Long seq;
+		private String seq;
 		private String value;
 		private String variationGb;
 	}

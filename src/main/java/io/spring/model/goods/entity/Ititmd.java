@@ -9,9 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -35,6 +33,7 @@ public class Ititmd {
         this.shortYn = ititmm.getShortYn();
     }
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seq;
 
     private String assortId;
