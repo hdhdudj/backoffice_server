@@ -106,7 +106,12 @@ public class JpaGoodsService {
         jpaItasrtRepository.deleteById(goodsId);
     }
 
-//    @Transactional
+    /**
+     * 21-04-27 Pecan
+     * 물품 정보 저장 insert, update
+     * @param goodsRequestData
+     * @return Itasrt Object
+     */
     private Itasrt saveItasrt(GoodsRequestData goodsRequestData) {
         Itasrt itasrt = jpaItasrtRepository.findById(goodsRequestData.getAssortId()).orElseGet(() -> new Itasrt(goodsRequestData));
 //        itasrt.setUpdDt(new Date());
@@ -133,6 +138,12 @@ public class JpaGoodsService {
         return itasrt;
     }
 
+    /**
+     * 21-04-28 Peca
+     * 물품 정보 이력 insert, update
+     * @param goodsRequestData
+     * @return Itasrn Object
+     */
     private Itasrn saveItasrn(GoodsRequestData goodsRequestData){
 //        ItasrnId itasrnId = new ItasrnId(goodsRequestData);
         Date effEndDt = null;
@@ -160,7 +171,12 @@ public class JpaGoodsService {
         return itasrn;
     }
 
-    // 메모 저장 테이블
+    /**
+     * 21-04-28 Pecan
+     * 메모(긴 글, 짧은 글) insert, update
+     * @param goodsRequestData
+     * @return List<Itasrd>
+     */
     private List<Itasrd> saveItasrd(GoodsRequestData goodsRequestData) {
         List<GoodsRequestData.Description> descriptionList = goodsRequestData.getDescription();
         List<Itasrd> itasrdList = new ArrayList<>();
@@ -183,6 +199,12 @@ public class JpaGoodsService {
         return itasrdList;
     }
 
+    /**
+     * 21-04-28 Pecan
+     * 옵션 정보 insert, update
+     * @param goodsRequestData
+     * @return List<Itvari>
+     */
     private List<Itvari> saveItvariList(GoodsRequestData goodsRequestData) {
         List<GoodsRequestData.Attributes> attributes = goodsRequestData.getAttributes();
         List<Itvari> itvariList = new ArrayList<>();
@@ -205,6 +227,12 @@ public class JpaGoodsService {
         return itvariList;
     }
 
+    /**
+     * 21-04-28 Pecan
+     * 아이템 정보 insert, update
+     * @param goodsRequestData
+     * @return List<Ititmm>
+     */
     private List<Ititmm> saveItemList(GoodsRequestData goodsRequestData) {
         List<GoodsRequestData.Items> itemList = goodsRequestData.getItems();
         List<Ititmm> ititmmList = new ArrayList<>();
@@ -243,6 +271,13 @@ public class JpaGoodsService {
         return ititmmList;
     }
 
+    /**
+     * 21-04-28 Pecan
+     * 아이템 정보 이력 insert, update
+     * @param goodsRequestData
+     * @param ititmmList
+     * @return List<Ititmd>
+     */
     private List<Ititmd> saveItemOptionList(GoodsRequestData goodsRequestData, List<Ititmm> ititmmList) {
         List<Ititmd> ititmdList = new ArrayList<>();
         for (Ititmm item: ititmmList) {
