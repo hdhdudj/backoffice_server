@@ -311,7 +311,9 @@ public class JpaGoodsService {
         }
     }
 
-    // table 초기화용 함수(test할 때 편하려고..)
+    /**
+     * Table 초기화 함수
+     */
     public void initTables(){
         Optional<SequenceData> op = jpaSequenceDataRepository.findById("seq_ITASRT");
         SequenceData seq = op.get();
@@ -325,7 +327,13 @@ public class JpaGoodsService {
         jpaSequenceDataRepository.save(seq);
     }
 
-    // 유틸 함수 : "009"를 받아 정수화해서 1을 더한 후 "010"으로 return
+    /**
+     * 21-04-25 Pecan
+     * 유틸 함수 : "009"를 받아 정수화해서 1을 더한 후 "010"으로 return
+     * @param calcNeedStringNumber
+     * @param length
+     * @return String
+     */
     private String plusOne(String calcNeedStringNumber, int length){ // 들어온 string의 숫자는 정수여야 함
         if(calcNeedStringNumber == null){
             return null;
