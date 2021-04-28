@@ -77,8 +77,6 @@ public class GoodsRequestData {
 	@Expose
 	private List<Items> items;
 
-	// ititmd
-
 	// itvari
 	@SerializedName("attributes")
 	@Expose
@@ -95,6 +93,10 @@ public class GoodsRequestData {
 		private String addPrice;
 		private String shortYn;
 	}
+
+	// image 관련
+	private List<String> uploadImage;
+	private List<String> deleteImage;
 
 	@Getter
 	@Setter

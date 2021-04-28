@@ -21,6 +21,20 @@ import java.util.Date;
 @Table(name = "itasrn")
 public class Itasrn {
     private final static Logger logger = LoggerFactory.getLogger(Itasrn.class);
+    public Itasrn(Itasrn itasrn){
+        this.historyGb = itasrn.getHistoryGb();
+        this.vendorId = itasrn.getVendorId();
+        this.assortId = itasrn.getAssortId();
+        this.localSale = itasrn.getLocalSale();
+        this.shortageYn = itasrn.getShortageYn();
+        try
+        {
+            this.effEndDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("9999-12-31 23:59:59"); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
+        }
+        catch (Exception e){
+            logger.debug(e.getMessage());
+        }
+    }
     public Itasrn(GoodsRequestData goodsRequestData){
         this.historyGb = "01"; // default 값
         this.vendorId = "000001";
@@ -34,7 +48,6 @@ public class Itasrn {
         catch (Exception e){
             logger.debug(e.getMessage());
         }
-        this.effStaDt = new Date();// 오늘날짜
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,6 +55,7 @@ public class Itasrn {
     private String historyGb;
     private String vendorId;
     private String assortId;
+    @CreationTimestamp
     private Date effStaDt;
 //    @Id
 //    private String seq;

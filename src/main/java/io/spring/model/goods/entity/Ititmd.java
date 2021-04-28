@@ -19,9 +19,10 @@ import java.util.Date;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Ititmd {
     private final static Logger logger = LoggerFactory.getLogger(Ititmd.class);
-    public Ititmd(Ititmm ititmm){
-        this.assortId = ititmm.getAssortId();
-        this.itemId = ititmm.getItemId();
+    public Ititmd(Ititmd ititmd){
+        this.assortId = ititmd.getAssortId();
+        this.shortYn = ititmd.getShortYn();
+        this.itemId = ititmd.getItemId();
         try
         {
             this.effEndDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("9999-12-31 23:59:59"); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
@@ -29,8 +30,18 @@ public class Ititmd {
         catch (Exception e){
             logger.debug(e.getMessage());
         }
-        this.effStaDt = new Date();// 오늘날짜
+    }
+    public Ititmd(Ititmm ititmm){
+        this.assortId = ititmm.getAssortId();
+        this.itemId = ititmm.getItemId();
         this.shortYn = ititmm.getShortYn();
+        try
+        {
+            this.effEndDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("9999-12-31 23:59:59"); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
+        }
+        catch (Exception e){
+            logger.debug(e.getMessage());
+        }
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,6 +50,7 @@ public class Ititmd {
     private String assortId;
     private String itemId;
     private Date effEndDt;
+    @CreationTimestamp
     private Date effStaDt;
     private String shortYn;
 

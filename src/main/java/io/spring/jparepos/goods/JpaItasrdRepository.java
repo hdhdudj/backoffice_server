@@ -14,4 +14,6 @@ public interface JpaItasrdRepository  extends JpaRepository<Itasrd, ItasrdId> {
 //    Itasrd findByAssortIdAndSeq(String assortId, String seq);
 
     List<Itasrd> findByAssortId(String assortId);
+
+    Itasrd findByAssortIdAndSeq(String assortId, String seq);
 }

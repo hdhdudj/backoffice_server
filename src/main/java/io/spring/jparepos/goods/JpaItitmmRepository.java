@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 public interface JpaItitmmRepository extends JpaRepository<Ititmm, ItitmmId> {
     @Query("select max(i.itemId) as maxVal from Ititmm as i where i.assortId = ?1")
     String findMaxItemIdByAssortId(String assortId);
+
+    Ititmm findByAssortIdAndItemId(String assortId, String itemId);
 }
