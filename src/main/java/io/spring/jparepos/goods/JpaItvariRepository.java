@@ -10,7 +10,7 @@ public interface JpaItvariRepository extends JpaRepository<Itvari, ItvariId> {
     String findMaxSeqByAssortId(String assortId);
 
 //    @Query("select i.seq, i.optionGb from Itvari as i where i.assortId = ?1 and i.optionNm = ?2")
-    Itvari findByAssortIdAndOptionNm(String assortId, String optionGb);
+    Itvari findByAssortIdAndOptionNm(String assortId, String optionNm);
 
 //    @Query("update User set name = :#{#paramUser.name}, age = :#{#paramUser.age}, ssn = :#{#paramUser.ssn} where id = :#{#paramUser.id}")
 //    int updateSpecificAttribute(@Param("paramUser") User user );
