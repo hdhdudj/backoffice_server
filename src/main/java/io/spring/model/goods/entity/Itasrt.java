@@ -1,5 +1,6 @@
 package io.spring.model.goods.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -138,11 +139,13 @@ public class Itasrt {
 	private String optionUseYn;
 
 	//// 다른 테이블과 엮으면 나오는 프로퍼티들
+//	@OneToOne
+	@JoinColumn(name = "brand_id", referencedColumnName = "brand_id", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY) // 연관관계
-	@JoinColumn(name = "brand_id", referencedColumnName = "brand_id", insertable=false, updatable=false)
 	private Itbrnd itbrnd;
 	@ManyToOne(fetch = FetchType.LAZY) // 연관관계
-	@JoinColumn(name = "disp_category_id", referencedColumnName = "category_id", insertable=false, updatable=false)
+	@JoinColumn(name = "disp_category_id", referencedColumnName = "category_id", insertable=false, updatable=false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	private Itcatg itcatg;
 
 //	private String brandNm;

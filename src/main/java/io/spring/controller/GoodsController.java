@@ -112,6 +112,20 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 	}
 
+//	@GetMapping(path="/getgoodslistmybatis")
+//	public ResponseEntity getGoodsList(@RequestParam String shortageYn, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtBegin, @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @RequestParam Date regDtEnd){
+//		logger.debug("get goods list data");
+//		List<HashMap<String, String>> responseData = goodsRepository.getGoodsList(shortageYn, regDtBegin, regDtEnd);
+//		for (HashMap<String, String> item : responseData) {
+//			System.out.println(item.get("brandNm"));
+//		}
+//		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
+//		if(responseData == null){
+//			return null;
+//		}
+//		return ResponseEntity.ok(res);
+//	}
+
 	// table 초기화용
 	@RequestMapping(path = "/inittables")
 	public void initTables(){

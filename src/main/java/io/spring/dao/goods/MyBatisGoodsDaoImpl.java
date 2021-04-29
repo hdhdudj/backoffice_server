@@ -44,5 +44,5 @@ public class MyBatisGoodsDaoImpl implements MyBatisGoodsDao {
 	public String selectMaxItemIdItitmm(GoodsInsertRequestData goodsInsertRequestData){return goodsMapper.selectMaxItemIdItitmm(goodsInsertRequestData);}
 
 	@Override
-	public List<HashMap<String, String>> getGoodsList(String shortageYn, Date regDtBegin, Date regDtEnd){return goodsMapper.getGoodsList(shortageYn, regDtBegin, regDtEnd);};
+	public List<HashMap<String, Object>> getGoodsList(String shortageYn, Date regDtBegin, Date regDtEnd){return goodsMapper.getGoodsList(shortageYn, regDtBegin, regDtEnd);};
 }

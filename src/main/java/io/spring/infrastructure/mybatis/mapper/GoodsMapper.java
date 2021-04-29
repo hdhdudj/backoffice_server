@@ -24,5 +24,5 @@ public interface GoodsMapper {
 
     String selectMaxSeqItasrt(GoodsInsertRequestData goodsInsertRequestData);
 
-    List<HashMap<String, String>> getGoodsList(String shortageYn, Date regDtBegin, Date regDtEnd);
+    List<HashMap<String, Object>> getGoodsList(String shortageYn, Date regDtBegin, Date regDtEnd);
 }

@@ -30,4 +30,10 @@ public class Itbrnd {
     private Date regDt;
     @UpdateTimestamp
     private Date updDt;
+
+    @Override
+    public String toString() {
+        return "Itbrnd [brandId=" + brandId + ", brandNm=" + brandNm + ", brandEnm=" + brandEnm + ", regId=" + regId
+                + ", updId=" + updId + ", regDt=" + regDt + ", updDt=" + updDt + "]";
+    }
 }
