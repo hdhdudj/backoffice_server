@@ -1,6 +1,6 @@
 package io.spring.model.goods.entity;
 
-import io.spring.model.goods.GoodsRequestData;
+import io.spring.model.goods.request.GoodsInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,10 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -26,48 +23,48 @@ import java.util.Date;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Itasrt {
 
-	public Itasrt(GoodsRequestData goodsRequestData){
-		this.assortId = goodsRequestData.getAssortId();
-		this.assortNm = goodsRequestData.getAssortNm();
-		this.assortModel = goodsRequestData.getAssortModel();
-		this.margin = goodsRequestData.getMargin();
-		this.taxGb = goodsRequestData.getTaxGb();
-		this.assortGb = goodsRequestData.getAssortGb();
-		this.assortState = goodsRequestData.getAssortState();
+	public Itasrt(GoodsInsertRequestData goodsInsertRequestData){
+		this.assortId = goodsInsertRequestData.getAssortId();
+		this.assortNm = goodsInsertRequestData.getAssortNm();
+		this.assortModel = goodsInsertRequestData.getAssortModel();
+		this.margin = goodsInsertRequestData.getMargin();
+		this.taxGb = goodsInsertRequestData.getTaxGb();
+		this.assortGb = goodsInsertRequestData.getAssortGb();
+		this.assortState = goodsInsertRequestData.getAssortState();
 //		this.asWidth = goodsRequestData.getAsWidth();
 //		this.asLength = goodsRequestData.getAsLength();
 //		this.asHeight = goodsRequestData.getAsHeight();
 //		this.weight = goodsRequestData.getWeight();
-		this.origin = goodsRequestData.getOrigin();
-		this.shortageYn = goodsRequestData.getShortageYn();
-		this.brandId = goodsRequestData.getBrandId();
-		this.dispCategoryId = goodsRequestData.getDispCategoryId();
+		this.origin = goodsInsertRequestData.getOrigin();
+		this.shortageYn = goodsInsertRequestData.getShortageYn();
+		this.brandId = goodsInsertRequestData.getBrandId();
+		this.dispCategoryId = goodsInsertRequestData.getDispCategoryId();
 		this.siteGb = "01";
-		this.asVendorId = goodsRequestData.getAsVendorId();
-		this.manufactureNm = goodsRequestData.getManufactureNm();
+		this.asVendorId = goodsInsertRequestData.getAsVendorId();
+		this.manufactureNm = goodsInsertRequestData.getManufactureNm();
 //		this.deliPrice = goodsRequestData.getDeliPrice();
 //		this.localPrice = goodsRequestData.getLocalPrice();
 //		this.localSale = goodsRequestData.getLocalSale();
-		this.assortColor = goodsRequestData.getAssortColor();
-		this.sellStaDt = goodsRequestData.getSellStaDt();
-		this.sellEndDt = goodsRequestData.getSellEndDt();
-		this.taxGb = goodsRequestData.getTaxGb();
-		this.mdRrp = goodsRequestData.getMdRrp();
-		this.mdTax = goodsRequestData.getMdTax();
-		this.mdYear = goodsRequestData.getMdYear();
-		this.mdMargin = goodsRequestData.getMdMargin();
-		this.mdMargin = goodsRequestData.getMdMargin();
-		this.mdVatrate = goodsRequestData.getMdVatrate();
-		this.mdOfflinePrice = goodsRequestData.getMdOfflinePrice();
-		this.mdOnlinePrice = goodsRequestData.getMdOnlinePrice();
-		this.mdGoodsVatrate = goodsRequestData.getMdGoodsVatrate();
-		this.buyWhere = goodsRequestData.getBuyWhere();
-		this.buyTax = goodsRequestData.getBuyTax();
-		this.buySupplyDiscount = goodsRequestData.getBuySupplyDiscount();
-		this.buyRrpIncrement = goodsRequestData.getBuyRrpIncrement();
-		this.buyExchangeRate = goodsRequestData.getBuyExchangeRate();
-		this.sizeType = goodsRequestData.getSizeType();
-		this.mdDiscountRate = goodsRequestData.getMdDiscountRate();
+		this.assortColor = goodsInsertRequestData.getAssortColor();
+		this.sellStaDt = goodsInsertRequestData.getSellStaDt();
+		this.sellEndDt = goodsInsertRequestData.getSellEndDt();
+		this.taxGb = goodsInsertRequestData.getTaxGb();
+		this.mdRrp = goodsInsertRequestData.getMdRrp();
+		this.mdTax = goodsInsertRequestData.getMdTax();
+		this.mdYear = goodsInsertRequestData.getMdYear();
+		this.mdMargin = goodsInsertRequestData.getMdMargin();
+		this.mdMargin = goodsInsertRequestData.getMdMargin();
+		this.mdVatrate = goodsInsertRequestData.getMdVatrate();
+		this.mdOfflinePrice = goodsInsertRequestData.getMdOfflinePrice();
+		this.mdOnlinePrice = goodsInsertRequestData.getMdOnlinePrice();
+		this.mdGoodsVatrate = goodsInsertRequestData.getMdGoodsVatrate();
+		this.buyWhere = goodsInsertRequestData.getBuyWhere();
+		this.buyTax = goodsInsertRequestData.getBuyTax();
+		this.buySupplyDiscount = goodsInsertRequestData.getBuySupplyDiscount();
+		this.buyRrpIncrement = goodsInsertRequestData.getBuyRrpIncrement();
+		this.buyExchangeRate = goodsInsertRequestData.getBuyExchangeRate();
+		this.sizeType = goodsInsertRequestData.getSizeType();
+		this.mdDiscountRate = goodsInsertRequestData.getMdDiscountRate();
 	}
 
 	@Id
@@ -96,7 +93,9 @@ public class Itasrt {
 	private Float weight;
 	private String origin;
 	private String shortageYn; // itasrn에도
+	@Column(name = "brand_id")
 	private String brandId;
+	@Column(name = "disp_category_id")
 	private String dispCategoryId;
 	private String siteGb;
 	private String asVendorId;
@@ -138,8 +137,16 @@ public class Itasrt {
 	private String optionGbName;
 	private String optionUseYn;
 
-	//// 
+	//// 다른 테이블과 엮으면 나오는 프로퍼티들
+	@ManyToOne(fetch = FetchType.LAZY) // 연관관계
+	@JoinColumn(name = "brand_id", referencedColumnName = "brand_id", insertable=false, updatable=false)
+	private Itbrnd itbrnd;
+	@ManyToOne(fetch = FetchType.LAZY) // 연관관계
+	@JoinColumn(name = "disp_category_id", referencedColumnName = "category_id", insertable=false, updatable=false)
+	private Itcatg itcatg;
 
+//	private String brandNm;
+//	private String categoryNm;
 //	private String assortDnm;
 //	private String assortEnm;
 //	private String payMthCd;

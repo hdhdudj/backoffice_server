@@ -1,4 +1,4 @@
-package io.spring.model.goods;
+package io.spring.model.goods.request;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class GoodsRequestData {
+public class GoodsInsertRequestData {
 	private String code;
 	private String message;
 	// itasrt, itvari, itasrd 공통

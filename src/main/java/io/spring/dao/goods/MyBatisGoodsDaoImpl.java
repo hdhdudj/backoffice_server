@@ -1,10 +1,11 @@
 package io.spring.dao.goods;
 
 import io.spring.infrastructure.mybatis.mapper.GoodsMapper;
-import io.spring.model.goods.GoodsRequestData;
+import io.spring.model.goods.request.GoodsInsertRequestData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,22 +24,25 @@ public class MyBatisGoodsDaoImpl implements MyBatisGoodsDao {
 	}
 	
 	@Override
-	public Boolean insertGoods(GoodsRequestData goodsRequestData) {
-		return goodsMapper.insertGoods(goodsRequestData);
+	public Boolean insertGoods(GoodsInsertRequestData goodsInsertRequestData) {
+		return goodsMapper.insertGoods(goodsInsertRequestData);
 	}
 
 	@Override
-	public String selectMaxSeqItasrt(GoodsRequestData goodsRequestData){return goodsMapper.selectMaxSeqItasrt(goodsRequestData);}
+	public String selectMaxSeqItasrt(GoodsInsertRequestData goodsInsertRequestData){return goodsMapper.selectMaxSeqItasrt(goodsInsertRequestData);}
 
 	@Override
-	public String selectMaxSeqItvari(GoodsRequestData goodsRequestData){ return goodsMapper.selectMaxSeqItvari(goodsRequestData);}
+	public String selectMaxSeqItvari(GoodsInsertRequestData goodsInsertRequestData){ return goodsMapper.selectMaxSeqItvari(goodsInsertRequestData);}
 
 	@Override
-	public String selectMaxSeqItasrd(GoodsRequestData goodsRequestData){return goodsMapper.selectMaxSeqItasrd(goodsRequestData);}
+	public String selectMaxSeqItasrd(GoodsInsertRequestData goodsInsertRequestData){return goodsMapper.selectMaxSeqItasrd(goodsInsertRequestData);}
 
 	@Override
-	public HashMap<String, Object> selectOneSeqOptionGb(GoodsRequestData.Items items){return goodsMapper.selectOneSeqOptionGb(items);}
+	public HashMap<String, Object> selectOneSeqOptionGb(GoodsInsertRequestData.Items items){return goodsMapper.selectOneSeqOptionGb(items);}
 
 	@Override
-	public String selectMaxItemIdItitmm(GoodsRequestData goodsRequestData){return goodsMapper.selectMaxItemIdItitmm(goodsRequestData);}
+	public String selectMaxItemIdItitmm(GoodsInsertRequestData goodsInsertRequestData){return goodsMapper.selectMaxItemIdItitmm(goodsInsertRequestData);}
+
+	@Override
+	public List<HashMap<String, String>> getGoodsList(String shortageYn, Date regDtBegin, Date regDtEnd){return goodsMapper.getGoodsList(shortageYn, regDtBegin, regDtEnd);};
 }

@@ -3,9 +3,9 @@ package io.spring.service.goods;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.goods.*;
 import io.spring.model.common.entity.SequenceData;
-import io.spring.model.goods.GoodsRequestData;
-import io.spring.model.goods.GoodsResponseData;
 import io.spring.model.goods.entity.*;
+import io.spring.model.goods.request.GoodsInsertRequestData;
+import io.spring.model.goods.response.GoodsInsertResponseData;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,42 +64,42 @@ public class JpaGoodsService {
     /**
      * goods 정보 insert 시퀀스 함수
      * Pecan 21-04-26
-     * @param goodsRequestData
+     * @param goodsInsertRequestData
      * @return GoodsResponseData
      */
     @Transactional
-    public GoodsResponseData sequenceInsertOrUpdateGoods(GoodsRequestData goodsRequestData){
+    public GoodsInsertResponseData sequenceInsertOrUpdateGoods(GoodsInsertRequestData goodsInsertRequestData){
         // itasrt에 goods 정보 저장
-        Itasrt itasrt = this.saveItasrt(goodsRequestData);
+        Itasrt itasrt = this.saveItasrt(goodsInsertRequestData);
         // itsrn에 goods 이력 저장
-        Itasrn itasrn = this.saveItasrn(goodsRequestData);
+        Itasrn itasrn = this.saveItasrn(goodsInsertRequestData);
         // itasrd에 문구 저장
-        List<Itasrd> itasrd = this.saveItasrd(goodsRequestData);
+        List<Itasrd> itasrd = this.saveItasrd(goodsInsertRequestData);
         // itvari에 assort_id별 옵션요소 저장(색상, 사이즈)
-        List<Itvari> itvariList = this.saveItvariList(goodsRequestData);
+        List<Itvari> itvariList = this.saveItvariList(goodsInsertRequestData);
         // ititmm에 assort_id별 item 저장
-        List<Ititmm> ititmmList = this.saveItemList(goodsRequestData);
+        List<Ititmm> ititmmList = this.saveItemList(goodsInsertRequestData);
         // ititmd에 item 이력 저장
-        List<Ititmd> ititmdList = this.saveItemHistoryList(goodsRequestData, ititmmList);
+        List<Ititmd> ititmdList = this.saveItemHistoryList(goodsInsertRequestData, ititmmList);
 
-        List<GoodsResponseData.Attributes> attributesList = makeGoodsResponseAttributes(goodsRequestData.getAssortId(), itvariList);
-        List<GoodsResponseData.Items> itemsList = makeGoodsResponseItems(goodsRequestData.getAssortId(), ititmmList);
-        return makeGoodsResponseData(goodsRequestData, attributesList, itemsList);
+        List<GoodsInsertResponseData.Attributes> attributesList = makeGoodsResponseAttributes(goodsInsertRequestData.getAssortId(), itvariList);
+        List<GoodsInsertResponseData.Items> itemsList = makeGoodsResponseItems(goodsInsertRequestData.getAssortId(), ititmmList);
+        return makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
     }
 
-    private List<GoodsResponseData.Attributes> makeGoodsResponseAttributes(String assortId, List<Itvari> itvariList){
+    private List<GoodsInsertResponseData.Attributes> makeGoodsResponseAttributes(String assortId, List<Itvari> itvariList){
         return null;
     }
 
-    private List<GoodsResponseData.Items> makeGoodsResponseItems(String assortId, List<Ititmm> ititmm){
+    private List<GoodsInsertResponseData.Items> makeGoodsResponseItems(String assortId, List<Ititmm> ititmm){
         return null;
     }
 
-    private GoodsResponseData makeGoodsResponseData(GoodsRequestData goodsRequestData, List<GoodsResponseData.Attributes> attributesList, List<GoodsResponseData.Items> itemsList){
-        GoodsResponseData goodsResponseData = GoodsResponseData.builder().goodsRequestData(goodsRequestData)
+    private GoodsInsertResponseData makeGoodsInsertResponseData(GoodsInsertRequestData goodsInsertRequestData, List<GoodsInsertResponseData.Attributes> attributesList, List<GoodsInsertResponseData.Items> itemsList){
+        GoodsInsertResponseData goodsInsertResponseData = GoodsInsertResponseData.builder().goodsInsertRequestData(goodsInsertRequestData)
                 .attributesList(attributesList).itemsList(itemsList).build();
 
-        return goodsResponseData;
+        return goodsInsertResponseData;
     }
 
     public void deleteById(String goodsId) {
@@ -109,31 +109,31 @@ public class JpaGoodsService {
     /**
      * 21-04-27 Pecan
      * 물품 정보 저장 insert, update
-     * @param goodsRequestData
+     * @param goodsInsertRequestData
      * @return Itasrt Object
      */
-    private Itasrt saveItasrt(GoodsRequestData goodsRequestData) {
-        Itasrt itasrt = jpaItasrtRepository.findById(goodsRequestData.getAssortId()).orElseGet(() -> new Itasrt(goodsRequestData));
+    private Itasrt saveItasrt(GoodsInsertRequestData goodsInsertRequestData) {
+        Itasrt itasrt = jpaItasrtRepository.findById(goodsInsertRequestData.getAssortId()).orElseGet(() -> new Itasrt(goodsInsertRequestData));
 //        itasrt.setUpdDt(new Date());
-        itasrt.setAssortNm(goodsRequestData.getAssortNm());
-        itasrt.setAssortColor(goodsRequestData.getAssortColor());
-        itasrt.setBrandId(goodsRequestData.getBrandId());
-        itasrt.setOrigin(goodsRequestData.getOrigin());
-        itasrt.setManufactureNm(goodsRequestData.getManufactureNm());
-        itasrt.setAssortModel(goodsRequestData.getAssortModel());
-        itasrt.setShortageYn(goodsRequestData.getShortageYn());
-        itasrt.setLocalPrice(goodsRequestData.getLocalPrice());
-        itasrt.setDeliPrice(goodsRequestData.getDeliPrice());
-        itasrt.setMargin(goodsRequestData.getMargin());
-        itasrt.setMdRrp(goodsRequestData.getMdRrp());
-        itasrt.setMdYear(goodsRequestData.getMdYear());
-        itasrt.setMdTax(goodsRequestData.getMdTax());
-        itasrt.setMdVatrate(goodsRequestData.getMdVatrate());
-        itasrt.setMdDiscountRate(goodsRequestData.getMdDiscountRate());
-        itasrt.setMdGoodsVatrate(goodsRequestData.getMdGoodsVatrate());
-        itasrt.setBuyWhere(goodsRequestData.getBuyWhere());
-        itasrt.setMdMargin(goodsRequestData.getMdMargin());
-        itasrt.setBuyExchangeRate(goodsRequestData.getBuyExchangeRate());
+        itasrt.setAssortNm(goodsInsertRequestData.getAssortNm());
+        itasrt.setAssortColor(goodsInsertRequestData.getAssortColor());
+        itasrt.setBrandId(goodsInsertRequestData.getBrandId());
+        itasrt.setOrigin(goodsInsertRequestData.getOrigin());
+        itasrt.setManufactureNm(goodsInsertRequestData.getManufactureNm());
+        itasrt.setAssortModel(goodsInsertRequestData.getAssortModel());
+        itasrt.setShortageYn(goodsInsertRequestData.getShortageYn());
+        itasrt.setLocalPrice(goodsInsertRequestData.getLocalPrice());
+        itasrt.setDeliPrice(goodsInsertRequestData.getDeliPrice());
+        itasrt.setMargin(goodsInsertRequestData.getMargin());
+        itasrt.setMdRrp(goodsInsertRequestData.getMdRrp());
+        itasrt.setMdYear(goodsInsertRequestData.getMdYear());
+        itasrt.setMdTax(goodsInsertRequestData.getMdTax());
+        itasrt.setMdVatrate(goodsInsertRequestData.getMdVatrate());
+        itasrt.setMdDiscountRate(goodsInsertRequestData.getMdDiscountRate());
+        itasrt.setMdGoodsVatrate(goodsInsertRequestData.getMdGoodsVatrate());
+        itasrt.setBuyWhere(goodsInsertRequestData.getBuyWhere());
+        itasrt.setMdMargin(goodsInsertRequestData.getMdMargin());
+        itasrt.setBuyExchangeRate(goodsInsertRequestData.getBuyExchangeRate());
         jpaItasrtRepository.save(itasrt);
         return itasrt;
     }
@@ -141,10 +141,10 @@ public class JpaGoodsService {
     /**
      * 21-04-28 Peca
      * 물품 정보 이력 insert, update
-     * @param goodsRequestData
+     * @param goodsInsertRequestData
      * @return Itasrn Object
      */
-    private Itasrn saveItasrn(GoodsRequestData goodsRequestData){
+    private Itasrn saveItasrn(GoodsInsertRequestData goodsInsertRequestData){
 //        ItasrnId itasrnId = new ItasrnId(goodsRequestData);
         Date effEndDt = null;
         try
@@ -154,9 +154,9 @@ public class JpaGoodsService {
         catch (Exception e){
             logger.debug(e.getMessage());
         }
-        Itasrn itasrn = jpaItasrnRepository.findByAssortIdAndEffEndDt(goodsRequestData.getAssortId(), effEndDt);
+        Itasrn itasrn = jpaItasrnRepository.findByAssortIdAndEffEndDt(goodsInsertRequestData.getAssortId(), effEndDt);
         if(itasrn == null){ // insert
-            itasrn = new Itasrn(goodsRequestData);
+            itasrn = new Itasrn(goodsInsertRequestData);
         }
         else{ // update
             Calendar cal = Calendar.getInstance();
@@ -167,8 +167,8 @@ public class JpaGoodsService {
             Itasrn newItasrn = new Itasrn(itasrn);
             jpaItasrnRepository.save(newItasrn);
         }
-        itasrn.setLocalSale(goodsRequestData.getLocalSale());
-        itasrn.setShortageYn(goodsRequestData.getShortageYn());
+        itasrn.setLocalSale(goodsInsertRequestData.getLocalSale());
+        itasrn.setShortageYn(goodsInsertRequestData.getShortageYn());
         jpaItasrnRepository.save(itasrn);
         return itasrn;
     }
@@ -176,17 +176,17 @@ public class JpaGoodsService {
     /**
      * 21-04-28 Pecan
      * 메모(긴 글, 짧은 글) insert, update
-     * @param goodsRequestData
+     * @param goodsInsertRequestData
      * @return List<Itasrd>
      */
-    private List<Itasrd> saveItasrd(GoodsRequestData goodsRequestData) {
-        List<GoodsRequestData.Description> descriptionList = goodsRequestData.getDescription();
+    private List<Itasrd> saveItasrd(GoodsInsertRequestData goodsInsertRequestData) {
+        List<GoodsInsertRequestData.Description> descriptionList = goodsInsertRequestData.getDescription();
         List<Itasrd> itasrdList = new ArrayList<>();
         for (int i = 0; i < descriptionList.size() ; i++) {
-            Itasrd itasrd = new Itasrd(goodsRequestData);
+            Itasrd itasrd = new Itasrd(goodsInsertRequestData);
             String seq = descriptionList.get(i).getSeq();
             if(seq == null || seq.trim().equals("")){ // insert
-                seq = jpaItasrdRepository.findMaxSeqByAssortId(goodsRequestData.getAssortId());
+                seq = jpaItasrdRepository.findMaxSeqByAssortId(goodsInsertRequestData.getAssortId());
                 if (seq == null || seq.trim().equals("")) { // insert -> 빈 테이블
                     seq = fourStartCd;
                 }
@@ -196,7 +196,7 @@ public class JpaGoodsService {
                 itasrd.setSeq(seq);
             }
             else{ // update
-                itasrd = jpaItasrdRepository.findByAssortIdAndSeq(goodsRequestData.getAssortId(), seq);
+                itasrd = jpaItasrdRepository.findByAssortIdAndSeq(goodsInsertRequestData.getAssortId(), seq);
             }
             itasrd.setOrdDetCd(descriptionList.get(i).getOrdDetCd());
             itasrd.setMemo(descriptionList.get(i).getMemo());
@@ -210,19 +210,19 @@ public class JpaGoodsService {
     /**
      * 21-04-28 Pecan
      * 옵션 정보 insert, update
-     * @param goodsRequestData
+     * @param goodsInsertRequestData
      * @return List<Itvari>
      */
-    private List<Itvari> saveItvariList(GoodsRequestData goodsRequestData) {
-        List<GoodsRequestData.Attributes> attributes = goodsRequestData.getAttributes();
+    private List<Itvari> saveItvariList(GoodsInsertRequestData goodsInsertRequestData) {
+        List<GoodsInsertRequestData.Attributes> attributes = goodsInsertRequestData.getAttributes();
         List<Itvari> itvariList = new ArrayList<>();
 
-        for(GoodsRequestData.Attributes attribute : attributes){
+        for(GoodsInsertRequestData.Attributes attribute : attributes){
             String seq = attribute.getSeq();
-            Itvari itvari = new Itvari(goodsRequestData);
-            itvari.setAssortId(goodsRequestData.getAssortId());
+            Itvari itvari = new Itvari(goodsInsertRequestData);
+            itvari.setAssortId(goodsInsertRequestData.getAssortId());
             if(seq == null || seq.trim().equals("")){ // seq가 존재하지 않는 경우 == 새로운 itvari INSERT -> seq max 값 따와야 함
-                seq = jpaItvariRepository.findMaxSeqByAssortId(goodsRequestData.getAssortId());
+                seq = jpaItvariRepository.findMaxSeqByAssortId(goodsInsertRequestData.getAssortId());
                 if(seq == null){ // max값이 없음 -> 해당 assort id에서 첫 insert
                     seq = fourStartCd;
                 }
@@ -232,7 +232,7 @@ public class JpaGoodsService {
                 itvari.setSeq(seq);
             }
             else{ // 존재하는 경우 : itvari 객체가 존재함이 보장됨 -> update
-                itvari = jpaItvariRepository.findByAssortIdAndSeq(goodsRequestData.getAssortId(), seq);
+                itvari = jpaItvariRepository.findByAssortIdAndSeq(goodsInsertRequestData.getAssortId(), seq);
             }
             itvari.setOptionNm(attribute.getValue());
             itvari.setOptionGb(attribute.getVariationGb());
@@ -246,17 +246,17 @@ public class JpaGoodsService {
     /**
      * 21-04-28 Pecan
      * 아이템 정보 insert, update
-     * @param goodsRequestData
+     * @param goodsInsertRequestData
      * @return List<Ititmm>
      */
-    private List<Ititmm> saveItemList(GoodsRequestData goodsRequestData) {
-        List<GoodsRequestData.Items> itemList = goodsRequestData.getItems();
+    private List<Ititmm> saveItemList(GoodsInsertRequestData goodsInsertRequestData) {
+        List<GoodsInsertRequestData.Items> itemList = goodsInsertRequestData.getItems();
         List<Ititmm> ititmmList = new ArrayList<>();
-        for(GoodsRequestData.Items item : itemList){
+        for(GoodsInsertRequestData.Items item : itemList){
             String itemId = item.getItemId(); // item id를 객체가 갖고 있으면 그것을 이용
-            Ititmm ititmm = new Ititmm(goodsRequestData.getAssortId(), item);
+            Ititmm ititmm = new Ititmm(goodsInsertRequestData.getAssortId(), item);
             if(itemId == null || itemId.trim().equals("")){ // 객체에 item id가 없으면 jpa에서 max값을 가져옴
-                itemId = jpaItitmmRepository.findMaxItemIdByAssortId(goodsRequestData.getAssortId());
+                itemId = jpaItitmmRepository.findMaxItemIdByAssortId(goodsInsertRequestData.getAssortId());
                 if(itemId == null || itemId.trim().equals("")){ // jpa에서 max값을 가져왔는데 null이면 해당 assort id에 item id가 존재하지 않으므로 초기값(0001)을 설정
                     itemId = fourStartCd;
                 }
@@ -266,13 +266,13 @@ public class JpaGoodsService {
                 ititmm.setItemId(itemId);
             }
             else{ // 객체에 item id가 있으면 해당 객체가 이미 존재하므로 객체를 가져옴 (update)
-                ititmm = jpaItitmmRepository.findByAssortIdAndItemId(goodsRequestData.getAssortId(), itemId);
+                ititmm = jpaItitmmRepository.findByAssortIdAndItemId(goodsInsertRequestData.getAssortId(), itemId);
             }
             String[] optionNmList = item.getValue().split(splitGb);
             // itvari에서 옵션 형질 찾아오기
             for(String optionNm : optionNmList){
-                System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ"+goodsRequestData.getAssortId()+" "+optionNm);
-                Itvari op = jpaItvariRepository.findByAssortIdAndOptionNm(goodsRequestData.getAssortId(), optionNm);
+                System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ"+ goodsInsertRequestData.getAssortId()+" "+optionNm);
+                Itvari op = jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), optionNm);
                 String opGb = op.getOptionGb();
                 if(opGb.equals(gbOne)){ // optionGb이 01인 경우
                     ititmm.setVariationGb1(opGb);
@@ -294,11 +294,11 @@ public class JpaGoodsService {
     /**
      * 21-04-28 Pecan
      * 아이템 정보 이력 insert, update
-     * @param goodsRequestData
+     * @param goodsInsertRequestData
      * @param ititmmList
      * @return List<Ititmd>
      */
-    private List<Ititmd> saveItemHistoryList(GoodsRequestData goodsRequestData, List<Ititmm> ititmmList) {
+    private List<Ititmd> saveItemHistoryList(GoodsInsertRequestData goodsInsertRequestData, List<Ititmm> ititmmList) {
         List<Ititmd> ititmdList = new ArrayList<>();
         Date effEndDt = null;
         for (int i = 0; i < ititmmList.size() ; i++) {
@@ -309,7 +309,7 @@ public class JpaGoodsService {
             catch (Exception e){
                 logger.debug(e.getMessage());
             }
-            Ititmd ititmd = jpaItitmdRepository.findByAssortIdAndItemIdAndEffEndDt(goodsRequestData.getAssortId(), ititmmList.get(i).getItemId() , effEndDt);
+            Ititmd ititmd = jpaItitmdRepository.findByAssortIdAndItemIdAndEffEndDt(goodsInsertRequestData.getAssortId(), ititmmList.get(i).getItemId() , effEndDt);
             if(ititmd == null){ // insert
                 ititmd = new Ititmd(ititmmList.get(i));
             }
@@ -401,7 +401,7 @@ public class JpaGoodsService {
      * @param assrotId
      * @return GoodsResponseData
      */
-    public GoodsResponseData getGoodsDetailPage(String assrotId) {
+    public GoodsInsertResponseData getGoodsDetailPage(String assrotId) {
 
         return null;
     }
@@ -409,11 +409,23 @@ public class JpaGoodsService {
     /**
      * 21-04-29 Pecan
      * brandId, dispCategoryId, regDt, shortageYn, (이상 itasrt) dispCategoryId(itcatg), brandId(itbrnd) 로 list 목록 가져오는 함수
-     * @param goodsRequestData
+     * @param shortageYn, RegDtBegin, regDtEnd
      * @return GoodsResponseData
      */
-    public GoodsResponseData getGoodsList(GoodsRequestData goodsRequestData) {
-        List<Itasrt> goodsList = jpaItasrtRepository.getGoodsList(goodsRequestData);
+    public GoodsInsertResponseData getGoodsList(String shortageYn, Date regDtBegin, Date regDtEnd) {
+        List<Object[]> goodsList = jpaItasrtRepository.getGoodsList(shortageYn, regDtBegin, regDtEnd);
+        for (Object[] goods : goodsList){
+            for (int i = 0; i < goods.length; i++) {
+                System.out.print(" " + goods[i] + " ");
+            }
+
+            System.out.println("");
+        }
+        GoodsInsertResponseData goodsInsertResponseData = null;//makeGoodsSelectListResponseData(goodsList);
+        return goodsInsertResponseData;
+    }
+
+    private GoodsInsertResponseData makeGoodsSelectListResponseData(List<Itasrt> goodsList) {
         return null;
     }
 }

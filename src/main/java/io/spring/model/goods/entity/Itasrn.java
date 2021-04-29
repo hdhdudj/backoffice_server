@@ -1,6 +1,6 @@
 package io.spring.model.goods.entity;
 
-import io.spring.model.goods.GoodsRequestData;
+import io.spring.model.goods.request.GoodsInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,12 +35,12 @@ public class Itasrn {
             logger.debug(e.getMessage());
         }
     }
-    public Itasrn(GoodsRequestData goodsRequestData){
+    public Itasrn(GoodsInsertRequestData goodsInsertRequestData){
         this.historyGb = "01"; // default 값
         this.vendorId = "000001";
         
-        this.assortId = goodsRequestData.getAssortId();
-        this.localSale = goodsRequestData.getLocalSale();
+        this.assortId = goodsInsertRequestData.getAssortId();
+        this.localSale = goodsInsertRequestData.getLocalSale();
         try
         {
             this.effEndDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("9999-12-31 23:59:59"); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)

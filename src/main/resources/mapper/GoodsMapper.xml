@@ -126,5 +126,24 @@
 		]]>
 	</insert>
 
+	<select id="getGoodsList" resultType="List">
+		select
+			i.assort_id
+			 ,i.assort_nm
+			 ,i.shortage_yn
+			 ,i.brand_id
+			 ,ib.brand_nm
+			 ,i.disp_category_id
+			 ,ic.category_nm
+		from itasrt i
+		   ,itbrnd ib
+		   ,itcatg ic
+		where 1=1
+		  and i.brand_id = ib.brand_id
+		  and i.disp_category_id  = ic.category_id
+		  and i.reg_Dt between '2020-01-01 00:00:01' and  '2023-04-30 00:00:01'
+		  and i.shortage_yn ='01';
+	</select>
+
 
 </mapper>

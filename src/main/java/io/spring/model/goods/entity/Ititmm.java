@@ -1,6 +1,6 @@
 package io.spring.model.goods.entity;
 
-import io.spring.model.goods.GoodsRequestData;
+import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.goods.idclass.ItitmmId;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,7 +20,7 @@ import java.util.Date;
 @IdClass(ItitmmId.class)
 public class Ititmm {
 
-    public Ititmm(String assortId, GoodsRequestData.Items items){
+    public Ititmm(String assortId, GoodsInsertRequestData.Items items){
         this.assortId = assortId;
 
         this.shortYn = items.getShortYn();

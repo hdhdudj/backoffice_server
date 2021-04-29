@@ -3,17 +3,19 @@ package io.spring.controller;
 import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
-import io.spring.model.goods.GoodsRequestData;
-import io.spring.model.goods.GoodsResponseData;
+import io.spring.model.goods.request.GoodsInsertRequestData;
+import io.spring.model.goods.response.GoodsInsertResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.goods.JpaGoodsService;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -54,7 +56,7 @@ public class GoodsController {
 	}
 	
 	@RequestMapping(path = "/insert")
-	public ResponseEntity insertGoodsMyBatis(@RequestBody GoodsRequestData goodsRequestData) {
+	public ResponseEntity insertGoodsMyBatis(@RequestBody GoodsInsertRequestData goodsInsertRequestData) {
 		logger.debug("insert goods");
 		
 		HashMap<String, Object> arr = new HashMap<String, Object>();
@@ -62,8 +64,8 @@ public class GoodsController {
 		HashMap<String, Object> x1 = myBatisCommonDao.getSequence(arr);
 		System.out.println("x1 = " + x1.get("nextval"));
 		
-		goodsRequestData.setAssortId(StringUtils.leftPad(Long.toString((long)x1.get("nextval")), 9, '0'));
-		Boolean b = goodsRepository.insertGoods(goodsRequestData);
+		goodsInsertRequestData.setAssortId(StringUtils.leftPad(Long.toString((long)x1.get("nextval")), 9, '0'));
+		Boolean b = goodsRepository.insertGoods(goodsInsertRequestData);
 		
 		ApiResponseMessage res = null;
 		
@@ -72,11 +74,11 @@ public class GoodsController {
 	
 	
 	@PostMapping(path = "/insertpost")
-	public ResponseEntity insertGoodsJpa(@RequestBody GoodsRequestData goodsRequestData) {
+	public ResponseEntity insertGoodsJpa(@RequestBody GoodsInsertRequestData goodsInsertRequestData) {
 		logger.debug("insert goods by jpa");
 
-		goodsRequestData.setAssortId(jpaCommonService.getAssortId(goodsRequestData)); // assort id 채번
-		GoodsResponseData responseData = jpaGoodsService.sequenceInsertOrUpdateGoods(goodsRequestData);
+		goodsInsertRequestData.setAssortId(jpaCommonService.getAssortId(goodsInsertRequestData)); // assort id 채번
+		GoodsInsertResponseData responseData = jpaGoodsService.sequenceInsertOrUpdateGoods(goodsInsertRequestData);
 
 		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
 
@@ -90,7 +92,7 @@ public class GoodsController {
 	public ResponseEntity insertGoodsJpaByGet(@RequestParam String assrotId){
 		logger.debug("get insert detail page");
 
-		GoodsResponseData responseData = jpaGoodsService.getGoodsDetailPage(assrotId);
+		GoodsInsertResponseData responseData = jpaGoodsService.getGoodsDetailPage(assrotId);
 
 		ApiResponseMessage res = new ApiResponseMessage("ok","success", responseData);
 		if(responseData == null){
@@ -99,10 +101,10 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 	}
 
-	@PostMapping(path="getgoodslist")
-	public ResponseEntity getGoodsList(@RequestBody GoodsRequestData goodsRequestData){
+	@GetMapping(path="/getgoodslist")
+	public ResponseEntity getGoodsList(@RequestParam String shortageYn, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtBegin, @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @RequestParam Date regDtEnd){
 		logger.debug("get goods list data");
-		GoodsResponseData responseData = jpaGoodsService.getGoodsList(goodsRequestData);
+		GoodsInsertResponseData responseData = jpaGoodsService.getGoodsList(shortageYn, regDtBegin, regDtEnd);
 		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
 		if(responseData == null){
 			return null;

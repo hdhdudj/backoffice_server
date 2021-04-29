@@ -1,7 +1,8 @@
 package io.spring.dao.goods;
 
-import io.spring.model.goods.GoodsRequestData;
+import io.spring.model.goods.request.GoodsInsertRequestData;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,15 +10,17 @@ public interface MyBatisGoodsDao {
 
 	List<HashMap<String, Object>> selectGoodsListAll();
 	
-	Boolean insertGoods(GoodsRequestData goodsRequestData);
+	Boolean insertGoods(GoodsInsertRequestData goodsInsertRequestData);
 
-	String selectMaxSeqItasrt(GoodsRequestData goodsRequestData);
+	String selectMaxSeqItasrt(GoodsInsertRequestData goodsInsertRequestData);
 
-	String selectMaxSeqItvari(GoodsRequestData goodsRequestData);
+	String selectMaxSeqItvari(GoodsInsertRequestData goodsInsertRequestData);
 
-	String selectMaxSeqItasrd(GoodsRequestData goodsRequestData);
+	String selectMaxSeqItasrd(GoodsInsertRequestData goodsInsertRequestData);
 
-	HashMap<String, Object> selectOneSeqOptionGb(GoodsRequestData.Items items);
+	HashMap<String, Object> selectOneSeqOptionGb(GoodsInsertRequestData.Items items);
 
-	public String selectMaxItemIdItitmm(GoodsRequestData goodsRequestData);
+	String selectMaxItemIdItitmm(GoodsInsertRequestData goodsInsertRequestData);
+
+    List<HashMap<String, String>> getGoodsList(String shortageYn, Date regDtBegin, Date regDtEnd);
 }

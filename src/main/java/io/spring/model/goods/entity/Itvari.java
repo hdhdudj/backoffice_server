@@ -1,6 +1,6 @@
 package io.spring.model.goods.entity;
 
-import io.spring.model.goods.GoodsRequestData;
+import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.goods.idclass.ItvariId;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,7 +22,7 @@ public class Itvari {
 
     /**
      *
-     * @param goodsRequestData
+     * @param goodsInsertRequestData
      * {
      *    "color": [
      *         {
@@ -40,8 +40,8 @@ public class Itvari {
      *             ]
      * }
      */
-    public Itvari(GoodsRequestData goodsRequestData){
-        this.assortId = goodsRequestData.getAssortId();
+    public Itvari(GoodsInsertRequestData goodsInsertRequestData){
+        this.assortId = goodsInsertRequestData.getAssortId();
         this.delYn = "02";
 //        this.optionGb = goodsRequestData.getOptionGb();
 //        this.imgYn = goodsRequestData.getImgYn();
