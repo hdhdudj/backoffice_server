@@ -405,4 +405,15 @@ public class JpaGoodsService {
 
         return null;
     }
+
+    /**
+     * 21-04-29 Pecan
+     * brandId, dispCategoryId, regDt, shortageYn, (이상 itasrt) dispCategoryId(itcatg), brandId(itbrnd) 로 list 목록 가져오는 함수
+     * @param goodsRequestData
+     * @return GoodsResponseData
+     */
+    public GoodsResponseData getGoodsList(GoodsRequestData goodsRequestData) {
+        List<Itasrt> goodsList = jpaItasrtRepository.getGoodsList(goodsRequestData);
+        return null;
+    }
 }

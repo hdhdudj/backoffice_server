@@ -138,6 +138,8 @@ public class Itasrt {
 	private String optionGbName;
 	private String optionUseYn;
 
+	//// 
+
 //	private String assortDnm;
 //	private String assortEnm;
 //	private String payMthCd;

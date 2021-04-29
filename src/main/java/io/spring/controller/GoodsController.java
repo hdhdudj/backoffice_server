@@ -99,6 +99,17 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 	}
 
+	@PostMapping(path="getgoodslist")
+	public ResponseEntity getGoodsList(@RequestBody GoodsRequestData goodsRequestData){
+		logger.debug("get goods list data");
+		GoodsResponseData responseData = jpaGoodsService.getGoodsList(goodsRequestData);
+		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
+		if(responseData == null){
+			return null;
+		}
+		return ResponseEntity.ok(res);
+	}
+
 	// table 초기화용
 	@RequestMapping(path = "/inittables")
 	public void initTables(){
