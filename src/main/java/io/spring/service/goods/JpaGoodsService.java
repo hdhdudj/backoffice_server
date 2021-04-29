@@ -271,6 +271,7 @@ public class JpaGoodsService {
             String[] optionNmList = item.getValue().split(splitGb);
             // itvari에서 옵션 형질 찾아오기
             for(String optionNm : optionNmList){
+                System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ"+goodsRequestData.getAssortId()+" "+optionNm);
                 Itvari op = jpaItvariRepository.findByAssortIdAndOptionNm(goodsRequestData.getAssortId(), optionNm);
                 String opGb = op.getOptionGb();
                 if(opGb.equals(gbOne)){ // optionGb이 01인 경우
@@ -392,5 +393,16 @@ public class JpaGoodsService {
             logger.debug(e.getMessage());
         }
         return calcRes;
+    }
+
+    /**
+     * 21-04-29 Pecan
+     * assortId를 통해 detail 페이지를 구성하는 정보를 반환하는 함수
+     * @param assrotId
+     * @return GoodsResponseData
+     */
+    public GoodsResponseData getGoodsDetailPage(String assrotId) {
+
+        return null;
     }
 }

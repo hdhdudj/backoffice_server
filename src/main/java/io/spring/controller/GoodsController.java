@@ -12,9 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -73,16 +71,29 @@ public class GoodsController {
 	}
 	
 	
-	@RequestMapping(path = "/inserttest")
+	@PostMapping(path = "/insertpost")
 	public ResponseEntity insertGoodsJpa(@RequestBody GoodsRequestData goodsRequestData) {
 		logger.debug("insert goods by jpa");
 
 		goodsRequestData.setAssortId(jpaCommonService.getAssortId(goodsRequestData)); // assort id 채번
-		GoodsResponseData responseObj = jpaGoodsService.sequenceInsertOrUpdateGoods(goodsRequestData);
+		GoodsResponseData responseData = jpaGoodsService.sequenceInsertOrUpdateGoods(goodsRequestData);
 
-		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseObj);
+		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
 
-		if(responseObj == null){
+		if(responseData == null){
+			return null;
+		}
+		return ResponseEntity.ok(res);
+	}
+
+	@GetMapping(path = "/insertget")
+	public ResponseEntity insertGoodsJpaByGet(@RequestParam String assrotId){
+		logger.debug("get insert detail page");
+
+		GoodsResponseData responseData = jpaGoodsService.getGoodsDetailPage(assrotId);
+
+		ApiResponseMessage res = new ApiResponseMessage("ok","success", responseData);
+		if(responseData == null){
 			return null;
 		}
 		return ResponseEntity.ok(res);
