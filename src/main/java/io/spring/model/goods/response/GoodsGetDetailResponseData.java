@@ -42,6 +42,8 @@ public class GoodsGetDetailResponseData {
         this.buySupplyDiscount = itasrt.getBuySupplyDiscount();
         this.buyExchangeRate = itasrt.getBuyExchangeRate();
         this.buyRrpIncrement = itasrt.getBuyRrpIncrement();
+        this.regDt = itasrt.getRegDt();
+        this.updDt = itasrt.getUpdDt();
     }
     private String code;
     private String message;
