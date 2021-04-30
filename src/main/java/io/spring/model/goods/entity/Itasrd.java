@@ -49,4 +49,9 @@ public class Itasrd {
     private Date regDt;
     @UpdateTimestamp
     private Date updDt;
+
+    // 연관 관계
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+    private Itasrt itasrt;
 }

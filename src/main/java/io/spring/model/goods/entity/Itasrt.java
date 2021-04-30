@@ -11,6 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 /**
  *  ITASRT table의 Entity
@@ -46,6 +47,7 @@ public class Itasrt {
 //		this.deliPrice = goodsRequestData.getDeliPrice();
 //		this.localPrice = goodsRequestData.getLocalPrice();
 //		this.localSale = goodsRequestData.getLocalSale();
+		this.localDeliFee = goodsInsertRequestData.getLocalDeliFee();
 		this.assortColor = goodsInsertRequestData.getAssortColor();
 		this.sellStaDt = goodsInsertRequestData.getSellStaDt();
 		this.sellEndDt = goodsInsertRequestData.getSellEndDt();
@@ -105,6 +107,7 @@ public class Itasrt {
 	private Float deliPrice;
 	@Column(nullable = true)
 	private Float localPrice;
+	private Float localDeliFee;
 	@Column(nullable = true)
 	private Float localSale; // itasrn에도 들어감
 	private String assortColor;
@@ -139,14 +142,29 @@ public class Itasrt {
 	private String optionUseYn;
 
 	//// 다른 테이블과 엮으면 나오는 프로퍼티들
-//	@OneToOne
-	@JoinColumn(name = "brand_id", referencedColumnName = "brand_id", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+	@JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@JsonIgnore
-	@ManyToOne(fetch = FetchType.LAZY) // 연관관계
-	private Itbrnd itbrnd;
-	@ManyToOne(fetch = FetchType.LAZY) // 연관관계
-	@JoinColumn(name = "disp_category_id", referencedColumnName = "category_id", insertable=false, updatable=false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
-	private Itcatg itcatg;
+	@OneToMany(fetch = FetchType.LAZY) // itvari 연관관계
+	private List<Itvari> itvariList;
+
+	@JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+	@JsonIgnore
+	@OneToMany(fetch = FetchType.LAZY) // ititmm 연관관계
+	private List<Ititmm> ititmmList;
+
+	@JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+	@OneToMany(fetch = FetchType.LAZY) // itasrd 연관관계
+	@JsonIgnore
+	private List<Itasrd> itasrdList;
+
+//	@OneToOne
+//	@JoinColumn(name = "brand_id", referencedColumnName = "brand_id", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+//	@JsonIgnore
+//	@ManyToOne(fetch = FetchType.LAZY) // 연관관계
+//	private Itbrnd itbrnd;
+//	@ManyToOne(fetch = FetchType.LAZY) // 연관관계
+//	@JoinColumn(name = "disp_category_id", referencedColumnName = "category_id", insertable=false, updatable=false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+//	private Itcatg itcatg;
 
 //	private String brandNm;
 //	private String categoryNm;

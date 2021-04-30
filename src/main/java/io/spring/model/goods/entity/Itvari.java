@@ -1,7 +1,7 @@
 package io.spring.model.goods.entity;
 
-import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.goods.idclass.ItvariId;
+import io.spring.model.goods.request.GoodsInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -65,8 +65,29 @@ public class Itvari {
     private Date regDt;
     @UpdateTimestamp
     private Date updDt;
-    @Column(nullable = true)
     private Long regId;
-    @Column(nullable = true)
     private Long updId;
+
+    // itasrt 연관 관계
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+    private Itasrt itasrt;
+
+//    // ititmm 연관 관계
+//    @OneToMany(fetch = FetchType.LAZY, targetEntity = Ititmm.class)
+//    @JoinColumns({
+//            @JoinColumn(name = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+//            @JoinColumn(name = "seq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+//    })
+////    @JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+//    private List<Ititmm> ititmm1;
+//
+//    // ititmm 연관 관계
+//    @OneToMany(fetch = FetchType.LAZY, targetEntity = Ititmm.class)
+//    @JoinColumns({
+//            @JoinColumn(name = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+//            @JoinColumn(name = "seq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+//    })
+////    @JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+//    private List<Ititmm> ititmm2;
 }

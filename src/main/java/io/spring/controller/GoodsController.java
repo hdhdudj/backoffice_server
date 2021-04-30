@@ -4,6 +4,7 @@ import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.model.goods.request.GoodsInsertRequestData;
+import io.spring.model.goods.response.GoodsGetDetailResponseData;
 import io.spring.model.goods.response.GoodsInsertResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.goods.JpaGoodsService;
@@ -72,7 +73,6 @@ public class GoodsController {
 		return null;
 	}
 	
-	
 	@PostMapping(path = "/insertpost")
 	public ResponseEntity insertGoodsJpa(@RequestBody GoodsInsertRequestData goodsInsertRequestData) {
 		logger.debug("insert goods by jpa");
@@ -88,11 +88,11 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 	}
 
-	@GetMapping(path = "/insertget")
-	public ResponseEntity insertGoodsJpaByGet(@RequestParam String assrotId){
-		logger.debug("get insert detail page");
+	@GetMapping(path = "/getgoodsdetail")
+	public ResponseEntity getGoodsJpaByGet(@RequestParam(required = true) String assortId){
+		logger.debug("get goods detail page");
 
-		GoodsInsertResponseData responseData = jpaGoodsService.getGoodsDetailPage(assrotId);
+		GoodsGetDetailResponseData responseData = jpaGoodsService.getGoodsDetailPage(assortId);
 
 		ApiResponseMessage res = new ApiResponseMessage("ok","success", responseData);
 		if(responseData == null){
@@ -101,6 +101,7 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 	}
 
+//	 jpa로 get list
 //	@GetMapping(path="/getgoodslist")
 //	public ResponseEntity getGoodsList(@RequestParam String shortageYn, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtBegin, @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @RequestParam Date regDtEnd){
 //		logger.debug("get goods list data");

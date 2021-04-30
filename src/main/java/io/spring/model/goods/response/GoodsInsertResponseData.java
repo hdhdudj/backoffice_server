@@ -40,7 +40,7 @@ public class GoodsInsertResponseData {
     @Setter
     public class Attributes{
         private String seq;
-        private String optionNm;
+        private String value;
         private String variationGb;
     }
 
@@ -48,7 +48,8 @@ public class GoodsInsertResponseData {
     @Setter
     public class Items{
         private String itemId;
-        private String color;
-        private String size;
+        private String value;
+        private String addPrice;
+        private String shortYn;
     }
 }

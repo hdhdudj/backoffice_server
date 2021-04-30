@@ -1,7 +1,7 @@
 package io.spring.model.goods.entity;
 
-import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.goods.idclass.ItitmmId;
+import io.spring.model.goods.request.GoodsInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,6 +45,27 @@ public class Ititmm {
     private Date regDt;
     @UpdateTimestamp
     private Date updDt;
+
+    // itasrt 연관 관계
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+    private Itasrt itasrt;
+
+    // itvari 연관 관계
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Itvari.class)
+    @JoinColumns({
+            @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+            @JoinColumn(name = "variationSeq1", referencedColumnName="seq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+    })
+    private Itvari itvari1;
+
+    // itvari 연관 관계
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Itvari.class)
+    @JoinColumns({
+            @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+            @JoinColumn(name = "variationSeq2", referencedColumnName="seq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+    })
+    private Itvari itvari2;
 
 //    private String orderLmtYn;
 //    private String orderLmtCnt;

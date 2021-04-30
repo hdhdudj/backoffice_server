@@ -23,7 +23,7 @@ public class GoodsInsertRequestData {
 	// itasrt
 	private String assortNm;
 	private String assortModel;
-	private String optionGbNm;
+	private String optionGbName;
 	private Float margin;
 	private String taxGb;
 	private String assortGb;
@@ -41,6 +41,7 @@ public class GoodsInsertRequestData {
 	private String manufactureNm;
 	private Float deliPrice;
 	private Float localPrice;
+	private Float localDeliFee;
 	private Float localSale; // itasrn에도 들어감
 	private String assortColor;
 	private Date sellStaDt;

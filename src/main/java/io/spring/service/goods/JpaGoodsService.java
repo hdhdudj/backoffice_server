@@ -5,6 +5,7 @@ import io.spring.jparepos.goods.*;
 import io.spring.model.common.entity.SequenceData;
 import io.spring.model.goods.entity.*;
 import io.spring.model.goods.request.GoodsInsertRequestData;
+import io.spring.model.goods.response.GoodsGetDetailResponseData;
 import io.spring.model.goods.response.GoodsInsertResponseData;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
@@ -82,23 +83,22 @@ public class JpaGoodsService {
         // ititmd에 item 이력 저장
         List<Ititmd> ititmdList = this.saveItemHistoryList(goodsInsertRequestData, ititmmList);
 
-        List<GoodsInsertResponseData.Attributes> attributesList = makeGoodsResponseAttributes(goodsInsertRequestData.getAssortId(), itvariList);
-        List<GoodsInsertResponseData.Items> itemsList = makeGoodsResponseItems(goodsInsertRequestData.getAssortId(), ititmmList);
+        List<GoodsInsertResponseData.Attributes> attributesList = makeGoodsResponseAttributes(itvariList);
+        List<GoodsInsertResponseData.Items> itemsList = makeGoodsResponseItems(ititmmList);
         return makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
     }
 
-    private List<GoodsInsertResponseData.Attributes> makeGoodsResponseAttributes(String assortId, List<Itvari> itvariList){
+    private List<GoodsInsertResponseData.Attributes> makeGoodsResponseAttributes(List<Itvari> itvariList){
         return null;
     }
 
-    private List<GoodsInsertResponseData.Items> makeGoodsResponseItems(String assortId, List<Ititmm> ititmm){
+    private List<GoodsInsertResponseData.Items> makeGoodsResponseItems(List<Ititmm> ititmm){
         return null;
     }
 
     private GoodsInsertResponseData makeGoodsInsertResponseData(GoodsInsertRequestData goodsInsertRequestData, List<GoodsInsertResponseData.Attributes> attributesList, List<GoodsInsertResponseData.Items> itemsList){
         GoodsInsertResponseData goodsInsertResponseData = GoodsInsertResponseData.builder().goodsInsertRequestData(goodsInsertRequestData)
                 .attributesList(attributesList).itemsList(itemsList).build();
-
         return goodsInsertResponseData;
     }
 
@@ -328,25 +328,6 @@ public class JpaGoodsService {
         }
 
         return ititmdList;
-//        for (Ititmm item: ititmmList) {
-//            Ititmd ititmd = jpaItitmdRepository.findByItemId(item.getItemId());//.orElseGet(()->null);//new Ititmd(goodsRequestData, item);
-//            if(ititmd == null){
-//                ititmd = new Ititmd(item);
-//            }
-//            else{
-//                Calendar cal = Calendar.getInstance();
-//                cal.setTime(new Date());
-//                cal.add(Calendar.SECOND, -1);
-//                ititmd.setEffEndDt(cal.getTime());
-//            }
-//            ititmd.setItemId(item.getItemId());
-////            ititmd.setEffStaDt(new Date()); // 임시로..
-////            ititmd.setEffEndDt(new Date());
-//            ititmd.setShortYn(item.getShortYn());
-//            ititmd.setUpdDt(new Date());
-//            ititmdList.add(ititmd);
-//            jpaItitmdRepository.save(ititmd);
-//        }
     }
 
     public void updateById(String goodsId, Itasrt goods) {
@@ -357,6 +338,87 @@ public class JpaGoodsService {
             jpaItasrtRepository.save(goods);
         }
     }
+
+    /**
+     * 21-04-29 Pecan
+     * assortId를 통해 detail 페이지를 구성하는 정보를 반환하는 함수
+     * @param assrotId
+     * @return GoodsResponseData
+     */
+    public GoodsGetDetailResponseData getGoodsDetailPage(String assrotId) {
+        Itasrt itasrt = jpaItasrtRepository.findById(assrotId).orElseGet(() -> null);
+        GoodsGetDetailResponseData goodsGetDetailResponseData = new GoodsGetDetailResponseData(itasrt);
+        List<GoodsGetDetailResponseData.Description> descriptions = makeDescriptions(itasrt.getItasrdList());
+        List<GoodsGetDetailResponseData.Attributes> attributesList = makeAttributesList(itasrt.getItvariList());
+        List<GoodsGetDetailResponseData.Items> itemsList = makeItemsList(itasrt.getItitmmList());
+        goodsGetDetailResponseData.setDescription(descriptions);
+        goodsGetDetailResponseData.setAttributes(attributesList);
+        goodsGetDetailResponseData.setItems(itemsList);
+        return goodsGetDetailResponseData;
+    }
+    // ititmm -> items 형태로 바꿔주는 함수
+    private List<GoodsGetDetailResponseData.Items> makeItemsList(List<Ititmm> ititmmList) {
+        List<GoodsGetDetailResponseData.Items> itemsList = new ArrayList<>();
+        for(Ititmm ititmm : ititmmList){
+            GoodsGetDetailResponseData.Items item = new GoodsGetDetailResponseData.Items();
+            item.setItemId(ititmm.getItemId());
+            item.setValue(ititmm.getItvari1().getOptionNm()+"^|^"+ititmm.getItvari2().getOptionNm());
+            item.setAddPrice(ititmm.getAddPrice());
+            item.setShortYn(ititmm.getShortYn());
+            itemsList.add(item);
+        }
+        return itemsList;
+    }
+
+    // itvari -> attributes 형태로 바꿔주는 함수
+    private List<GoodsGetDetailResponseData.Attributes> makeAttributesList(List<Itvari> itvariList) {
+        List<GoodsGetDetailResponseData.Attributes> attributesList = new ArrayList<>();
+        for(Itvari itvari : itvariList){
+            GoodsGetDetailResponseData.Attributes attr = new GoodsGetDetailResponseData.Attributes();
+            attr.setSeq(itvari.getSeq());
+            attr.setValue(itvari.getOptionNm());
+            attr.setVariationGb(itvari.getOptionGb());
+            attributesList.add(attr);
+        }
+        return attributesList;
+    }
+
+    // itasrd -> description 형태로 바꿔주는 함수
+    private List<GoodsGetDetailResponseData.Description> makeDescriptions(List<Itasrd> itasrdList) {
+        List<GoodsGetDetailResponseData.Description> descriptionList = new ArrayList<>();
+        for(Itasrd itasrd : itasrdList){
+            GoodsGetDetailResponseData.Description desc = new GoodsGetDetailResponseData.Description();
+            desc.setSeq(itasrd.getSeq());
+            desc.setOrdDetCd(itasrd.getOrdDetCd());
+            desc.setTextHtmlGb(itasrd.getTextHtmlGb());
+            desc.setMemo(itasrd.getMemo());
+            descriptionList.add(desc);
+        }
+        return descriptionList;
+    }
+
+    /**
+     * 21-04-29 Pecan
+     * brandId, dispCategoryId, regDt, shortageYn, (이상 itasrt) dispCategoryId(itcatg), brandId(itbrnd) 로 list 목록 가져오는 함수
+     * @param shortageYn, RegDtBegin, regDtEnd
+     * @return GoodsResponseData
+     */
+    public GoodsInsertResponseData getGoodsList(String shortageYn, Date regDtBegin, Date regDtEnd) {
+        List<Object[]> goodsList = jpaItasrtRepository.getGoodsList(shortageYn, regDtBegin, regDtEnd);
+        for (Object[] goods : goodsList){
+            for (int i = 0; i < goods.length; i++) {
+                System.out.print(" " + goods[i] + " ");
+            }
+
+            System.out.println("");
+        }
+        GoodsInsertResponseData goodsInsertResponseData = null;//makeGoodsSelectListResponseData(goodsList);
+        return goodsInsertResponseData;
+    }
+
+//    private GoodsInsertResponseData makeGoodsSelectListResponseData(List<Itasrt> goodsList) {
+//        return null;
+//    }
 
     /**
      * Table 초기화 함수
@@ -393,39 +455,5 @@ public class JpaGoodsService {
             logger.debug(e.getMessage());
         }
         return calcRes;
-    }
-
-    /**
-     * 21-04-29 Pecan
-     * assortId를 통해 detail 페이지를 구성하는 정보를 반환하는 함수
-     * @param assrotId
-     * @return GoodsResponseData
-     */
-    public GoodsInsertResponseData getGoodsDetailPage(String assrotId) {
-
-        return null;
-    }
-
-    /**
-     * 21-04-29 Pecan
-     * brandId, dispCategoryId, regDt, shortageYn, (이상 itasrt) dispCategoryId(itcatg), brandId(itbrnd) 로 list 목록 가져오는 함수
-     * @param shortageYn, RegDtBegin, regDtEnd
-     * @return GoodsResponseData
-     */
-    public GoodsInsertResponseData getGoodsList(String shortageYn, Date regDtBegin, Date regDtEnd) {
-        List<Object[]> goodsList = jpaItasrtRepository.getGoodsList(shortageYn, regDtBegin, regDtEnd);
-        for (Object[] goods : goodsList){
-            for (int i = 0; i < goods.length; i++) {
-                System.out.print(" " + goods[i] + " ");
-            }
-
-            System.out.println("");
-        }
-        GoodsInsertResponseData goodsInsertResponseData = null;//makeGoodsSelectListResponseData(goodsList);
-        return goodsInsertResponseData;
-    }
-
-    private GoodsInsertResponseData makeGoodsSelectListResponseData(List<Itasrt> goodsList) {
-        return null;
     }
 }

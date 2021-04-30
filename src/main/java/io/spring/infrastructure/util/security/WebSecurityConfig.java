@@ -49,6 +49,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.POST, "/goods/insert").permitAll()
 				.antMatchers(HttpMethod.POST, "/goods/inserttest").permitAll()
 				.antMatchers(HttpMethod.POST, "/goods/inittables").permitAll()
+				.antMatchers(HttpMethod.GET, "/goods/getgoodsdetail").permitAll()
 				.antMatchers(HttpMethod.GET, "/goods/getgoodslistmybatis").permitAll()
 				//
 				.antMatchers(AUTH_WHITELIST).permitAll()
