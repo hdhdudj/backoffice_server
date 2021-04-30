@@ -51,7 +51,7 @@ public class Ititmm {
     @JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     private Itasrt itasrt;
 
-    // itvari 연관 관계
+    // itvari 연관 관계 (일단 단방향)
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Itvari.class)
     @JoinColumns({
             @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
@@ -59,7 +59,7 @@ public class Ititmm {
     })
     private Itvari itvari1;
 
-    // itvari 연관 관계
+    // itvari 연관 관계 (일단 단방향)
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Itvari.class)
     @JoinColumns({
             @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
