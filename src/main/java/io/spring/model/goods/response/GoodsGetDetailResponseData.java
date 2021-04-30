@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 import java.util.List;
@@ -45,9 +47,11 @@ public class GoodsGetDetailResponseData {
     private String message;
     // itasrt, itvari, itasrd 공통
     private String assortId;
+    @CreationTimestamp
     private Date regDt;
     private String regId;
     private String updId;
+    @UpdateTimestamp
     private Date updDt;
 
     // itasrt
