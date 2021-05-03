@@ -1,8 +1,5 @@
 package io.spring.model.purchase.request;
 
-<<<<<<< HEAD
-public class PurchaseInsertRequest {
-=======
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -82,5 +79,4 @@ public class PurchaseInsertRequest {
     private Long tempIndicateQty;
     private Long tempQty;
     private Float stockAmt;
->>>>>>> f7b8e53dc986ee7251cedee8b65bee1f84b3392d
 }

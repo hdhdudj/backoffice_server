@@ -1,5 +1,6 @@
 package io.spring.service.goods;
 
+import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.goods.*;
 import io.spring.model.common.entity.SequenceData;
@@ -7,7 +8,6 @@ import io.spring.model.goods.entity.*;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.goods.response.GoodsGetDetailResponseData;
 import io.spring.model.goods.response.GoodsInsertResponseData;
-import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -191,7 +191,7 @@ public class JpaGoodsService {
                     seq = fourStartCd;
                 }
                 else{ // insert -> 찬 테이블
-                    seq = plusOne(seq, 4);
+                    seq = Utilities.plusOne(seq, 4);
                 }
                 itasrd.setSeq(seq);
             }
@@ -227,7 +227,7 @@ public class JpaGoodsService {
                     seq = fourStartCd;
                 }
                 else{ // max값 따옴 -> seq++
-                    seq = plusOne(seq, 4);
+                    seq = Utilities.plusOne(seq, 4);
                 }
                 itvari.setSeq(seq);
             }
@@ -261,7 +261,7 @@ public class JpaGoodsService {
                     itemId = fourStartCd;
                 }
                 else { // jpa에서 max값을 가져온 경우 1을 더한 후 item id로 삼음
-                    itemId = plusOne(itemId, 4);
+                    itemId = Utilities.plusOne(itemId, 4);
                 }
                 ititmm.setItemId(itemId);
             }
@@ -271,7 +271,6 @@ public class JpaGoodsService {
             String[] optionNmList = item.getValue().split(splitGb);
             // itvari에서 옵션 형질 찾아오기
             for(String optionNm : optionNmList){
-                System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ"+ goodsInsertRequestData.getAssortId()+" "+optionNm);
                 Itvari op = jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), optionNm);
                 String opGb = op.getOptionGb();
                 if(opGb.equals(gbOne)){ // optionGb이 01인 경우
@@ -436,24 +435,4 @@ public class JpaGoodsService {
         jpaSequenceDataRepository.save(seq);
     }
 
-    /**
-     * 21-04-25 Pecan
-     * 유틸 함수 : "009"를 받아 정수화해서 1을 더한 후 "010"으로 return
-     * @param calcNeedStringNumber
-     * @param length
-     * @return String
-     */
-    private String plusOne(String calcNeedStringNumber, int length){ // 들어온 string의 숫자는 정수여야 함
-        if(calcNeedStringNumber == null){
-            return null;
-        }
-        String calcRes = "";
-        try{
-            calcRes = StringUtils.leftPad(Long.toString((long)Double.parseDouble(calcNeedStringNumber) + 1), length, '0');
-        }
-        catch(Exception e){
-            logger.debug(e.getMessage());
-        }
-        return calcRes;
-    }
 }
