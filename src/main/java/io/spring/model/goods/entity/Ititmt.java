@@ -32,7 +32,7 @@ public class Ititmt {
     @Id
     private Date effEndDt;
     @Id
-    @CreationTimestamp
+//    @CreationTimestamp
     private Date effStaDt;
     private String stockGb;
     private Long tempIndicateQty;
@@ -41,9 +41,9 @@ public class Ititmt {
     private String vendorId;
     private String siteGb;
     private Long regId;
+    private Long updId;
     @CreationTimestamp
     private Date regDt;
-    private Long updId;
     @UpdateTimestamp
     private Date updDt;
 }

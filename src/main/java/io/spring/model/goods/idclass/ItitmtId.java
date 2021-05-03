@@ -2,7 +2,6 @@ package io.spring.model.goods.idclass;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -16,6 +15,6 @@ public class ItitmtId implements Serializable {
     private String itemId;
     private String itemGrade;
     private Date effEndDt;
-    @CreationTimestamp
-    private Date effStaDt;
+//    @CreationTimestamp
+//    private Date effStaDt;
 }
