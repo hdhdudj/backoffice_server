@@ -21,6 +21,14 @@ import java.util.Date;
 @IdClass(ItitmtId.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Ititmt {
+    public Ititmt(ItitmtId ititmtId){
+        this.storageId = ititmtId.getStorageId();
+        this.assortId = ititmtId.getAssortId();
+        this.itemId = ititmtId.getItemId();
+        this.itemGrade = ititmtId.getItemGrade();
+        this.effEndDt = ititmtId.getEffEndDt();
+        this.effStaDt = ititmtId.getEffStaDt();
+    }
     @Id
     private String storageId;
     @Id
@@ -32,7 +40,6 @@ public class Ititmt {
     @Id
     private Date effEndDt;
     @Id
-//    @CreationTimestamp
     private Date effStaDt;
     private String stockGb;
     private Long tempIndicateQty;

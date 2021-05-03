@@ -33,9 +33,9 @@ public class Lsdpsp {
     private String planChgReason;
     private String claimItemYn;
     private Long regId;
+    private Long updId;
     @CreationTimestamp
     private Date regDt;
-    private Long updId;
     @UpdateTimestamp
     private Date updDt;
 }

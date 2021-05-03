@@ -28,9 +28,9 @@ public class Lspchb {
     private String purchaseStatus;
     private String cancelGb;
     private Long regId;
+    private Long updId;
     @CreationTimestamp
     private Date regDt;
-    private Long updId;
     @UpdateTimestamp
     private Date updDt;
 }
