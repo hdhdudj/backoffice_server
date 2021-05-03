@@ -1,15 +1,15 @@
 package io.spring.model.purchase.request;
 
-import lombok.AccessLevel;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+//@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PurchaseInsertRequest {
     /**
      * 21-05-03 Pecan
@@ -26,10 +26,11 @@ public class PurchaseInsertRequest {
     private String itemGrade; // lspchd, ititmt
 
     // lspchm
-    private Date purchaseDt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
+    private Date purchaseDt ;
     private String purchaseRemark;
-    private String siteOrderno;
-    private String siteTrackno;
+    private String siteOrderNo;
+    private String siteTrackNo;
     private Long localPrice;
     private Long newLocalPrice;
     private Long localDeliFee;
@@ -46,6 +47,7 @@ public class PurchaseInsertRequest {
     private String delivery;
     private String payment;
     private String carrier;
+    private List<Items> items;
 
     // lspchs
     private Date effStaDt;
@@ -53,8 +55,8 @@ public class PurchaseInsertRequest {
     // lspchd
     private String purchaseSeq;
     private Long purchaseQty;
-    private Float purchaseUnitamt;
-    private Float purchaseItemamt;
+    private Float purchaseUnitAmt;
+    private Float purchaseItemAmt;
     private String vatGb;
     private String setGb;
     private String mailsendYn;
@@ -79,4 +81,14 @@ public class PurchaseInsertRequest {
     private Long tempIndicateQty;
     private Long tempQty;
     private Float stockAmt;
+
+    @Getter
+    @Setter
+    public static class Items{
+        private String assortId;
+        private String itemId;
+        private Long purchaseQty;
+        private Float purchaseUnitAmt;
+        private String purchaseStatus;
+    }
 }

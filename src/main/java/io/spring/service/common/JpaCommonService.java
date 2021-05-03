@@ -1,8 +1,10 @@
 package io.spring.service.common;
 
 import io.spring.dao.common.MyBatisCommonDao;
+import io.spring.infrastructure.util.StringFactory;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.model.goods.request.GoodsInsertRequestData;
+import io.spring.model.purchase.request.PurchaseInsertRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +47,17 @@ public class JpaCommonService {
 		Object r = em1.createNativeQuery("SELECT nextval('" + sequenceName + "')").getSingleResult(); // jpa로 부르기
         logger.debug("nextVal : ", r.toString());
         return StringUtils.leftPad(r.toString(), 9, '0');
+    }
+
+    public String getPurchaseNo(@NotNull PurchaseInsertRequest purchaseInsertRequest, String sequenceName){
+        System.out.println("----------------------------- : " + purchaseInsertRequest.getPurchaseNo());
+        if (purchaseInsertRequest.getPurchaseNo() != null && !purchaseInsertRequest.getPurchaseNo().equals("")) { // 기존 리퀘스트에 purchaseNo가 존재하는 경우 그대로 돌려보냄
+            return purchaseInsertRequest.getPurchaseNo();
+        }
+        Object r = em1.createNativeQuery("SELECT nextval('" + sequenceName + "')").getSingleResult(); // jpa로 부르기
+        logger.debug("nextVal : ", r.toString());
+        String returnStr = StringUtils.leftPad(r.toString(), 8, '0');
+        return StringFactory.getCUpperStr() + returnStr;
     }
 
 

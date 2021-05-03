@@ -1,15 +1,20 @@
 package io.spring.model.purchase.entity;
 
+import io.spring.infrastructure.util.StringFactory;
+import io.spring.model.purchase.request.PurchaseInsertRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Entity
@@ -18,6 +23,40 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lspchm {
+    private final static Logger logger = LoggerFactory.getLogger(Lspchm.class);
+    public Lspchm(PurchaseInsertRequest purchaseInsertRequest){
+        this.purchaseNo = purchaseInsertRequest.getPurchaseNo();
+        this.purchaseDt = purchaseInsertRequest.getPurchaseDt();
+        try{
+            this.effEndDt = new SimpleDateFormat().parse("9999-12-31 23:59:59");
+        }
+        catch (Exception e){
+            logger.debug(e.getMessage());
+        }
+        this.purchaseStatus = purchaseInsertRequest.getPurchaseStatus(); // 01 : 발주, 05 : 취소
+        this.purchaseRemark = purchaseInsertRequest.getPurchaseRemark();
+        this.siteGb = StringFactory.getGbOne(); // "01"
+        this.vendorId = StringFactory.getFourStartCd(); // "0001"
+        this.siteOrderNo = purchaseInsertRequest.getSiteOrderNo();
+        this.siteTrackNo = purchaseInsertRequest.getSiteTrackNo();
+        this.localPrice = purchaseInsertRequest.getLocalPrice();
+        this.newLocalPrice = this.localPrice;
+        this.localDeliFee = purchaseInsertRequest.getLocalDeliFee();
+        this.newLocalDeliFee = this.localDeliFee;
+        this.localTax = purchaseInsertRequest.getLocalTax();
+        this.newLocalTax = this.localTax;
+        this.disPrice = purchaseInsertRequest.getDisPrice();
+        this.newDisPrice = this.disPrice;
+        this.purchaseGb = StringFactory.getGbOne(); // "01" : 일반발주
+        this.purchaseVendorId = purchaseInsertRequest.getPurchaseVendorId();
+        this.storeCd = purchaseInsertRequest.getStoreCd(); // "00001"
+        this.oStoreCd = purchaseInsertRequest.getOStoreCd();
+        this.terms = purchaseInsertRequest.getTerms();
+        this.delivery = purchaseInsertRequest.getDelivery();
+        this.payment = purchaseInsertRequest.getPayment();
+        this.carrier = purchaseInsertRequest.getCarrier();
+
+    }
     @Id
     private String purchaseNo;
     @CreationTimestamp
@@ -28,8 +67,8 @@ public class Lspchm {
     private String siteGb;
     private String vendorId;
     private String dealtypeCd;
-    private String siteOrderno;
-    private String siteTrackno;
+    private String siteOrderNo;
+    private String siteTrackNo;
     private String purchaseCustNm;
     private Long localPrice;
     private Long newLocalPrice;
