@@ -15,14 +15,19 @@ public class PurchaseInsertRequest {
      * 21-05-03 Pecan
      * 발주 insert request dto
       */
-    // lspchd
-    private String purchaseNo; // lspchs
+    // 여러 테이블에서 쓰는 변수
+    private String purchaseNo; // lspchm, lspchs
+    private String purchaseStatus; // lspchm, lspchs, lspchb
+    private Date effEndDt; // lspchm, lspchs
+    private String siteGb; // lspchm, ititmt
+    private String vendorId; // lspchm, ititmt
+    private String assortId; // lspchd, lsdpsp, ititmt
+    private String itemId; // lspchd, lsdpsp
+    private String itemGrade; // lspchd, ititmt
+
+    // lspchm
     private Date purchaseDt;
-    private Date effEndDt; // lspchs
-    private String purchaseStatus; // lspchs, lspchb
     private String purchaseRemark;
-    private String siteGb; // ititmt
-    private String vendorId; // ititmt
     private String siteOrderno;
     private String siteTrackno;
     private Long localPrice;
@@ -47,12 +52,9 @@ public class PurchaseInsertRequest {
 
     // lspchd
     private String purchaseSeq;
-    private String assortId; // lsdpsp, ititmt
-    private String itemId; // lsdpsp
     private Long purchaseQty;
     private Float purchaseUnitamt;
     private Float purchaseItemamt;
-    private String itemGrade; // ititmt
     private String vatGb;
     private String setGb;
     private String mailsendYn;
