@@ -23,12 +23,11 @@ public class JpaCommonService {
 	@Autowired
 	private EntityManager em1;
 
-    private final String seqStr = "seq";
-    private final String seqItasrtStr = "seq_ITASRT";
-    private final String seqNameStr = "seqName";
-    private final String nextvalStr = "nextval";
+//    private final String seqStr = "seq";
+//    private final String seqNameStr = "seqName";
+//    private final String nextvalStr = "nextval";
 
-    public String getAssortId(@NotNull GoodsInsertRequestData goodsInsertRequestData) {
+    public String getAssortId(@NotNull GoodsInsertRequestData goodsInsertRequestData, String sequenceName) {
 		if (goodsInsertRequestData.getAssortId() != null && !goodsInsertRequestData.getAssortId().equals("")) { // 기존 리퀘스트에 assort id가 존재하는 경우 그대로 돌려보냄
             return goodsInsertRequestData.getAssortId();
         }
@@ -43,7 +42,7 @@ public class JpaCommonService {
 //		HashMap<String, Object> x1 = myBatisCommonDao.getSequence(arr); // max + 1 리턴
 //        String assortId = StringUtils.leftPad(Long.toString((long)x1.get(nextvalStr)), 9, '0');
 //        itasrt.setAssortId(assortId);
-		Object r = em1.createNativeQuery("SELECT nextval('" + seqItasrtStr + "')").getSingleResult(); // jpa로 부르기
+		Object r = em1.createNativeQuery("SELECT nextval('" + sequenceName + "')").getSingleResult(); // jpa로 부르기
         logger.debug("nextVal : ", r.toString());
         return StringUtils.leftPad(r.toString(), 9, '0');
     }

@@ -3,6 +3,7 @@ package io.spring.controller;
 import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
+import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.goods.response.GoodsGetDetailResponseData;
 import io.spring.model.goods.response.GoodsInsertResponseData;
@@ -77,7 +78,7 @@ public class GoodsController {
 	public ResponseEntity insertGoodsJpa(@RequestBody GoodsInsertRequestData goodsInsertRequestData) {
 		logger.debug("insert goods by jpa");
 
-		goodsInsertRequestData.setAssortId(jpaCommonService.getAssortId(goodsInsertRequestData)); // assort id 채번
+		goodsInsertRequestData.setAssortId(jpaCommonService.getAssortId(goodsInsertRequestData, StringFactory.getSeqItasrtStr())); // assort id 채번
 		GoodsInsertResponseData responseData = jpaGoodsService.sequenceInsertOrUpdateGoods(goodsInsertRequestData);
 
 		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);

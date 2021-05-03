@@ -1,5 +1,6 @@
 package io.spring.service.goods;
 
+import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.goods.*;
@@ -22,12 +23,7 @@ import java.util.*;
 public class JpaGoodsService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final String threeStartCd = "001";
-    private final String fourStartCd = "0001";
-//    private final String nineStartCd = "000000001";
-    private final String gbOne = "01";
-    private final String gbTwo = "02";
-    private final String splitGb = "\\^\\|\\^";
+
 
     @Autowired
     private JpaItasrtRepository jpaItasrtRepository;
@@ -188,7 +184,7 @@ public class JpaGoodsService {
             if(seq == null || seq.trim().equals("")){ // insert
                 seq = jpaItasrdRepository.findMaxSeqByAssortId(goodsInsertRequestData.getAssortId());
                 if (seq == null || seq.trim().equals("")) { // insert -> 빈 테이블
-                    seq = fourStartCd;
+                    seq = StringFactory.getFourStartCd();//fourStartCd;
                 }
                 else{ // insert -> 찬 테이블
                     seq = Utilities.plusOne(seq, 4);
@@ -224,7 +220,7 @@ public class JpaGoodsService {
             if(seq == null || seq.trim().equals("")){ // seq가 존재하지 않는 경우 == 새로운 itvari INSERT -> seq max 값 따와야 함
                 seq = jpaItvariRepository.findMaxSeqByAssortId(goodsInsertRequestData.getAssortId());
                 if(seq == null){ // max값이 없음 -> 해당 assort id에서 첫 insert
-                    seq = fourStartCd;
+                    seq = StringFactory.getFourStartCd();//fourStartCd;
                 }
                 else{ // max값 따옴 -> seq++
                     seq = Utilities.plusOne(seq, 4);
@@ -258,7 +254,7 @@ public class JpaGoodsService {
             if(itemId == null || itemId.trim().equals("")){ // 객체에 item id가 없으면 jpa에서 max값을 가져옴
                 itemId = jpaItitmmRepository.findMaxItemIdByAssortId(goodsInsertRequestData.getAssortId());
                 if(itemId == null || itemId.trim().equals("")){ // jpa에서 max값을 가져왔는데 null이면 해당 assort id에 item id가 존재하지 않으므로 초기값(0001)을 설정
-                    itemId = fourStartCd;
+                    itemId = StringFactory.getFourStartCd();
                 }
                 else { // jpa에서 max값을 가져온 경우 1을 더한 후 item id로 삼음
                     itemId = Utilities.plusOne(itemId, 4);
@@ -268,16 +264,16 @@ public class JpaGoodsService {
             else{ // 객체에 item id가 있으면 해당 객체가 이미 존재하므로 객체를 가져옴 (update)
                 ititmm = jpaItitmmRepository.findByAssortIdAndItemId(goodsInsertRequestData.getAssortId(), itemId);
             }
-            String[] optionNmList = item.getValue().split(splitGb);
+            String[] optionNmList = item.getValue().split(StringFactory.getSplitGb());
             // itvari에서 옵션 형질 찾아오기
             for(String optionNm : optionNmList){
                 Itvari op = jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), optionNm);
                 String opGb = op.getOptionGb();
-                if(opGb.equals(gbOne)){ // optionGb이 01인 경우
+                if(opGb.equals(StringFactory.getGbOne())){ // optionGb이 01인 경우
                     ititmm.setVariationGb1(opGb);
                     ititmm.setVariationSeq1(op.getSeq());
                 }
-                else if(opGb.equals(gbTwo)){ // optionGb이 02인 경우
+                else if(opGb.equals(StringFactory.getGbTwo())){ // optionGb이 02인 경우
                     ititmm.setVariationGb2(opGb);
                     ititmm.setVariationSeq2(op.getSeq());
                 }

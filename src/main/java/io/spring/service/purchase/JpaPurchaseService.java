@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class JpaPurchaseService {
@@ -28,11 +29,15 @@ public class JpaPurchaseService {
     private JpaItitmtRepository jpaItitmtRepository;
 
     /**
-     *
+     * 21-05-03 Pecan
+     * 발주 insert/update 시퀀스 함수
      * @param purchaseInsertRequest
-     * @return
+     * @return String
      */
+    @Transactional
     public String savePurchaseSquence(PurchaseInsertRequest purchaseInsertRequest) {
+        // purchaseNo 채번
+        
         // lspchm (발주마스터)
         Lspchm lspchm = this.saveLspchm(purchaseInsertRequest);
         // lspchs (발주 상태 이력)
@@ -45,7 +50,7 @@ public class JpaPurchaseService {
         Lsdpsp lsdpsp = this.saveLsdpsp(purchaseInsertRequest);
         // ititmt (예정 재고)
         Ititmt ititmt = this.saveItitmt(purchaseInsertRequest);
-        return lspchd.getAssortId();
+        return lspchm.getPurchaseNo();
     }
 
     private Lspchm saveLspchm(PurchaseInsertRequest purchaseInsertRequest) {
