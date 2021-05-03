@@ -16,6 +16,7 @@ import java.util.Date;
 @Entity
 @Getter
 @Setter
+@Table(name="ititmd")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Ititmd {
     private final static Logger logger = LoggerFactory.getLogger(Ititmd.class);

@@ -45,12 +45,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.POST, "/testa").permitAll()
 				.antMatchers(HttpMethod.GET, "/order/orders").permitAll()
 				//
-				.antMatchers(HttpMethod.GET, "/goods/select").permitAll()
-				.antMatchers(HttpMethod.POST, "/goods/insert").permitAll()
-				.antMatchers(HttpMethod.POST, "/goods/inserttest").permitAll()
-				.antMatchers(HttpMethod.POST, "/goods/inittables").permitAll()
-				.antMatchers(HttpMethod.GET, "/goods/getgoodsdetail").permitAll()
-				.antMatchers(HttpMethod.GET, "/goods/getgoodslistmybatis").permitAll()
+				.antMatchers(HttpMethod.GET, "/goods/*").permitAll()
+				.antMatchers(HttpMethod.POST, "/goods/*").permitAll()
+				.antMatchers(HttpMethod.GET, "/purchase/*").permitAll()
+				.antMatchers(HttpMethod.POST, "/purchase/*").permitAll()
 				//
 				.antMatchers(AUTH_WHITELIST).permitAll()
 				.antMatchers(HttpMethod.GET, "/articles/**", "/profiles/**", "/tags").permitAll().anyRequest()
