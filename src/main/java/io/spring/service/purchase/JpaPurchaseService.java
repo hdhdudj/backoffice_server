@@ -1,6 +1,7 @@
 package io.spring.service.purchase;
 
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
 import io.spring.jparepos.purchase.*;
@@ -16,9 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class JpaPurchaseService {
@@ -120,9 +119,27 @@ public class JpaPurchaseService {
         return lspchs;
     }
 
-    private Lspchd saveLspchd(PurchaseInsertRequest purchaseInsertRequest) {
-
-        return null;
+    private List<Lspchd> saveLspchd(PurchaseInsertRequest purchaseInsertRequest) {
+        List<Lspchd> lspchdList = new ArrayList<>();
+        for(PurchaseInsertRequest.Items item : purchaseInsertRequest.getItems()){
+            Lspchd lspchd = jpaLspchdRepository.findByAssortIdAndItemId(item.getAssortId(), item.getItemId());
+            if(lspchd == null){
+                String purchaseSeq = jpaLspchdRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequest.getPurchaseNo());
+                if(purchaseSeq == null){
+                    purchaseSeq = StringFactory.getFourStartCd();
+                }
+                else {
+                    purchaseSeq = Utilities.plusOne(purchaseSeq, 4);
+                }
+                lspchd = new Lspchd(purchaseInsertRequest.getPurchaseNo(), purchaseSeq);
+            }
+            lspchd.setPurchaseQty(item.getPurchaseQty());
+            lspchd.setPurchaseUnitAmt(item.getPurchaseUnitAmt());
+            lspchd.setAssortId(item.getAssortId());
+            lspchd.setItemId(item.getItemId());
+            lspchdList.add(lspchd);
+        }
+        return lspchdList;
     }
 
     private Lspchb saveLspchb(PurchaseInsertRequest purchaseInsertRequest) {

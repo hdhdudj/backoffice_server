@@ -21,6 +21,10 @@ import java.util.Date;
 @IdClass(LspchdId.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lspchd {
+    public Lspchd(String purchaseNo, String purchaseSeq){
+        this.purchaseNo = purchaseNo;
+        this.purchaseSeq = purchaseSeq;
+    }
     @Id
     private String purchaseNo;
     @Id
@@ -28,8 +32,8 @@ public class Lspchd {
     private String assortId;
     private String itemId;
     private Long purchaseQty;
-    private Float purchaseUnitamt;
-    private Float purchaseItemamt;
+    private Float purchaseUnitAmt;
+    private Float purchaseItemAmt;
     private String itemGrade;
     private String vatGb;
     private String setGb;
