@@ -53,7 +53,7 @@ public class JpaPurchaseService {
         // lspchs (발주 상태 이력)
         Lspchs lspchs = this.saveLspchs(purchaseInsertRequest);
         // lspchd (발주 디테일)
-        Lspchd lspchd = this.saveLspchd(purchaseInsertRequest);
+        List<Lspchd> lspchd = this.saveLspchd(purchaseInsertRequest);
         // lspchb (발주 디테일 이력)
         Lspchb lspchb = this.saveLspchb(purchaseInsertRequest);
         // lsdpsp (입고 예정)
