@@ -122,8 +122,8 @@ public class JpaPurchaseService {
     private List<Lspchd> saveLspchd(PurchaseInsertRequest purchaseInsertRequest) {
         List<Lspchd> lspchdList = new ArrayList<>();
         for(PurchaseInsertRequest.Items item : purchaseInsertRequest.getItems()){
-            Lspchd lspchd = jpaLspchdRepository.findByAssortIdAndItemId(item.getAssortId(), item.getItemId());
-            if(lspchd == null){
+            Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequest.getPurchaseNo(), item.getPurchaseSeq());
+            if(lspchd == null){ // insert
                 String purchaseSeq = jpaLspchdRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequest.getPurchaseNo());
                 if(purchaseSeq == null){
                     purchaseSeq = StringFactory.getFourStartCd();
@@ -147,14 +147,7 @@ public class JpaPurchaseService {
         List<Lspchb> lspchbList = new ArrayList<>();
         Date effEndDt = null;
         for(PurchaseInsertRequest.Items items: purchaseInsertRequest.getItems()){
-            try
-            {
-                effEndDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("9999-12-31 23:59:59"); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
-            }
-            catch (Exception e){
-                logger.debug(e.getMessage());
-            }
-            Lspchb lspchb = jpaLspchbRepository.findByPurchaseNoAndEffEndDt(purchaseInsertRequest.getPurchaseNo(), effEndDt);
+            Lspchb lspchb = jpaLspchbRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequest.getPurchaseNo(), items.getPurchaseSeq());
             if(lspchb == null){ // insert
                 lspchb = new Lspchb(purchaseInsertRequest);
                 String purchaseSeq = jpaLspchbRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequest.getPurchaseNo());
@@ -166,8 +159,16 @@ public class JpaPurchaseService {
                 }
                 lspchb.setPurchaseSeq(purchaseSeq);
             }
-            lspchb.setPurchaseNo(StringFactory.getNinetyNine());
-            lspchb.setEffEndDt(new Date());
+            else{ // update
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(new Date());
+                cal.add(Calendar.SECOND, -1);
+                lspchb.setEffEndDt(cal.getTime());
+                // update 후 새 이력 insert
+                Lspchb newLspchb = new Lspchb(lspchb);
+                jpaLspchbRepository.save(newLspchb);
+            }
+            lspchb.setPurchaseNo(purchaseInsertRequest.getPurchaseNo());
             lspchb.setPurchaseStatus(purchaseInsertRequest.getPurchaseStatus());
             lspchb.setCancelGb(StringFactory.getNinetyNine());
             jpaLspchbRepository.save(lspchb);

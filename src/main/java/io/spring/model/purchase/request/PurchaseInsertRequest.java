@@ -87,6 +87,7 @@ public class PurchaseInsertRequest {
     public static class Items{
         private String assortId;
         private String itemId;
+        private String purchaseSeq;
         private Long purchaseQty;
         private Float purchaseUnitAmt;
         private String purchaseStatus;

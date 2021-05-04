@@ -28,7 +28,7 @@ public class Lspchm {
         this.purchaseNo = purchaseInsertRequest.getPurchaseNo();
         this.purchaseDt = purchaseInsertRequest.getPurchaseDt();
         try{
-            this.effEndDt = new SimpleDateFormat().parse("9999-12-31 23:59:59");
+            this.effEndDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("9999-12-31 23:59:59");
         }
         catch (Exception e){
             logger.debug(e.getMessage());

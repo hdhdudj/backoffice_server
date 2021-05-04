@@ -12,5 +12,5 @@ public interface JpaLspchdRepository extends JpaRepository<Lspchd, LspchdId> {
     List<Lspchs> findByPurchaseNo(String purchaseNo);
     @Query("select max(l.purchaseSeq) as maxVal from Lspchd as l where l.purchaseNo = ?1")
     String findMaxPurchaseSeqByPurchaseNo(String purchaseNo);
-    Lspchd findByAssortIdAndItemId(String assortId, String itemId);
+    Lspchd findByPurchaseNoAndPurchaseSeq(String purchaseNo, String purchaseSeq);
 }
