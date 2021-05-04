@@ -53,9 +53,9 @@ public class JpaPurchaseService {
         // lspchs (발주 상태 이력)
         Lspchs lspchs = this.saveLspchs(purchaseInsertRequest);
         // lspchd (발주 디테일)
-        List<Lspchd> lspchd = this.saveLspchd(purchaseInsertRequest);
+        List<Lspchd> lspchdList = this.saveLspchd(purchaseInsertRequest);
         // lspchb (발주 디테일 이력)
-        Lspchb lspchb = this.saveLspchb(purchaseInsertRequest);
+        List<Lspchb> lspchbList = this.saveLspchb(purchaseInsertRequest);
         // lsdpsp (입고 예정)
         Lsdpsp lsdpsp = this.saveLsdpsp(purchaseInsertRequest);
         // ititmt (예정 재고)
@@ -137,14 +137,43 @@ public class JpaPurchaseService {
             lspchd.setPurchaseUnitAmt(item.getPurchaseUnitAmt());
             lspchd.setAssortId(item.getAssortId());
             lspchd.setItemId(item.getItemId());
+            jpaLspchdRepository.save(lspchd);
             lspchdList.add(lspchd);
         }
         return lspchdList;
     }
 
-    private Lspchb saveLspchb(PurchaseInsertRequest purchaseInsertRequest) {
-
-        return null;
+    private List<Lspchb> saveLspchb(PurchaseInsertRequest purchaseInsertRequest) {
+        List<Lspchb> lspchbList = new ArrayList<>();
+        Date effEndDt = null;
+        for(PurchaseInsertRequest.Items items: purchaseInsertRequest.getItems()){
+            try
+            {
+                effEndDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("9999-12-31 23:59:59"); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
+            }
+            catch (Exception e){
+                logger.debug(e.getMessage());
+            }
+            Lspchb lspchb = jpaLspchbRepository.findByPurchaseNoAndEffEndDt(purchaseInsertRequest.getPurchaseNo(), effEndDt);
+            if(lspchb == null){ // insert
+                lspchb = new Lspchb(purchaseInsertRequest);
+                String purchaseSeq = jpaLspchbRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequest.getPurchaseNo());
+                if(purchaseSeq == null){ // 해당 purchaseNo에 seq가 없는 경우
+                    purchaseSeq = StringFactory.getFourStartCd(); // 0001
+                }
+                else{ // 해당 purchaseNo에 seq가 있는 경우
+                    purchaseSeq = Utilities.plusOne(purchaseSeq, 4);
+                }
+                lspchb.setPurchaseSeq(purchaseSeq);
+            }
+            lspchb.setPurchaseNo(StringFactory.getNinetyNine());
+            lspchb.setEffEndDt(new Date());
+            lspchb.setPurchaseStatus(purchaseInsertRequest.getPurchaseStatus());
+            lspchb.setCancelGb(StringFactory.getNinetyNine());
+            jpaLspchbRepository.save(lspchb);
+            lspchbList.add(lspchb);
+        }
+        return lspchbList;
     }
 
     private Lsdpsp saveLsdpsp(PurchaseInsertRequest purchaseInsertRequest) {
@@ -167,6 +196,7 @@ public class JpaPurchaseService {
         jpaLspchsRepository.deleteAll();
         jpaLspchmRepository.deleteAll();
         jpaLspchbRepository.deleteAll();
+        jpaLspchdRepository.deleteAll();
         jpaLsdpspRepository.deleteAll();
         jpaItitmtRepository.deleteAll();
         seq.setSequenceCurValue("0");

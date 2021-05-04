@@ -29,5 +29,6 @@ public class StringFactory {
     // jpaPurchaseService
     @Getter
     private final static String purchaseSeqStr = "seq_LSPCHM";
-
+    @Getter
+    private final static String ninetyNine = "99";
 }

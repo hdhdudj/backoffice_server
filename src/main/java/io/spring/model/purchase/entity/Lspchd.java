@@ -56,7 +56,7 @@ public class Lspchd {
     private String depositSeq;
     private String setShipId;
     private String setShipSeq;
-    private String siteOrderno;
+    private String siteOrderNo;
     private Long regId;
     @CreationTimestamp
     private Date regDt;

@@ -1,15 +1,18 @@
 package io.spring.model.purchase.entity;
 
+import io.spring.infrastructure.util.StringFactory;
+import io.spring.model.purchase.request.PurchaseInsertRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Entity
@@ -18,7 +21,23 @@ import java.util.Date;
 @Table(name="lspchb")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lspchb {
+    private final static Logger logger = LoggerFactory.getLogger(Lspchb.class);
+    public Lspchb(PurchaseInsertRequest purchaseInsertRequest){
+        Date effEndDt = null;
+        try
+        {
+            effEndDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("9999-12-31 23:59:59"); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
+        }
+        catch (Exception e){
+            logger.debug(e.getMessage());
+        }
+        this.purchaseNo = purchaseInsertRequest.getPurchaseNo();
+        this.purchaseSeq = purchaseInsertRequest.getPurchaseSeq();
+        this.purchaseStatus = purchaseInsertRequest.getPurchaseStatus();
+        this.cancelGb = StringFactory.getNinetyNine();
+    }
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seq;
     private String purchaseNo;
     private String purchaseSeq;
