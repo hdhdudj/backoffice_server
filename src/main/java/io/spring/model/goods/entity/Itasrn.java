@@ -1,5 +1,6 @@
 package io.spring.model.goods.entity;
 
+import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -29,7 +30,7 @@ public class Itasrn {
         this.shortageYn = itasrn.getShortageYn();
         try
         {
-            this.effEndDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("9999-12-31 23:59:59"); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
+            this.effEndDt = new SimpleDateFormat(StringFactory.getDateFormat()).parse(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
         }
         catch (Exception e){
             logger.debug(e.getMessage());
@@ -43,7 +44,7 @@ public class Itasrn {
         this.localSale = goodsInsertRequestData.getLocalSale();
         try
         {
-            this.effEndDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("9999-12-31 23:59:59"); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
+            this.effEndDt = new SimpleDateFormat(StringFactory.getDateFormat()).parse(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
         }
         catch (Exception e){
             logger.debug(e.getMessage());

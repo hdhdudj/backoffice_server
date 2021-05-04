@@ -145,7 +145,7 @@ public class JpaGoodsService {
         Date effEndDt = null;
         try
         {
-            effEndDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("9999-12-31 23:59:59"); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
+            effEndDt = new SimpleDateFormat(StringFactory.getDateFormat()).parse(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
         }
         catch (Exception e){
             logger.debug(e.getMessage());
@@ -299,7 +299,7 @@ public class JpaGoodsService {
         for (int i = 0; i < ititmmList.size() ; i++) {
             try
             {
-                effEndDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("9999-12-31 23:59:59"); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
+                effEndDt = new SimpleDateFormat(StringFactory.getDateFormat()).parse(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
             }
             catch (Exception e){
                 logger.debug(e.getMessage());

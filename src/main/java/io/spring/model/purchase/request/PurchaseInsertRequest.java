@@ -76,7 +76,7 @@ public class PurchaseInsertRequest {
     private String claimItemYn;
 
     // ititmt
-    private String storageId;
+//    private String storageId;
     private String stockGb;
     private Long tempIndicateQty;
     private Long tempQty;
@@ -87,6 +87,7 @@ public class PurchaseInsertRequest {
     public static class Items{
         private String assortId;
         private String itemId;
+        private String itemGrade = "11";
         private String purchaseSeq;
         private Long purchaseQty;
         private Float purchaseUnitAmt;

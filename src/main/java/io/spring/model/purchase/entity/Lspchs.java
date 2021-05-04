@@ -1,5 +1,6 @@
 package io.spring.model.purchase.entity;
 
+import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.purchase.request.PurchaseInsertRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,7 +25,7 @@ public class Lspchs {
     public Lspchs(PurchaseInsertRequest purchaseInsertRequest){
         this.purchaseNo = purchaseInsertRequest.getPurchaseNo();
         try{
-            this.effEndDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("9999-12-31 23:59:59");
+            this.effEndDt = new SimpleDateFormat(StringFactory.getDateFormat()).parse(StringFactory.getDoomDay());
         }
         catch (Exception e){
             logger.debug(e.getMessage());
@@ -34,7 +35,7 @@ public class Lspchs {
     public Lspchs(Lspchs lspchs){
         this.purchaseNo = lspchs.getPurchaseNo();
         try{
-            this.effEndDt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("9999-12-31 23:59:59");
+            this.effEndDt = new SimpleDateFormat(StringFactory.getDateFormat()).parse(StringFactory.getDoomDay());
         }
         catch (Exception e){
             logger.debug(e.getMessage());
