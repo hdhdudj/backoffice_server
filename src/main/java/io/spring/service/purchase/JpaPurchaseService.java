@@ -181,10 +181,12 @@ public class JpaPurchaseService {
     private List<Lsdpsp> saveLsdpsp(PurchaseInsertRequest purchaseInsertRequest) {
         List<Lsdpsp> lsdpspList = new ArrayList<>();
         for(PurchaseInsertRequest.Items items : purchaseInsertRequest.getItems()){
-            Lsdpsp lsdpsp = jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequest.getPurchaseNo(), items.getPurchaseSeq());
+            Lsdpsp lsdpsp = items.getPurchaseSeq() == null || items.getPurchaseSeq().equals("")? null : jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequest.getPurchaseNo(), items.getPurchaseSeq());
             if(lsdpsp == null){ // insert
-                purchaseInsertRequest.setDepositPlanId(jpaCommonService.getNumberId(purchaseInsertRequest.getDepositPlanId(), StringFactory.getDepositPlanId(), StringFactory.getIntNine())); // depositPlanId 채번
-                String seq = jpaLsdpspRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequest.getDepositPlanId());
+                System.out.println("--------" + "insert");
+                String depositPlanId = jpaCommonService.getNumberId(purchaseInsertRequest.getDepositPlanId(), StringFactory.getDepositPlanId(), StringFactory.getIntNine());
+                purchaseInsertRequest.setDepositPlanId(depositPlanId); // depositPlanId 채번
+                String seq = jpaLsdpspRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequest.getPurchaseNo());
                 if(seq == null){
                     seq = StringFactory.getFourStartCd();
                 }
@@ -193,6 +195,7 @@ public class JpaPurchaseService {
                 }
                 items.setPurchaseSeq(seq);
                 lsdpsp = new Lsdpsp(purchaseInsertRequest, items);
+                purchaseInsertRequest.setDepositPlanId(null);
             }
             else{ // update
                 lsdpsp.setPurchaseNo(purchaseInsertRequest.getPurchaseNo());

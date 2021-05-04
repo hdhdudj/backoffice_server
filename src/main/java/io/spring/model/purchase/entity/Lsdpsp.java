@@ -32,7 +32,7 @@ public class Lsdpsp {
         catch(Exception e){
             logger.debug(e.getMessage());
         }
-        this.purchasePlanQty = items.getPurchaseQty();
+        this.purchasePlanQty = purchaseInsertRequest.getPurchasePlanQty();
         this.purchaseTakeQty = purchaseInsertRequest.getPurchaseTakeQty();
         this.assortId = items.getAssortId();
         this.itemId = items.getItemId();

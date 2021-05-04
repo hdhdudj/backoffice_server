@@ -38,7 +38,7 @@ public class JpaCommonService {
 
     // C00001 식으로 반환
     public String getStrNumberId(String addStr, @NotNull String id, String sequenceName, int size){
-        System.out.println("----------------------------- : " + id);
+//        System.out.println("----------------------------- : " + id);
         if (id != null && !id.equals("")) { // 기존 리퀘스트에 purchaseNo가 존재하는 경우 그대로 돌려보냄
             return id;
         }
