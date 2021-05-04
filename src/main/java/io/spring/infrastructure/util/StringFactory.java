@@ -50,4 +50,5 @@ public class StringFactory {
     private final static String doomDay = "9999-12-31 23:59:59";
     @Getter
     private final static String dateFormat = "yyyy-MM-dd HH:mm:ss";
+
 }

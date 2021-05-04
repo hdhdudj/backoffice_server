@@ -7,8 +7,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 import java.util.List;
@@ -42,19 +40,19 @@ public class GoodsGetDetailResponseData {
         this.buySupplyDiscount = itasrt.getBuySupplyDiscount();
         this.buyExchangeRate = itasrt.getBuyExchangeRate();
         this.buyRrpIncrement = itasrt.getBuyRrpIncrement();
-        this.regDt = itasrt.getRegDt();
-        this.updDt = itasrt.getUpdDt();
+//        this.regDt = itasrt.getRegDt();
+//        this.updDt = itasrt.getUpdDt();
     }
     private String code;
     private String message;
     // itasrt, itvari, itasrd 공통
     private String assortId;
-    @CreationTimestamp
-    private Date regDt;
+//    @CreationTimestamp
+//    private Date regDt;
     private String regId;
     private String updId;
-    @UpdateTimestamp
-    private Date updDt;
+//    @UpdateTimestamp
+//    private Date updDt;
 
     // itasrt
     private String assortNm;

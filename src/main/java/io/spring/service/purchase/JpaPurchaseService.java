@@ -10,6 +10,7 @@ import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.purchase.entity.*;
 import io.spring.model.purchase.request.PurchaseInsertRequest;
+import io.spring.model.purchase.response.PurchaseSelectDetailResponse;
 import io.spring.service.common.JpaCommonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -97,7 +97,7 @@ public class JpaPurchaseService {
         Date effEndDt = null;
         try
         {
-            effEndDt = new SimpleDateFormat(StringFactory.getDateFormat()).parse(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
+            effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
         }
         catch (Exception e){
             logger.debug(e.getMessage());
@@ -151,7 +151,7 @@ public class JpaPurchaseService {
         for(PurchaseInsertRequest.Items items: purchaseInsertRequest.getItems()){
             Date doomDate = null;
             try{
-                doomDate = new SimpleDateFormat(StringFactory.getDateFormat()).parse(StringFactory.getDoomDay());
+                doomDate = Utilities.getStringToDate(StringFactory.getDoomDay());
             }
             catch(Exception e){
                 logger.debug(e.getMessage());
@@ -178,8 +178,8 @@ public class JpaPurchaseService {
                 jpaLspchbRepository.save(newLspchb);
             }
             lspchb.setPurchaseNo(purchaseInsertRequest.getPurchaseNo());
-            lspchb.setPurchaseStatus(purchaseInsertRequest.getPurchaseStatus());
-            lspchb.setCancelGb(StringFactory.getNinetyNine());
+            lspchb.setPurchaseStatus(items.getPurchaseStatus());
+            lspchb.setCancelGb(StringFactory.getNinetyNine()); // 추후 수정
             jpaLspchbRepository.save(lspchb);
             lspchbList.add(lspchb);
         }
@@ -192,7 +192,6 @@ public class JpaPurchaseService {
             System.out.println("items.getPurchaseSeq() : "+items.getPurchaseSeq());
             Lsdpsp lsdpsp = items.getPurchaseSeq() == null || items.getPurchaseSeq().equals("")? null : jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequest.getPurchaseNo(), items.getPurchaseSeq());
             if(lsdpsp == null){ // insert
-                System.out.println("--------" + "insert");
                 String depositPlanId = jpaCommonService.getNumberId(purchaseInsertRequest.getDepositPlanId(), StringFactory.getDepositPlanId(), StringFactory.getIntNine());
                 purchaseInsertRequest.setDepositPlanId(depositPlanId); // depositPlanId 채번
                 String seq = jpaLsdpspRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequest.getPurchaseNo());
@@ -244,6 +243,35 @@ public class JpaPurchaseService {
         return ititmtList;
     }
 
+    public PurchaseSelectDetailResponse getPurchaseDetailPage(String purchaseNo) {
+        Lspchm lspchm = jpaLspchmRepository.findById(purchaseNo).get();
+        List<PurchaseSelectDetailResponse.Items> itemsList = makeItemsList(lspchm.getLspchdList());
+        PurchaseSelectDetailResponse purchaseSelectDetailResponse = new PurchaseSelectDetailResponse(lspchm);
+        purchaseSelectDetailResponse.setItems(itemsList);
+        return purchaseSelectDetailResponse;
+    }
+
+    private List<PurchaseSelectDetailResponse.Items> makeItemsList(List<Lspchd> lspchdList) {
+        List<PurchaseSelectDetailResponse.Items> itemsList = new ArrayList<>();
+        for(Lspchd lspchd : lspchdList){
+            PurchaseSelectDetailResponse.Items item = new PurchaseSelectDetailResponse.Items();
+            item.setAssortId(lspchd.getAssortId());
+            item.setItemId(lspchd.getItemId());
+            item.setPurchaseQty(lspchd.getPurchaseQty());
+            item.setPurchaseUnitAmt(lspchd.getPurchaseUnitAmt());
+            item.setPurchaseSeq(lspchd.getPurchaseSeq());
+            List<Lspchb> lspchbList = lspchd.getLspchb();
+            for(Lspchb lspchb : lspchbList){
+                if(lspchb.getEffEndDt().compareTo(Utilities.getStringToDate(StringFactory.getDoomDay())) == 0){
+                    item.setPurchaseStatus(lspchb.getPurchaseStatus());
+                    break;
+                }
+            }
+            itemsList.add(item);
+        }
+        return itemsList;
+    }
+
     /**
      * Table 초기화 함수
      */
@@ -265,4 +293,5 @@ public class JpaPurchaseService {
         jpaItitmtRepository.deleteAll();
 
     }
+
 }

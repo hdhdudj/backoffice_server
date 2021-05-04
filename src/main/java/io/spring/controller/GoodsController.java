@@ -90,7 +90,7 @@ public class GoodsController {
 	}
 
 	@GetMapping(path = "/getgoodsdetail")
-	public ResponseEntity getGoodsJpaByGet(@RequestParam(required = true) String assortId){
+	public ResponseEntity getGoodsDetailJpa(@RequestParam(required = true) String assortId){
 		logger.debug("get goods detail page");
 
 		GoodsGetDetailResponseData responseData = jpaGoodsService.getGoodsDetailPage(assortId);

@@ -1,6 +1,8 @@
 package io.spring.model.purchase.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.infrastructure.util.Utilities;
 import io.spring.model.purchase.request.PurchaseInsertRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -11,11 +13,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name="lspchm")
@@ -28,7 +29,7 @@ public class Lspchm {
         this.purchaseNo = purchaseInsertRequest.getPurchaseNo();
         this.purchaseDt = purchaseInsertRequest.getPurchaseDt();
         try{
-            this.effEndDt = new SimpleDateFormat(StringFactory.getDateFormat()).parse(StringFactory.getDoomDay());
+            this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
         }
         catch (Exception e){
             logger.debug(e.getMessage());
@@ -88,6 +89,13 @@ public class Lspchm {
     private String delivery;
     private String payment;
     private String carrier;
+
+    // 연관관계 : lspchs
+    @OneToMany
+    @JsonIgnore
+    @JoinColumn(name = "purchaseNo", referencedColumnName = "purchaseNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+    private List<Lspchd> lspchdList;
+
     private Long regId;
     @CreationTimestamp
     private Date regDt;

@@ -4,6 +4,9 @@ import org.flywaydb.core.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * 21-05-03 Pecan
  * 유틸 class : 여러 service에서 공통적으로 쓰일 편의 함수 모음 클래스
@@ -29,5 +32,22 @@ public class Utilities {
             logger.debug(e.getMessage());
         }
         return calcRes;
+    }
+
+    /**
+     * 21-05-04 Pecan
+     * 유틸 함수 : "9999-12-31 23:59:59"를 yyyy-MM-dd HH:mm:ss꼴 Date로 반환
+     * @param String
+     * @return Date
+     */
+    public static Date getStringToDate(String strDate){
+        Date getDate = null;
+        try{
+            getDate = new SimpleDateFormat(StringFactory.getDateFormat()).parse(strDate);
+        }
+        catch(Exception e){
+            logger.debug(e.getMessage());
+        }
+        return getDate;
     }
 }

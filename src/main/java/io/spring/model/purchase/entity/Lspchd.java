@@ -8,11 +8,9 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -57,6 +55,16 @@ public class Lspchd {
     private String setShipId;
     private String setShipSeq;
     private String siteOrderNo;
+
+    // 연관관계 : lspchb
+    // itvari 연관 관계 (일단 단방향)
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = Lspchb.class)
+    @JoinColumns({
+            @JoinColumn(name = "purchaseNo", referencedColumnName="purchaseNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+            @JoinColumn(name = "purchaseSeq", referencedColumnName="purchaseSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+    })
+    private List<Lspchb> lspchb;
+
     private Long regId;
     @CreationTimestamp
     private Date regDt;
