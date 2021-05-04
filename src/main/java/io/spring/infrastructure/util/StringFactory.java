@@ -30,5 +30,19 @@ public class StringFactory {
     @Getter
     private final static String purchaseSeqStr = "seq_LSPCHM";
     @Getter
+    private final static String depositPlanId = "seq_LSDPSP";
+    @Getter
     private final static String ninetyNine = "99";
+    @Getter
+    private final static int intNine = 9;
+    @Getter
+    private final static int intEight = 8;
+    @Getter
+    private final static String strZero = "0";
+
+    // controller
+    @Getter
+    private final static String strOk = "ok";
+    @Getter
+    private final static String strSuccess = "success";
 }

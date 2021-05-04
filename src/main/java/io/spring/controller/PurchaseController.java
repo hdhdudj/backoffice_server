@@ -25,10 +25,10 @@ public class PurchaseController {
     @PostMapping(path="/jpasave")
     public ResponseEntity savePurchaseJpa(@RequestBody PurchaseInsertRequest purchaseInsertRequest){
         logger.debug("insert or update purchase by jpa");
-        purchaseInsertRequest.setPurchaseNo(jpaCommonService.getPurchaseNo(purchaseInsertRequest, StringFactory.getPurchaseSeqStr())); // purchaseNo 채번
+        purchaseInsertRequest.setPurchaseNo(jpaCommonService.getStrNumberId(StringFactory.getCUpperStr(), purchaseInsertRequest.getPurchaseNo(), StringFactory.getPurchaseSeqStr(), StringFactory.getIntEight())); // purchaseNo 채번
         String purchaseNo = jpaPurchaseService.savePurchaseSquence(purchaseInsertRequest);
 
-        ApiResponseMessage res = new ApiResponseMessage("ok", "success", purchaseNo);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), purchaseNo);
         if(res == null){
             return null;
         }

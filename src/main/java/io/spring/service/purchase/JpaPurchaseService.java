@@ -49,6 +49,7 @@ public class JpaPurchaseService {
     @Transactional
     public String savePurchaseSquence(PurchaseInsertRequest purchaseInsertRequest) {
         // lspchm (발주마스터)
+        System.out.println("-----"+purchaseInsertRequest.getPurchaseNo());
         Lspchm lspchm = this.saveLspchm(purchaseInsertRequest);
         // lspchs (발주 상태 이력)
         Lspchs lspchs = this.saveLspchs(purchaseInsertRequest);
@@ -57,7 +58,7 @@ public class JpaPurchaseService {
         // lspchb (발주 디테일 이력)
         List<Lspchb> lspchbList = this.saveLspchb(purchaseInsertRequest);
         // lsdpsp (입고 예정)
-        Lsdpsp lsdpsp = this.saveLsdpsp(purchaseInsertRequest);
+        List<Lsdpsp> lsdpsp = this.saveLsdpsp(purchaseInsertRequest);
         // ititmt (예정 재고)
         Ititmt ititmt = this.saveItitmt(purchaseInsertRequest);
         return lspchm.getPurchaseNo();
@@ -122,7 +123,7 @@ public class JpaPurchaseService {
     private List<Lspchd> saveLspchd(PurchaseInsertRequest purchaseInsertRequest) {
         List<Lspchd> lspchdList = new ArrayList<>();
         for(PurchaseInsertRequest.Items item : purchaseInsertRequest.getItems()){
-            Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequest.getPurchaseNo(), item.getPurchaseSeq());
+            Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequest.getPurchaseNo(), item.getPurchaseSeq() == null? null:item.getPurchaseSeq());
             if(lspchd == null){ // insert
                 String purchaseSeq = jpaLspchdRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequest.getPurchaseNo());
                 if(purchaseSeq == null){
@@ -177,9 +178,35 @@ public class JpaPurchaseService {
         return lspchbList;
     }
 
-    private Lsdpsp saveLsdpsp(PurchaseInsertRequest purchaseInsertRequest) {
-
-        return null;
+    private List<Lsdpsp> saveLsdpsp(PurchaseInsertRequest purchaseInsertRequest) {
+        List<Lsdpsp> lsdpspList = new ArrayList<>();
+        for(PurchaseInsertRequest.Items items : purchaseInsertRequest.getItems()){
+            Lsdpsp lsdpsp = jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequest.getPurchaseNo(), items.getPurchaseSeq());
+            if(lsdpsp == null){ // insert
+                purchaseInsertRequest.setDepositPlanId(jpaCommonService.getNumberId(purchaseInsertRequest.getDepositPlanId(), StringFactory.getDepositPlanId(), StringFactory.getIntNine())); // depositPlanId 채번
+                String seq = jpaLsdpspRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequest.getDepositPlanId());
+                if(seq == null){
+                    seq = StringFactory.getFourStartCd();
+                }
+                else{
+                    seq = Utilities.plusOne(seq, 4);
+                }
+                items.setPurchaseSeq(seq);
+                lsdpsp = new Lsdpsp(purchaseInsertRequest, items);
+            }
+            else{ // update
+                lsdpsp.setPurchaseNo(purchaseInsertRequest.getPurchaseNo());
+                lsdpsp.setPurchaseSeq(items.getPurchaseSeq());
+                lsdpsp.setPurchasePlanQty(purchaseInsertRequest.getPurchasePlanQty());
+                lsdpsp.setPurchaseTakeQty(purchaseInsertRequest.getPurchaseTakeQty());
+                lsdpsp.setAssortId(items.getAssortId());
+                lsdpsp.setItemId(items.getItemId());
+                lsdpsp.setPlanStatus(purchaseInsertRequest.getPlanStatus());
+            }
+            lsdpspList.add(lsdpsp);
+            jpaLsdpspRepository.save(lsdpsp);
+        }
+        return lsdpspList;
     }
 
     private Ititmt saveItitmt(PurchaseInsertRequest purchaseInsertRequest) {
@@ -193,6 +220,12 @@ public class JpaPurchaseService {
     public void initTables(){
         Optional<SequenceData> op = jpaSequenceDataRepository.findById(StringFactory.getPurchaseSeqStr());
         SequenceData seq = op.get();
+        seq.setSequenceCurValue(StringFactory.getStrZero());
+        jpaSequenceDataRepository.save(seq);
+        op = jpaSequenceDataRepository.findById(StringFactory.getDepositPlanId());
+        seq = op.get();
+        seq.setSequenceCurValue(StringFactory.getStrZero());
+        jpaSequenceDataRepository.save(seq);
         jpaLspchmRepository.deleteAll();
         jpaLspchsRepository.deleteAll();
         jpaLspchmRepository.deleteAll();
@@ -200,7 +233,6 @@ public class JpaPurchaseService {
         jpaLspchdRepository.deleteAll();
         jpaLsdpspRepository.deleteAll();
         jpaItitmtRepository.deleteAll();
-        seq.setSequenceCurValue("0");
-        jpaSequenceDataRepository.save(seq);
+
     }
 }

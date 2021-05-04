@@ -1,10 +1,7 @@
 package io.spring.service.common;
 
 import io.spring.dao.common.MyBatisCommonDao;
-import io.spring.infrastructure.util.StringFactory;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
-import io.spring.model.goods.request.GoodsInsertRequestData;
-import io.spring.model.purchase.request.PurchaseInsertRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,35 +26,26 @@ public class JpaCommonService {
 //    private final String seqNameStr = "seqName";
 //    private final String nextvalStr = "nextval";
 
-    public String getAssortId(@NotNull GoodsInsertRequestData goodsInsertRequestData, String sequenceName) {
-		if (goodsInsertRequestData.getAssortId() != null && !goodsInsertRequestData.getAssortId().equals("")) { // 기존 리퀘스트에 assort id가 존재하는 경우 그대로 돌려보냄
-            return goodsInsertRequestData.getAssortId();
+    // 000012 식으로 반환
+    public String getNumberId(@NotNull String id, String sequenceName, int size) {
+		if (id != null && !id.equals("")) { // 기존 리퀘스트에 assort id가 존재하는 경우 그대로 돌려보냄
+            return id;
         }
-		// 기존 리퀘스트에 assort id가 존재하지 않는 경우
-//        Itasrt itasrt = new Itasrt(goodsRequestData);
-//        HashMap<String, Object> arr = new HashMap<String, Object>();
-//
-//        arr.put(seqNameStr, seqItasrtStr);
-////        String res = jpaSequenceDataRepository.nextVal(seqItasrtStr);
-////        System.out.println(res + "-------------------");
-//
-//		HashMap<String, Object> x1 = myBatisCommonDao.getSequence(arr); // max + 1 리턴
-//        String assortId = StringUtils.leftPad(Long.toString((long)x1.get(nextvalStr)), 9, '0');
-//        itasrt.setAssortId(assortId);
 		Object r = em1.createNativeQuery("SELECT nextval('" + sequenceName + "')").getSingleResult(); // jpa로 부르기
         logger.debug("nextVal : ", r.toString());
-        return StringUtils.leftPad(r.toString(), 9, '0');
+        return StringUtils.leftPad(r.toString(), size, '0');
     }
 
-    public String getPurchaseNo(@NotNull PurchaseInsertRequest purchaseInsertRequest, String sequenceName){
-        System.out.println("----------------------------- : " + purchaseInsertRequest.getPurchaseNo());
-        if (purchaseInsertRequest.getPurchaseNo() != null && !purchaseInsertRequest.getPurchaseNo().equals("")) { // 기존 리퀘스트에 purchaseNo가 존재하는 경우 그대로 돌려보냄
-            return purchaseInsertRequest.getPurchaseNo();
+    // C00001 식으로 반환
+    public String getStrNumberId(String addStr, @NotNull String id, String sequenceName, int size){
+        System.out.println("----------------------------- : " + id);
+        if (id != null && !id.equals("")) { // 기존 리퀘스트에 purchaseNo가 존재하는 경우 그대로 돌려보냄
+            return id;
         }
         Object r = em1.createNativeQuery("SELECT nextval('" + sequenceName + "')").getSingleResult(); // jpa로 부르기
         logger.debug("nextVal : ", r.toString());
-        String returnStr = StringUtils.leftPad(r.toString(), 8, '0');
-        return StringFactory.getCUpperStr() + returnStr;
+        String returnStr = StringUtils.leftPad(r.toString(), size, '0');
+        return addStr + returnStr;
     }
 
 

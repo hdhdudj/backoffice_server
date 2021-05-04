@@ -427,7 +427,7 @@ public class JpaGoodsService {
         jpaItitmmRepository.deleteAll();
         jpaItitmdRepository.deleteAll();
         jpaItvariRepository.deleteAll();
-        seq.setSequenceCurValue("0");
+        seq.setSequenceCurValue(StringFactory.getStrZero());
         jpaSequenceDataRepository.save(seq);
     }
 

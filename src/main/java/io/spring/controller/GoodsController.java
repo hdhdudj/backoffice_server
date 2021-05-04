@@ -78,10 +78,10 @@ public class GoodsController {
 	public ResponseEntity insertGoodsJpa(@RequestBody GoodsInsertRequestData goodsInsertRequestData) {
 		logger.debug("insert goods by jpa");
 
-		goodsInsertRequestData.setAssortId(jpaCommonService.getAssortId(goodsInsertRequestData, StringFactory.getSeqItasrtStr())); // assort id 채번
+		goodsInsertRequestData.setAssortId(jpaCommonService.getNumberId(goodsInsertRequestData.getAssortId(), StringFactory.getSeqItasrtStr(), StringFactory.getIntNine())); // assort id 채번
 		GoodsInsertResponseData responseData = jpaGoodsService.sequenceInsertOrUpdateGoods(goodsInsertRequestData);
 
-		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), responseData);
 
 		if(responseData == null){
 			return null;
@@ -95,7 +95,7 @@ public class GoodsController {
 
 		GoodsGetDetailResponseData responseData = jpaGoodsService.getGoodsDetailPage(assortId);
 
-		ApiResponseMessage res = new ApiResponseMessage("ok","success", responseData);
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), responseData);
 		if(responseData == null){
 			return null;
 		}
