@@ -3,46 +3,36 @@
 <mapper namespace="io.spring.infrastructure.mybatis.mapper.PurchaseMapper">
     <select id="selectPurchaseListByCondition" resultType="HashMap">
         <![CDATA[
-        select
-        distinct *
-        from
-        (select a.purchase_no
-        , b.purchase_seq
-        , a.purchase_vendor_id
-        , b.assort_id
-        , b.item_id
-        , b.purchase_qty
-        , b.purchase_unit_amt
-        , b.site_order_no
-        , c.opt1
-        , c.opt2
+        select a.purchase_no,
+               b.purchase_seq,
+               a.purchase_vendor_id,
+               b.assort_id,
+               b.item_id,
+               b.purchase_qty,
+               b.purchase_unit_amt,
+               b.site_order_no,
+               (select b1.option_nm
+                from ititmm b2, itvari b1
+                where b2.assort_id=b.assort_id
+                  And b2.item_id= b.item_id
+                  And  b2.assort_id = b1.assort_id
+                  and b2.variation_gb1 = b1.variation_gb
+                  and  b2.variation_seq1=b1.seq) opt1,
+               (select b1.option_nm
+                from ititmm b2, itvari b1
+                where b2.assort_id=b.assort_id
+                  And b2.item_id= b.item_id
+                  And  b2.assort_id = b1.assort_id
+                  and b2.variation_gb2 = b1.variation_gb
+                  and  b2.variation_seq2=b1.seq) opt2
         from lspchm a,
-        lspchd b
-        ,(select a.assort_id assort_id
-        , a.item_id item_id
-        , (select b1.option_nm
-        from itvari b1
-        where b1.assort_id = a.assort_id
-        and b1.variation_gb = a.variation_gb1
-        and b1.seq = a.variation_seq1
-        ) opt1
-        , (select b1.option_nm
-        from itvari b1
-        where b1.assort_id = a.assort_id
-        and b1.variation_gb = a.variation_gb2
-        and b1.seq = a.variation_seq2
-        ) opt2
-        from ititmm a,
-        lspchd b
-        ) c
-
+             lspchd b
         where a.purchase_dt between #{startDt} and #{endDt}
-        and a.purchase_vendor_id = #{purchaseVendorId}
-        and a.purchase_no = b.purchase_no
-        and b.assort_id = c.assort_id
-        and b.item_id = c.item_id
-        and b.assort_id = #{assortId}
-        and a.purchase_status = #{purchaseStatus}) a;
+          and a.purchase_vendor_id = #{purchaseVendorId}
+          and a.purchase_no = b.purchase_no
+          and b.assort_id = #{assortId}
+          and a.purchase_status = #{purchaseStatus}
         ]]>
     </select>
 </mapper>
+
