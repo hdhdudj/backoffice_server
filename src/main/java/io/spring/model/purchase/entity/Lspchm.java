@@ -96,7 +96,6 @@ public class Lspchm {
     private List<Lspchd> lspchdList;
 
     // 연관관계 : ititmm
-    @One
 
     private Long regId;
     @CreationTimestamp

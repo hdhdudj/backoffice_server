@@ -7,6 +7,7 @@ import io.spring.model.purchase.response.PurchaseSelectDetailResponse;
 import io.spring.model.purchase.response.PurchaseSelectListResponse;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.purchase.JpaPurchaseService;
+import io.spring.service.purchase.MyBatisPurchaseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/purchase")
@@ -22,9 +25,11 @@ public class PurchaseController {
 
     private JpaPurchaseService jpaPurchaseService;
     private JpaCommonService jpaCommonService;
-    public PurchaseController(JpaPurchaseService jpaPurchaseService, JpaCommonService jpaCommonService){
+    private MyBatisPurchaseService myBatisPurchaseService;
+    public PurchaseController(JpaPurchaseService jpaPurchaseService, JpaCommonService jpaCommonService, MyBatisPurchaseService myBatisPurchaseService){
         this.jpaCommonService = jpaCommonService;
         this.jpaPurchaseService = jpaPurchaseService;
+        this.myBatisPurchaseService = myBatisPurchaseService;
     }
 
     @GetMapping(path = "/getpurchasedetail")
@@ -67,14 +72,28 @@ public class PurchaseController {
         return ResponseEntity.ok(res);
     }
 
-    // 발주 list get
+    // 발주 list get (jpa)
     @GetMapping(path="/purchaselistjpa")
-    public ResponseEntity getPurchaseList(@RequestParam String purchaseVendorId, @RequestParam String assortId, @RequestParam String purchaseStatus, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDt, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDt){
-        logger.debug("get purchase list");
+    public ResponseEntity getPurchaseListJpa(@RequestParam String purchaseVendorId, @RequestParam String assortId, @RequestParam String purchaseStatus, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDt, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDt){
+        logger.debug("get purchase list - jpa");
 
         PurchaseSelectListResponse purchaseSelectListResponse = jpaPurchaseService.getPurchaseList(purchaseVendorId, assortId, purchaseStatus, startDt, endDt);
 
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectListResponse);
+        if(res == null){
+            return null;
+        }
+        return ResponseEntity.ok(res);
+    }
+
+    // 발주 list get (mybatis)
+    @GetMapping(path="/purchaselistmybatis")
+    public ResponseEntity getPurchaseListMyBatis(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")HashMap<String, Object> param){
+        logger.debug("get purchase list - mybatis");
+
+        List<HashMap<String, Object>> result = myBatisPurchaseService.getPurchaseList(param);
+
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), result);
         if(res == null){
             return null;
         }
