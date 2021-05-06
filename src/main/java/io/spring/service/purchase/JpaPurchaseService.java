@@ -27,21 +27,13 @@ import java.util.*;
 public class JpaPurchaseService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
     private JpaLspchmRepository jpaLspchmRepository;
-    @Autowired
     private JpaLsdpspRepository jpaLsdpspRepository;
-    @Autowired
     private JpaLspchbRepository jpaLspchbRepository;
-    @Autowired
     private JpaLspchdRepository jpaLspchdRepository;
-    @Autowired
     private JpaLspchsRepository jpaLspchsRepository;
-    @Autowired
     private JpaItitmtRepository jpaItitmtRepository;
-    @Autowired
     private JpaCommonService jpaCommonService;
-    @Autowired
     private JpaSequenceDataRepository jpaSequenceDataRepository;
     @Autowired
     private EntityManager em;
@@ -280,13 +272,19 @@ public class JpaPurchaseService {
     public PurchaseSelectListResponse getPurchaseList(HashMap<String, Object> param) {
         List<PurchaseSelectListResponse.Purchase> purchaseList = new ArrayList<>();
         TypedQuery<Lspchd> query =
-                em.createQuery("select d from Lspchd d left join fetch d.lspchm m where m.purchaseDt between ?1 and ?2 and m.purchaseVendorId = ?3 and m.purchaseStatus = ?4 and d.assortId = ?5", Lspchd.class);
+                em.createQuery("select d from Lspchd d " +
+                        "left join fetch d.lspchm m where m.purchaseDt " +
+                        "between ?1 " +
+                        "and ?2 " +
+                        "and m.purchaseVendorId = ?3 " +
+                        "and m.purchaseStatus = ?4 " +
+                        "and d.assortId = ?5"
+                        , Lspchd.class);
         query.setParameter(1, Utilities.getStringToDate(param.get(StringFactory.getStrStartDt()).toString()))
                 .setParameter(2, Utilities.getStringToDate(param.get(StringFactory.getStrEndDt()).toString()))
                 .setParameter(3, param.get(StringFactory.getStrPurchaseVendorId()))
                 .setParameter(4, param.get(StringFactory.getStrPurchaseStatus()))
                 .setParameter(5, param.get(StringFactory.getStrAssortId()));
-//        List<Lspchm> lspchmList = jpaLspchmRepository.findPurchaseList(param);
         List<Lspchd> lspchdList = query.getResultList();
         for(Lspchd lspchd : lspchdList){
             PurchaseSelectListResponse.Purchase purchase = new PurchaseSelectListResponse.Purchase(lspchd.getLspchm());
