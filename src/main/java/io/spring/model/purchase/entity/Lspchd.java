@@ -57,7 +57,6 @@ public class Lspchd {
     private String siteOrderNo;
 
     // 연관관계 : lspchb
-    // itvari 연관 관계 (일단 단방향)
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Lspchb.class)
     @JoinColumns({
             @JoinColumn(name = "purchaseNo", referencedColumnName="purchaseNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),

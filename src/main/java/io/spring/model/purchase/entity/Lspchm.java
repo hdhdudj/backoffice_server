@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -90,11 +89,14 @@ public class Lspchm {
     private String payment;
     private String carrier;
 
-    // 연관관계 : lspchs
+    // 연관관계 : lspchd
     @OneToMany
     @JsonIgnore
     @JoinColumn(name = "purchaseNo", referencedColumnName = "purchaseNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     private List<Lspchd> lspchdList;
+
+    // 연관관계 : itasrt
+    @One
 
     private Long regId;
     @CreationTimestamp

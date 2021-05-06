@@ -4,12 +4,16 @@ import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.purchase.request.PurchaseInsertRequest;
 import io.spring.model.purchase.response.PurchaseSelectDetailResponse;
+import io.spring.model.purchase.response.PurchaseSelectListResponse;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.purchase.JpaPurchaseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 @RestController
 @RequestMapping(value = "/purchase")
@@ -50,7 +54,7 @@ public class PurchaseController {
     }
     // 발주 detail page
     @GetMapping(path="/purchasedetailjpa")
-    public ResponseEntity getPurchaseDetailPage(String purchaseNo) {
+    public ResponseEntity getPurchaseDetailPage(@RequestParam String purchaseNo) {
         logger.debug("get purchase detail page");
 
         PurchaseSelectDetailResponse purchaseSelectDetailResponse = jpaPurchaseService.getPurchaseDetailPage(purchaseNo);
@@ -62,6 +66,21 @@ public class PurchaseController {
         }
         return ResponseEntity.ok(res);
     }
+
+    // 발주 list get
+    @GetMapping(path="/purchaselistjpa")
+    public ResponseEntity getPurchaseList(@RequestParam String purchaseVendorId, @RequestParam String assortId, @RequestParam String purchaseStatus, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDt, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDt){
+        logger.debug("get purchase list");
+
+        PurchaseSelectListResponse purchaseSelectListResponse = jpaPurchaseService.getPurchaseList(purchaseVendorId, assortId, purchaseStatus, startDt, endDt);
+
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectListResponse);
+        if(res == null){
+            return null;
+        }
+        return ResponseEntity.ok(res);
+    }
+
     @GetMapping(path="/init")
     public void initTabled(){
         jpaPurchaseService.initTables();

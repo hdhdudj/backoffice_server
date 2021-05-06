@@ -11,6 +11,7 @@ import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.purchase.entity.*;
 import io.spring.model.purchase.request.PurchaseInsertRequest;
 import io.spring.model.purchase.response.PurchaseSelectDetailResponse;
+import io.spring.model.purchase.response.PurchaseSelectListResponse;
 import io.spring.service.common.JpaCommonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -271,7 +272,17 @@ public class JpaPurchaseService {
         }
         return itemsList;
     }
-
+    // 발주 list 가져오는 함수
+    public PurchaseSelectListResponse getPurchaseList(String purchaseVendorId, String assortId, String purchaseStatus, Date startDt, Date endDt) {
+        List<PurchaseSelectListResponse.Purchase> purchaseList = new ArrayList<>();
+        List<Lspchm> lspchmList = jpaLspchmRepository.findPurchaseList(purchaseVendorId, assortId, purchaseStatus, startDt, endDt);
+        for(Lspchm lspchm : lspchmList){
+            PurchaseSelectListResponse.Purchase purchase = new PurchaseSelectListResponse.Purchase(lspchm);
+        }
+        PurchaseSelectListResponse purchaseSelectListResponse = new PurchaseSelectListResponse(purchaseList);
+        return purchaseSelectListResponse;
+    }
+    
     /**
      * Table 초기화 함수
      */
@@ -293,5 +304,4 @@ public class JpaPurchaseService {
         jpaItitmtRepository.deleteAll();
 
     }
-
 }
