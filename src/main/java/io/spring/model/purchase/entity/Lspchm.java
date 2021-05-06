@@ -95,7 +95,7 @@ public class Lspchm {
     @JoinColumn(name = "purchaseNo", referencedColumnName = "purchaseNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     private List<Lspchd> lspchdList;
 
-    // 연관관계 : ititmm
+
 
     private Long regId;
     @CreationTimestamp

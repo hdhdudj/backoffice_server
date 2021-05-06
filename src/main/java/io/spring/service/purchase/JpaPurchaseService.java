@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.*;
 
 @Service
@@ -41,6 +43,8 @@ public class JpaPurchaseService {
     private JpaCommonService jpaCommonService;
     @Autowired
     private JpaSequenceDataRepository jpaSequenceDataRepository;
+    @Autowired
+    private EntityManager em;
 
     /**
      * 21-05-03 Pecan
@@ -273,11 +277,29 @@ public class JpaPurchaseService {
         return itemsList;
     }
     // 발주 list 가져오는 함수
-    public PurchaseSelectListResponse getPurchaseList(String purchaseVendorId, String assortId, String purchaseStatus, Date startDt, Date endDt) {
+    public PurchaseSelectListResponse getPurchaseList(HashMap<String, Object> param) {
         List<PurchaseSelectListResponse.Purchase> purchaseList = new ArrayList<>();
-        List<Lspchm> lspchmList = jpaLspchmRepository.findPurchaseList(purchaseVendorId, assortId, purchaseStatus, startDt, endDt);
-        for(Lspchm lspchm : lspchmList){
-            PurchaseSelectListResponse.Purchase purchase = new PurchaseSelectListResponse.Purchase(lspchm);
+        TypedQuery<Lspchd> query =
+                em.createQuery("select d from Lspchd d left join fetch d.lspchm m where m.purchaseDt between ?1 and ?2 and m.purchaseVendorId = ?3 and m.purchaseStatus = ?4 and d.assortId = ?5", Lspchd.class);
+        query.setParameter(1, Utilities.getStringToDate(param.get(StringFactory.getStrStartDt()).toString()))
+                .setParameter(2, Utilities.getStringToDate(param.get(StringFactory.getStrEndDt()).toString()))
+                .setParameter(3, param.get(StringFactory.getStrPurchaseVendorId()))
+                .setParameter(4, param.get(StringFactory.getStrPurchaseStatus()))
+                .setParameter(5, param.get(StringFactory.getStrAssortId()));
+//        List<Lspchm> lspchmList = jpaLspchmRepository.findPurchaseList(param);
+        List<Lspchd> lspchdList = query.getResultList();
+        for(Lspchd lspchd : lspchdList){
+            PurchaseSelectListResponse.Purchase purchase = new PurchaseSelectListResponse.Purchase(lspchd.getLspchm());
+            purchase.setPurchaseSeq(lspchd.getPurchaseSeq());
+            purchase.setPurchaseQty(lspchd.getPurchaseQty());
+            purchase.setPurchaseUnitAmt(lspchd.getPurchaseUnitAmt());
+            purchase.setAssortId(lspchd.getAssortId());
+            purchase.setItemId(lspchd.getItemId());
+            purchase.setSiteOrderNo(lspchd.getSiteOrderNo());
+            purchase.setAssortNm(lspchd.getItitmm().getItasrt().getAssortNm());
+            purchase.setOptionNm1(lspchd.getItitmm().getItvari1().getOptionNm());
+            purchase.setOptionNm2(lspchd.getItitmm().getItvari2().getOptionNm());
+            purchaseList.add(purchase);
         }
         PurchaseSelectListResponse purchaseSelectListResponse = new PurchaseSelectListResponse(purchaseList);
         return purchaseSelectListResponse;

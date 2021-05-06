@@ -39,6 +39,17 @@ public class StringFactory {
     private final static int intEight = 8;
     @Getter
     private final static String strZero = "0";
+    @Getter
+    private final static String strStartDt = "startDt";
+    @Getter
+    private final static String strEndDt = "endDt";
+    @Getter
+    private final static String strPurchaseVendorId = "purchaseVendorId";
+    @Getter
+    private final static String strAssortId = "assortId";
+    @Getter
+    private final static String strPurchaseStatus = "purchaseStatus";
+
 
     // controller
     @Getter

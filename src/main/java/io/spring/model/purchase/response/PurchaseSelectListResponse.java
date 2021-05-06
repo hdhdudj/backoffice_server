@@ -27,12 +27,14 @@ public class PurchaseSelectListResponse {
         }
         private String purchaseNo;
         private String purchaseVendorId;
+        private String purchaseSeq;
+        private Long purchaseQty;
+        private Float purchaseUnitAmt;
         private String assortId;
         private String itemId;
         private String assortNm;
-        private String optionNm;
-        private String purchaseQty;
-        private String purchaseUnitAmt;
+        private String optionNm1; // 색상
+        private String optionNm2; // 사이즈
         private String siteOrderNo;
     }
 }

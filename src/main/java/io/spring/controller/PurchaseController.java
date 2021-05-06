@@ -14,7 +14,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -74,12 +73,12 @@ public class PurchaseController {
 
     // 발주 list get (jpa)
     @GetMapping(path="/purchaselistjpa")
-    public ResponseEntity getPurchaseListJpa(@RequestParam String purchaseVendorId, @RequestParam String assortId, @RequestParam String purchaseStatus, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDt, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDt){
+    public ResponseEntity getPurchaseListJpa(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")HashMap<String, Object> param){
         logger.debug("get purchase list - jpa");
 
-        PurchaseSelectListResponse purchaseSelectListResponse = jpaPurchaseService.getPurchaseList(purchaseVendorId, assortId, purchaseStatus, startDt, endDt);
+        PurchaseSelectListResponse purchaseSelectListResponse = jpaPurchaseService.getPurchaseList(param);
 
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectListResponse);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectListResponse.getPurchaseList());
         if(res == null){
             return null;
         }

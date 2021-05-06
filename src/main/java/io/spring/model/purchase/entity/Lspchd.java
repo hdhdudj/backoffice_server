@@ -1,5 +1,7 @@
 package io.spring.model.purchase.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.purchase.idclass.LspchdId;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -63,6 +65,20 @@ public class Lspchd {
             @JoinColumn(name = "purchaseSeq", referencedColumnName="purchaseSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
     })
     private List<Lspchb> lspchb;
+
+    // 연관관계 : lspchm
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Lspchm.class)
+    @JoinColumn(name = "purchaseNo", referencedColumnName="purchaseNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+    private Lspchm lspchm;
+
+    // 연관관계 : ititmm
+    @OneToOne
+    @JsonIgnore
+    @JoinColumns({
+            @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+            @JoinColumn(name = "itemId", referencedColumnName = "itemId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+    })
+    private Ititmm ititmm;
 
     private Long regId;
     @CreationTimestamp
