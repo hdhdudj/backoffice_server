@@ -27,21 +27,13 @@ import java.util.*;
 public class JpaPurchaseService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
     private JpaLspchmRepository jpaLspchmRepository;
-    @Autowired
     private JpaLsdpspRepository jpaLsdpspRepository;
-    @Autowired
     private JpaLspchbRepository jpaLspchbRepository;
-    @Autowired
     private JpaLspchdRepository jpaLspchdRepository;
-    @Autowired
     private JpaLspchsRepository jpaLspchsRepository;
-    @Autowired
     private JpaItitmtRepository jpaItitmtRepository;
-    @Autowired
     private JpaCommonService jpaCommonService;
-    @Autowired
     private JpaSequenceDataRepository jpaSequenceDataRepository;
     @Autowired
     private EntityManager em;
@@ -284,7 +276,7 @@ public class JpaPurchaseService {
                                 "left join fetch d.lspchm m left join fetch d.ititmm it left join fetch it.itasrt " +
                                 "left join fetch it.itvari1 left join fetch it.itvari2 " +
                                 "where m.purchaseDt " +
-                                "between ?1 " +
+                            "between ?1 " +
                                 "and ?2 " +
                                 "and m.purchaseVendorId = ?3 " +
                                 "and m.purchaseStatus = ?4 " +
@@ -295,7 +287,6 @@ public class JpaPurchaseService {
                 .setParameter(3, param.get(StringFactory.getStrPurchaseVendorId()))
                 .setParameter(4, param.get(StringFactory.getStrPurchaseStatus()))
                 .setParameter(5, param.get(StringFactory.getStrAssortId()));
-//        List<Lspchm> lspchmList = jpaLspchmRepository.findPurchaseList(param);
         List<Lspchd> lspchdList = query.getResultList();
         for(Lspchd lspchd : lspchdList){
             PurchaseSelectListResponse.Purchase purchase = new PurchaseSelectListResponse.Purchase(lspchd.getLspchm());
