@@ -280,7 +280,16 @@ public class JpaPurchaseService {
     public PurchaseSelectListResponse getPurchaseList(HashMap<String, Object> param) {
         List<PurchaseSelectListResponse.Purchase> purchaseList = new ArrayList<>();
         TypedQuery<Lspchd> query =
-                em.createQuery("select d from Lspchd d left join fetch d.lspchm m where m.purchaseDt between ?1 and ?2 and m.purchaseVendorId = ?3 and m.purchaseStatus = ?4 and d.assortId = ?5", Lspchd.class);
+                em.createQuery("select d from Lspchd d " +
+                                "left join fetch d.lspchm m left join fetch d.ititmm it left join fetch it.itasrt " +
+                                "left join fetch it.itvari1 left join fetch it.itvari2 " +
+                                "where m.purchaseDt " +
+                                "between ?1 " +
+                                "and ?2 " +
+                                "and m.purchaseVendorId = ?3 " +
+                                "and m.purchaseStatus = ?4 " +
+                                "and d.assortId = ?5"
+                        , Lspchd.class);
         query.setParameter(1, Utilities.getStringToDate(param.get(StringFactory.getStrStartDt()).toString()))
                 .setParameter(2, Utilities.getStringToDate(param.get(StringFactory.getStrEndDt()).toString()))
                 .setParameter(3, param.get(StringFactory.getStrPurchaseVendorId()))
