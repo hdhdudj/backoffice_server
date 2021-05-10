@@ -8,6 +8,7 @@ import io.spring.model.purchase.response.PurchaseSelectListResponse;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.purchase.JpaPurchaseService;
 import io.spring.service.purchase.MyBatisPurchaseService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,17 +20,18 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/purchase")
+@RequiredArgsConstructor
 public class PurchaseController {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    private JpaPurchaseService jpaPurchaseService;
-    private JpaCommonService jpaCommonService;
-    private MyBatisPurchaseService myBatisPurchaseService;
-    public PurchaseController(JpaPurchaseService jpaPurchaseService, JpaCommonService jpaCommonService, MyBatisPurchaseService myBatisPurchaseService){
-        this.jpaCommonService = jpaCommonService;
-        this.jpaPurchaseService = jpaPurchaseService;
-        this.myBatisPurchaseService = myBatisPurchaseService;
-    }
+    private final JpaPurchaseService jpaPurchaseService;
+    private final JpaCommonService jpaCommonService;
+    private final MyBatisPurchaseService myBatisPurchaseService;
+//    public PurchaseController(JpaPurchaseService jpaPurchaseService, JpaCommonService jpaCommonService, MyBatisPurchaseService myBatisPurchaseService){
+//        this.jpaCommonService = jpaCommonService;
+//        this.jpaPurchaseService = jpaPurchaseService;
+//        this.myBatisPurchaseService = myBatisPurchaseService;
+//    }
 
     @GetMapping(path = "/getpurchasedetail")
     public ResponseEntity getPurchaseDetailJpa(@RequestParam(required = true) String purchaseNo){
