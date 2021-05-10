@@ -243,7 +243,10 @@ public class JpaPurchaseService {
     }
 
     public PurchaseSelectDetailResponse getPurchaseDetailPage(String purchaseNo) {
-        Lspchm lspchm = jpaLspchmRepository.findById(purchaseNo).get();
+        Lspchm lspchm = jpaLspchmRepository.findById(purchaseNo).orElseGet(() -> null);//.get();
+        if(lspchm == null){
+            return new PurchaseSelectDetailResponse();
+        }
         List<PurchaseSelectDetailResponse.Items> itemsList = makeItemsList(lspchm.getLspchdList());
         PurchaseSelectDetailResponse purchaseSelectDetailResponse = new PurchaseSelectDetailResponse(lspchm);
         purchaseSelectDetailResponse.setItems(itemsList);
