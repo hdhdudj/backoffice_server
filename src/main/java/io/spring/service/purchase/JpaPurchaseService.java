@@ -13,6 +13,7 @@ import io.spring.model.purchase.request.PurchaseInsertRequest;
 import io.spring.model.purchase.response.PurchaseSelectDetailResponse;
 import io.spring.model.purchase.response.PurchaseSelectListResponse;
 import io.spring.service.common.JpaCommonService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,17 +25,18 @@ import javax.persistence.TypedQuery;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class JpaPurchaseService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private JpaLspchmRepository jpaLspchmRepository;
-    private JpaLsdpspRepository jpaLsdpspRepository;
-    private JpaLspchbRepository jpaLspchbRepository;
-    private JpaLspchdRepository jpaLspchdRepository;
-    private JpaLspchsRepository jpaLspchsRepository;
-    private JpaItitmtRepository jpaItitmtRepository;
-    private JpaCommonService jpaCommonService;
-    private JpaSequenceDataRepository jpaSequenceDataRepository;
+    private final JpaLspchmRepository jpaLspchmRepository;
+    private final JpaLsdpspRepository jpaLsdpspRepository;
+    private final JpaLspchbRepository jpaLspchbRepository;
+    private final JpaLspchdRepository jpaLspchdRepository;
+    private final JpaLspchsRepository jpaLspchsRepository;
+    private final JpaItitmtRepository jpaItitmtRepository;
+    private final JpaCommonService jpaCommonService;
+    private final JpaSequenceDataRepository jpaSequenceDataRepository;
     @Autowired
     private EntityManager em;
 

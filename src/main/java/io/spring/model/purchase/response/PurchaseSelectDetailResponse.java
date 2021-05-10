@@ -11,7 +11,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class PurchaseSelectDetailResponse {
     public PurchaseSelectDetailResponse(Lspchm lspchm){
         this.purchaseDt = lspchm.getPurchaseDt();
