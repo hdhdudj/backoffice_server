@@ -5,8 +5,9 @@ import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.goods.request.GoodsInsertRequestData;
-import io.spring.model.goods.response.GoodsGetDetailResponseData;
+import io.spring.model.goods.response.GoodsSelectDetailResponseData;
 import io.spring.model.goods.response.GoodsInsertResponseData;
+import io.spring.model.goods.response.GoodsSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.goods.JpaGoodsService;
 import org.flywaydb.core.internal.util.StringUtils;
@@ -93,7 +94,7 @@ public class GoodsController {
 	public ResponseEntity getGoodsDetailJpa(@RequestParam(required = true) String assortId){
 		logger.debug("get goods detail page");
 
-		GoodsGetDetailResponseData responseData = jpaGoodsService.getGoodsDetailPage(assortId);
+		GoodsSelectDetailResponseData responseData = jpaGoodsService.getGoodsDetailPage(assortId);
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), responseData);
 		if(responseData == null){
@@ -102,17 +103,17 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 	}
 
-//	 jpa로 get list
-//	@GetMapping(path="/getgoodslist")
-//	public ResponseEntity getGoodsList(@RequestParam String shortageYn, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtBegin, @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @RequestParam Date regDtEnd){
-//		logger.debug("get goods list data");
-//		GoodsInsertResponseData responseData = jpaGoodsService.getGoodsList(shortageYn, regDtBegin, regDtEnd);
-//		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
-//		if(responseData == null){
-//			return null;
-//		}
-//		return ResponseEntity.ok(res);
-//	}
+	// jpa로 get list
+	@GetMapping(path="/getgoodslistjpa")
+	public ResponseEntity getGoodsListJpa(@RequestParam String shortageYn, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtBegin, @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @RequestParam Date regDtEnd){
+		logger.debug("get goods list data");
+		List<GoodsSelectListResponseData.Goods> responseData = jpaGoodsService.getGoodsList(shortageYn, regDtBegin, regDtEnd).getGoodsList();
+		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
+		if(responseData == null){
+			return null;
+		}
+		return ResponseEntity.ok(res);
+	}
 
 	@GetMapping(path="/getgoodslistmybatis")
 	public ResponseEntity getGoodsList(@RequestParam String shortageYn, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtBegin, @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @RequestParam Date regDtEnd){

@@ -96,9 +96,7 @@ public class Itasrt {
 	private Float weight;
 	private String origin;
 	private String shortageYn; // itasrn에도
-	@Column(name = "brand_id")
 	private String brandId;
-	@Column(name = "disp_category_id")
 	private String dispCategoryId;
 	private String siteGb;
 	private String asVendorId;
@@ -156,6 +154,18 @@ public class Itasrt {
 	@OneToMany(fetch = FetchType.LAZY) // itasrd 연관관계
 	@JsonIgnore
 	private List<Itasrd> itasrdList;
+
+	@JoinColumn(name="brandId", referencedColumnName = "brandId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonIgnore
+	private Itbrnd itbrnd; // itbrnd 연관관계
+
+	@JoinColumn(name="dispCategoryId", referencedColumnName = "categoryId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+	@ManyToOne
+	@JsonIgnore
+	private Itcatg itcatg; // itcatg 연관관계
+	
+	
 
 //	@OneToOne
 //	@JoinColumn(name = "brand_id", referencedColumnName = "brand_id", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))

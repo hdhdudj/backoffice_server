@@ -14,8 +14,8 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GoodsGetDetailResponseData {
-    public GoodsGetDetailResponseData(Itasrt itasrt){
+public class GoodsSelectDetailResponseData {
+    public GoodsSelectDetailResponseData(Itasrt itasrt){
         this.assortId = itasrt.getAssortId();
         this.assortNm = itasrt.getAssortNm();
         this.assortColor = itasrt.getAssortColor();
@@ -97,7 +97,7 @@ public class GoodsGetDetailResponseData {
     private Float mdDiscountRate;
 
     // itasrd
-    private List<GoodsGetDetailResponseData.Description> description; // html (메모 상세) - long memo, text (메모 간략) - short memo
+    private List<GoodsSelectDetailResponseData.Description> description; // html (메모 상세) - long memo, text (메모 간략) - short memo
     @Getter
     @Setter
     public static class Description{
@@ -110,12 +110,12 @@ public class GoodsGetDetailResponseData {
     // ititmm
     @SerializedName("items")
     @Expose
-    private List<GoodsGetDetailResponseData.Items> items;
+    private List<GoodsSelectDetailResponseData.Items> items;
 
     // itvari
     @SerializedName("attributes")
     @Expose
-    private List<GoodsGetDetailResponseData.Attributes> attributes;
+    private List<GoodsSelectDetailResponseData.Attributes> attributes;
 
     // ititmm
     @Getter

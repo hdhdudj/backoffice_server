@@ -7,8 +7,9 @@ import io.spring.jparepos.goods.*;
 import io.spring.model.common.entity.SequenceData;
 import io.spring.model.goods.entity.*;
 import io.spring.model.goods.request.GoodsInsertRequestData;
-import io.spring.model.goods.response.GoodsGetDetailResponseData;
 import io.spring.model.goods.response.GoodsInsertResponseData;
+import io.spring.model.goods.response.GoodsSelectDetailResponseData;
+import io.spring.model.goods.response.GoodsSelectListResponseData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.*;
 
 @Service
@@ -339,22 +341,22 @@ public class JpaGoodsService {
      * @param assrotId
      * @return GoodsResponseData
      */
-    public GoodsGetDetailResponseData getGoodsDetailPage(String assrotId) {
+    public GoodsSelectDetailResponseData getGoodsDetailPage(String assrotId) {
         Itasrt itasrt = jpaItasrtRepository.findById(assrotId).orElseGet(() -> null);
-        GoodsGetDetailResponseData goodsGetDetailResponseData = new GoodsGetDetailResponseData(itasrt);
-        List<GoodsGetDetailResponseData.Description> descriptions = makeDescriptions(itasrt.getItasrdList());
-        List<GoodsGetDetailResponseData.Attributes> attributesList = makeAttributesList(itasrt.getItvariList());
-        List<GoodsGetDetailResponseData.Items> itemsList = makeItemsList(itasrt.getItitmmList());
-        goodsGetDetailResponseData.setDescription(descriptions);
-        goodsGetDetailResponseData.setAttributes(attributesList);
-        goodsGetDetailResponseData.setItems(itemsList);
-        return goodsGetDetailResponseData;
+        GoodsSelectDetailResponseData goodsSelectDetailResponseData = new GoodsSelectDetailResponseData(itasrt);
+        List<GoodsSelectDetailResponseData.Description> descriptions = makeDescriptions(itasrt.getItasrdList());
+        List<GoodsSelectDetailResponseData.Attributes> attributesList = makeAttributesList(itasrt.getItvariList());
+        List<GoodsSelectDetailResponseData.Items> itemsList = makeItemsList(itasrt.getItitmmList());
+        goodsSelectDetailResponseData.setDescription(descriptions);
+        goodsSelectDetailResponseData.setAttributes(attributesList);
+        goodsSelectDetailResponseData.setItems(itemsList);
+        return goodsSelectDetailResponseData;
     }
     // ititmm -> items 형태로 바꿔주는 함수
-    private List<GoodsGetDetailResponseData.Items> makeItemsList(List<Ititmm> ititmmList) {
-        List<GoodsGetDetailResponseData.Items> itemsList = new ArrayList<>();
+    private List<GoodsSelectDetailResponseData.Items> makeItemsList(List<Ititmm> ititmmList) {
+        List<GoodsSelectDetailResponseData.Items> itemsList = new ArrayList<>();
         for(Ititmm ititmm : ititmmList){
-            GoodsGetDetailResponseData.Items item = new GoodsGetDetailResponseData.Items();
+            GoodsSelectDetailResponseData.Items item = new GoodsSelectDetailResponseData.Items();
             item.setItemId(ititmm.getItemId());
             item.setValue(ititmm.getItvari1().getOptionNm()+"^|^"+ititmm.getItvari2().getOptionNm());
             item.setAddPrice(ititmm.getAddPrice());
@@ -365,10 +367,10 @@ public class JpaGoodsService {
     }
 
     // itvari -> attributes 형태로 바꿔주는 함수
-    private List<GoodsGetDetailResponseData.Attributes> makeAttributesList(List<Itvari> itvariList) {
-        List<GoodsGetDetailResponseData.Attributes> attributesList = new ArrayList<>();
+    private List<GoodsSelectDetailResponseData.Attributes> makeAttributesList(List<Itvari> itvariList) {
+        List<GoodsSelectDetailResponseData.Attributes> attributesList = new ArrayList<>();
         for(Itvari itvari : itvariList){
-            GoodsGetDetailResponseData.Attributes attr = new GoodsGetDetailResponseData.Attributes();
+            GoodsSelectDetailResponseData.Attributes attr = new GoodsSelectDetailResponseData.Attributes();
             attr.setSeq(itvari.getSeq());
             attr.setValue(itvari.getOptionNm());
             attr.setVariationGb(itvari.getOptionGb());
@@ -378,10 +380,10 @@ public class JpaGoodsService {
     }
 
     // itasrd -> description 형태로 바꿔주는 함수
-    private List<GoodsGetDetailResponseData.Description> makeDescriptions(List<Itasrd> itasrdList) {
-        List<GoodsGetDetailResponseData.Description> descriptionList = new ArrayList<>();
+    private List<GoodsSelectDetailResponseData.Description> makeDescriptions(List<Itasrd> itasrdList) {
+        List<GoodsSelectDetailResponseData.Description> descriptionList = new ArrayList<>();
         for(Itasrd itasrd : itasrdList){
-            GoodsGetDetailResponseData.Description desc = new GoodsGetDetailResponseData.Description();
+            GoodsSelectDetailResponseData.Description desc = new GoodsSelectDetailResponseData.Description();
             desc.setSeq(itasrd.getSeq());
             desc.setOrdDetCd(itasrd.getOrdDetCd());
             desc.setTextHtmlGb(itasrd.getTextHtmlGb());
@@ -392,22 +394,32 @@ public class JpaGoodsService {
     }
 
     /**
-     * 21-04-29 Pecan
+     * 21-05-10 Pecan
      * brandId, dispCategoryId, regDt, shortageYn, (이상 itasrt) dispCategoryId(itcatg), brandId(itbrnd) 로 list 목록 가져오는 함수
      * @param shortageYn, RegDtBegin, regDtEnd
-     * @return GoodsResponseData
+     * @return GoodsSelectListResponseData
      */
-    public GoodsInsertResponseData getGoodsList(String shortageYn, Date regDtBegin, Date regDtEnd) {
-        List<Object[]> goodsList = jpaItasrtRepository.getGoodsList(shortageYn, regDtBegin, regDtEnd);
-        for (Object[] goods : goodsList){
-            for (int i = 0; i < goods.length; i++) {
-                System.out.print(" " + goods[i] + " ");
-            }
-
-            System.out.println("");
+    public GoodsSelectListResponseData getGoodsList(String shortageYn, Date regDtBegin, Date regDtEnd) {
+        TypedQuery<Itasrt> query =
+                em.createQuery("select t from Itasrt t " +
+                                "join fetch t.itbrnd b " +
+                                "join fetch t.itcatg c " +
+                                "where t.regDt " +
+                                "between ?1 " +
+                                "and ?2 " +
+                                "and t.shortageYn = ?3 "
+                        , Itasrt.class);
+        query.setParameter(1, regDtBegin)
+                .setParameter(2, regDtEnd)
+                .setParameter(3, shortageYn);
+        List<Itasrt> itasrtList = query.getResultList();
+        List<GoodsSelectListResponseData.Goods> goodsList = new ArrayList<>();
+        for(Itasrt itasrt : itasrtList){
+            GoodsSelectListResponseData.Goods goods = new GoodsSelectListResponseData.Goods(itasrt);
+            goodsList.add(goods);
         }
-        GoodsInsertResponseData goodsInsertResponseData = null;//makeGoodsSelectListResponseData(goodsList);
-        return goodsInsertResponseData;
+        GoodsSelectListResponseData goodsSelectListResponseData = new GoodsSelectListResponseData(goodsList);
+        return goodsSelectListResponseData;
     }
 
 //    private GoodsInsertResponseData makeGoodsSelectListResponseData(List<Itasrt> goodsList) {
