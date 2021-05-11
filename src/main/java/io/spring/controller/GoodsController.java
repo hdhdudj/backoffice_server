@@ -26,7 +26,7 @@ import java.util.List;
 @RequestMapping(value = "/goods")
 public class GoodsController {
 	private Logger logger = LoggerFactory.getLogger(getClass());
-	
+	// 한글한그랗ㄴ글
 	private MyBatisGoodsDao goodsRepository;
 	private MyBatisCommonDao myBatisCommonDao;
 	private JpaGoodsService jpaGoodsService;
