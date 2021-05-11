@@ -1,13 +1,13 @@
 package io.spring.dao.goods;
 
-import io.spring.infrastructure.mybatis.mapper.GoodsMapper;
-import io.spring.model.goods.request.GoodsInsertRequestData;
+import java.util.HashMap;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import io.spring.infrastructure.mybatis.mapper.GoodsMapper;
+import io.spring.model.goods.request.GoodsInsertRequestData;
 
 @Repository
 public class MyBatisGoodsDaoImpl implements MyBatisGoodsDao {
@@ -44,5 +44,7 @@ public class MyBatisGoodsDaoImpl implements MyBatisGoodsDao {
 	public String selectMaxItemIdItitmm(GoodsInsertRequestData goodsInsertRequestData){return goodsMapper.selectMaxItemIdItitmm(goodsInsertRequestData);}
 
 	@Override
-	public List<HashMap<String, Object>> getGoodsList(String shortageYn, Date regDtBegin, Date regDtEnd){return goodsMapper.getGoodsList(shortageYn, regDtBegin, regDtEnd);};
+	public List<HashMap<String, Object>> getGoodsList(HashMap<String, Object> param) {
+		return goodsMapper.getGoodsList(param);
+	};
 }

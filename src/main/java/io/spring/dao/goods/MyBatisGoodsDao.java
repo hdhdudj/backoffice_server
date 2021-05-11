@@ -1,10 +1,9 @@
 package io.spring.dao.goods;
 
-import io.spring.model.goods.request.GoodsInsertRequestData;
-
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import io.spring.model.goods.request.GoodsInsertRequestData;
 
 public interface MyBatisGoodsDao {
 
@@ -22,5 +21,5 @@ public interface MyBatisGoodsDao {
 
 	String selectMaxItemIdItitmm(GoodsInsertRequestData goodsInsertRequestData);
 
-    List<HashMap<String, Object>> getGoodsList(String shortageYn, Date regDtBegin, Date regDtEnd);
+	List<HashMap<String, Object>> getGoodsList(HashMap<String, Object> param);
 }
