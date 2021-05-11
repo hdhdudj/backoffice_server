@@ -1,7 +1,6 @@
 package io.spring.model.goods.entity;
 
 import io.spring.infrastructure.util.StringFactory;
-import io.spring.infrastructure.util.Utilities;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.goods.idclass.ItitmcId;
 import lombok.AccessLevel;
@@ -29,8 +28,8 @@ public class Ititmc {
         this.assortId = item.getAssortId();
         this.itemId = item.getItemId();
         this.itemGrade = item.getItemGrade();
-        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
-        this.effStaDt = new Date();
+        this.effEndDt = depositInsertRequestData.getDepositDt();
+        this.effStaDt = this.effEndDt;
         this.stockGb = StringFactory.getGbOne(); // 01 하드코딩
     }
     @Id
