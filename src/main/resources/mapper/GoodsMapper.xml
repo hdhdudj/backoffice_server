@@ -126,7 +126,7 @@
 		]]>
 	</insert>
 
-	<select id="getGoodsList" parameterType="map" resultType="map">
+	<select id="getGoodsList" resultType="HashMap">
 		select
 			i.assort_id as assortId
 			 ,i.assort_nm as assortNm
