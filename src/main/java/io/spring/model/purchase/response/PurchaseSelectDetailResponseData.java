@@ -12,8 +12,8 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
-public class PurchaseSelectDetailResponse {
-    public PurchaseSelectDetailResponse(Lspchm lspchm){
+public class PurchaseSelectDetailResponseData {
+    public PurchaseSelectDetailResponseData(Lspchm lspchm){
         this.purchaseDt = lspchm.getPurchaseDt();
         this.purchaseVendorId = lspchm.getPurchaseVendorId();
         this.purchaseRemark = lspchm.getPurchaseRemark();

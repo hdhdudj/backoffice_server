@@ -2,7 +2,7 @@ package io.spring.model.purchase.entity;
 
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
-import io.spring.model.purchase.request.PurchaseInsertRequest;
+import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,15 +22,15 @@ import java.util.Date;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lspchs {
     private final static Logger logger = LoggerFactory.getLogger(Lspchs.class);
-    public Lspchs(PurchaseInsertRequest purchaseInsertRequest){
-        this.purchaseNo = purchaseInsertRequest.getPurchaseNo();
+    public Lspchs(PurchaseInsertRequestData purchaseInsertRequestData){
+        this.purchaseNo = purchaseInsertRequestData.getPurchaseNo();
         try{
             this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
         }
         catch (Exception e){
             logger.debug(e.getMessage());
         }
-        this.purchaseStatus = purchaseInsertRequest.getPurchaseStatus();
+        this.purchaseStatus = purchaseInsertRequestData.getPurchaseStatus();
     }
     public Lspchs(Lspchs lspchs){
         this.purchaseNo = lspchs.getPurchaseNo();

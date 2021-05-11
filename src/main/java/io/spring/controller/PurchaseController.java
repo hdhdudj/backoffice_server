@@ -2,9 +2,9 @@ package io.spring.controller;
 
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
-import io.spring.model.purchase.request.PurchaseInsertRequest;
-import io.spring.model.purchase.response.PurchaseSelectDetailResponse;
-import io.spring.model.purchase.response.PurchaseSelectListResponse;
+import io.spring.model.purchase.request.PurchaseInsertRequestData;
+import io.spring.model.purchase.response.PurchaseSelectDetailResponseData;
+import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.purchase.JpaPurchaseService;
 import io.spring.service.purchase.MyBatisPurchaseService;
@@ -37,7 +37,7 @@ public class PurchaseController {
     public ResponseEntity getPurchaseDetailJpa(@RequestParam(required = true) String purchaseNo){
         logger.debug("get purchase detail page");
 
-        PurchaseSelectDetailResponse responseData = jpaPurchaseService.getPurchaseDetailPage(purchaseNo);
+        PurchaseSelectDetailResponseData responseData = jpaPurchaseService.getPurchaseDetailPage(purchaseNo);
 
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), responseData);
         if(responseData == null){
@@ -47,10 +47,10 @@ public class PurchaseController {
     }
 
     @PostMapping(path="/jpasave")
-    public ResponseEntity savePurchaseJpa(@RequestBody PurchaseInsertRequest purchaseInsertRequest){
+    public ResponseEntity savePurchaseJpa(@RequestBody PurchaseInsertRequestData purchaseInsertRequestData){
         logger.debug("insert or update purchase by jpa");
-        purchaseInsertRequest.setPurchaseNo(jpaCommonService.getStrNumberId(StringFactory.getCUpperStr(), purchaseInsertRequest.getPurchaseNo(), StringFactory.getPurchaseSeqStr(), StringFactory.getIntEight())); // purchaseNo 채번
-        String purchaseNo = jpaPurchaseService.savePurchaseSquence(purchaseInsertRequest);
+        purchaseInsertRequestData.setPurchaseNo(jpaCommonService.getStrNumberId(StringFactory.getCUpperStr(), purchaseInsertRequestData.getPurchaseNo(), StringFactory.getPurchaseSeqStr(), StringFactory.getIntEight())); // purchaseNo 채번
+        String purchaseNo = jpaPurchaseService.savePurchaseSquence(purchaseInsertRequestData);
 
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), purchaseNo);
         if(res == null){
@@ -63,9 +63,9 @@ public class PurchaseController {
     public ResponseEntity getPurchaseDetailPage(@RequestParam String purchaseNo) {
         logger.debug("get purchase detail page");
 
-        PurchaseSelectDetailResponse purchaseSelectDetailResponse = jpaPurchaseService.getPurchaseDetailPage(purchaseNo);
+        PurchaseSelectDetailResponseData purchaseSelectDetailResponseData = jpaPurchaseService.getPurchaseDetailPage(purchaseNo);
 
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectDetailResponse);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectDetailResponseData);
 
         if(res == null){
             return null;
@@ -78,9 +78,9 @@ public class PurchaseController {
     public ResponseEntity getPurchaseListJpa(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")HashMap<String, Object> param){
         logger.debug("get purchase list - jpa");
 
-        PurchaseSelectListResponse purchaseSelectListResponse = jpaPurchaseService.getPurchaseList(param);
+        PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getPurchaseList(param);
 
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectListResponse.getPurchaseList());
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectListResponseData.getPurchaseList());
         if(res == null){
             return null;
         }

@@ -11,8 +11,8 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PurchaseSelectListResponse {
-    public PurchaseSelectListResponse(List<Purchase> purchases){
+public class PurchaseSelectListResponseData {
+    public PurchaseSelectListResponseData(List<Purchase> purchases){
         this.purchaseList = purchases;
     }
     private List<Purchase> purchaseList;

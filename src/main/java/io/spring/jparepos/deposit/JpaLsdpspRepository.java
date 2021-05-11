@@ -1,6 +1,6 @@
-package io.spring.jparepos.purchase;
+package io.spring.jparepos.deposit;
 
-import io.spring.model.purchase.entity.Lsdpsp;
+import io.spring.model.deposit.entity.Lsdpsp;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

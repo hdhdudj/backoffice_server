@@ -1,6 +1,6 @@
 package io.spring.model.goods.idclass;
 
-import io.spring.model.purchase.request.PurchaseInsertRequest;
+import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,12 +17,12 @@ import java.util.Date;
 public class ItitmtId implements Serializable {
     private final static Logger logger = LoggerFactory.getLogger(ItitmtId.class);
     //default serial version id, required for serializable classes.
-    public ItitmtId(PurchaseInsertRequest purchaseInsertRequest, PurchaseInsertRequest.Items items){
-        this.storageId = purchaseInsertRequest.getStoreCd();
+    public ItitmtId(PurchaseInsertRequestData purchaseInsertRequestData, PurchaseInsertRequestData.Items items){
+        this.storageId = purchaseInsertRequestData.getStoreCd();
         this.assortId = items.getAssortId();
         this.itemId = items.getItemId();
         this.itemGrade = items.getItemGrade();
-        this.effStaDt = purchaseInsertRequest.getPurchaseDt();
+        this.effStaDt = purchaseInsertRequestData.getPurchaseDt();
         this.effEndDt = this.effStaDt;
     }
 

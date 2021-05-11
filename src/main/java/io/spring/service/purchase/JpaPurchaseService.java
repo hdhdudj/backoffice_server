@@ -3,15 +3,17 @@ package io.spring.service.purchase;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
+import io.spring.jparepos.deposit.JpaLsdpspRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
 import io.spring.jparepos.purchase.*;
 import io.spring.model.common.entity.SequenceData;
+import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.purchase.entity.*;
-import io.spring.model.purchase.request.PurchaseInsertRequest;
-import io.spring.model.purchase.response.PurchaseSelectDetailResponse;
-import io.spring.model.purchase.response.PurchaseSelectListResponse;
+import io.spring.model.purchase.request.PurchaseInsertRequestData;
+import io.spring.model.purchase.response.PurchaseSelectDetailResponseData;
+import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -43,56 +45,56 @@ public class JpaPurchaseService {
     /**
      * 21-05-03 Pecan
      * 발주 insert/update 시퀀스 함수
-     * @param purchaseInsertRequest
+     * @param purchaseInsertRequestData
      * @return String
      */
     @Transactional
-    public String savePurchaseSquence(PurchaseInsertRequest purchaseInsertRequest) {
+    public String savePurchaseSquence(PurchaseInsertRequestData purchaseInsertRequestData) {
         // lspchm (발주마스터)
-        System.out.println("-----"+purchaseInsertRequest.getPurchaseNo());
-        Lspchm lspchm = this.saveLspchm(purchaseInsertRequest);
+        System.out.println("-----"+ purchaseInsertRequestData.getPurchaseNo());
+        Lspchm lspchm = this.saveLspchm(purchaseInsertRequestData);
         // lspchs (발주 상태 이력)
-        Lspchs lspchs = this.saveLspchs(purchaseInsertRequest);
+        Lspchs lspchs = this.saveLspchs(purchaseInsertRequestData);
         // lspchd (발주 디테일)
-        List<Lspchd> lspchdList = this.saveLspchd(purchaseInsertRequest);
+        List<Lspchd> lspchdList = this.saveLspchd(purchaseInsertRequestData);
         // lspchb (발주 디테일 이력)
-        List<Lspchb> lspchbList = this.saveLspchb(purchaseInsertRequest);
+        List<Lspchb> lspchbList = this.saveLspchb(purchaseInsertRequestData);
         // lsdpsp (입고 예정)
-        List<Lsdpsp> lsdpsp = this.saveLsdpsp(purchaseInsertRequest);
+        List<Lsdpsp> lsdpsp = this.saveLsdpsp(purchaseInsertRequestData);
         // ititmt (예정 재고)
-        List<Ititmt> ititmt = this.saveItitmt(purchaseInsertRequest);
+        List<Ititmt> ititmt = this.saveItitmt(purchaseInsertRequestData);
         return lspchm.getPurchaseNo();
     }
 
-    private Lspchm saveLspchm(PurchaseInsertRequest purchaseInsertRequest) {
-        Lspchm lspchm = jpaLspchmRepository.findByPurchaseNo(purchaseInsertRequest.getPurchaseNo()).orElseGet(() -> null);
+    private Lspchm saveLspchm(PurchaseInsertRequestData purchaseInsertRequestData) {
+        Lspchm lspchm = jpaLspchmRepository.findByPurchaseNo(purchaseInsertRequestData.getPurchaseNo()).orElseGet(() -> null);
         if(lspchm == null){ // insert
-            lspchm = new Lspchm(purchaseInsertRequest);
+            lspchm = new Lspchm(purchaseInsertRequestData);
         }
         else { // update
-            lspchm.setPurchaseDt(purchaseInsertRequest.getPurchaseDt());
+            lspchm.setPurchaseDt(purchaseInsertRequestData.getPurchaseDt());
             lspchm.setEffEndDt(new Date());
-            lspchm.setPurchaseStatus(purchaseInsertRequest.getPurchaseStatus());
-            lspchm.setPurchaseRemark(purchaseInsertRequest.getPurchaseRemark());
+            lspchm.setPurchaseStatus(purchaseInsertRequestData.getPurchaseStatus());
+            lspchm.setPurchaseRemark(purchaseInsertRequestData.getPurchaseRemark());
 //            lspchm.setSiteGb(purchaseInsertRequest.getSiteGb());
 //            lspchm.setVendorId(purchaseInsertRequest.getVendorId());
-            lspchm.setSiteOrderNo(purchaseInsertRequest.getSiteOrderNo());
+            lspchm.setSiteOrderNo(purchaseInsertRequestData.getSiteOrderNo());
 //            lspchm.setSiteTrackno(purchaseInsertRequest.getSiteTrackno());
-            lspchm.setNewLocalPrice(purchaseInsertRequest.getLocalPrice());
-            lspchm.setNewLocalTax(purchaseInsertRequest.getLocalTax());
-            lspchm.setNewDisPrice(purchaseInsertRequest.getDisPrice());
+            lspchm.setNewLocalPrice(purchaseInsertRequestData.getLocalPrice());
+            lspchm.setNewLocalTax(purchaseInsertRequestData.getLocalTax());
+            lspchm.setNewDisPrice(purchaseInsertRequestData.getDisPrice());
 //            lspchm.setPurchaseGb(purchaseInsertRequest.getPurchaseGb());
-            lspchm.setStoreCd(purchaseInsertRequest.getStoreCd());
-            lspchm.setTerms(purchaseInsertRequest.getTerms());
-            lspchm.setDelivery(purchaseInsertRequest.getDelivery());
-            lspchm.setPayment(purchaseInsertRequest.getPayment());
-            lspchm.setCarrier(purchaseInsertRequest.getCarrier());
+            lspchm.setStoreCd(purchaseInsertRequestData.getStoreCd());
+            lspchm.setTerms(purchaseInsertRequestData.getTerms());
+            lspchm.setDelivery(purchaseInsertRequestData.getDelivery());
+            lspchm.setPayment(purchaseInsertRequestData.getPayment());
+            lspchm.setCarrier(purchaseInsertRequestData.getCarrier());
         }
         jpaLspchmRepository.save(lspchm);
         return lspchm;
     }
 
-    private Lspchs saveLspchs(PurchaseInsertRequest purchaseInsertRequest) {
+    private Lspchs saveLspchs(PurchaseInsertRequestData purchaseInsertRequestData) {
         Date effEndDt = null;
         try
         {
@@ -101,9 +103,9 @@ public class JpaPurchaseService {
         catch (Exception e){
             logger.debug(e.getMessage());
         }
-        Lspchs lspchs = jpaLspchsRepository.findByPurchaseNoAndEffEndDt(purchaseInsertRequest.getPurchaseNo(), effEndDt);
+        Lspchs lspchs = jpaLspchsRepository.findByPurchaseNoAndEffEndDt(purchaseInsertRequestData.getPurchaseNo(), effEndDt);
         if(lspchs == null){ // insert
-            lspchs = new Lspchs(purchaseInsertRequest);
+            lspchs = new Lspchs(purchaseInsertRequestData);
         }
         else{ // update
             Calendar cal = Calendar.getInstance();
@@ -114,25 +116,25 @@ public class JpaPurchaseService {
             Lspchs newLspchs = new Lspchs(lspchs);
             jpaLspchsRepository.save(newLspchs);
         }
-        lspchs.setPurchaseNo(purchaseInsertRequest.getPurchaseNo());
-        lspchs.setPurchaseStatus(purchaseInsertRequest.getPurchaseStatus());
+        lspchs.setPurchaseNo(purchaseInsertRequestData.getPurchaseNo());
+        lspchs.setPurchaseStatus(purchaseInsertRequestData.getPurchaseStatus());
         jpaLspchsRepository.save(lspchs);
         return lspchs;
     }
 
-    private List<Lspchd> saveLspchd(PurchaseInsertRequest purchaseInsertRequest) {
+    private List<Lspchd> saveLspchd(PurchaseInsertRequestData purchaseInsertRequestData) {
         List<Lspchd> lspchdList = new ArrayList<>();
-        for(PurchaseInsertRequest.Items item : purchaseInsertRequest.getItems()){
-            Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequest.getPurchaseNo(), item.getPurchaseSeq() == null? null:item.getPurchaseSeq());
+        for(PurchaseInsertRequestData.Items item : purchaseInsertRequestData.getItems()){
+            Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequestData.getPurchaseNo(), item.getPurchaseSeq() == null? null:item.getPurchaseSeq());
             if(lspchd == null){ // insert
-                String purchaseSeq = jpaLspchdRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequest.getPurchaseNo());
+                String purchaseSeq = jpaLspchdRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequestData.getPurchaseNo());
                 if(purchaseSeq == null){
                     purchaseSeq = StringFactory.getFourStartCd();
                 }
                 else {
                     purchaseSeq = Utilities.plusOne(purchaseSeq, 4);
                 }
-                lspchd = new Lspchd(purchaseInsertRequest.getPurchaseNo(), purchaseSeq);
+                lspchd = new Lspchd(purchaseInsertRequestData.getPurchaseNo(), purchaseSeq);
             }
             lspchd.setPurchaseQty(item.getPurchaseQty());
             lspchd.setPurchaseUnitAmt(item.getPurchaseUnitAmt());
@@ -144,10 +146,10 @@ public class JpaPurchaseService {
         return lspchdList;
     }
 
-    private List<Lspchb> saveLspchb(PurchaseInsertRequest purchaseInsertRequest) {
+    private List<Lspchb> saveLspchb(PurchaseInsertRequestData purchaseInsertRequestData) {
         List<Lspchb> lspchbList = new ArrayList<>();
         Date effEndDt = null;
-        for(PurchaseInsertRequest.Items items: purchaseInsertRequest.getItems()){
+        for(PurchaseInsertRequestData.Items items: purchaseInsertRequestData.getItems()){
             Date doomDate = null;
             try{
                 doomDate = Utilities.getStringToDate(StringFactory.getDoomDay());
@@ -155,10 +157,10 @@ public class JpaPurchaseService {
             catch(Exception e){
                 logger.debug(e.getMessage());
             }
-            Lspchb lspchb = jpaLspchbRepository.findByPurchaseNoAndPurchaseSeqAndEffEndDt(purchaseInsertRequest.getPurchaseNo(), items.getPurchaseSeq(), doomDate);
+            Lspchb lspchb = jpaLspchbRepository.findByPurchaseNoAndPurchaseSeqAndEffEndDt(purchaseInsertRequestData.getPurchaseNo(), items.getPurchaseSeq(), doomDate);
             if(lspchb == null){ // insert
-                lspchb = new Lspchb(purchaseInsertRequest);
-                String purchaseSeq = jpaLspchbRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequest.getPurchaseNo());
+                lspchb = new Lspchb(purchaseInsertRequestData);
+                String purchaseSeq = jpaLspchbRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequestData.getPurchaseNo());
                 if(purchaseSeq == null){ // 해당 purchaseNo에 seq가 없는 경우
                     purchaseSeq = StringFactory.getFourStartCd(); // 0001
                 }
@@ -176,7 +178,7 @@ public class JpaPurchaseService {
                 Lspchb newLspchb = new Lspchb(lspchb);
                 jpaLspchbRepository.save(newLspchb);
             }
-            lspchb.setPurchaseNo(purchaseInsertRequest.getPurchaseNo());
+            lspchb.setPurchaseNo(purchaseInsertRequestData.getPurchaseNo());
             lspchb.setPurchaseStatus(items.getPurchaseStatus());
             lspchb.setCancelGb(StringFactory.getNinetyNine()); // 추후 수정
             jpaLspchbRepository.save(lspchb);
@@ -185,15 +187,15 @@ public class JpaPurchaseService {
         return lspchbList;
     }
 
-    private List<Lsdpsp> saveLsdpsp(PurchaseInsertRequest purchaseInsertRequest) {
+    private List<Lsdpsp> saveLsdpsp(PurchaseInsertRequestData purchaseInsertRequestData) {
         List<Lsdpsp> lsdpspList = new ArrayList<>();
-        for(PurchaseInsertRequest.Items items : purchaseInsertRequest.getItems()){
+        for(PurchaseInsertRequestData.Items items : purchaseInsertRequestData.getItems()){
             System.out.println("items.getPurchaseSeq() : "+items.getPurchaseSeq());
-            Lsdpsp lsdpsp = items.getPurchaseSeq() == null || items.getPurchaseSeq().equals("")? null : jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequest.getPurchaseNo(), items.getPurchaseSeq());
+            Lsdpsp lsdpsp = items.getPurchaseSeq() == null || items.getPurchaseSeq().equals("")? null : jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequestData.getPurchaseNo(), items.getPurchaseSeq());
             if(lsdpsp == null){ // insert
-                String depositPlanId = jpaCommonService.getNumberId(purchaseInsertRequest.getDepositPlanId(), StringFactory.getDepositPlanId(), StringFactory.getIntNine());
-                purchaseInsertRequest.setDepositPlanId(depositPlanId); // depositPlanId 채번
-                String seq = jpaLsdpspRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequest.getPurchaseNo());
+                String depositPlanId = jpaCommonService.getNumberId(purchaseInsertRequestData.getDepositPlanId(), StringFactory.getDepositPlanId(), StringFactory.getIntNine());
+                purchaseInsertRequestData.setDepositPlanId(depositPlanId); // depositPlanId 채번
+                String seq = jpaLsdpspRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequestData.getPurchaseNo());
                 if(seq == null){
                     seq = StringFactory.getFourStartCd();
                 }
@@ -201,17 +203,17 @@ public class JpaPurchaseService {
                     seq = Utilities.plusOne(seq, 4);
                 }
                 items.setPurchaseSeq(seq);
-                lsdpsp = new Lsdpsp(purchaseInsertRequest, items);
-                purchaseInsertRequest.setDepositPlanId(null);
+                lsdpsp = new Lsdpsp(purchaseInsertRequestData, items);
+                purchaseInsertRequestData.setDepositPlanId(null);
             }
             else{ // update
-                lsdpsp.setPurchaseNo(purchaseInsertRequest.getPurchaseNo());
+                lsdpsp.setPurchaseNo(purchaseInsertRequestData.getPurchaseNo());
                 lsdpsp.setPurchaseSeq(items.getPurchaseSeq());
-                lsdpsp.setPurchasePlanQty(purchaseInsertRequest.getPurchasePlanQty());
-                lsdpsp.setPurchaseTakeQty(purchaseInsertRequest.getPurchaseTakeQty());
+                lsdpsp.setPurchasePlanQty(purchaseInsertRequestData.getPurchasePlanQty());
+                lsdpsp.setPurchaseTakeQty(purchaseInsertRequestData.getPurchaseTakeQty());
                 lsdpsp.setAssortId(items.getAssortId());
                 lsdpsp.setItemId(items.getItemId());
-                lsdpsp.setPlanStatus(purchaseInsertRequest.getPlanStatus());
+                lsdpsp.setPlanStatus(purchaseInsertRequestData.getPlanStatus());
             }
             lsdpspList.add(lsdpsp);
             jpaLsdpspRepository.save(lsdpsp);
@@ -219,10 +221,10 @@ public class JpaPurchaseService {
         return lsdpspList;
     }
 
-    private List<Ititmt> saveItitmt(PurchaseInsertRequest purchaseInsertRequest) {
+    private List<Ititmt> saveItitmt(PurchaseInsertRequestData purchaseInsertRequestData) {
         List<Ititmt> ititmtList = new ArrayList<>();
-        for(PurchaseInsertRequest.Items items : purchaseInsertRequest.getItems()){
-            ItitmtId ititmtId = new ItitmtId(purchaseInsertRequest, items);
+        for(PurchaseInsertRequestData.Items items : purchaseInsertRequestData.getItems()){
+            ItitmtId ititmtId = new ItitmtId(purchaseInsertRequestData, items);
             Ititmt ititmt = jpaItitmtRepository.findById(ititmtId).orElseGet(() -> null);
             if(ititmt == null){ // insert
                 ititmt = new Ititmt(ititmtId);
@@ -232,31 +234,31 @@ public class JpaPurchaseService {
             else{ // update
                 ititmt.setTempQty(ititmt.getTempQty()+1);
             }
-            ititmt.setStockGb(purchaseInsertRequest.getStockGb());
-            ititmt.setStockAmt(purchaseInsertRequest.getStockAmt());
-            ititmt.setVendorId(purchaseInsertRequest.getVendorId());
-            ititmt.setSiteGb(purchaseInsertRequest.getSiteGb());
+            ititmt.setStockGb(purchaseInsertRequestData.getStockGb());
+            ititmt.setStockAmt(purchaseInsertRequestData.getStockAmt());
+            ititmt.setVendorId(purchaseInsertRequestData.getVendorId());
+            ititmt.setSiteGb(purchaseInsertRequestData.getSiteGb());
             jpaItitmtRepository.save(ititmt);
             ititmtList.add(ititmt);
         }
         return ititmtList;
     }
 
-    public PurchaseSelectDetailResponse getPurchaseDetailPage(String purchaseNo) {
+    public PurchaseSelectDetailResponseData getPurchaseDetailPage(String purchaseNo) {
         Lspchm lspchm = jpaLspchmRepository.findById(purchaseNo).orElseGet(() -> null);//.get();
         if(lspchm == null){
-            return new PurchaseSelectDetailResponse();
+            return new PurchaseSelectDetailResponseData();
         }
-        List<PurchaseSelectDetailResponse.Items> itemsList = makeItemsList(lspchm.getLspchdList());
-        PurchaseSelectDetailResponse purchaseSelectDetailResponse = new PurchaseSelectDetailResponse(lspchm);
-        purchaseSelectDetailResponse.setItems(itemsList);
-        return purchaseSelectDetailResponse;
+        List<PurchaseSelectDetailResponseData.Items> itemsList = makeItemsList(lspchm.getLspchdList());
+        PurchaseSelectDetailResponseData purchaseSelectDetailResponseData = new PurchaseSelectDetailResponseData(lspchm);
+        purchaseSelectDetailResponseData.setItems(itemsList);
+        return purchaseSelectDetailResponseData;
     }
 
-    private List<PurchaseSelectDetailResponse.Items> makeItemsList(List<Lspchd> lspchdList) {
-        List<PurchaseSelectDetailResponse.Items> itemsList = new ArrayList<>();
+    private List<PurchaseSelectDetailResponseData.Items> makeItemsList(List<Lspchd> lspchdList) {
+        List<PurchaseSelectDetailResponseData.Items> itemsList = new ArrayList<>();
         for(Lspchd lspchd : lspchdList){
-            PurchaseSelectDetailResponse.Items item = new PurchaseSelectDetailResponse.Items();
+            PurchaseSelectDetailResponseData.Items item = new PurchaseSelectDetailResponseData.Items();
             item.setAssortId(lspchd.getAssortId());
             item.setItemId(lspchd.getItemId());
             item.setPurchaseQty(lspchd.getPurchaseQty());
@@ -274,8 +276,8 @@ public class JpaPurchaseService {
         return itemsList;
     }
     // 발주 list 가져오는 함수
-    public PurchaseSelectListResponse getPurchaseList(HashMap<String, Object> param) {
-        List<PurchaseSelectListResponse.Purchase> purchaseList = new ArrayList<>();
+    public PurchaseSelectListResponseData getPurchaseList(HashMap<String, Object> param) {
+        List<PurchaseSelectListResponseData.Purchase> purchaseList = new ArrayList<>();
         TypedQuery<Lspchd> query =
                 em.createQuery("select d from Lspchd d " +
                     "join fetch d.lspchm m " +
@@ -297,7 +299,7 @@ public class JpaPurchaseService {
                 .setParameter(5, param.get(StringFactory.getStrAssortId()));
         List<Lspchd> lspchdList = query.getResultList();
         for(Lspchd lspchd : lspchdList){
-            PurchaseSelectListResponse.Purchase purchase = new PurchaseSelectListResponse.Purchase(lspchd.getLspchm());
+            PurchaseSelectListResponseData.Purchase purchase = new PurchaseSelectListResponseData.Purchase(lspchd.getLspchm());
             purchase.setPurchaseSeq(lspchd.getPurchaseSeq());
             purchase.setPurchaseQty(lspchd.getPurchaseQty());
             purchase.setPurchaseUnitAmt(lspchd.getPurchaseUnitAmt());
@@ -309,8 +311,8 @@ public class JpaPurchaseService {
             purchase.setOptionNm2(lspchd.getItitmm().getItvari2().getOptionNm());
             purchaseList.add(purchase);
         }
-        PurchaseSelectListResponse purchaseSelectListResponse = new PurchaseSelectListResponse(purchaseList);
-        return purchaseSelectListResponse;
+        PurchaseSelectListResponseData purchaseSelectListResponseData = new PurchaseSelectListResponseData(purchaseList);
+        return purchaseSelectListResponseData;
     }
     
     /**

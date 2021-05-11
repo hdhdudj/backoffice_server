@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 //@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PurchaseInsertRequest {
+public class PurchaseInsertRequestData {
     /**
      * 21-05-03 Pecan
      * 발주 insert request dto

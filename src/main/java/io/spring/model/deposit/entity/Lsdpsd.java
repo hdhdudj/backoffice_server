@@ -1,0 +1,78 @@
+package io.spring.model.deposit.entity;
+
+import io.spring.infrastructure.util.StringFactory;
+import io.spring.infrastructure.util.Utilities;
+import io.spring.model.deposit.idclass.LsdpsdId;
+import io.spring.model.deposit.request.DepositInsertRequestData;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.apache.ibatis.annotations.Update;
+import org.flywaydb.core.internal.util.StringUtils;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+import java.util.Date;
+
+@Entity
+@Getter
+@Setter
+@Table(name="lsdpsd")
+@IdClass(LsdpsdId.class)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Lsdpsd {
+    public Lsdpsd(String depositNo, DepositInsertRequestData.Item item){
+        this.depositNo = depositNo;
+        this.depositSeq = item.getDepositSeq();
+        this.assortId = item.getAssortId();
+        this.itemGrade = item.getItemGrade();
+        this.extraClsCd = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
+        this.salePrice = (float) 0;
+        this.depositQty = item.getDepositQty();
+        this.extraUnitcost = item.getExtraUnitcost();
+        this.deliPrice = this.depositQty * this.extraUnitcost;
+        this.extraCost = this.deliPrice;
+        this.extraQty = this.depositQty;
+        this.finishYymm = Utilities.getStringToDate(StringFactory.getDoomDay());
+        this.depositType = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01' 입고
+        this.siteGb = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
+        this.vendorId = StringUtils.leftPad("1", 6, '0');
+        this.inputNo = item.getPurchaseNo();
+        this.inputSeq = item.getPurchaseSeq();
+    }
+    @Id
+    private String depositNo;
+    @Id
+    private String depositSeq;
+    private String assortId;
+    private String itemId;
+    private String itemGrade;
+    private String extraClsCd;
+    private Long depositQty;
+    private Float deliPrice;
+    private Float salePrice;
+    private Float extraUnitcost;
+    private Float extraCost;
+    private Long extraQty;
+    private Date finishYymm;
+    private String depositType;
+    private String siteGb;
+    private String vendorId;
+    private String sStorageCd;
+    private String minDepositNo;
+    private String minDepositSeq;
+    private String inputNo;
+    private String inputSeq;
+    private Long regId;
+    @CreationTimestamp
+    private Date regDt;
+    private Long updId;
+    @UpdateTimestamp
+    private Date updDt;
+    private Date excAppDt;
+}

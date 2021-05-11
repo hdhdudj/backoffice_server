@@ -62,4 +62,10 @@ public class StringFactory {
     @Getter
     private final static String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
+    // deposit controller
+    @Getter
+    private final static String strDepositNo = "seq_LSDPSM";
+    @Getter
+    private final static String dUpperStr = "D";
+
 }

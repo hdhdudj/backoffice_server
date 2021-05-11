@@ -1,7 +1,7 @@
-package io.spring.model.purchase.entity;
+package io.spring.model.deposit.entity;
 
 import io.spring.infrastructure.util.StringFactory;
-import io.spring.model.purchase.request.PurchaseInsertRequest;
+import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,22 +24,22 @@ import java.util.Date;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lsdpsp {
     private final static Logger logger = LoggerFactory.getLogger(Lsdpsp.class);
-    public Lsdpsp(PurchaseInsertRequest purchaseInsertRequest, PurchaseInsertRequest.Items items){
-        this.depositPlanId = purchaseInsertRequest.getDepositPlanId();
+    public Lsdpsp(PurchaseInsertRequestData purchaseInsertRequestData, PurchaseInsertRequestData.Items items){
+        this.depositPlanId = purchaseInsertRequestData.getDepositPlanId();
         try{
             this.smReservationDt = new SimpleDateFormat(StringFactory.getDateFormat()).parse(StringFactory.getDoomDay());
         }
         catch(Exception e){
             logger.debug(e.getMessage());
         }
-        this.purchasePlanQty = purchaseInsertRequest.getPurchasePlanQty();
-        this.purchaseTakeQty = purchaseInsertRequest.getPurchaseTakeQty();
+        this.purchasePlanQty = purchaseInsertRequestData.getPurchasePlanQty();
+        this.purchaseTakeQty = purchaseInsertRequestData.getPurchaseTakeQty();
         this.assortId = items.getAssortId();
         this.itemId = items.getItemId();
-        this.planStatus = purchaseInsertRequest.getPlanStatus();
+        this.planStatus = purchaseInsertRequestData.getPlanStatus();
 //        this.orderId = purchaseInsertRequest.getOrderId();
 //        this.orderSeq = purchaseInsertRequest.getOrderSeq();
-        this.purchaseNo = purchaseInsertRequest.getPurchaseNo();
+        this.purchaseNo = purchaseInsertRequestData.getPurchaseNo();
         this.purchaseSeq = items.getPurchaseSeq();
         this.claimItemYn = StringFactory.getGbTwo(); // 02
     }
