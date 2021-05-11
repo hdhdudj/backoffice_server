@@ -126,7 +126,7 @@
 		]]>
 	</insert>
 
-	<select id="getGoodsList" resultType="HashMap">
+	<select id="getGoodsList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
 		select
 			i.assort_id as assortId
 			 ,i.assort_nm as assortNm
@@ -135,6 +135,7 @@
 			 ,ib.brand_nm as brandNm
 			 ,i.disp_category_id as dispCategoryId
 			 ,ic.category_nm as categoryNm
+			 ,f_categoryFullPath(i.disp_category_id) fullCategoryNm
 		from itasrt i
 		   ,itbrnd ib
 		   ,itcatg ic
