@@ -11,9 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -63,4 +61,5 @@ public class Lsdpsp {
     private Date regDt;
     @UpdateTimestamp
     private Date updDt;
+
 }

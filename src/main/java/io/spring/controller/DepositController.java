@@ -3,6 +3,7 @@ package io.spring.controller;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.deposit.request.DepositInsertRequestData;
+import io.spring.model.deposit.response.DepositSelectDetailResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.deposit.JpaDepositService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,13 @@ public class DepositController {
         depositInsertRequestData.setDepositNo(depositNo); // deposit no 채번
         depositNo = jpaDepositService.sequenceInsertDeposit(depositInsertRequestData);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), depositNo);
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping(path="/depositdetailjpa")
+    public ResponseEntity getDepositDetailPage(@RequestParam String depositNo){
+        DepositSelectDetailResponseData depositSelectDetailResponseData = jpaDepositService.getDetail(depositNo);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositSelectDetailResponseData);
         return ResponseEntity.ok(res);
     }
 

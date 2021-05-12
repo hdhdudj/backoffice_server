@@ -8,15 +8,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.ibatis.annotations.Update;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -31,6 +27,7 @@ public class Lsdpsd {
         this.depositSeq = item.getDepositSeq();
         this.assortId = item.getAssortId();
         this.itemGrade = item.getItemGrade();
+        this.itemId = item.getItemId();
         this.extraClsCd = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
         this.salePrice = (float) 0;
         this.depositQty = item.getDepositQty();
@@ -75,4 +72,26 @@ public class Lsdpsd {
     @UpdateTimestamp
     private Date updDt;
     private Date excAppDt;
+
+
+    // 연관 관계 lsdpsm
+    @ManyToOne
+    @JoinColumn(name = "depositNo", referencedColumnName="depositNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+    private Lsdpsm lsdpsm;
+
+    // 연관 관계 lsdpsp
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "inputNo", referencedColumnName="purchaseNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+            @JoinColumn(name = "inputSeq", referencedColumnName="purchaseSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+    })
+    private Lsdpsp lsdpsp;
+
+//    // 연관 관계 ititmc
+//    @ManyToOne
+//    @JoinColumns({
+//            @JoinColumn(name = "inputNo", referencedColumnName="purchaseNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+//            @JoinColumn(name = "inputSeq", referencedColumnName="purchaseSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+//    })
+//    private Ititmc ititmc;
 }

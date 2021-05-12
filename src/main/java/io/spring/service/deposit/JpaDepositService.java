@@ -9,6 +9,7 @@ import io.spring.jparepos.goods.JpaItitmtRepository;
 import io.spring.model.common.entity.SequenceData;
 import io.spring.model.deposit.entity.*;
 import io.spring.model.deposit.request.DepositInsertRequestData;
+import io.spring.model.deposit.response.DepositSelectDetailResponseData;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.idclass.ItitmtId;
@@ -80,6 +81,14 @@ public class JpaDepositService {
 
     private void saveLsdpds(DepositInsertRequestData depositInsertRequestData) {
         for(DepositInsertRequestData.Item item : depositInsertRequestData.getItems()){
+            String depositSeq = jpaLsdpdsRepository.findMaxDepositSeqByDepositNo(depositInsertRequestData.getDepositNo());
+            if(depositSeq == null){
+                depositSeq = StringUtils.leftPad("1",4,'0');
+            }
+            else{
+                depositSeq = Utilities.plusOne(depositSeq, 4);
+            }
+            item.setDepositSeq(depositSeq);
             Lsdpds lsdpds = new Lsdpds(depositInsertRequestData.getDepositNo(), item);
             jpaLsdpdsRepository.save(lsdpds);
         }
@@ -136,6 +145,18 @@ public class JpaDepositService {
             ititmtList.add(ititmt);
         }
         return ititmtList;
+    }
+
+    public DepositSelectDetailResponseData getDetail(String depositNo){
+        List<Lsdpsd> lsdpsdList = jpaLsdpsdRepository.findByDepositNo(depositNo);
+        List<DepositSelectDetailResponseData.Item> itemList = new ArrayList<>();
+        for(Lsdpsd lsdpsd : lsdpsdList){
+            DepositSelectDetailResponseData.Item item = new DepositSelectDetailResponseData.Item(lsdpsd);
+        }
+        Lsdpsm lsdpsm = lsdpsdList.get(0).getLsdpsm();
+        DepositSelectDetailResponseData depositSelectDetailResponseData = new DepositSelectDetailResponseData(lsdpsm);
+
+        return depositSelectDetailResponseData;
     }
 
     /**
