@@ -118,11 +118,11 @@ public class GoodsController {
 	public ResponseEntity getGoodsList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtBegin, Date regDtEnd, String shortageYn){
 		logger.debug("get goods list data");
 
-		HashMap<String, Object> map = new HashMap<String, Object>();
+		HashMap<String, Object> param = new HashMap<String, Object>();
 
-		map.put("shortageYn", shortageYn);
-		map.put("regDtBegin", regDtBegin);
-		map.put("regDtEnd", regDtEnd);
+		param.put("shortageYn", shortageYn);
+		param.put("regDtBegin", regDtBegin);
+		param.put("regDtEnd", regDtEnd);
 
 		List<HashMap<String, Object>> responseData = goodsRepository.getGoodsList(param);
 		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
