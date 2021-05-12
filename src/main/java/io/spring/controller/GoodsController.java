@@ -74,9 +74,9 @@ public class GoodsController {
 		return null;
 	}
 	
-	@PostMapping(path = "/insertpost")
-	public ResponseEntity insertGoodsJpa(@RequestBody GoodsInsertRequestData goodsInsertRequestData) {
-		logger.debug("insert goods by jpa");
+	@PostMapping(path = "/savebyjpa")
+	public ResponseEntity saveGoodsJpa(@RequestBody GoodsInsertRequestData goodsInsertRequestData) {
+		logger.debug("save(insert or update) goods by jpa");
 
 		goodsInsertRequestData.setAssortId(jpaCommonService.getNumberId(goodsInsertRequestData.getAssortId(), StringFactory.getSeqItasrtStr(), StringFactory.getIntNine())); // assort id 채번
 		GoodsInsertResponseData responseData = jpaGoodsService.sequenceInsertOrUpdateGoods(goodsInsertRequestData);
