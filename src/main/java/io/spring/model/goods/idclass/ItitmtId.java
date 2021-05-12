@@ -1,12 +1,11 @@
 package io.spring.model.goods.idclass;
 
+import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -15,7 +14,6 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ItitmtId implements Serializable {
-    private final static Logger logger = LoggerFactory.getLogger(ItitmtId.class);
     //default serial version id, required for serializable classes.
     public ItitmtId(PurchaseInsertRequestData purchaseInsertRequestData, PurchaseInsertRequestData.Items items){
         this.storageId = purchaseInsertRequestData.getStoreCd();
@@ -24,6 +22,15 @@ public class ItitmtId implements Serializable {
         this.itemGrade = items.getItemGrade();
         this.effStaDt = purchaseInsertRequestData.getPurchaseDt();
         this.effEndDt = this.effStaDt;
+    }
+
+    public ItitmtId(DepositInsertRequestData depositInsertRequestData, DepositInsertRequestData.Item item){
+        this.storageId = depositInsertRequestData.getStoreCd();
+        this.assortId = item.getAssortId();
+        this.itemId = item.getItemId();
+        this.itemGrade = item.getItemGrade();
+        this.effStaDt = depositInsertRequestData.getDepositDt();
+        this.effEndDt = depositInsertRequestData.getDepositDt();
     }
 
     private static final long serialVersionUID = 1L;

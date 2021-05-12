@@ -8,10 +8,7 @@ import io.spring.service.deposit.JpaDepositService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -21,12 +18,17 @@ public class DepositController {
     private final JpaDepositService jpaDepositService;
     private final JpaCommonService jpaCommonService;
 
-    @PostMapping(path="/insertbyjpa")
-    public ResponseEntity insertDepositJpa(@RequestBody DepositInsertRequestData depositInsertRequestData){
+    @PostMapping(path="/savebyjpa")
+    public ResponseEntity saveDepositJpa(@RequestBody DepositInsertRequestData depositInsertRequestData){
         String depositNo = jpaCommonService.getStrNumberId(StringFactory.getDUpperStr(), depositInsertRequestData.getDepositNo(), StringFactory.getStrDepositNo(), StringFactory.getIntEight());
         depositInsertRequestData.setDepositNo(depositNo); // deposit no 채번
-        jpaDepositService.sequenceInsertDeposit(depositInsertRequestData);
+        depositNo = jpaDepositService.sequenceInsertDeposit(depositInsertRequestData);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), depositNo);
         return ResponseEntity.ok(res);
+    }
+
+    @GetMapping(path="/init")
+    public void initTabled(){
+        jpaDepositService.init();
     }
 }

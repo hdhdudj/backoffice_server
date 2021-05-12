@@ -8,22 +8,21 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Entity
 @Table(name="lspchm")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lspchm {
-    private final static Logger logger = LoggerFactory.getLogger(Lspchm.class);
     public Lspchm(PurchaseInsertRequestData purchaseInsertRequestData){
         this.purchaseNo = purchaseInsertRequestData.getPurchaseNo();
         this.purchaseDt = purchaseInsertRequestData.getPurchaseDt();
@@ -31,7 +30,7 @@ public class Lspchm {
             this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
         }
         catch (Exception e){
-            logger.debug(e.getMessage());
+            log.debug(e.getMessage());
         }
         this.purchaseStatus = purchaseInsertRequestData.getPurchaseStatus(); // 01 : 발주, 05 : 취소
         this.purchaseRemark = purchaseInsertRequestData.getPurchaseRemark();
@@ -59,7 +58,6 @@ public class Lspchm {
     }
     @Id
     private String purchaseNo;
-    @CreationTimestamp
     private Date purchaseDt;
     private Date effEndDt;
     private String purchaseStatus;

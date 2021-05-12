@@ -26,7 +26,7 @@ public class PurchaseInsertRequestData {
     private String itemGrade; // lspchd, ititmt
 
     // lspchm
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date purchaseDt ;
     private String purchaseRemark;
     private String siteOrderNo;

@@ -51,7 +51,6 @@ public class JpaPurchaseService {
     @Transactional
     public String savePurchaseSquence(PurchaseInsertRequestData purchaseInsertRequestData) {
         // lspchm (발주마스터)
-        System.out.println("-----"+ purchaseInsertRequestData.getPurchaseNo());
         Lspchm lspchm = this.saveLspchm(purchaseInsertRequestData);
         // lspchs (발주 상태 이력)
         Lspchs lspchs = this.saveLspchs(purchaseInsertRequestData);
@@ -125,7 +124,6 @@ public class JpaPurchaseService {
     private List<Lspchd> saveLspchd(PurchaseInsertRequestData purchaseInsertRequestData) {
         List<Lspchd> lspchdList = new ArrayList<>();
         for(PurchaseInsertRequestData.Items item : purchaseInsertRequestData.getItems()){
-            System.out.println("----- " + item.getAssortId() + " " + item.getItemId());
             Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequestData.getPurchaseNo(), item.getPurchaseSeq() == null? null:item.getPurchaseSeq());
             if(lspchd == null){ // insert
                 String purchaseSeq = jpaLspchdRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequestData.getPurchaseNo());
@@ -191,7 +189,6 @@ public class JpaPurchaseService {
     private List<Lsdpsp> saveLsdpsp(PurchaseInsertRequestData purchaseInsertRequestData) {
         List<Lsdpsp> lsdpspList = new ArrayList<>();
         for(PurchaseInsertRequestData.Items items : purchaseInsertRequestData.getItems()){
-            System.out.println("items.getPurchaseSeq() : "+items.getPurchaseSeq());
             Lsdpsp lsdpsp = items.getPurchaseSeq() == null || items.getPurchaseSeq().equals("")? null : jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequestData.getPurchaseNo(), items.getPurchaseSeq());
             if(lsdpsp == null){ // insert
                 String depositPlanId = jpaCommonService.getNumberId(purchaseInsertRequestData.getDepositPlanId(), StringFactory.getDepositPlanId(), StringFactory.getIntNine());
@@ -210,7 +207,7 @@ public class JpaPurchaseService {
             else{ // update
                 lsdpsp.setPurchaseNo(purchaseInsertRequestData.getPurchaseNo());
                 lsdpsp.setPurchaseSeq(items.getPurchaseSeq());
-                lsdpsp.setPurchasePlanQty(items.getPurchaseQty()+1);
+                lsdpsp.setPurchasePlanQty(items.getPurchaseQty() + lsdpsp.getPurchasePlanQty());
 //                lsdpsp.setPurchaseTakeQty(purchaseInsertRequestData.getPurchaseTakeQty());
                 lsdpsp.setAssortId(items.getAssortId());
                 lsdpsp.setItemId(items.getItemId());
@@ -230,10 +227,10 @@ public class JpaPurchaseService {
             if(ititmt == null){ // insert
                 ititmt = new Ititmt(ititmtId);
                 ititmt.setTempIndicateQty(0L);
-                ititmt.setTempQty(1L);
+                ititmt.setTempQty(items.getPurchaseQty());
             }
             else{ // update
-                ititmt.setTempQty(ititmt.getTempQty()+1);
+                ititmt.setTempQty(ititmt.getTempQty() + items.getPurchaseQty());
             }
             ititmt.setStockGb(purchaseInsertRequestData.getStockGb());
             ititmt.setStockAmt(purchaseInsertRequestData.getStockAmt());

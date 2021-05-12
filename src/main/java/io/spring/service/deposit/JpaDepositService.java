@@ -1,21 +1,28 @@
 package io.spring.service.deposit;
 
+import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.deposit.*;
 import io.spring.jparepos.goods.JpaItitmcRepository;
-import io.spring.model.deposit.entity.Lsdpds;
-import io.spring.model.deposit.entity.Lsdpsd;
-import io.spring.model.deposit.entity.Lsdpsm;
-import io.spring.model.deposit.entity.Lsdpss;
+import io.spring.jparepos.goods.JpaItitmtRepository;
+import io.spring.model.common.entity.SequenceData;
+import io.spring.model.deposit.entity.*;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.goods.entity.Ititmc;
+import io.spring.model.goods.entity.Ititmt;
+import io.spring.model.goods.idclass.ItitmtId;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class JpaDepositService {
@@ -25,13 +32,18 @@ public class JpaDepositService {
     private final JpaLsdpdsRepository jpaLsdpdsRepository;
     private final JpaLsdpspRepository jpaLsdpspRepository;
     private final JpaItitmcRepository jpaItitmcRepository;
+    private final JpaItitmtRepository jpaItitmtRepository;
+    private final JpaSequenceDataRepository jpaSequenceDataRepository;
 
+    @Transactional
     public String sequenceInsertDeposit(DepositInsertRequestData depositInsertRequestData){
         Lsdpsm lsdpsm = this.saveLsdpsm(depositInsertRequestData);// lsdpsm (입고 마스터)
         List<Lsdpsd> lsdpsdList = this.saveLsdpsd(depositInsertRequestData);// lsdpsd (입고 디테일)
         this.saveLsdpss(depositInsertRequestData);// lsdpss (입고 마스터 이력)
         this.saveLsdpds(depositInsertRequestData);// lsdpds (입고 디테일 이력)
+        List<Lsdpsp> lsdpspList = this.saveLsdpsp(depositInsertRequestData);// lsdpsp (입고 예정)
         List<Ititmc> ititmcList = this.saveItitmc(depositInsertRequestData);// ititmc (상품 재고)
+        List<Ititmt> ititmtList = this.saveItitmt(depositInsertRequestData);// ititmt (입고예정재고)
         return depositInsertRequestData.getDepositNo();
     }
 
@@ -76,10 +88,68 @@ public class JpaDepositService {
     private List<Ititmc> saveItitmc(DepositInsertRequestData depositInsertRequestData) {
         List<Ititmc> ititmcList = new ArrayList<>();
         for(DepositInsertRequestData.Item item : depositInsertRequestData.getItems()){
+            Lsdpsp lsdpsp = jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(item.getPurchaseNo(), item.getPurchaseSeq());
             Ititmc ititmc = new Ititmc(depositInsertRequestData, item);
+            ititmc.setQty(lsdpsp.getPurchaseTakeQty());
             jpaItitmcRepository.save(ititmc);
             ititmcList.add(ititmc);
         }
         return ititmcList;
+    }
+
+    private List<Lsdpsp> saveLsdpsp(DepositInsertRequestData depositInsertRequestData) {
+        List<DepositInsertRequestData.Item> itemList = depositInsertRequestData.getItems();
+        List<Lsdpsp> lsdpspList = new ArrayList<>();
+        for(DepositInsertRequestData.Item item : itemList){
+            Lsdpsp lsdpsp = jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(item.getPurchaseNo(), item.getPurchaseSeq());
+            if(lsdpsp.getPurchasePlanQty() < item.getDepositQty()){
+                log.debug("puchase_take_qty is bigger than purchase_plan_qty.");
+                return null;
+            }
+            lsdpsp.setPurchaseTakeQty(item.getDepositQty());
+            jpaLsdpspRepository.save(lsdpsp);
+            lsdpspList.add(lsdpsp);
+        }
+        return lsdpspList;
+    }
+
+    private List<Ititmt> saveItitmt(DepositInsertRequestData depositInsertRequestData) {
+        List<DepositInsertRequestData.Item> itemList = depositInsertRequestData.getItems();
+        List<Ititmt> ititmtList = new ArrayList<>();
+        for(DepositInsertRequestData.Item item : itemList){
+            Lsdpsp lsdpsp = jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(item.getPurchaseNo(), item.getPurchaseSeq());
+            ItitmtId ititmtId = new ItitmtId(depositInsertRequestData, item);
+            Ititmt ititmt = jpaItitmtRepository.findById(ititmtId).orElseGet(() -> null);
+            if(ititmt == null){
+                log.debug("ititmt is null.");
+            }
+            long tempQty = ititmt.getTempQty() - lsdpsp.getPurchaseTakeQty();
+            if(tempQty < 0){
+                log.debug("ititmt.temp_qty is smaller than lsdpsp.take_qty.");
+                return null;
+            }
+            ititmt.setTempQty(tempQty);
+            jpaItitmtRepository.save(ititmt);
+            ititmtList.add(ititmt);
+        }
+        return ititmtList;
+    }
+
+    /**
+     * Table 초기화 함수
+     */
+    public void init(){
+        Optional<SequenceData> op = jpaSequenceDataRepository.findById(StringFactory.getStrDepositNo());
+        SequenceData seq = op.get();
+        seq.setSequenceCurValue(StringFactory.getStrZero());
+        jpaSequenceDataRepository.save(seq);
+        jpaItitmcRepository.deleteAll();
+        jpaItitmtRepository.deleteAll();
+        jpaLsdpspRepository.deleteAll();
+        jpaLsdpdsRepository.deleteAll();
+        jpaLsdpssRepository.deleteAll();
+        jpaLsdpsmRepository.deleteAll();
+        jpaLsdpsdRepository.deleteAll();
+
     }
 }
