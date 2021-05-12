@@ -22,7 +22,6 @@ public class Ititmm {
 
     public Ititmm(String assortId, GoodsInsertRequestData.Items items){
         this.assortId = assortId;
-
         this.shortYn = items.getShortYn();
         this.addPrice = items.getAddPrice();
     }

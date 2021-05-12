@@ -125,6 +125,7 @@ public class JpaPurchaseService {
     private List<Lspchd> saveLspchd(PurchaseInsertRequestData purchaseInsertRequestData) {
         List<Lspchd> lspchdList = new ArrayList<>();
         for(PurchaseInsertRequestData.Items item : purchaseInsertRequestData.getItems()){
+            System.out.println("----- " + item.getAssortId() + " " + item.getItemId());
             Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequestData.getPurchaseNo(), item.getPurchaseSeq() == null? null:item.getPurchaseSeq());
             if(lspchd == null){ // insert
                 String purchaseSeq = jpaLspchdRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequestData.getPurchaseNo());
@@ -209,8 +210,8 @@ public class JpaPurchaseService {
             else{ // update
                 lsdpsp.setPurchaseNo(purchaseInsertRequestData.getPurchaseNo());
                 lsdpsp.setPurchaseSeq(items.getPurchaseSeq());
-                lsdpsp.setPurchasePlanQty(purchaseInsertRequestData.getPurchasePlanQty());
-                lsdpsp.setPurchaseTakeQty(purchaseInsertRequestData.getPurchaseTakeQty());
+                lsdpsp.setPurchasePlanQty(items.getPurchaseQty()+1);
+//                lsdpsp.setPurchaseTakeQty(purchaseInsertRequestData.getPurchaseTakeQty());
                 lsdpsp.setAssortId(items.getAssortId());
                 lsdpsp.setItemId(items.getItemId());
                 lsdpsp.setPlanStatus(purchaseInsertRequestData.getPlanStatus());
