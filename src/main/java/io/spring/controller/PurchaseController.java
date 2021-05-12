@@ -15,6 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -75,8 +76,16 @@ public class PurchaseController {
 
     // 발주 list get (jpa)
     @GetMapping(path="/purchaselistjpa")
-    public ResponseEntity getPurchaseListJpa(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")HashMap<String, Object> param){
+    public ResponseEntity getPurchaseListJpa(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") String purchaseVendorId, String assortId, String purchaseStatus, Date startDt, Date endDt){
         logger.debug("get purchase list - jpa");
+
+        HashMap<String, Object> param = new HashMap<>();
+
+        param.put("purchaseVendorId", purchaseVendorId);
+        param.put("assortId", assortId);
+        param.put("purchaseStatus", purchaseStatus);
+        param.put("startDt", startDt);
+        param.put("endDt", endDt);
 
         PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getPurchaseList(param);
 
@@ -89,8 +98,16 @@ public class PurchaseController {
 
     // 발주 list get (mybatis)
     @GetMapping(path="/purchaselistmybatis")
-    public ResponseEntity getPurchaseListMyBatis(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")HashMap<String, Object> param){
+    public ResponseEntity getPurchaseListMyBatis(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") String purchaseVendorId, String assortId, String purchaseStatus, Date startDt, Date endDt){
         logger.debug("get purchase list - mybatis");
+
+        HashMap<String, Object> param = new HashMap<>();
+
+        param.put("purchaseVendorId", purchaseVendorId);
+        param.put("assortId", assortId);
+        param.put("purchaseStatus", purchaseStatus);
+        param.put("startDt", startDt);
+        param.put("endDt", endDt);
 
         List<HashMap<String, Object>> result = myBatisPurchaseService.getPurchaseList(param);
 

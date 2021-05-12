@@ -115,14 +115,14 @@ public class GoodsController {
 	}
 
 	@GetMapping(path="/getgoodslistmybatis")
-	public ResponseEntity getGoodsList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")HashMap<String, Object> param){
+	public ResponseEntity getGoodsList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtBegin, Date regDtEnd, String shortageYn){
 		logger.debug("get goods list data");
 
-//		HashMap<String, Object> map = new HashMap<String, Object>();
-//
-//		map.put("shortageYn", shortageYn);
-//		map.put("regDtBegin", regDtBegin);
-//		map.put("regDtEnd", regDtEnd);
+		HashMap<String, Object> map = new HashMap<String, Object>();
+
+		map.put("shortageYn", shortageYn);
+		map.put("regDtBegin", regDtBegin);
+		map.put("regDtEnd", regDtEnd);
 
 		List<HashMap<String, Object>> responseData = goodsRepository.getGoodsList(param);
 		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
