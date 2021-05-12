@@ -104,7 +104,7 @@ public class JpaDepositService {
             Lsdpsp lsdpsp = jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(item.getPurchaseNo(), item.getPurchaseSeq());
             if(lsdpsp.getPurchasePlanQty() < item.getDepositQty()){
                 log.debug("puchase_take_qty is bigger than purchase_plan_qty.");
-                return null;
+                throw new NumberFormatException();
             }
             lsdpsp.setPurchaseTakeQty(item.getDepositQty());
             jpaLsdpspRepository.save(lsdpsp);
@@ -120,13 +120,16 @@ public class JpaDepositService {
             Lsdpsp lsdpsp = jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(item.getPurchaseNo(), item.getPurchaseSeq());
             ItitmtId ititmtId = new ItitmtId(depositInsertRequestData, item);
             Ititmt ititmt = jpaItitmtRepository.findById(ititmtId).orElseGet(() -> null);
+            assert ititmt == null : "ititmt is null.";
             if(ititmt == null){
                 log.debug("ititmt is null.");
+                throw new NumberFormatException();
             }
             long tempQty = ititmt.getTempQty() - lsdpsp.getPurchaseTakeQty();
+            assert tempQty < 0 : "ititmt is null.";
             if(tempQty < 0){
                 log.debug("ititmt.temp_qty is smaller than lsdpsp.take_qty.");
-                return null;
+                throw new NumberFormatException();
             }
             ititmt.setTempQty(tempQty);
             jpaItitmtRepository.save(ititmt);
