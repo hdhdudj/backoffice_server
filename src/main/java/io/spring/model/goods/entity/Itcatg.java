@@ -1,5 +1,6 @@
 package io.spring.model.goods.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,16 +14,17 @@ import javax.persistence.Table;
 import java.util.Date;
 
 @Entity
-@Getter
 @Setter
+@Getter
 @Table(name="itcatg")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Itcatg {
     @Id
     private String categoryId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date effEndDt;
     private String categoryGid;
-    @CreationTimestamp
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date effStaDt;
     private String categoryNm;
     private String categoryEnm;

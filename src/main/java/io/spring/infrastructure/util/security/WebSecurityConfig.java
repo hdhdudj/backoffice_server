@@ -51,6 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.POST, "/purchase/*").permitAll()
 				.antMatchers(HttpMethod.GET, "/deposit/*").permitAll()
 				.antMatchers(HttpMethod.POST, "/deposit/*").permitAll()
+				.antMatchers(HttpMethod.GET, "/category/*").permitAll()
 				//
 				.antMatchers(AUTH_WHITELIST).permitAll()
 				.antMatchers(HttpMethod.GET, "/articles/**", "/profiles/**", "/tags").permitAll().anyRequest()
