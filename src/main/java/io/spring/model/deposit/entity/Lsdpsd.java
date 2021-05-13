@@ -6,6 +6,7 @@ import io.spring.infrastructure.util.Utilities;
 import io.spring.model.deposit.idclass.LsdpsdId;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.goods.entity.Ititmm;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -102,6 +103,14 @@ public class Lsdpsd{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     private Itasrt itasrt;
+
+    // 연관 관계 ititmm
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumns({
+            @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+            @JoinColumn(name = "itemId", referencedColumnName="itemId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+    })
+    private Ititmm ititmm;
 
 //    // 연관 관계 ititmc
 //    @ManyToOne

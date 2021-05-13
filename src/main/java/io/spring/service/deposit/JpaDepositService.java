@@ -198,8 +198,13 @@ public class JpaDepositService {
         List<DepositSelectListResponseData> depositSelectListResponseDataList = new ArrayList<>();
         TypedQuery<Lsdpsd> query = em.createQuery("select ld from Lsdpsd ld " +
                         "join fetch ld.lsdpsm lm " +
+                        "join fetch ld.lsdpsp lp " +
+                        "join fetch ld.lsdpds ls " +
                         "join fetch ld.itasrt it " +
-                        "join fetch ld.lsdpsm.cmvdmr cm " +
+                        "join fetch lm.cmvdmr cm " +
+                        "left join fetch ld.ititmm im " +
+//                        "left join fetch im.itvari1 iv1 " +
+//                        "left join fetch im.itvari2 iv2 " +
                         "where lm.depositDt between ?1 and ?2 " +
                         "and lm.depositVendorId like CONCAT('%',?3,'%') " +
                         "and ld.assortId like concat('%', ?4, '%')",
@@ -210,8 +215,14 @@ public class JpaDepositService {
         query.setParameter(4, param.get("assortId"));
         List<Lsdpsd> resultList = query.getResultList();
         for(Lsdpsd lsdpsd : resultList){
-            DepositSelectListResponseData depositSelectDetailResponseData = new DepositSelectListResponseData(lsdpsd);
-            depositSelectListResponseDataList.add(depositSelectDetailResponseData);
+            DepositSelectListResponseData depositSelectListResponseData = new DepositSelectListResponseData(lsdpsd);
+            depositSelectListResponseData.setDepositVendorId(lsdpsd.getLsdpsm().getDepositVendorId());
+            depositSelectListResponseData.setVdNm(lsdpsd.getLsdpsm().getCmvdmr().getVdNm());
+            depositSelectListResponseData.setAssortNm(lsdpsd.getItasrt().getAssortNm());
+//            depositSelectListResponseData.setOptionNm1(lsdpsd.getItitmm().getItvari1().getOptionNm());
+//            depositSelectListResponseData.setOptionNm2(lsdpsd.getItitmm().getItvari2().getOptionNm());
+            depositSelectListResponseData.setDepositQty(lsdpsd.getLsdpsp().getPurchaseTakeQty());
+            depositSelectListResponseDataList.add(depositSelectListResponseData);
         }
         return depositSelectListResponseDataList;
     }

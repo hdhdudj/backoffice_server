@@ -11,7 +11,11 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DepositSelectListResponseData {
     public DepositSelectListResponseData(Lsdpsd lsdpsd){
-
+        this.depositNo = lsdpsd.getDepositNo();
+        this.depositSeq = lsdpsd.getDepositSeq();
+        this.assortId = lsdpsd.getAssortId();
+        this.itemId = lsdpsd.getItemId();
+        this.extraUnitcost = lsdpsd.getExtraUnitcost();
     }
     private String depositNo;
     private String depositSeq;
@@ -23,5 +27,5 @@ public class DepositSelectListResponseData {
     private String optionNm1;
     private String optionNm2;
     private Long depositQty;
-    private Long extraUnitAmt;
+    private Float extraUnitcost;
 }
