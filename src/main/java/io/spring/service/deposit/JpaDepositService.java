@@ -102,7 +102,7 @@ public class JpaDepositService {
         for(DepositInsertRequestData.Item item : depositInsertRequestData.getItems()){
             Lsdpsp lsdpsp = jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(item.getPurchaseNo(), item.getPurchaseSeq());
             Ititmc ititmc = new Ititmc(depositInsertRequestData, item);
-            ititmc.setQty(lsdpsp.getPurchaseTakeQty());
+            ititmc.setQty(lsdpsp.getPurchaseTakeQty() + ititmc.getQty());
             jpaItitmcRepository.save(ititmc);
             ititmcList.add(ititmc);
         }
@@ -132,13 +132,11 @@ public class JpaDepositService {
             Lsdpsp lsdpsp = jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(item.getPurchaseNo(), item.getPurchaseSeq());
             ItitmtId ititmtId = new ItitmtId(depositInsertRequestData, item);
             Ititmt ititmt = jpaItitmtRepository.findById(ititmtId).orElseGet(() -> null);
-            assert ititmt == null : "ititmt is null.";
             if(ititmt == null){
                 log.debug("ititmt is null.");
                 throw new NumberFormatException();
             }
             long tempQty = ititmt.getTempQty() - lsdpsp.getPurchaseTakeQty();
-            assert tempQty < 0 : "ititmt is null.";
             if(tempQty < 0){
                 log.debug("ititmt.temp_qty is smaller than lsdpsp.take_qty.");
                 throw new NumberFormatException();
@@ -152,8 +150,9 @@ public class JpaDepositService {
 
     public DepositSelectDetailResponseData getDetail(String depositNo){
         TypedQuery<Lsdpsd> query = em.createQuery("select d from Lsdpsd d join fetch d.lsdpsp p join fetch d.lsdpsm m join fetch d.lsdpds s " +
-                "where d.depositNo=?1", Lsdpsd.class);
+                "where d.depositNo=?1 and s.effEndDt=?2", Lsdpsd.class);
         query.setParameter(1, depositNo);
+        query.setParameter(2, Utilities.getStringToDate(StringFactory.getDoomDay()));
         List<Lsdpsd> lsdpsdList = query.getResultList();
         if(lsdpsdList.size() == 0){
             log.debug("lsdpsdList is empty.");
@@ -164,7 +163,7 @@ public class JpaDepositService {
             DepositSelectDetailResponseData.Item item = new DepositSelectDetailResponseData.Item(lsdpsd);
             item.setPurchaseNo(lsdpsd.getLsdpsp().getPurchaseNo());
             item.setPurchaseSeq(lsdpsd.getLsdpsp().getPurchaseSeq());
-            item.setDepositQty(lsdpsd.getLsdpsp().getPurchaseTakeQty());
+            item.setDepositQty(lsdpsd.getLsdpsp().getPurchasePlanQty());
             item.setDepositStatus(lsdpsd.getLsdpds().getDepositStatus());
             itemList.add(item);
         }

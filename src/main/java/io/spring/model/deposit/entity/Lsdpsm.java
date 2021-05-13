@@ -1,5 +1,6 @@
 package io.spring.model.deposit.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.deposit.request.DepositInsertRequestData;
@@ -40,6 +41,7 @@ public class Lsdpsm {
     private String depositGb;
     private String siteGb;
     private String vendorId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date finishYymm;
     private String depositType;
     private String storeCd;

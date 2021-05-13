@@ -1,5 +1,6 @@
 package io.spring.model.deposit.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import lombok.AccessLevel;
@@ -45,6 +46,7 @@ public class Lsdpsp implements Serializable {
     }
     @Id
     private String depositPlanId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date smReservationDt;
     private Long purchasePlanQty;
     private Long purchaseTakeQty;
