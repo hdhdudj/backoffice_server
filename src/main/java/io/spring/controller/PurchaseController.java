@@ -76,7 +76,7 @@ public class PurchaseController {
 
     // 발주 list get (jpa)
     @GetMapping(path="/purchaselistjpa")
-    public ResponseEntity getPurchaseListJpa(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") String purchaseVendorId, String assortId, String purchaseStatus, Date startDt, Date endDt){
+    public ResponseEntity getPurchaseListJpa(@RequestParam String purchaseVendorId,@RequestParam String assortId,@RequestParam String purchaseStatus,@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDt,@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDt){
         logger.debug("get purchase list - jpa");
 
         HashMap<String, Object> param = new HashMap<>();
@@ -98,7 +98,7 @@ public class PurchaseController {
 
     // 발주 list get (mybatis)
     @GetMapping(path="/purchaselistmybatis")
-    public ResponseEntity getPurchaseListMyBatis(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") String purchaseVendorId, String assortId, String purchaseStatus, Date startDt, Date endDt){
+    public ResponseEntity getPurchaseListMyBatis(@RequestParam String purchaseVendorId,@RequestParam String assortId, String purchaseStatus, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDt, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDt){
         logger.debug("get purchase list - mybatis");
 
         HashMap<String, Object> param = new HashMap<>();

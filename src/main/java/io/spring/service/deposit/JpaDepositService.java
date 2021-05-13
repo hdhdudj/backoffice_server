@@ -10,6 +10,7 @@ import io.spring.model.common.entity.SequenceData;
 import io.spring.model.deposit.entity.*;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.deposit.response.DepositSelectDetailResponseData;
+import io.spring.model.deposit.response.DepositSelectListResponseData;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.idclass.ItitmtId;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -190,5 +192,27 @@ public class JpaDepositService {
         jpaLsdpsmRepository.deleteAll();
         jpaLsdpsdRepository.deleteAll();
 
+    }
+
+    public List<DepositSelectListResponseData> getList(HashMap<String, Object> param) {
+        List<DepositSelectListResponseData> depositSelectListResponseDataList = new ArrayList<>();
+        TypedQuery<Lsdpsd> query = em.createQuery("select ld from Lsdpsd ld " +
+                        "join fetch ld.lsdpsm lm " +
+                        "join fetch ld.itasrt it " +
+                        "join fetch ld.lsdpsm.cmvdmr cm " +
+                        "where lm.depositDt between ?1 and ?2 " +
+                        "and lm.depositVendorId like CONCAT('%',?3,'%') " +
+                        "and ld.assortId like concat('%', ?4, '%')",
+                Lsdpsd.class);
+        query.setParameter(1, param.get("startDt"));
+        query.setParameter(2, param.get("endDt"));
+        query.setParameter(3, param.get("depositVendorId"));
+        query.setParameter(4, param.get("assortId"));
+        List<Lsdpsd> resultList = query.getResultList();
+        for(Lsdpsd lsdpsd : resultList){
+            DepositSelectListResponseData depositSelectDetailResponseData = new DepositSelectListResponseData(lsdpsd);
+            depositSelectListResponseDataList.add(depositSelectDetailResponseData);
+        }
+        return depositSelectListResponseDataList;
     }
 }
