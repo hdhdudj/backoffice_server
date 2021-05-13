@@ -3,7 +3,6 @@ package io.spring.model.deposit.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.deposit.entity.Lsdpsm;
-import io.spring.model.deposit.request.DepositInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +26,7 @@ public class DepositSelectDetailResponseData {
     private String storeCd;
     private String depositStatus;
     private String depositVendorId;
-    private List<DepositInsertRequestData.Item> items;
+    private List<Item> items;
 
     @Getter
     @Setter
@@ -40,13 +39,6 @@ public class DepositSelectDetailResponseData {
             this.itemGrade = lsdpsd.getItemGrade();
             this.itemId = lsdpsd.getItemId();
             this.extraUnitcost = lsdpsd.getExtraUnitcost();
-
-            // ititmc
-
-            // lsdpds
-
-            // lsdpsp
-
         }
         private String depositSeq;
         private String assortId;

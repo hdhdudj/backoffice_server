@@ -19,6 +19,8 @@ import org.flywaydb.core.internal.util.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +37,7 @@ public class JpaDepositService {
     private final JpaItitmcRepository jpaItitmcRepository;
     private final JpaItitmtRepository jpaItitmtRepository;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
+    private final EntityManager em;
 
     @Transactional
     public String sequenceInsertDeposit(DepositInsertRequestData depositInsertRequestData){
@@ -148,13 +151,26 @@ public class JpaDepositService {
     }
 
     public DepositSelectDetailResponseData getDetail(String depositNo){
-        List<Lsdpsd> lsdpsdList = jpaLsdpsdRepository.findByDepositNo(depositNo);
+        TypedQuery<Lsdpsd> query = em.createQuery("select d from Lsdpsd d join fetch d.lsdpsp p join fetch d.lsdpsm m join fetch d.lsdpds s " +
+                "where d.depositNo=?1", Lsdpsd.class);
+        query.setParameter(1, depositNo);
+        List<Lsdpsd> lsdpsdList = query.getResultList();
+        if(lsdpsdList.size() == 0){
+            log.debug("lsdpsdList is empty.");
+            throw new IndexOutOfBoundsException();
+        }
         List<DepositSelectDetailResponseData.Item> itemList = new ArrayList<>();
         for(Lsdpsd lsdpsd : lsdpsdList){
             DepositSelectDetailResponseData.Item item = new DepositSelectDetailResponseData.Item(lsdpsd);
+            item.setPurchaseNo(lsdpsd.getLsdpsp().getPurchaseNo());
+            item.setPurchaseSeq(lsdpsd.getLsdpsp().getPurchaseSeq());
+            item.setDepositQty(lsdpsd.getLsdpsp().getPurchaseTakeQty());
+            item.setDepositStatus(lsdpsd.getLsdpds().getDepositStatus());
+            itemList.add(item);
         }
         Lsdpsm lsdpsm = lsdpsdList.get(0).getLsdpsm();
         DepositSelectDetailResponseData depositSelectDetailResponseData = new DepositSelectDetailResponseData(lsdpsm);
+        depositSelectDetailResponseData.setItems(itemList);
 
         return depositSelectDetailResponseData;
     }

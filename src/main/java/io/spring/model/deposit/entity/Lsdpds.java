@@ -11,6 +11,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity
@@ -18,9 +19,10 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name="lsdpds")
-public class Lsdpds {
+public class Lsdpds implements Serializable {
     public Lsdpds(String depositNo, DepositInsertRequestData.Item item){
         this.depositNo = depositNo;
+        this.depositSeq = item.getDepositSeq();
         this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
         this.effStaDt = new Date();
         this.depositStatus = item.getDepositStatus();

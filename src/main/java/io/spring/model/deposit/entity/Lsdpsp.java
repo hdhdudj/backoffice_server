@@ -6,29 +6,31 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+@Slf4j
 @Entity
 @Getter
 @Setter
 @Table(name="lsdpsp")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Lsdpsp {
-    private final static Logger logger = LoggerFactory.getLogger(Lsdpsp.class);
+public class Lsdpsp implements Serializable {
     public Lsdpsp(PurchaseInsertRequestData purchaseInsertRequestData, PurchaseInsertRequestData.Items items){
         this.depositPlanId = purchaseInsertRequestData.getDepositPlanId();
         try{
             this.smReservationDt = new SimpleDateFormat(StringFactory.getDateFormat()).parse(StringFactory.getDoomDay());
         }
         catch(Exception e){
-            logger.debug(e.getMessage());
+            log.debug(e.getMessage());
         }
         this.purchasePlanQty = items.getPurchaseQty();
         this.purchaseTakeQty = 0L;
