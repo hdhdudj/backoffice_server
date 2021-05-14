@@ -203,8 +203,8 @@ public class JpaDepositService {
                         "join fetch ld.itasrt it " +
                         "join fetch lm.cmvdmr cm " +
                         "left join fetch ld.ititmm im " +
-//                        "left join fetch im.itvari1 iv1 " +
-//                        "left join fetch im.itvari2 iv2 " +
+                        "left join fetch im.itvari1 iv1 " +
+                        "left join fetch im.itvari2 iv2 " +
                         "where lm.depositDt between ?1 and ?2 " +
                         "and lm.depositVendorId like CONCAT('%',?3,'%') " +
                         "and ld.assortId like concat('%', ?4, '%')",
@@ -219,9 +219,10 @@ public class JpaDepositService {
             depositSelectListResponseData.setDepositVendorId(lsdpsd.getLsdpsm().getDepositVendorId());
             depositSelectListResponseData.setVdNm(lsdpsd.getLsdpsm().getCmvdmr().getVdNm());
             depositSelectListResponseData.setAssortNm(lsdpsd.getItasrt().getAssortNm());
-//            depositSelectListResponseData.setOptionNm1(lsdpsd.getItitmm().getItvari1().getOptionNm());
-//            depositSelectListResponseData.setOptionNm2(lsdpsd.getItitmm().getItvari2().getOptionNm());
+            // 2 depth 주의...
+            depositSelectListResponseData.setOptionNm2(lsdpsd.getItitmm().getItvari2().getOptionNm());
             depositSelectListResponseData.setDepositQty(lsdpsd.getLsdpsp().getPurchaseTakeQty());
+            //
             depositSelectListResponseDataList.add(depositSelectListResponseData);
         }
         return depositSelectListResponseDataList;
