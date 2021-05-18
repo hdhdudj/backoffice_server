@@ -1,18 +1,20 @@
 package io.spring.controller;
 
-import io.spring.infrastructure.util.ApiResponseMessage;
-import io.spring.infrastructure.util.StringFactory;
-import io.spring.model.category.response.CategorySelectOneResponseData;
-import io.spring.service.category.JpaCategoryService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import io.spring.infrastructure.util.ApiResponseMessage;
+import io.spring.infrastructure.util.StringFactory;
+import io.spring.model.category.response.CategoryListResponseData;
+import io.spring.model.category.response.CategorySelectOneResponseData;
+import io.spring.service.category.JpaCategoryService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
@@ -34,4 +36,18 @@ public class CategoryController {
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), categorySelectOneResponseDataList);
         return ResponseEntity.ok(res);
     }
+
+	@GetMapping(path = "/full_categories")
+	public ResponseEntity getFullCategoryData() {
+
+		CategoryListResponseData ret = jpaCategoryService.getFullCategoryData();
+
+//		List<CategorySelectOneResponseData> categorySelectOneResponseDataList = jpaCategoryService
+//				.getCategoryDataByUpCategoryId(upCategoryId);
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
+				ret);
+		return ResponseEntity.ok(res);
+	}
+
+
 }
