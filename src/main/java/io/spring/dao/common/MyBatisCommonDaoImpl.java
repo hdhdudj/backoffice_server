@@ -23,4 +23,15 @@ public class MyBatisCommonDaoImpl implements MyBatisCommonDao {
 		return r;
 	}
 
+	@Override
+	public HashMap<String, Object> getCategory(HashMap<String, Object> param) {
+		HashMap<String, Object> r = commonMapper.getCategory(param);
+		System.out.println(r);
+		// TODO Auto-generated method stub
+		return r;
+	}
+	
+	
+	
+
 }

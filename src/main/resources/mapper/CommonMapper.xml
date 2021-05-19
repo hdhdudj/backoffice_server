@@ -11,7 +11,16 @@
 		
     </select>
 
-
+    <select id="getCategory" parameterType="java.util.Map" resultType="HashMap"  >
+    	
+    	<![CDATA[
+			select category_id categoryId,category_nm categoryNm,up_category_id upCategoryId 
+				from itcatg
+				where category_id=#{categoryId}
+		
+    	]]>
+		
+    </select>
 
 
 

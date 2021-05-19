@@ -2,6 +2,7 @@ package io.spring.service.category;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -110,6 +111,36 @@ public class JpaCategoryService {
 
 		return r;
 
+	}
+	
+	public LinkedList<String> findUpperCategory(String categoryId) {
+		LinkedList<String> a =new LinkedList<String>();
+		
+		Itcatg itcatg = jpaItcatgRepository.findById(categoryId).orElseGet(() -> null);
+		
+		if (itcatg == null) {
+			return null;
+		}
+
+		a.addFirst(itcatg.getCategoryId());
+		
+		String upCatId="";
+		String catId="";
+		
+		upCatId = itcatg.getUpCategoryId();
+		catId = upCatId;
+		
+		while (upCatId != "A00000000")  {
+			System.out.println(catId);
+			Itcatg itcatgT = jpaItcatgRepository.findById(catId).orElseGet(() -> null);
+			if(!itcatgT.getUpCategoryId().equals("A00000000")) {
+				a.addFirst(itcatgT.getCategoryId()); 
+			}
+			upCatId = itcatgT.getUpCategoryId();
+			catId = upCatId;
+	 
+	    }
+		return a;
 	}
 
 	private CategoryTree findSubCategory(String rootCategoryId) {

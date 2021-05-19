@@ -1,5 +1,6 @@
 package io.spring.controller;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.category.response.CategoryListResponseData;
 import io.spring.model.category.response.CategorySelectOneResponseData;
 import io.spring.service.category.JpaCategoryService;
+import io.spring.service.common.MyBatisCommonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class CategoryController {
     private final JpaCategoryService jpaCategoryService;
+    private final MyBatisCommonService myBatisCommonService;
 
     @GetMapping(path="/getcatbycatid")
     public ResponseEntity getCategoryDateByCategoryId(@RequestParam String categoryId){
@@ -41,6 +44,23 @@ public class CategoryController {
 	public ResponseEntity getFullCategoryData() {
 
 		CategoryListResponseData ret = jpaCategoryService.getFullCategoryData();
+
+//		List<CategorySelectOneResponseData> categorySelectOneResponseDataList = jpaCategoryService
+//				.getCategoryDataByUpCategoryId(upCategoryId);
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
+				ret);
+		return ResponseEntity.ok(res);
+	}
+	
+	@GetMapping(path = "/up_categories")
+	public ResponseEntity getUpCategoryData(@RequestParam String categoryId) {
+
+		
+		
+		
+	//	LinkedList<String> ret = jpaCategoryService.findUpperCategory(categoryId);
+		
+		LinkedList<String> ret = myBatisCommonService.findUpperCategory(categoryId);
 
 //		List<CategorySelectOneResponseData> categorySelectOneResponseDataList = jpaCategoryService
 //				.getCategoryDataByUpCategoryId(upCategoryId);
