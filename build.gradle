@@ -42,6 +42,11 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
     implementation 'junit:junit:4.13.1'
     implementation 'org.junit.jupiter:junit-jupiter:5.7.0'
+    
+    // https://mvnrepository.com/artifact/commons-net/commons-net
+	implementation group: 'commons-net', name: 'commons-net', version: '3.6'
+    
+    
 //    implementation 'org.springframework.boot:spring-boot-starter-batch'
     // https://mvnrepository.com/artifact/org.springframework.plugin/spring-plugin-core
     compile group: 'org.springframework.plugin', name: 'spring-plugin-core', version: '1.2.0.RELEASE'
