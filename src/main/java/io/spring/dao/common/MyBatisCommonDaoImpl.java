@@ -1,6 +1,7 @@
 package io.spring.dao.common;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -30,6 +31,14 @@ public class MyBatisCommonDaoImpl implements MyBatisCommonDao {
 		// TODO Auto-generated method stub
 		return r;
 	}
+
+	@Override
+	public List<HashMap<String, Object>> getBrandSearchList(HashMap<String, Object> param) {
+		// TODO Auto-generated method stub
+		return commonMapper.getBrandSearchList(param);
+	}
+	
+	
 	
 	
 	

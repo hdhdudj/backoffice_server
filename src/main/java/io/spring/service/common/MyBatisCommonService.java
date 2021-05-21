@@ -22,6 +22,13 @@ public class MyBatisCommonService {
 	        return category;
 	    }
 		
+		public List<HashMap<String, Object>> getBrandSearchList(HashMap<String, Object> param) {
+			List<HashMap<String, Object>> list = myBatisCommonDao.getBrandSearchList(param);
+
+	        return list;
+	    }
+		
+				
 		
 		public LinkedList<String> findUpperCategory(String categoryId) {
 			
