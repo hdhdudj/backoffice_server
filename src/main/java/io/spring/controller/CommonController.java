@@ -77,7 +77,7 @@ public class CommonController {
 		Testenum2 a = new Testenum2();
 		System.out.println(a);
 		
-		a.setAssortGb("03");
+		//a.setAssortGb("03");
 		jpaCommonService.saveTestEnum2(a);
 		
 		System.out.println(a);

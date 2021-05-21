@@ -9,6 +9,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AccessLevel;
@@ -20,25 +23,20 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name="testenum2")
+@DynamicInsert
+@DynamicUpdate
+@NoArgsConstructor
 public class Testenum2 {
 	
-	
-	
-	
-	
-	  public Testenum2() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 
 	@Id
 	    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	    private Long seq;
 	  
 	  @Column(columnDefinition = "varchar(2) default '01'")
-	  private String assortGb ="01";
+	  private String assortGb;
 	  @Column(columnDefinition = "varchar(2) default '02'")
-	  private String assortYn = "02";
+	  private String assortYn;
 	  
 	  private String brandId;
 
