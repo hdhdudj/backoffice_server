@@ -40,7 +40,7 @@ public class FileService {
 	
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
-	private  static final String REMOTE_URL = "https://trdst.hgodo.com";
+//	private  static final String FTP_PREPIX_URL = "https://trdst.hgodo.com";
 	
 	
 	private String FTP_HOST;
@@ -49,12 +49,15 @@ public class FileService {
 	
 	private String FTP_PASSWORD;
 	
-	private String FTP_PATH;	
+	private String FTP_EDITOR_PATH;	
+	private String FTP_IMAGE_PATH;	
 	
 	private int FTP_PORT=21;
+	private String FTP_PREPIX_URL;
 	
 	 @Autowired
-	    public FileService(@Value("${ftp.host}") String FTP_HOST,@Value("${ftp.id}") String FTP_ID,@Value("${ftp.password}") String FTP_PASSWORD,@Value("${ftp.path}") String FTP_PATH) {
+	    public FileService(@Value("${ftp.host}") String FTP_HOST,@Value("${ftp.id}") String FTP_ID,@Value("${ftp.password}") String FTP_PASSWORD,@Value("${ftp.editor_path}") String FTP_EDITOR_PATH,@Value("${ftp.image_path}") String FTP_IMAGE_PATH,
+	    		@Value("${ftp.prefix_url}") String FTP_PREPIX_URL) {
 
 			this.FTP_HOST = FTP_HOST;
 			
@@ -62,11 +65,13 @@ public class FileService {
 			
 			this.FTP_PASSWORD=FTP_PASSWORD;
 			
-			this.FTP_PATH=FTP_PATH;	
+			this.FTP_EDITOR_PATH=FTP_EDITOR_PATH;	
+			this.FTP_IMAGE_PATH=FTP_IMAGE_PATH;	
+			this.FTP_PREPIX_URL=FTP_PREPIX_URL;
 	    }  
 
 	
-	public FileVo storeFile(MultipartFile file)  {
+	public FileVo storeFile(String imageGb,MultipartFile file)  {
 		
 	
 		
@@ -107,9 +112,18 @@ public class FileService {
 
         String day = currentDate.substring(6, 8);
         
-        FTP_PATH="/editor_test";	
+     //   FTP_PATH="/editor_test";	
 		
-        String ServerPath = FTP_PATH + "/" + year + "/" + month + "/" + day + "/";
+        String ftpPath="";
+        
+        if(imageGb.equals("03")) {
+        	ftpPath = FTP_EDITOR_PATH;
+        }else {
+        	ftpPath = FTP_IMAGE_PATH;
+        }
+        
+        String ServerPath = ftpPath + "/" + year + "/" + month + "/" + day + "/";
+        String fileUrl =FTP_PREPIX_URL + ftpPath + "/" + year + "/" + month + "/" + day + "/";
         		
        // + "/";
         
@@ -117,7 +131,8 @@ public class FileService {
         
         
         if(ret.equals("success")) {
-        	f.setFilePath(ServerPath + newFileName );
+        	f.setFilePath(ServerPath );
+        	
         	newfile.delete();
         	
         }

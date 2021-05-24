@@ -13,7 +13,10 @@ import org.springframework.web.multipart.MultipartFile;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.file.FileVo;
+import io.spring.model.file.response.FileUploadFileResponseData;
+import io.spring.model.goods.entity.Itaimg;
 import io.spring.service.file.FileService;
+import io.spring.service.goods.JpaGoodsService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -25,8 +28,12 @@ public class FileController {
 	@Autowired
 	private FileService fileService ;
 	
+
+	@Autowired
+	private JpaGoodsService jpaGoodsService ;
+	
 	@PostMapping("/uploadFile")
-    public ResponseEntity uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity uploadFile(@RequestParam("imageGb") String imageGb,@RequestParam("file") MultipartFile file) {
        // String fileName = service.storeFile(file);
        // 
         //String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -45,11 +52,14 @@ public class FileController {
 		//파일사이즈
 		
 		
-		FileVo f = fileService.storeFile(file);
+		FileVo f = fileService.storeFile(imageGb,file);
 		
+		Itaimg ii = jpaGoodsService.saveItaimg(imageGb, f);
 		
-		  ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), f);
-	        return ResponseEntity.ok(res);
+		FileUploadFileResponseData r = new FileUploadFileResponseData(ii);
+		
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),r);
+	       return ResponseEntity.ok(res);
 	}
     
 }
