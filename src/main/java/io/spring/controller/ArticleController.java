@@ -52,6 +52,9 @@ public class ArticleController {
         return articleRepository.findBySlug(slug).map(article -> {
             if (!AuthorizationService.canWriteArticle(user, article)) {
                 throw new NoAuthorizationException();
+                
+                
+              
             }
             article.update(
                 updateArticleParam.getTitle(),

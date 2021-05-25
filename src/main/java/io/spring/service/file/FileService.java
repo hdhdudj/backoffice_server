@@ -70,6 +70,14 @@ public class FileService {
 			this.FTP_PREPIX_URL=FTP_PREPIX_URL;
 	    }  
 
+	 public String deleteFile(FileVo f) {
+		 
+		 String fileName = f.getFileName();
+		 String filePath = f.getFilePath();
+		 
+		 String ret = ftpDeleteFile( filePath , fileName);
+		 return ret;
+	 }
 	
 	public FileVo storeFile(String imageGb,MultipartFile file)  {
 		
@@ -145,6 +153,120 @@ public class FileService {
 	        } 
 		  
 		 
+	}
+	
+	
+	private String ftpDeleteFile(String filePath ,String fileName) {
+		
+		FTPClient ftp = null;
+
+		FileInputStream fis = null;
+
+		boolean isSuccess = false;
+
+		int reply = 0;
+
+		ftp = new FTPClient();
+
+		
+
+		try {
+			
+
+			ftp.connect(FTP_HOST,FTP_PORT);
+
+			
+
+			//success
+
+			reply = ftp.getReplyCode();
+
+			 
+
+			if (!FTPReply.isPositiveCompletion(reply)) {
+
+				ftp.disconnect();
+
+				logger.debug("FTP server refused connection.");
+
+				System.exit(1);
+
+			}
+
+			 
+
+			if(!ftp.login(FTP_ID, FTP_PASSWORD)) {
+
+                ftp.logout();
+
+                logger.debug("ftp 서버에 로그인하지 못했습니다.");
+
+            }
+
+            
+
+            ftp.setFileType(FTP.BINARY_FILE_TYPE);
+
+            ftp.enterLocalPassiveMode();
+            
+            String fileToDelete = filePath + fileName;
+            
+            isSuccess = ftp.deleteFile(fileToDelete);
+            if (isSuccess) {
+                System.out.println("The file was deleted successfully.");
+            } else {
+                System.out.println("Could not delete the  file, it may not exist.");
+            }     
+            
+            
+		}catch (SocketException e) {
+
+			e.printStackTrace();
+
+			
+
+			return "SocketException";
+
+		} catch (IOException e) {
+
+			e.printStackTrace();
+
+			return "IOException";
+
+		} finally {
+
+		
+
+				try {
+
+				
+
+					ftp.disconnect();
+
+					logger.debug("FTP DISCONNECT   ");
+
+					
+
+					if (!isSuccess) {
+
+						return "fail";
+
+					}
+
+				} catch (IOException e) {
+
+					e.printStackTrace();
+
+				}
+
+				
+
+	
+
+		}
+
+		
+		return "success";
 	}
 	
 	private String ftpConnect(String ftpFolder, String filename, File files) {

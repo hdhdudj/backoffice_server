@@ -442,6 +442,26 @@ public class JpaGoodsService {
     	return ii;
     	
     }
+    
+   
+    public Itaimg getItaimg(Long uid) {
+    	Itaimg r = jpaItaimgRepository.findById(uid) .orElse(null);
+    	
+    	
+    	return r;
+    	
+    }
+    
+    @Transactional
+    public void deleteItaimg(Itaimg ii) {
+    	
+     jpaItaimgRepository.delete(ii);
+    	
+    	
+    
+    	
+    }
+     
 
     /**
      * Table 珥덇린�솕 �븿�닔
