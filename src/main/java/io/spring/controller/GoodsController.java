@@ -51,7 +51,7 @@ public class GoodsController {
 			res = new ApiResponseMessage<List<HashMap<String, Object>>>("SUCCESS","", r);
 		}
 		else {
-			res = new ApiResponseMessage<List<HashMap<String, Object>>>("ERROR", "����Ÿ ����", null);
+			res = new ApiResponseMessage<List<HashMap<String, Object>>>("ERROR", "占쏙옙占쏙옙타 占쏙옙占쏙옙", null);
 		}
 		
 		return ResponseEntity.ok(res);
@@ -77,8 +77,11 @@ public class GoodsController {
 	@PostMapping(path = "/savebyjpa")
 	public ResponseEntity saveGoodsJpa(@RequestBody GoodsInsertRequestData goodsInsertRequestData) {
 		logger.debug("save(insert or update) goods by jpa");
+		System.out.println(goodsInsertRequestData.toString());
 
-		goodsInsertRequestData.setAssortId(jpaCommonService.getNumberId(goodsInsertRequestData.getAssortId(), StringFactory.getSeqItasrtStr(), StringFactory.getIntNine())); // assort id 채번
+		goodsInsertRequestData.setAssortId(jpaCommonService.getNumberId(goodsInsertRequestData.getAssortId(), StringFactory.getSeqItasrtStr(), StringFactory.getIntNine())); // assort id 梨꾨쾲
+	
+		System.out.println(goodsInsertRequestData.toString());
 		GoodsInsertResponseData responseData = jpaGoodsService.sequenceInsertOrUpdateGoods(goodsInsertRequestData);
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), responseData);
@@ -102,7 +105,7 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 	}
 
-	// jpa로 get list
+	// jpa濡� get list
 	@GetMapping(path="/getgoodslistjpa")
 	public ResponseEntity getGoodsListJpa(@RequestParam String shortageYn, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtBegin, @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @RequestParam Date regDtEnd){
 		logger.debug("get goods list data");
@@ -132,7 +135,7 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 	}
 
-	// table 초기화용
+	// table 珥덇린�솕�슜
 	@RequestMapping(path = "/inittables")
 	public void initTables(){
 		jpaGoodsService.initTables();

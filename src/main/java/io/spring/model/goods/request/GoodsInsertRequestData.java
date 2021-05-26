@@ -15,7 +15,7 @@ import java.util.List;
 public class GoodsInsertRequestData {
 	private String code;
 	private String message;
-	// itasrt, itvari, itasrd 공통
+	// itasrt, itvari, itasrd 怨듯넻
 	private String assortId;
 	private Date regDt;
 	private String regId;
@@ -35,7 +35,7 @@ public class GoodsInsertRequestData {
 	private Float asHeight;
 	private Float weight;
 	private String origin;
-	private String shortageYn; // itasrn에도
+	private String shortageYn; // itasrn�뿉�룄
 	private String brandId;
 	private String dispCategoryId;
 	private String siteGb;
@@ -44,7 +44,7 @@ public class GoodsInsertRequestData {
 	private Float deliPrice;
 	private Float localPrice;
 	private Float localDeliFee;
-	private Float localSale; // itasrn에도 들어감
+	private Float localSale; // itasrn�뿉�룄 �뱾�뼱媛�
 	private String assortColor;
 	private Date sellStaDt;
 	private Date sellEndDt;
@@ -65,7 +65,7 @@ public class GoodsInsertRequestData {
 	private Float mdDiscountRate;
 
 	// itasrd
-	private List<Description> description; // html (메모 상세) - long memo, text (메모 간략) - short memo
+	private List<Description> description; // html (硫붾え �긽�꽭) - long memo, text (硫붾え 媛꾨왂) - short memo
 	@Getter
 	@Setter
 	public static class Description{
@@ -91,13 +91,13 @@ public class GoodsInsertRequestData {
 	public static class Items{
 //		private String assortId;
 		private String itemId;
-//		@Expose // object 중 해당 값이 null일 경우, json으로 만들 필드를 자동 생략
+//		@Expose // object 以� �빐�떦 媛믪씠 null�씪 寃쎌슦, json�쑝濡� 留뚮뱾 �븘�뱶瑜� �옄�룞 �깮�왂
 		private String value;
 		private String addPrice;
 		private String shortYn;
 	}
 
-	// image 관련
+	// image 愿��젴
 	private List<String> uploadImage;
 	private List<String> deleteImage;
 
@@ -108,6 +108,29 @@ public class GoodsInsertRequestData {
 		private String value;
 		private String variationGb;
 	}
+
+	@Override
+	public String toString() {
+		return "GoodsInsertRequestData [code=" + code + ", message=" + message + ", assortId=" + assortId + ", regDt="
+				+ regDt + ", regId=" + regId + ", updId=" + updId + ", updDt=" + updDt + ", assortNm=" + assortNm
+				+ ", assortModel=" + assortModel + ", optionGbName=" + optionGbName + ", margin=" + margin + ", taxGb="
+				+ taxGb + ", assortGb=" + assortGb + ", assortState=" + assortState + ", asWidth=" + asWidth
+				+ ", asLength=" + asLength + ", asHeight=" + asHeight + ", weight=" + weight + ", origin=" + origin
+				+ ", shortageYn=" + shortageYn + ", brandId=" + brandId + ", dispCategoryId=" + dispCategoryId
+				+ ", siteGb=" + siteGb + ", asVendorId=" + asVendorId + ", manufactureNm=" + manufactureNm
+				+ ", deliPrice=" + deliPrice + ", localPrice=" + localPrice + ", localDeliFee=" + localDeliFee
+				+ ", localSale=" + localSale + ", assortColor=" + assortColor + ", sellStaDt=" + sellStaDt
+				+ ", sellEndDt=" + sellEndDt + ", mdRrp=" + mdRrp + ", mdTax=" + mdTax + ", mdYear=" + mdYear
+				+ ", mdMargin=" + mdMargin + ", mdVatrate=" + mdVatrate + ", mdOfflinePrice=" + mdOfflinePrice
+				+ ", mdOnlinePrice=" + mdOnlinePrice + ", mdGoodsVatrate=" + mdGoodsVatrate + ", buyWhere=" + buyWhere
+				+ ", buyTax=" + buyTax + ", buySupplyDiscount=" + buySupplyDiscount + ", buyRrpIncrement="
+				+ buyRrpIncrement + ", buyExchangeRate=" + buyExchangeRate + ", sizeType=" + sizeType
+				+ ", mdDiscountRate=" + mdDiscountRate + ", description=" + description + ", items=" + items
+				+ ", attributes=" + attributes + ", uploadImage=" + uploadImage + ", deleteImage=" + deleteImage + "]";
+	}
+	
+	
+	
 
 //	@Getter
 //	@Setter
