@@ -1,5 +1,6 @@
 package io.spring.model.goods.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import lombok.AccessLevel;
@@ -46,7 +47,9 @@ public class GoodsInsertRequestData {
 	private Float localDeliFee;
 	private Float localSale; // itasrn�뿉�룄 �뱾�뼱媛�
 	private String assortColor;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
 	private Date sellStaDt;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
 	private Date sellEndDt;
 	private Float mdRrp;
 	private String mdTax;
@@ -63,6 +66,7 @@ public class GoodsInsertRequestData {
 	private Float buyExchangeRate;
 	private String sizeType;
 	private Float mdDiscountRate;
+
 
 	// itasrd
 	private List<Description> description; // html (硫붾え �긽�꽭) - long memo, text (硫붾え 媛꾨왂) - short memo

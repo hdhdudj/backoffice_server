@@ -1,5 +1,6 @@
 package io.spring.model.goods.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import io.spring.model.goods.entity.Itasrt;
@@ -18,6 +19,7 @@ public class GoodsSelectDetailResponseData {
     public GoodsSelectDetailResponseData(Itasrt itasrt){
         this.assortId = itasrt.getAssortId();
         this.assortNm = itasrt.getAssortNm();
+        this.assortGb = itasrt.getAssortGb();
         this.assortColor = itasrt.getAssortColor();
         this.brandId = itasrt.getBrandId();
         this.origin = itasrt.getOrigin();
@@ -40,12 +42,23 @@ public class GoodsSelectDetailResponseData {
         this.buySupplyDiscount = itasrt.getBuySupplyDiscount();
         this.buyExchangeRate = itasrt.getBuyExchangeRate();
         this.buyRrpIncrement = itasrt.getBuyRrpIncrement();
+        
+        this.sellStaDt=itasrt.getSellStaDt();
+        this.sellEndDt=itasrt.getSellEndDt();
+        
+        
+        this.asWidth=itasrt.getAsWidth();
+        this.asLength=itasrt.getAsLength();
+        this.asHeight=itasrt.getAsHeight();
+        this.weight=itasrt.getWeight();
+        this.deliPrice = itasrt.getDeliPrice();
+        
 //        this.regDt = itasrt.getRegDt();
 //        this.updDt = itasrt.getUpdDt();
     }
-    private String code;
-    private String message;
-    // itasrt, itvari, itasrd 공통
+
+    
+        // itasrt, itvari, itasrd 怨듯넻
     private String assortId;
 //    @CreationTimestamp
 //    private Date regDt;
@@ -67,7 +80,7 @@ public class GoodsSelectDetailResponseData {
     private Float asHeight;
     private Float weight;
     private String origin;
-    private String shortageYn; // itasrn에도
+    private String shortageYn; // itasrn�뿉�룄
     private String brandId;
     private String dispCategoryId;
     private String siteGb;
@@ -76,9 +89,12 @@ public class GoodsSelectDetailResponseData {
     private Float deliPrice;
     private Float localPrice;
     private Float localDeliFee;
-    private Float localSale; // itasrn에도 들어감
+    private Float localSale; // itasrn�뿉�룄 �뱾�뼱媛�
     private String assortColor;
+    
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date sellStaDt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date sellEndDt;
     private Float mdRrp;
     private String mdTax;
@@ -97,7 +113,7 @@ public class GoodsSelectDetailResponseData {
     private Float mdDiscountRate;
 
     // itasrd
-    private List<GoodsSelectDetailResponseData.Description> description; // html (메모 상세) - long memo, text (메모 간략) - short memo
+    private List<GoodsSelectDetailResponseData.Description> description; // html (硫붾え �긽�꽭) - long memo, text (硫붾え 媛꾨왂) - short memo
     @Getter
     @Setter
     public static class Description{
@@ -123,13 +139,13 @@ public class GoodsSelectDetailResponseData {
     public static class Items{
         //		private String assortId;
         private String itemId;
-        //		@Expose // object 중 해당 값이 null일 경우, json으로 만들 필드를 자동 생략
+        //		@Expose // object 以� �빐�떦 媛믪씠 null�씪 寃쎌슦, json�쑝濡� 留뚮뱾 �븘�뱶瑜� �옄�룞 �깮�왂
         private String value;
         private String addPrice;
         private String shortYn;
     }
 
-    // image 관련
+    // image 愿��젴
     private List<String> uploadImage;
     private List<String> deleteImage;
 

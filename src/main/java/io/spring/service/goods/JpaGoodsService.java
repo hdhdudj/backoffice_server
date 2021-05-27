@@ -2,6 +2,7 @@ package io.spring.service.goods;
 
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.infrastructure.util.exception.ResourceNotFoundException;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.goods.*;
 import io.spring.model.common.entity.SequenceData;
@@ -346,7 +347,11 @@ public class JpaGoodsService {
      * @return GoodsResponseData
      */
     public GoodsSelectDetailResponseData getGoodsDetailPage(String assrotId) {
-        Itasrt itasrt = jpaItasrtRepository.findById(assrotId).orElseGet(() -> null);
+       // Itasrt itasrt = jpaItasrtRepository.findById(assrotId).orElseGet(() -> null);
+    	
+    	
+    	 Itasrt itasrt = jpaItasrtRepository.findById(assrotId).orElseThrow(() -> new ResourceNotFoundException());
+    	
         GoodsSelectDetailResponseData goodsSelectDetailResponseData = new GoodsSelectDetailResponseData(itasrt);
         List<GoodsSelectDetailResponseData.Description> descriptions = makeDescriptions(itasrt.getItasrdList());
         List<GoodsSelectDetailResponseData.Attributes> attributesList = makeAttributesList(itasrt.getItvariList());
@@ -362,7 +367,17 @@ public class JpaGoodsService {
         for(Ititmm ititmm : ititmmList){
             GoodsSelectDetailResponseData.Items item = new GoodsSelectDetailResponseData.Items();
             item.setItemId(ititmm.getItemId());
-            item.setValue(ititmm.getItvari1().getOptionNm()+"^|^"+ititmm.getItvari2().getOptionNm());
+            
+            
+            String option2NM="";
+            if(ititmm.getItvari2()!=null) {
+            	option2NM = "^|^"+ititmm.getItvari2().getOptionNm();
+            }else {
+            	option2NM ="";
+            }
+            
+            
+            item.setValue(ititmm.getItvari1().getOptionNm()+option2NM);
             item.setAddPrice(ititmm.getAddPrice());
             item.setShortYn(ititmm.getShortYn());
             itemsList.add(item);
