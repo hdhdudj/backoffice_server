@@ -65,24 +65,24 @@ public class JpaGoodsService {
     }
 
     /**
-     * goods �젙蹂� insert �떆���뒪 �븿�닔
+     * goods 정보 insert 시퀀스 함수
      * Pecan 21-04-26
      * @param goodsInsertRequestData
      * @return GoodsResponseData
      */
     @Transactional
     public GoodsInsertResponseData sequenceInsertOrUpdateGoods(GoodsInsertRequestData goodsInsertRequestData){
-        // itasrt�뿉 goods �젙蹂� ���옣
+        // itasrt?뿉 goods ?젙蹂? ???옣
         Itasrt itasrt = this.saveItasrt(goodsInsertRequestData);
-        // itsrn�뿉 goods �씠�젰 ���옣
+        // itsrn?뿉 goods ?씠?젰 ???옣
         Itasrn itasrn = this.saveItasrn(goodsInsertRequestData);
-        // itasrd�뿉 臾멸뎄 ���옣
+        // itasrd?뿉 臾멸뎄 ???옣
         List<Itasrd> itasrd = this.saveItasrd(goodsInsertRequestData);
-        // itvari�뿉 assort_id蹂� �샃�뀡�슂�냼 ���옣(�깋�긽, �궗�씠利�)
+        // itvari?뿉 assort_id蹂? ?샃?뀡?슂?냼 ???옣(?깋?긽, ?궗?씠利?)
         List<Itvari> itvariList = this.saveItvariList(goodsInsertRequestData);
-        // ititmm�뿉 assort_id蹂� item ���옣
+        // ititmm?뿉 assort_id蹂? item ???옣
         List<Ititmm> ititmmList = this.saveItemList(goodsInsertRequestData);
-        // ititmd�뿉 item �씠�젰 ���옣
+        // ititmd?뿉 item ?씠?젰 ???옣
         List<Ititmd> ititmdList = this.saveItemHistoryList(goodsInsertRequestData, ititmmList);
 
         List<GoodsInsertResponseData.Attributes> attributesList = makeGoodsResponseAttributes(itvariList);
@@ -110,7 +110,7 @@ public class JpaGoodsService {
 
     /**
      * 21-04-27 Pecan
-     * 臾쇳뭹 �젙蹂� ���옣 insert, update
+     * 물품 정보 저장 insert, update
      * @param goodsInsertRequestData
      * @return Itasrt Object
      */
@@ -142,7 +142,7 @@ public class JpaGoodsService {
 
     /**
      * 21-04-28 Peca
-     * 臾쇳뭹 �젙蹂� �씠�젰 insert, update
+     * 물품 정보 이력 insert, update
      * @param goodsInsertRequestData
      * @return Itasrn Object
      */
@@ -151,7 +151,7 @@ public class JpaGoodsService {
         Date effEndDt = null;
         try
         {
-            effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 留덉�留� �궇吏�(�뾾�쓣 寃쎌슦 9999-12-31 23:59:59?)
+            effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
         }
         catch (Exception e){
             logger.debug(e.getMessage());
@@ -165,7 +165,7 @@ public class JpaGoodsService {
             cal.setTime(new Date());
             cal.add(Calendar.SECOND, -1);
             itasrn.setEffEndDt(cal.getTime());
-            // update �썑 �깉 �씠�젰 insert
+            // update 후 새 이력 insert
             Itasrn newItasrn = new Itasrn(itasrn);
             jpaItasrnRepository.save(newItasrn);
         }
@@ -177,7 +177,7 @@ public class JpaGoodsService {
 
     /**
      * 21-04-28 Pecan
-     * 硫붾え(湲� 湲�, 吏㏃� 湲�) insert, update
+     * 메모(긴 글, 짧은 글) insert, update
      * @param goodsInsertRequestData
      * @return List<Itasrd>
      */
@@ -189,10 +189,10 @@ public class JpaGoodsService {
             String seq = descriptionList.get(i).getSeq();
             if(seq == null || seq.trim().equals("")){ // insert
                 seq = jpaItasrdRepository.findMaxSeqByAssortId(goodsInsertRequestData.getAssortId());
-                if (seq == null || seq.trim().equals("")) { // insert -> 鍮� �뀒�씠釉�
+                if (seq == null || seq.trim().equals("")) { // insert -> 빈 테이블
                     seq = StringFactory.getFourStartCd();//fourStartCd;
                 }
-                else{ // insert -> 李� �뀒�씠釉�
+                else{ // insert -> 찬 테이블
                     seq = Utilities.plusOne(seq, 4);
                 }
                 itasrd.setSeq(seq);
@@ -211,7 +211,7 @@ public class JpaGoodsService {
 
     /**
      * 21-04-28 Pecan
-     * �샃�뀡 �젙蹂� insert, update
+     * 옵션 정보 insert, update
      * @param goodsInsertRequestData
      * @return List<Itvari>
      */
@@ -223,17 +223,17 @@ public class JpaGoodsService {
             String seq = attribute.getSeq();
             Itvari itvari = new Itvari(goodsInsertRequestData);
             itvari.setAssortId(goodsInsertRequestData.getAssortId());
-            if(seq == null || seq.trim().equals("")){ // seq媛� 議댁옱�븯吏� �븡�뒗 寃쎌슦 == �깉濡쒖슫 itvari INSERT -> seq max 媛� �뵲���빞 �븿
+            if(seq == null || seq.trim().equals("")){ // seq가 존재하지 않는 경우 == 새로운 itvari INSERT -> seq max 값 따와야 함
                 seq = jpaItvariRepository.findMaxSeqByAssortId(goodsInsertRequestData.getAssortId());
-                if(seq == null){ // max媛믪씠 �뾾�쓬 -> �빐�떦 assort id�뿉�꽌 泥� insert
+                if(seq == null){ // max값이 없음 -> 해당 assort id에서 첫 insert
                     seq = StringFactory.getFourStartCd();//fourStartCd;
                 }
-                else{ // max媛� �뵲�샂 -> seq++
+                else{ // max값 따옴 -> seq++
                     seq = Utilities.plusOne(seq, 4);
                 }
                 itvari.setSeq(seq);
             }
-            else{ // 議댁옱�븯�뒗 寃쎌슦 : itvari 媛앹껜媛� 議댁옱�븿�씠 蹂댁옣�맖 -> update
+            else{ // 존재하는 경우 : itvari 객체가 존재함이 보장됨 -> update
                 itvari = jpaItvariRepository.findByAssortIdAndSeq(goodsInsertRequestData.getAssortId(), seq);
             }
             itvari.setOptionNm(attribute.getValue());
@@ -247,7 +247,7 @@ public class JpaGoodsService {
 
     /**
      * 21-04-28 Pecan
-     * �븘�씠�뀥 �젙蹂� insert, update
+     * 아이템 정보 insert, update
      * @param goodsInsertRequestData
      * @return List<Ititmm>
      */
@@ -255,31 +255,31 @@ public class JpaGoodsService {
         List<GoodsInsertRequestData.Items> itemList = goodsInsertRequestData.getItems();
         List<Ititmm> ititmmList = new ArrayList<>();
         for(GoodsInsertRequestData.Items item : itemList){
-            String itemId = item.getItemId(); // item id瑜� 媛앹껜媛� 媛뽮퀬 �엳�쑝硫� 洹멸쾬�쓣 �씠�슜
+            String itemId = item.getItemId(); // item id瑜? 媛앹껜媛? 媛뽮퀬 ?엳?쑝硫? 洹멸쾬?쓣 ?씠?슜
             Ititmm ititmm = new Ititmm(goodsInsertRequestData.getAssortId(), item);
-            if(itemId == null || itemId.trim().equals("")){ // 媛앹껜�뿉 item id媛� �뾾�쑝硫� jpa�뿉�꽌 max媛믪쓣 媛��졇�샂
+            if(itemId == null || itemId.trim().equals("")){ // 媛앹껜?뿉 item id媛? ?뾾?쑝硫? jpa?뿉?꽌 max媛믪쓣 媛??졇?샂
                 itemId = jpaItitmmRepository.findMaxItemIdByAssortId(goodsInsertRequestData.getAssortId());
-                if(itemId == null || itemId.trim().equals("")){ // jpa�뿉�꽌 max媛믪쓣 媛��졇�솕�뒗�뜲 null�씠硫� �빐�떦 assort id�뿉 item id媛� 議댁옱�븯吏� �븡�쑝誘�濡� 珥덇린媛�(0001)�쓣 �꽕�젙
+                if(itemId == null || itemId.trim().equals("")){ // jpa?뿉?꽌 max媛믪쓣 媛??졇?솕?뒗?뜲 null?씠硫? ?빐?떦 assort id?뿉 item id媛? 議댁옱?븯吏? ?븡?쑝誘?濡? 珥덇린媛?(0001)?쓣 ?꽕?젙
                     itemId = StringFactory.getFourStartCd();
                 }
-                else { // jpa�뿉�꽌 max媛믪쓣 媛��졇�삩 寃쎌슦 1�쓣 �뜑�븳 �썑 item id濡� �궪�쓬
+                else { // jpa?뿉?꽌 max媛믪쓣 媛??졇?삩 寃쎌슦 1?쓣 ?뜑?븳 ?썑 item id濡? ?궪?쓬
                     itemId = Utilities.plusOne(itemId, 4);
                 }
                 ititmm.setItemId(itemId);
             }
-            else{ // 媛앹껜�뿉 item id媛� �엳�쑝硫� �빐�떦 媛앹껜媛� �씠誘� 議댁옱�븯誘�濡� 媛앹껜瑜� 媛��졇�샂 (update)
+            else{ // 媛앹껜?뿉 item id媛? ?엳?쑝硫? ?빐?떦 媛앹껜媛? ?씠誘? 議댁옱?븯誘?濡? 媛앹껜瑜? 媛??졇?샂 (update)
                 ititmm = jpaItitmmRepository.findByAssortIdAndItemId(goodsInsertRequestData.getAssortId(), itemId);
             }
             String[] optionNmList = item.getValue().split(StringFactory.getSplitGb());
-            // itvari�뿉�꽌 �샃�뀡 �삎吏� 李얠븘�삤湲�
+            // itvari?뿉?꽌 ?샃?뀡 ?삎吏? 李얠븘?삤湲?
             for(String optionNm : optionNmList){
                 Itvari op = jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), optionNm);
                 String opGb = op.getOptionGb();
-                if(opGb.equals(StringFactory.getGbOne())){ // optionGb�씠 01�씤 寃쎌슦
+                if(opGb.equals(StringFactory.getGbOne())){ // optionGb?씠 01?씤 寃쎌슦
                     ititmm.setVariationGb1(opGb);
                     ititmm.setVariationSeq1(op.getSeq());
                 }
-                else if(opGb.equals(StringFactory.getGbTwo())){ // optionGb�씠 02�씤 寃쎌슦
+                else if(opGb.equals(StringFactory.getGbTwo())){ // optionGb?씠 02?씤 寃쎌슦
                     ititmm.setVariationGb2(opGb);
                     ititmm.setVariationSeq2(op.getSeq());
                 }
@@ -294,7 +294,7 @@ public class JpaGoodsService {
 
     /**
      * 21-04-28 Pecan
-     * �븘�씠�뀥 �젙蹂� �씠�젰 insert, update
+     * ?븘?씠?뀥 ?젙蹂? ?씠?젰 insert, update
      * @param goodsInsertRequestData
      * @param ititmmList
      * @return List<Ititmd>
@@ -305,7 +305,7 @@ public class JpaGoodsService {
         for (int i = 0; i < ititmmList.size() ; i++) {
             try
             {
-                effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 留덉�留� �궇吏�(�뾾�쓣 寃쎌슦 9999-12-31 23:59:59?)
+                effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 留덉?留? ?궇吏?(?뾾?쓣 寃쎌슦 9999-12-31 23:59:59?)
             }
             catch (Exception e){
                 logger.debug(e.getMessage());
@@ -319,7 +319,7 @@ public class JpaGoodsService {
                 cal.setTime(new Date());
                 cal.add(Calendar.SECOND, -1);
                 ititmd.setEffEndDt(cal.getTime());
-                // update �썑 �깉 �씠�젰 insert
+                // update ?썑 ?깉 ?씠?젰 insert
                 Ititmd newItitmd = new Ititmd(ititmd);
                 jpaItitmdRepository.save(newItitmd);
 //            saveItasrn(goodsRequestData);
@@ -342,7 +342,7 @@ public class JpaGoodsService {
 
     /**
      * 21-04-29 Pecan
-     * assortId瑜� �넻�빐 detail �럹�씠吏�瑜� 援ъ꽦�븯�뒗 �젙蹂대�� 諛섑솚�븯�뒗 �븿�닔
+     * assortId瑜? ?넻?빐 detail ?럹?씠吏?瑜? 援ъ꽦?븯?뒗 ?젙蹂대?? 諛섑솚?븯?뒗 ?븿?닔
      * @param assrotId
      * @return GoodsResponseData
      */
@@ -361,7 +361,7 @@ public class JpaGoodsService {
         goodsSelectDetailResponseData.setItems(itemsList);
         return goodsSelectDetailResponseData;
     }
-    // ititmm -> items �삎�깭濡� 諛붽퓭二쇰뒗 �븿�닔
+    // ititmm -> items ?삎?깭濡? 諛붽퓭二쇰뒗 ?븿?닔
     private List<GoodsSelectDetailResponseData.Items> makeItemsList(List<Ititmm> ititmmList) {
         List<GoodsSelectDetailResponseData.Items> itemsList = new ArrayList<>();
         for(Ititmm ititmm : ititmmList){
@@ -385,7 +385,7 @@ public class JpaGoodsService {
         return itemsList;
     }
 
-    // itvari -> attributes �삎�깭濡� 諛붽퓭二쇰뒗 �븿�닔
+    // itvari -> attributes ?삎?깭濡? 諛붽퓭二쇰뒗 ?븿?닔
     private List<GoodsSelectDetailResponseData.Attributes> makeAttributesList(List<Itvari> itvariList) {
         List<GoodsSelectDetailResponseData.Attributes> attributesList = new ArrayList<>();
         for(Itvari itvari : itvariList){
@@ -398,7 +398,7 @@ public class JpaGoodsService {
         return attributesList;
     }
 
-    // itasrd -> description �삎�깭濡� 諛붽퓭二쇰뒗 �븿�닔
+    // itasrd -> description ?삎?깭濡? 諛붽퓭二쇰뒗 ?븿?닔
     private List<GoodsSelectDetailResponseData.Description> makeDescriptions(List<Itasrd> itasrdList) {
         List<GoodsSelectDetailResponseData.Description> descriptionList = new ArrayList<>();
         for(Itasrd itasrd : itasrdList){
@@ -414,7 +414,7 @@ public class JpaGoodsService {
 
     /**
      * 21-05-10 Pecan
-     * brandId, dispCategoryId, regDt, shortageYn, (�씠�긽 itasrt) dispCategoryId(itcatg), brandId(itbrnd) 濡� list 紐⑸줉 媛��졇�삤�뒗 �븿�닔
+     * brandId, dispCategoryId, regDt, shortageYn, (?씠?긽 itasrt) dispCategoryId(itcatg), brandId(itbrnd) 濡? list 紐⑸줉 媛??졇?삤?뒗 ?븿?닔
      * @param shortageYn, RegDtBegin, regDtEnd
      * @return GoodsSelectListResponseData
      */
@@ -479,7 +479,7 @@ public class JpaGoodsService {
      
 
     /**
-     * Table 珥덇린�솕 �븿�닔
+     * Table 珥덇린?솕 ?븿?닔
      */
     public void initTables(){
         Optional<SequenceData> op = jpaSequenceDataRepository.findById("seq_ITASRT");
