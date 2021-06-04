@@ -14,8 +14,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
- *  ITASRT table�쓽 Entity
- *  ITASRT : �긽�뭹 �젙蹂� table
+ *  ITASRT table의 Entity
+ *  ITASRT : 상품 정보 table
  */
 
 @Entity
@@ -88,95 +88,78 @@ public class Itasrt {
 	private String taxGb;
 	private String assortGb;
 	private String assortState;
-	@Column(nullable = true)
 	private Float asWidth;
-	@Column(nullable = true)
 	private Float asLength;
-	@Column(nullable = true)
 	private Float asHeight;
-	@Column(nullable = true)
 	private Float weight;
 	private String origin;
-	private String shortageYn; // itasrn�뿉�룄
+	private String shortageYn; // itasrn에도
 	private String brandId;
 	private String dispCategoryId;
 	private String siteGb;
 	private String asVendorId;
 	private String manufactureNm;
-	@Column(nullable = true)
 	private Float deliPrice;
-	@Column(nullable = true)
 	private Float localPrice;
 	private Float localDeliFee;
-	@Column(nullable = true)
-	private Float localSale; // itasrn�뿉�룄 �뱾�뼱媛�
+	private Float localSale; // itasrn에도 들어감
 	private String assortColor;
 	private Date sellStaDt;
 	private Date sellEndDt;
-	@Column(nullable = true)
 	private Float mdRrp;
 	private String mdTax;
 	private String mdYear;
-	@Column(nullable = true)
 	private Float mdMargin;
-	@Column(nullable = true)
 	private Float mdVatrate;
-	@Column(nullable = true)
 	private Float mdOfflinePrice;
-	@Column(nullable = true)
 	private Float mdOnlinePrice;
-	@Column(nullable = true)
 	private Float mdGoodsVatrate;
 	private String buyWhere;
 	private String buyTax;
-	@Column(nullable = true)
 	private Float buySupplyDiscount;
-	@Column(nullable = true)
 	private Float buyRrpIncrement;
-	@Column(nullable = true)
 	private Float buyExchangeRate;
 	private String sizeType;
-	@Column(nullable = true)
 	private Float mdDiscountRate;
 	private String optionGbName;
 	private String optionUseYn;
 
-	
 
-	//// �떎瑜� �뀒�씠釉붽낵 �뿮�쑝硫� �굹�삤�뒗 �봽濡쒗띁�떚�뱾
+
+	//// 다른 테이블과 엮으면 나오는 프로퍼티들
 	@JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@JsonIgnore
-	@OneToMany(fetch = FetchType.LAZY) // itvari �뿰愿�愿�怨�
+	@OneToMany(fetch = FetchType.LAZY) // itvari 연관관계
 	private List<Itvari> itvariList;
 
 	@JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@JsonIgnore
-	@OneToMany(fetch = FetchType.LAZY) // ititmm �뿰愿�愿�怨�
+	@OneToMany(fetch = FetchType.LAZY) // ititmm 연관관계
 	private List<Ititmm> ititmmList;
 
 	@JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
-	@OneToMany(fetch = FetchType.LAZY) // itasrd �뿰愿�愿�怨�
+	@OneToMany(fetch = FetchType.LAZY) // itasrd 연관관계
 	@JsonIgnore
 	private List<Itasrd> itasrdList;
 
 	@JoinColumn(name="brandId", referencedColumnName = "brandId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
-	private Itbrnd itbrnd; // itbrnd �뿰愿�愿�怨�
+	private Itbrnd itbrnd; // itbrnd 연관관계
 
 	@JoinColumn(name="dispCategoryId", referencedColumnName = "categoryId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@ManyToOne
 	@JsonIgnore
-	private Itcatg itcatg; // itcatg �뿰愿�愿�怨�
+	private Itcatg itcatg; // itcatg 연관관계
 	
 	
 
 //	@OneToOne
 //	@JoinColumn(name = "brand_id", referencedColumnName = "brand_id", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 //	@JsonIgnore
-//	@ManyToOne(fetch = FetchType.LAZY) // �뿰愿�愿�怨�
+//	@ManyToOne(fetch = FetchType.LAZY) // 연관관계
 //	private Itbrnd itbrnd;
-//	@ManyToOne(fetch = FetchType.LAZY) // �뿰愿�愿�怨�
+//	@ManyToOne(fetch = FetchType.LAZY) // 연관관계
 //	@JoinColumn(name = "disp_category_id", referencedColumnName = "category_id", insertable=false, updatable=false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 //	private Itcatg itcatg;
 

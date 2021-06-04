@@ -57,9 +57,7 @@ public class Ititmd {
     private Date effStaDt;
     private String shortYn;
 
-    @Column(nullable = true)
     private Long regId;
-    @Column(nullable = true)
     private Long updId;
     @CreationTimestamp
     private Date regDt;

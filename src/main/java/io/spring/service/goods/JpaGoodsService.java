@@ -72,17 +72,17 @@ public class JpaGoodsService {
      */
     @Transactional
     public GoodsInsertResponseData sequenceInsertOrUpdateGoods(GoodsInsertRequestData goodsInsertRequestData){
-        // itasrt?뿉 goods ?젙蹂? ???옣
+        // itasrt에 goods 정보 저장
         Itasrt itasrt = this.saveItasrt(goodsInsertRequestData);
-        // itsrn?뿉 goods ?씠?젰 ???옣
+        // itsrn에 goods 이력 저장
         Itasrn itasrn = this.saveItasrn(goodsInsertRequestData);
-        // itasrd?뿉 臾멸뎄 ???옣
+        // itasrd에 문구 저장
         List<Itasrd> itasrd = this.saveItasrd(goodsInsertRequestData);
-        // itvari?뿉 assort_id蹂? ?샃?뀡?슂?냼 ???옣(?깋?긽, ?궗?씠利?)
+        // itvari에 assort_id별 옵션요소 저장(색상, 사이즈)
         List<Itvari> itvariList = this.saveItvariList(goodsInsertRequestData);
-        // ititmm?뿉 assort_id蹂? item ???옣
+        // ititmm에 assort_id별 item 저장
         List<Ititmm> ititmmList = this.saveItemList(goodsInsertRequestData);
-        // ititmd?뿉 item ?씠?젰 ???옣
+        // ititmd에 item 이력 저장
         List<Ititmd> ititmdList = this.saveItemHistoryList(goodsInsertRequestData, ititmmList);
 
         List<GoodsInsertResponseData.Attributes> attributesList = makeGoodsResponseAttributes(itvariList);
@@ -255,31 +255,31 @@ public class JpaGoodsService {
         List<GoodsInsertRequestData.Items> itemList = goodsInsertRequestData.getItems();
         List<Ititmm> ititmmList = new ArrayList<>();
         for(GoodsInsertRequestData.Items item : itemList){
-            String itemId = item.getItemId(); // item id瑜? 媛앹껜媛? 媛뽮퀬 ?엳?쑝硫? 洹멸쾬?쓣 ?씠?슜
+            String itemId = item.getItemId(); // item id를 객체가 갖고 있으면 그것을 이용
             Ititmm ititmm = new Ititmm(goodsInsertRequestData.getAssortId(), item);
-            if(itemId == null || itemId.trim().equals("")){ // 媛앹껜?뿉 item id媛? ?뾾?쑝硫? jpa?뿉?꽌 max媛믪쓣 媛??졇?샂
+            if(itemId == null || itemId.trim().equals("")){ // 객체에 item id가 없으면 jpa에서 max값을 가져옴
                 itemId = jpaItitmmRepository.findMaxItemIdByAssortId(goodsInsertRequestData.getAssortId());
-                if(itemId == null || itemId.trim().equals("")){ // jpa?뿉?꽌 max媛믪쓣 媛??졇?솕?뒗?뜲 null?씠硫? ?빐?떦 assort id?뿉 item id媛? 議댁옱?븯吏? ?븡?쑝誘?濡? 珥덇린媛?(0001)?쓣 ?꽕?젙
+                if(itemId == null || itemId.trim().equals("")){ // jpa에서 max값을 가져왔는데 null이면 해당 assort id에 item id가 존재하지 않으므로 초기값(0001)을 설정
                     itemId = StringFactory.getFourStartCd();
                 }
-                else { // jpa?뿉?꽌 max媛믪쓣 媛??졇?삩 寃쎌슦 1?쓣 ?뜑?븳 ?썑 item id濡? ?궪?쓬
+                else { // jpa에서 max값을 가져온 경우 1을 더한 후 item id로 삼음
                     itemId = Utilities.plusOne(itemId, 4);
                 }
                 ititmm.setItemId(itemId);
             }
-            else{ // 媛앹껜?뿉 item id媛? ?엳?쑝硫? ?빐?떦 媛앹껜媛? ?씠誘? 議댁옱?븯誘?濡? 媛앹껜瑜? 媛??졇?샂 (update)
+            else{ // 객체에 item id가 있으면 해당 객체가 이미 존재하므로 객체를 가져옴 (update)
                 ititmm = jpaItitmmRepository.findByAssortIdAndItemId(goodsInsertRequestData.getAssortId(), itemId);
             }
             String[] optionNmList = item.getValue().split(StringFactory.getSplitGb());
-            // itvari?뿉?꽌 ?샃?뀡 ?삎吏? 李얠븘?삤湲?
+            // itvari에서 옵션 형질 찾아오기
             for(String optionNm : optionNmList){
                 Itvari op = jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), optionNm);
                 String opGb = op.getOptionGb();
-                if(opGb.equals(StringFactory.getGbOne())){ // optionGb?씠 01?씤 寃쎌슦
+                if(opGb.equals(StringFactory.getGbOne())){ // optionGb이 01인 경우
                     ititmm.setVariationGb1(opGb);
                     ititmm.setVariationSeq1(op.getSeq());
                 }
-                else if(opGb.equals(StringFactory.getGbTwo())){ // optionGb?씠 02?씤 寃쎌슦
+                else if(opGb.equals(StringFactory.getGbTwo())){ // optionGb이 02인 경우
                     ititmm.setVariationGb2(opGb);
                     ititmm.setVariationSeq2(op.getSeq());
                 }
@@ -294,7 +294,7 @@ public class JpaGoodsService {
 
     /**
      * 21-04-28 Pecan
-     * ?븘?씠?뀥 ?젙蹂? ?씠?젰 insert, update
+     * 아이템 정보 이력 insert, update
      * @param goodsInsertRequestData
      * @param ititmmList
      * @return List<Ititmd>
@@ -305,7 +305,7 @@ public class JpaGoodsService {
         for (int i = 0; i < ititmmList.size() ; i++) {
             try
             {
-                effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 留덉?留? ?궇吏?(?뾾?쓣 寃쎌슦 9999-12-31 23:59:59?)
+                effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
             }
             catch (Exception e){
                 logger.debug(e.getMessage());
@@ -319,7 +319,7 @@ public class JpaGoodsService {
                 cal.setTime(new Date());
                 cal.add(Calendar.SECOND, -1);
                 ititmd.setEffEndDt(cal.getTime());
-                // update ?썑 ?깉 ?씠?젰 insert
+                // update 후 새 이력 insert
                 Ititmd newItitmd = new Ititmd(ititmd);
                 jpaItitmdRepository.save(newItitmd);
 //            saveItasrn(goodsRequestData);
@@ -342,7 +342,7 @@ public class JpaGoodsService {
 
     /**
      * 21-04-29 Pecan
-     * assortId瑜? ?넻?빐 detail ?럹?씠吏?瑜? 援ъ꽦?븯?뒗 ?젙蹂대?? 諛섑솚?븯?뒗 ?븿?닔
+     * assortId를 통해 detail 페이지를 구성하는 정보를 반환하는 함수
      * @param assrotId
      * @return GoodsResponseData
      */
@@ -361,7 +361,7 @@ public class JpaGoodsService {
         goodsSelectDetailResponseData.setItems(itemsList);
         return goodsSelectDetailResponseData;
     }
-    // ititmm -> items ?삎?깭濡? 諛붽퓭二쇰뒗 ?븿?닔
+    // ititmm -> items 형태로 바꿔주는 함수
     private List<GoodsSelectDetailResponseData.Items> makeItemsList(List<Ititmm> ititmmList) {
         List<GoodsSelectDetailResponseData.Items> itemsList = new ArrayList<>();
         for(Ititmm ititmm : ititmmList){
@@ -385,7 +385,7 @@ public class JpaGoodsService {
         return itemsList;
     }
 
-    // itvari -> attributes ?삎?깭濡? 諛붽퓭二쇰뒗 ?븿?닔
+    // itvari -> attributes 형태로 바꿔주는 함수
     private List<GoodsSelectDetailResponseData.Attributes> makeAttributesList(List<Itvari> itvariList) {
         List<GoodsSelectDetailResponseData.Attributes> attributesList = new ArrayList<>();
         for(Itvari itvari : itvariList){
@@ -398,7 +398,7 @@ public class JpaGoodsService {
         return attributesList;
     }
 
-    // itasrd -> description ?삎?깭濡? 諛붽퓭二쇰뒗 ?븿?닔
+    // itasrd -> description 형태로 바꿔주는 함수
     private List<GoodsSelectDetailResponseData.Description> makeDescriptions(List<Itasrd> itasrdList) {
         List<GoodsSelectDetailResponseData.Description> descriptionList = new ArrayList<>();
         for(Itasrd itasrd : itasrdList){
@@ -414,7 +414,7 @@ public class JpaGoodsService {
 
     /**
      * 21-05-10 Pecan
-     * brandId, dispCategoryId, regDt, shortageYn, (?씠?긽 itasrt) dispCategoryId(itcatg), brandId(itbrnd) 濡? list 紐⑸줉 媛??졇?삤?뒗 ?븿?닔
+     * brandId, dispCategoryId, regDt, shortageYn, (이상 itasrt) dispCategoryId(itcatg), brandId(itbrnd) 로 list 목록 가져오는 함수
      * @param shortageYn, RegDtBegin, regDtEnd
      * @return GoodsSelectListResponseData
      */
@@ -476,10 +476,10 @@ public class JpaGoodsService {
     
     	
     }
-     
+
 
     /**
-     * Table 珥덇린?솕 ?븿?닔
+     * Table 초기화 함수
      */
     public void initTables(){
         Optional<SequenceData> op = jpaSequenceDataRepository.findById("seq_ITASRT");

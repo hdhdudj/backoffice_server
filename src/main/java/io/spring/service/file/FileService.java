@@ -1,5 +1,19 @@
 package io.spring.service.file;
 
+import io.spring.model.file.FileVo;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPReply;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,30 +22,6 @@ import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
-
-import javax.activation.MimetypesFileTypeMap;
-
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPReply;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
-
-import io.spring.infrastructure.util.PropertyUtil;
-import io.spring.model.file.FileVo;
-import io.spring.service.deposit.JpaDepositService;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -149,7 +139,7 @@ public class FileService {
 	        }catch(Exception e) {
 	        	e.printStackTrace();
 	        	return null;
-	           // throw new FileUploadException("["+fileName+"] ÆÄÀÏ ¾÷·Îµå¿¡ ½ÇÆĞÇÏ¿´½À´Ï´Ù. ´Ù½Ã ½ÃµµÇÏ½Ê½Ã¿À.",e);
+	           // throw new FileUploadException("["+fileName+"] íŒŒì¼ ì—…ë¡œë“œì— ì‹¤íŒ¨í•˜ì˜€ìŠµë‹ˆë‹¤. ë‹¤ì‹œ ì‹œë„í•˜ì‹­ì‹œì˜¤.",e);
 	        } 
 		  
 		 
@@ -199,7 +189,7 @@ public class FileService {
 
                 ftp.logout();
 
-                logger.debug("ftp ¼­¹ö¿¡ ·Î±×ÀÎÇÏÁö ¸øÇß½À´Ï´Ù.");
+                logger.debug("ftp ì„œë²„ì— ë¡œê·¸ì¸í•˜ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.");
 
             }
 
@@ -316,7 +306,7 @@ public class FileService {
 
                 ftp.logout();
 
-                logger.debug("ftp ¼­¹ö¿¡ ·Î±×ÀÎÇÏÁö ¸øÇß½À´Ï´Ù.");
+                logger.debug("ftp ì„œë²„ì— ë¡œê·¸ì¸í•˜ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.");
 
             }
 
@@ -357,7 +347,7 @@ public class FileService {
 
             
 
-            //ÆÄÀÏ ¾÷·Îµå
+            //íŒŒì¼ ì—…ë¡œë“œ
 
             String tempFileName = new String((ftpFolder+filename).getBytes("utf-8"),"iso_8859_1");
 

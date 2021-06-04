@@ -1,23 +1,5 @@
 package io.spring.controller;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
-import org.flywaydb.core.internal.util.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
@@ -28,6 +10,17 @@ import io.spring.model.goods.response.GoodsSelectDetailResponseData;
 import io.spring.model.goods.response.GoodsSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.goods.JpaGoodsService;
+import org.flywaydb.core.internal.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/goods")
@@ -58,7 +51,7 @@ public class GoodsController {
 			res = new ApiResponseMessage<List<HashMap<String, Object>>>("SUCCESS","", r);
 		}
 		else {
-			res = new ApiResponseMessage<List<HashMap<String, Object>>>("ERROR", "占쏙옙占쏙옙타 占쏙옙占쏙옙", null);
+			res = new ApiResponseMessage<List<HashMap<String, Object>>>("ERROR", "ERROR", null);
 		}
 		
 		return ResponseEntity.ok(res);
@@ -114,7 +107,7 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 	}
 
-	// jpa濡� get list
+	// jpa로 get list
 	@GetMapping(path="/getgoodslistjpa")
 	public ResponseEntity getGoodsListJpa(@RequestParam String shortageYn, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtBegin, @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @RequestParam Date regDtEnd){
 		logger.debug("get goods list data");
@@ -146,7 +139,7 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 	}
 
-	// table 珥덇린�솕�슜
+	// table 초기화용
 	@RequestMapping(path = "/inittables")
 	public void initTables(){
 		jpaGoodsService.initTables();

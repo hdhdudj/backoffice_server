@@ -36,9 +36,7 @@ public class Ititmm {
     private String variationGb2;
     private String variationSeq2;
     private String addPrice;
-    @Column(nullable = true)
     private Long regId;
-    @Column(nullable = true)
     private Long updId;
     @CreationTimestamp
     private Date regDt;

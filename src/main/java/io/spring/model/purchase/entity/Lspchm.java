@@ -34,8 +34,8 @@ public class Lspchm {
         }
         this.purchaseStatus = purchaseInsertRequestData.getPurchaseStatus(); // 01 : 발주, 05 : 취소
         this.purchaseRemark = purchaseInsertRequestData.getPurchaseRemark();
-        this.siteGb = StringFactory.getGbOne(); // "01"
-        this.vendorId = StringFactory.getFourStartCd(); // "0001"
+        this.siteGb = StringFactory.getGbOne(); // "01" 하드코딩
+        this.vendorId = StringFactory.getFourStartCd(); // "0001" 하드코딩
         this.siteOrderNo = purchaseInsertRequestData.getSiteOrderNo();
         this.siteTrackNo = purchaseInsertRequestData.getSiteTrackNo();
         this.localPrice = purchaseInsertRequestData.getLocalPrice();

@@ -1,20 +1,5 @@
 package io.spring.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.exception.ResourceNotFoundException;
@@ -24,6 +9,12 @@ import io.spring.model.goods.entity.Itaimg;
 import io.spring.service.file.FileService;
 import io.spring.service.goods.JpaGoodsService;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -49,13 +40,13 @@ public class FileController {
         
        // return new FileUploadResponse(fileName, fileDownloadUri, file.getContentType(), file.getSize());
   
-		//ÆÄÀÏ¾÷·ÎµåÈÄ 
-		//ÆÄÀÏ¿øº»¸í
-		//ÆÄÀÏÀÌ¸§
-		//ÆÄÀÏ°æ·Î
-		//ÆÄÀÏseq
-		//ÆÄÀÏÅ¸ÀÔ
-		//ÆÄÀÏ»çÀÌÁî
+		//íŒŒì¼ì—…ë¡œë“œí›„ 
+		//íŒŒì¼ì›ë³¸ëª…
+		//íŒŒì¼ì´ë¦„
+		//íŒŒì¼ê²½ë¡œ
+		//íŒŒì¼seq
+		//íŒŒì¼íƒ€ì…
+		//íŒŒì¼ì‚¬ì´ì¦ˆ
 		
 		
 		FileVo f = fileService.storeFile(imageGb,file);
@@ -81,13 +72,13 @@ public class FileController {
 	        
 	       // return new FileUploadResponse(fileName, fileDownloadUri, file.getContentType(), file.getSize());
 	  
-			//ÆÄÀÏ¾÷·ÎµåÈÄ 
-			//ÆÄÀÏ¿øº»¸í
-			//ÆÄÀÏÀÌ¸§
-			//ÆÄÀÏ°æ·Î
-			//ÆÄÀÏseq
-			//ÆÄÀÏÅ¸ÀÔ
-			//ÆÄÀÏ»çÀÌÁî
+			//íŒŒì¼ì—…ë¡œë“œí›„ 
+			//íŒŒì¼ì›ë³¸ëª…
+			//íŒŒì¼ì´ë¦„
+			//íŒŒì¼ê²½ë¡œ
+			//íŒŒì¼seq
+			//íŒŒì¼íƒ€ì…
+			//íŒŒì¼ì‚¬ì´ì¦ˆ
 			
 	//	jpaGoodsService.
 		

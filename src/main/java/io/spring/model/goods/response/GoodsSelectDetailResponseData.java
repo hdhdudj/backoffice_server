@@ -58,7 +58,7 @@ public class GoodsSelectDetailResponseData {
     }
 
     
-        // itasrt, itvari, itasrd 怨듯넻
+        // itasrt, itvari, itasrd 공통
     private String assortId;
 //    @CreationTimestamp
 //    private Date regDt;
@@ -80,7 +80,7 @@ public class GoodsSelectDetailResponseData {
     private Float asHeight;
     private Float weight;
     private String origin;
-    private String shortageYn; // itasrn�뿉�룄
+    private String shortageYn; // itasrn에도
     private String brandId;
     private String dispCategoryId;
     private String siteGb;
@@ -89,7 +89,7 @@ public class GoodsSelectDetailResponseData {
     private Float deliPrice;
     private Float localPrice;
     private Float localDeliFee;
-    private Float localSale; // itasrn�뿉�룄 �뱾�뼱媛�
+    private Float localSale; // itasrn에도 들어감
     private String assortColor;
     
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
@@ -113,7 +113,7 @@ public class GoodsSelectDetailResponseData {
     private Float mdDiscountRate;
 
     // itasrd
-    private List<GoodsSelectDetailResponseData.Description> description; // html (硫붾え �긽�꽭) - long memo, text (硫붾え 媛꾨왂) - short memo
+    private List<GoodsSelectDetailResponseData.Description> description; // html (메모 상세) - long memo, text (메모 간략) - short memo
     @Getter
     @Setter
     public static class Description{
@@ -139,13 +139,12 @@ public class GoodsSelectDetailResponseData {
     public static class Items{
         //		private String assortId;
         private String itemId;
-        //		@Expose // object 以� �빐�떦 媛믪씠 null�씪 寃쎌슦, json�쑝濡� 留뚮뱾 �븘�뱶瑜� �옄�룞 �깮�왂
         private String value;
         private String addPrice;
         private String shortYn;
     }
 
-    // image 愿��젴
+    // image 관련
     private List<String> uploadImage;
     private List<String> deleteImage;
 

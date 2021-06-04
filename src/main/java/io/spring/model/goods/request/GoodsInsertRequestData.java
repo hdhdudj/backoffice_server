@@ -3,9 +3,7 @@ package io.spring.model.goods.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
@@ -16,7 +14,7 @@ import java.util.List;
 public class GoodsInsertRequestData {
 	private String code;
 	private String message;
-	// itasrt, itvari, itasrd 怨듯넻
+	// itasrt, itvari, itasrd 공통
 	private String assortId;
 	private Date regDt;
 	private String regId;
@@ -36,7 +34,7 @@ public class GoodsInsertRequestData {
 	private Float asHeight;
 	private Float weight;
 	private String origin;
-	private String shortageYn; // itasrn�뿉�룄
+	private String shortageYn; // itasrn에도
 	private String brandId;
 	private String dispCategoryId;
 	private String siteGb;
@@ -45,7 +43,7 @@ public class GoodsInsertRequestData {
 	private Float deliPrice;
 	private Float localPrice;
 	private Float localDeliFee;
-	private Float localSale; // itasrn�뿉�룄 �뱾�뼱媛�
+	private Float localSale; // itasrn에도 들어감
 	private String assortColor;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
 	private Date sellStaDt;
@@ -69,7 +67,7 @@ public class GoodsInsertRequestData {
 
 
 	// itasrd
-	private List<Description> description; // html (硫붾え �긽�꽭) - long memo, text (硫붾え 媛꾨왂) - short memo
+	private List<Description> description; // html (메모 상세) - long memo, text (메모 간략) - short memo
 	@Getter
 	@Setter
 	public static class Description{
@@ -95,13 +93,13 @@ public class GoodsInsertRequestData {
 	public static class Items{
 //		private String assortId;
 		private String itemId;
-//		@Expose // object 以� �빐�떦 媛믪씠 null�씪 寃쎌슦, json�쑝濡� 留뚮뱾 �븘�뱶瑜� �옄�룞 �깮�왂
+//		@Expose // object 중 해당 값이 null일 경우, json으로 만들 필드를 자동 생략
 		private String value;
 		private String addPrice;
 		private String shortYn;
 	}
 
-	// image 愿��젴
+	// image 관련
 	private List<String> uploadImage;
 	private List<String> deleteImage;
 

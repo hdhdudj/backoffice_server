@@ -1,8 +1,9 @@
 package io.spring.controller;
 
-import java.util.HashMap;
-import java.util.List;
-
+import io.spring.dao.common.MyBatisCommonDao;
+import io.spring.dao.order.MyBatisOrderDao;
+import io.spring.infrastructure.util.ApiResponseMessage;
+import io.spring.service.common.JpaCommonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.spring.dao.common.MyBatisCommonDao;
-import io.spring.dao.order.MyBatisOrderDao;
-import io.spring.infrastructure.util.ApiResponseMessage;
-import io.spring.service.common.JpaCommonService;
+import java.util.HashMap;
+import java.util.List;
 
 
 @RestController
@@ -104,7 +103,7 @@ public class OrderController {
 		if (r.size() > 0) {
 			res = new ApiResponseMessage<List<HashMap<String, Object>>>("SUCCESS", "", r);
 		} else {
-			res = new ApiResponseMessage<List<HashMap<String, Object>>>("ERROR", "����Ÿ ����", null);
+			res = new ApiResponseMessage<List<HashMap<String, Object>>>("ERROR", "ERROR", null);
 		}
 		
 
