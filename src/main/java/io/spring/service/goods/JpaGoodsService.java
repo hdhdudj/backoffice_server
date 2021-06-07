@@ -12,9 +12,10 @@ import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.goods.response.GoodsInsertResponseData;
 import io.spring.model.goods.response.GoodsSelectDetailResponseData;
 import io.spring.model.goods.response.GoodsSelectListResponseData;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,35 +23,26 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.*;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class JpaGoodsService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
 
-    @Autowired
-    private JpaItasrtRepository jpaItasrtRepository;
-    @Autowired
-    private JpaItasrnRepository jpaItasrnRepository;
-    @Autowired
-    private JpaItvariRepository jpaItvariRepository;
-//    @Autowired
+    private final JpaItasrtRepository jpaItasrtRepository;
+    private final JpaItasrnRepository jpaItasrnRepository;
+    private final JpaItvariRepository jpaItvariRepository;
 //    private MyBatisCommonDao myBatisCommonDao;
-//    @Autowired
 //    private MyBatisGoodsDao myBatisGoodsDao;
-    @Autowired
-    private JpaItasrdRepository jpaItasrdRepository;
-    @Autowired
-    private JpaItitmmRepository jpaItitmmRepository;
-    @Autowired
-    private JpaItitmdRepository jpaItitmdRepository;
-    @Autowired
-    private JpaSequenceDataRepository jpaSequenceDataRepository;
-    @Autowired
-    private EntityManager em;
+    private final JpaItasrdRepository jpaItasrdRepository;
+    private final JpaItitmmRepository jpaItitmmRepository;
+    private final JpaItitmdRepository jpaItitmdRepository;
+    private final JpaSequenceDataRepository jpaSequenceDataRepository;
+    private final EntityManager em;
     
-    @Autowired
-    private JpaItaimgRepository jpaItaimgRepository;
+    private final JpaItaimgRepository jpaItaimgRepository;
 
 
     public List<Itasrt> findAll() {
@@ -87,6 +79,7 @@ public class JpaGoodsService {
 
         List<GoodsInsertResponseData.Attributes> attributesList = makeGoodsResponseAttributes(itvariList);
         List<GoodsInsertResponseData.Items> itemsList = makeGoodsResponseItems(ititmmList);
+        log.debug("+++++ 실행됨.");
         return makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
     }
 
@@ -270,20 +263,32 @@ public class JpaGoodsService {
             else{ // 객체에 item id가 있으면 해당 객체가 이미 존재하므로 객체를 가져옴 (update)
                 ititmm = jpaItitmmRepository.findByAssortIdAndItemId(goodsInsertRequestData.getAssortId(), itemId);
             }
-            String[] optionNmList = item.getValue().split(StringFactory.getSplitGb());
-            // itvari에서 옵션 형질 찾아오기
-            for(String optionNm : optionNmList){
-                Itvari op = jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), optionNm);
-                String opGb = op.getOptionGb();
-                if(opGb.equals(StringFactory.getGbOne())){ // optionGb이 01인 경우
-                    ititmm.setVariationGb1(opGb);
-                    ititmm.setVariationSeq1(op.getSeq());
-                }
-                else if(opGb.equals(StringFactory.getGbTwo())){ // optionGb이 02인 경우
-                    ititmm.setVariationGb2(opGb);
-                    ititmm.setVariationSeq2(op.getSeq());
-                }
+            // 옵션1 관련값 찾아넣기
+            Itvari op1 = jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), item.getVariationValue1());
+            if(op1 != null){
+                ititmm.setVariationGb1(op1.getOptionGb());
+                ititmm.setVariationSeq1(op1.getSeq());
             }
+            // 옵션2 관련값 찾아넣기
+            Itvari op2 = jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), item.getVariationValue2());
+            if(op2 != null){
+                ititmm.setVariationGb2(op2.getOptionGb());
+                ititmm.setVariationSeq2(op2.getSeq());
+            }
+//            String[] optionNmList = item.getValue().split(StringFactory.getSplitGb());
+//            // itvari에서 옵션 형질 찾아오기
+//            for(String optionNm : optionNmList){
+//                Itvari op = jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), optionNm);
+//                String opGb = op.getOptionGb();
+//                if(opGb.equals(StringFactory.getGbOne())){ // optionGb이 01인 경우
+//                    ititmm.setVariationGb1(opGb);
+//                    ititmm.setVariationSeq1(op.getSeq());
+//                }
+//                else if(opGb.equals(StringFactory.getGbTwo())){ // optionGb이 02인 경우
+//                    ititmm.setVariationGb2(opGb);
+//                    ititmm.setVariationSeq2(op.getSeq());
+//                }
+//            }
             ititmm.setAddPrice(item.getAddPrice());
             ititmm.setShortYn(item.getShortYn());
             jpaItitmmRepository.save(ititmm);

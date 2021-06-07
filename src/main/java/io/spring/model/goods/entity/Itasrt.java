@@ -66,7 +66,7 @@ public class Itasrt {
 		this.buySupplyDiscount = goodsInsertRequestData.getBuySupplyDiscount();
 		this.buyRrpIncrement = goodsInsertRequestData.getBuyRrpIncrement();
 		this.buyExchangeRate = goodsInsertRequestData.getBuyExchangeRate();
-		this.sizeType = goodsInsertRequestData.getSizeType();
+//		this.sizeType = goodsInsertRequestData.getSizeType();
 		this.mdDiscountRate = goodsInsertRequestData.getMdDiscountRate();
 		this.optionGbName = goodsInsertRequestData.getOptionGbName();
 		
@@ -119,7 +119,7 @@ public class Itasrt {
 	private Float buySupplyDiscount;
 	private Float buyRrpIncrement;
 	private Float buyExchangeRate;
-	private String sizeType;
+//	private String sizeType;
 	private Float mdDiscountRate;
 	private String optionGbName;
 	private String optionUseYn;
