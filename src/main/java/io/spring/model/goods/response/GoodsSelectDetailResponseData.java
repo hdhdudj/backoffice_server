@@ -139,7 +139,10 @@ public class GoodsSelectDetailResponseData {
     public static class Items{
         //		private String assortId;
         private String itemId;
-        private String value;
+        private String variationSeq1;
+        private String variationSeq2;
+        private String variationValue1;
+        private String variationValue2;
         private String addPrice;
         private String shortYn;
     }
