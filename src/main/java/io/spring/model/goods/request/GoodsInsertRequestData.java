@@ -112,24 +112,24 @@ public class GoodsInsertRequestData {
 	// image 관련
 	private List<UploadMainImage> uploadMainImage;
 	private List<UploadAddImage> uploadAddImage;
-	private List<String> deleteImage;
+	private List<Long> deleteImage;
 	@Getter
 	@Setter
 	public static class UploadMainImage{
 		private Long uid;
-		private String fileName;
-		private String filePath;
+		private String name;
 		private String url;
 		private String imageGb;
+		private String status;
 	}
 	@Getter
 	@Setter
 	public static class UploadAddImage{
 		private Long uid;
-		private String fileName;
-		private String filePath;
+		private String name;
 		private String url;
 		private String imageGb;
+		private String status;
 	}
 
 	@Override
