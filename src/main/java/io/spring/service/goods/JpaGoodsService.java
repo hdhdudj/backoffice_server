@@ -77,15 +77,10 @@ public class JpaGoodsService {
 
         // itaimg에 assortId 업데이트 시켜주기
         this.updateItaimgAssortId(goodsInsertRequestData, itasrt.getAssortId());
-        // 이미지 delete 목록이 존재하면 해당 uid를 가진 이미지들 삭제해주기
-        this.deleteImages(goodsInsertRequestData.getDeleteImage());
 
         List<GoodsInsertResponseData.Attributes> attributesList = makeGoodsResponseAttributes(itvariList);
         List<GoodsInsertResponseData.Items> itemsList = makeGoodsResponseItems(ititmmList);
         return makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
-    }
-
-    private void deleteImages(List<Long> deleteImage) {
     }
 
     private void updateItaimgAssortId(GoodsInsertRequestData goodsInsertRequestData, String assortId) {
