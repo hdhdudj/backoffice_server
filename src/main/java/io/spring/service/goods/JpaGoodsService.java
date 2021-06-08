@@ -348,14 +348,14 @@ public class JpaGoodsService {
     /**
      * 21-04-29 Pecan
      * assortId를 통해 detail 페이지를 구성하는 정보를 반환하는 함수
-     * @param assrotId
+     * @param assortId
      * @return GoodsResponseData
      */
-    public GoodsSelectDetailResponseData getGoodsDetailPage(String assrotId) {
+    public GoodsSelectDetailResponseData getGoodsDetailPage(String assortId) {
        // Itasrt itasrt = jpaItasrtRepository.findById(assrotId).orElseGet(() -> null);
-    	
-    	
-    	 Itasrt itasrt = jpaItasrtRepository.findById(assrotId).orElseThrow(() -> new ResourceNotFoundException());
+
+        System.out.println("+++++ " + assortId);
+        Itasrt itasrt = jpaItasrtRepository.findById(assortId).orElseThrow(() -> new ResourceNotFoundException());
     	
         GoodsSelectDetailResponseData goodsSelectDetailResponseData = new GoodsSelectDetailResponseData(itasrt);
         List<GoodsSelectDetailResponseData.Description> descriptions = makeDescriptions(itasrt.getItasrdList());
@@ -372,17 +372,22 @@ public class JpaGoodsService {
         for(Ititmm ititmm : ititmmList){
             GoodsSelectDetailResponseData.Items item = new GoodsSelectDetailResponseData.Items();
             item.setItemId(ititmm.getItemId());
-            
-            
-            String option2NM="";
-            if(ititmm.getItvari2()!=null) {
-            	option2NM = "^|^"+ititmm.getItvari2().getOptionNm();
-            }else {
-            	option2NM ="";
+
+//            String option2NM="";
+//            if(ititmm.getItvari2()!=null) {
+//            	option2NM = "^|^"+ititmm.getItvari2().getOptionNm();
+//            }else {
+//            	option2NM ="";
+//            }
+            Itvari op1 = jpaItvariRepository.findByAssortIdAndSeq(ititmm.getAssortId(), ititmm.getVariationSeq1());
+            item.setVariationValue1(op1.getOptionNm());
+            item.setVariationSeq1(op1.getSeq());
+            if(ititmm.getVariationSeq2() != null){
+                Itvari op2 = jpaItvariRepository.findByAssortIdAndSeq(ititmm.getAssortId(), ititmm.getVariationSeq2());
+                item.setVariationSeq2(op2.getSeq());
+                item.setVariationValue2(op2.getOptionNm());
             }
-            
-            
-            item.setValue(ititmm.getItvari1().getOptionNm()+option2NM);
+//            item.setVariationValue1(ititmm.getItvari1().getOptionNm()+option2NM);
             item.setAddPrice(ititmm.getAddPrice());
             item.setShortYn(ititmm.getShortYn());
             itemsList.add(item);

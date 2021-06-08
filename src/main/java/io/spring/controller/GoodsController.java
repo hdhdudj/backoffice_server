@@ -92,12 +92,11 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 	}
 
-	@GetMapping(path = "/{assortId}")
-	public ResponseEntity getGoodsDetailJpa(@PathVariable("assortId") String assortId){
+	@GetMapping(path = "/getgoodsdetail")
+	public ResponseEntity getGoodsDetailJpa(@RequestParam("assortId") String assortId){
 		logger.debug("get goods detail page");
 		logger.debug(assortId);
 		
-
 		GoodsSelectDetailResponseData responseData = jpaGoodsService.getGoodsDetailPage(assortId);
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), responseData);
