@@ -1,13 +1,12 @@
 package io.spring.model.goods.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -23,7 +22,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Itasrt {
+public class Itasrt extends CommonProps {
 
 	public Itasrt(GoodsInsertRequestData goodsInsertRequestData){
 		this.assortId = goodsInsertRequestData.getAssortId();
@@ -74,13 +73,6 @@ public class Itasrt {
 
 	@Id
 	private String assortId;
-
-	private Long regId;
-	private Long updId;
-	@CreationTimestamp
-	private Date regDt;
-	@UpdateTimestamp
-	private Date updDt;
 
 	private String assortNm;
 	private String assortModel;

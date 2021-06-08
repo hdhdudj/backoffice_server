@@ -2,17 +2,16 @@ package io.spring.model.goods.entity;
 
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.entity.CommonProps;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Entity
@@ -20,7 +19,7 @@ import java.util.Date;
 @Setter
 @Table(name="ititmd")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Ititmd {
+public class Ititmd extends CommonProps {
     private final static Logger logger = LoggerFactory.getLogger(Ititmd.class);
     public Ititmd(Ititmd ititmd){
         this.assortId = ititmd.getAssortId();
@@ -56,11 +55,4 @@ public class Ititmd {
     @CreationTimestamp
     private Date effStaDt;
     private String shortYn;
-
-    private Long regId;
-    private Long updId;
-    @CreationTimestamp
-    private Date regDt;
-    @UpdateTimestamp
-    private Date updDt;
 }

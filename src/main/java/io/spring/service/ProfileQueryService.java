@@ -1,25 +1,20 @@
 package io.spring.service;
 
+import io.spring.dao.user.User;
+import io.spring.infrastructure.mybatis.readservice.UserReadService;
+import io.spring.infrastructure.mybatis.readservice.UserRelationshipQueryService;
 import io.spring.model.ProfileData;
 import io.spring.model.UserData;
-import io.spring.infrastructure.mybatis.readservice.UserReadService;
-import io.spring.dao.user.User;
-import io.spring.infrastructure.mybatis.readservice.UserRelationshipQueryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class ProfileQueryService {
-    private UserReadService userReadService;
-    private UserRelationshipQueryService userRelationshipQueryService;
-
-    @Autowired
-    public ProfileQueryService(UserReadService userReadService, UserRelationshipQueryService userRelationshipQueryService) {
-        this.userReadService = userReadService;
-        this.userRelationshipQueryService = userRelationshipQueryService;
-    }
+    private final UserReadService userReadService;
+    private final UserRelationshipQueryService userRelationshipQueryService;
 
     public Optional<ProfileData> findByUsername(String username, User currentUser) {
         UserData userData = userReadService.findByUsername(username);

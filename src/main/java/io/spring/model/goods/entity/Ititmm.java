@@ -1,16 +1,14 @@
 package io.spring.model.goods.entity;
 
+import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.idclass.ItitmmId;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @Entity
 @Table(name = "ititmm")
@@ -18,7 +16,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @IdClass(ItitmmId.class)
-public class Ititmm {
+public class Ititmm extends CommonProps {
 
     public Ititmm(String assortId, GoodsInsertRequestData.Items items){
         this.assortId = assortId;
@@ -36,12 +34,6 @@ public class Ititmm {
     private String variationGb2;
     private String variationSeq2;
     private String addPrice;
-    private Long regId;
-    private Long updId;
-    @CreationTimestamp
-    private Date regDt;
-    @UpdateTimestamp
-    private Date updDt;
 
     // itasrt 연관 관계
     @ManyToOne(fetch = FetchType.LAZY)

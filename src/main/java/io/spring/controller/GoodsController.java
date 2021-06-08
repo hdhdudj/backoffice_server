@@ -10,10 +10,9 @@ import io.spring.model.goods.response.GoodsSelectDetailResponseData;
 import io.spring.model.goods.response.GoodsSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.goods.JpaGoodsService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.internal.util.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,26 +21,27 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/goods")
+@RequiredArgsConstructor
 public class GoodsController {
-	private Logger logger = LoggerFactory.getLogger(getClass());
-	private MyBatisGoodsDao goodsRepository;
-	private MyBatisCommonDao myBatisCommonDao;
-	private JpaGoodsService jpaGoodsService;
-	private JpaCommonService jpaCommonService;
+	private final MyBatisGoodsDao goodsRepository;
+	private final MyBatisCommonDao myBatisCommonDao;
+	private final JpaGoodsService jpaGoodsService;
+	private final JpaCommonService jpaCommonService;
 
-	@Autowired
-	public GoodsController(MyBatisGoodsDao goodsRepository, MyBatisCommonDao myBatisCommonDao, JpaGoodsService jpaGoodsService, JpaCommonService jpaCommonService) {
-		this.goodsRepository = goodsRepository;
-		this.myBatisCommonDao = myBatisCommonDao;
-		this.jpaGoodsService = jpaGoodsService;
-		this.jpaCommonService = jpaCommonService;
-	}
+//	@Autowired
+//	public GoodsController(MyBatisGoodsDao goodsRepository, MyBatisCommonDao myBatisCommonDao, JpaGoodsService jpaGoodsService, JpaCommonService jpaCommonService) {
+//		this.goodsRepository = goodsRepository;
+//		this.myBatisCommonDao = myBatisCommonDao;
+//		this.jpaGoodsService = jpaGoodsService;
+//		this.jpaCommonService = jpaCommonService;
+//	}
 	
 	@RequestMapping(path = "/select")
 	public ResponseEntity selectGoodsListAll() {
-		logger.debug("select goods");
+		log.debug("select goods");
 		
 		List<HashMap<String, Object>> r = goodsRepository.selectGoodsListAll();
 		
@@ -59,7 +59,7 @@ public class GoodsController {
 	
 	@RequestMapping(path = "/insert")
 	public ResponseEntity insertGoodsMyBatis(@RequestBody GoodsInsertRequestData goodsInsertRequestData) {
-		logger.debug("insert goods");
+		log.debug("insert goods");
 		
 		HashMap<String, Object> arr = new HashMap<String, Object>();
 		arr.put("seqName", "seq_ITASRT");
@@ -76,7 +76,7 @@ public class GoodsController {
 	
 	@PostMapping(path = "/savebyjpa")
 	public ResponseEntity saveGoodsJpa(@RequestBody GoodsInsertRequestData goodsInsertRequestData) {
-		logger.debug("save(insert or update) goods by jpa");
+		log.debug("save(insert or update) goods by jpa");
 		System.out.println(goodsInsertRequestData.toString());
 
 		goodsInsertRequestData.setAssortId(jpaCommonService.getNumberId(goodsInsertRequestData.getAssortId(), StringFactory.getSeqItasrtStr(), StringFactory.getIntNine())); // assort id 梨꾨쾲
@@ -94,8 +94,8 @@ public class GoodsController {
 
 	@GetMapping(path = "/getgoodsdetail")
 	public ResponseEntity getGoodsDetailJpa(@RequestParam("assortId") String assortId){
-		logger.debug("get goods detail page");
-		logger.debug(assortId);
+		log.debug("get goods detail page");
+		log.debug(assortId);
 		
 		GoodsSelectDetailResponseData responseData = jpaGoodsService.getGoodsDetailPage(assortId);
 
@@ -109,7 +109,7 @@ public class GoodsController {
 	// jpa로 get list
 	@GetMapping(path="/getgoodslistjpa")
 	public ResponseEntity getGoodsListJpa(@RequestParam String shortageYn, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtBegin, @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @RequestParam Date regDtEnd){
-		logger.debug("get goods list data");
+		log.debug("get goods list data");
 		List<GoodsSelectListResponseData.Goods> responseData = jpaGoodsService.getGoodsList(shortageYn, regDtBegin, regDtEnd).getGoodsList();
 		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
 		if(responseData == null){
@@ -122,7 +122,7 @@ public class GoodsController {
 	public ResponseEntity getGoodsList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtBegin,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtEnd,
 			@RequestParam String shortageYn) {
-		logger.debug("get goods list data");
+		log.debug("get goods list data");
 
 		HashMap<String, Object> param = new HashMap<String, Object>();
 

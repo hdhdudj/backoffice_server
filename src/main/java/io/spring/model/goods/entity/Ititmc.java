@@ -1,14 +1,13 @@
 package io.spring.model.goods.entity;
 
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.goods.idclass.ItitmcId;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -22,7 +21,7 @@ import java.util.Date;
 @Table(name="ititmc")
 @IdClass(ItitmcId.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Ititmc {
+public class Ititmc extends CommonProps {
     public Ititmc(DepositInsertRequestData depositInsertRequestData, DepositInsertRequestData.Item item){
         this.storageId = depositInsertRequestData.getStoreCd();
         this.assortId = item.getAssortId();
@@ -50,10 +49,4 @@ public class Ititmc {
     private Float stockAmt;
     private String vendorId;
     private String siteGb;
-    private Long regId;
-    @CreationTimestamp
-    private Date regDt;
-    private Long updId;
-    @UpdateTimestamp
-    private Date updDt;
 }

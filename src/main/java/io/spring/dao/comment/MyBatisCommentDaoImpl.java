@@ -1,19 +1,16 @@
 package io.spring.dao.comment;
 
 import io.spring.infrastructure.mybatis.mapper.CommentMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class MyBatisCommentDaoImpl implements MyBatisCommentDao {
-    private CommentMapper commentMapper;
-
-    @Autowired
-    public MyBatisCommentDaoImpl(CommentMapper commentMapper) {
-        this.commentMapper = commentMapper;
-    }
+    private final CommentMapper commentMapper;
 
     @Override
     public void save(Comment comment) {

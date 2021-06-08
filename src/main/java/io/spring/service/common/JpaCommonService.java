@@ -7,9 +7,6 @@ import io.spring.model.common.entity.Testenum2;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,17 +18,10 @@ import javax.validation.constraints.NotNull;
 @Service
 @RequiredArgsConstructor
 public class JpaCommonService {
-    private Logger logger = LoggerFactory.getLogger(getClass());
-    @Autowired
-    private JpaSequenceDataRepository jpaSequenceDataRepository;
-    @Autowired
-    private MyBatisCommonDao myBatisCommonDao;
-
-    @Autowired
-    private JpaTestenum2Repository jpaTestenum2Repository;  
-    
-	@Autowired
-	private EntityManager em1;
+    private final JpaSequenceDataRepository jpaSequenceDataRepository;
+    private final MyBatisCommonDao myBatisCommonDao;
+    private final JpaTestenum2Repository jpaTestenum2Repository;  
+	private final EntityManager em1;
 
 //    private final String seqStr = "seq";
 //    private final String seqNameStr = "seqName";
@@ -50,7 +40,7 @@ public class JpaCommonService {
             return id;
         }
 		Object r = em1.createNativeQuery("SELECT nextval('" + sequenceName + "')").getSingleResult();
-        logger.debug("nextVal : ", r.toString());
+        log.debug("nextVal : ", r.toString());
         return StringUtils.leftPad(r.toString(), size, '0');
     }
 
@@ -61,7 +51,7 @@ public class JpaCommonService {
             return id;
         }
         Object r = em1.createNativeQuery("SELECT nextval('" + sequenceName + "')").getSingleResult();
-        logger.debug("nextVal : ", r.toString());
+        log.debug("nextVal : ", r.toString());
         String returnStr = StringUtils.leftPad(r.toString(), size, '0');
         return addStr + returnStr;
     }

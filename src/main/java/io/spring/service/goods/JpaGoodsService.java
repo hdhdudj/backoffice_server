@@ -14,8 +14,6 @@ import io.spring.model.goods.response.GoodsSelectDetailResponseData;
 import io.spring.model.goods.response.GoodsSelectListResponseData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,10 +25,6 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class JpaGoodsService {
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-
-
-
     private final JpaItasrtRepository jpaItasrtRepository;
     private final JpaItasrnRepository jpaItasrnRepository;
     private final JpaItvariRepository jpaItvariRepository;
@@ -76,11 +70,24 @@ public class JpaGoodsService {
         List<Ititmm> ititmmList = this.saveItemList(goodsInsertRequestData);
         // ititmd에 item 이력 저장
         List<Ititmd> ititmdList = this.saveItemHistoryList(goodsInsertRequestData, ititmmList);
+        // 메인 이미지 정보와 메인 이미지 저장
+        this.saveMainImage(goodsInsertRequestData);
+        // 추가 이미지 정보와 추가 이미지 저장
+        this.saveAddImage(goodsInsertRequestData);
 
         List<GoodsInsertResponseData.Attributes> attributesList = makeGoodsResponseAttributes(itvariList);
         List<GoodsInsertResponseData.Items> itemsList = makeGoodsResponseItems(ititmmList);
-        log.debug("+++++ 실행됨.");
         return makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
+    }
+
+    private void saveAddImage(GoodsInsertRequestData goodsInsertRequestData) {
+        // itaimg에 이미지 정보 저장
+        // 이미지 파일 ftp로 저장
+    }
+
+    private void saveMainImage(GoodsInsertRequestData goodsInsertRequestData) {
+        // itaimg에 이미지 정보 저장
+        // 이미지 파일 ftp로 저장
     }
 
     private List<GoodsInsertResponseData.Attributes> makeGoodsResponseAttributes(List<Itvari> itvariList){
@@ -147,7 +154,7 @@ public class JpaGoodsService {
             effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
         }
         catch (Exception e){
-            logger.debug(e.getMessage());
+            log.debug(e.getMessage());
         }
         Itasrn itasrn = jpaItasrnRepository.findByAssortIdAndEffEndDt(goodsInsertRequestData.getAssortId(), effEndDt);
         if(itasrn == null){ // insert
@@ -313,7 +320,7 @@ public class JpaGoodsService {
                 effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
             }
             catch (Exception e){
-                logger.debug(e.getMessage());
+                log.debug(e.getMessage());
             }
             Ititmd ititmd = jpaItitmdRepository.findByAssortIdAndItemIdAndEffEndDt(goodsInsertRequestData.getAssortId(), ititmmList.get(i).getItemId() , effEndDt);
             if(ititmd == null){ // insert
@@ -352,9 +359,6 @@ public class JpaGoodsService {
      * @return GoodsResponseData
      */
     public GoodsSelectDetailResponseData getGoodsDetailPage(String assortId) {
-       // Itasrt itasrt = jpaItasrtRepository.findById(assrotId).orElseGet(() -> null);
-
-        System.out.println("+++++ " + assortId);
         Itasrt itasrt = jpaItasrtRepository.findById(assortId).orElseThrow(() -> new ResourceNotFoundException());
     	
         GoodsSelectDetailResponseData goodsSelectDetailResponseData = new GoodsSelectDetailResponseData(itasrt);
@@ -372,13 +376,6 @@ public class JpaGoodsService {
         for(Ititmm ititmm : ititmmList){
             GoodsSelectDetailResponseData.Items item = new GoodsSelectDetailResponseData.Items();
             item.setItemId(ititmm.getItemId());
-
-//            String option2NM="";
-//            if(ititmm.getItvari2()!=null) {
-//            	option2NM = "^|^"+ititmm.getItvari2().getOptionNm();
-//            }else {
-//            	option2NM ="";
-//            }
             Itvari op1 = jpaItvariRepository.findByAssortIdAndSeq(ititmm.getAssortId(), ititmm.getVariationSeq1());
             item.setVariationValue1(op1.getOptionNm());
             item.setVariationSeq1(op1.getSeq());
@@ -387,7 +384,6 @@ public class JpaGoodsService {
                 item.setVariationSeq2(op2.getSeq());
                 item.setVariationValue2(op2.getOptionNm());
             }
-//            item.setVariationValue1(ititmm.getItvari1().getOptionNm()+option2NM);
             item.setAddPrice(ititmm.getAddPrice());
             item.setShortYn(ititmm.getShortYn());
             itemsList.add(item);
@@ -451,18 +447,14 @@ public class JpaGoodsService {
         return goodsSelectListResponseData;
     }
 
-    
-    
-    
-    
 //    private GoodsInsertResponseData makeGoodsSelectListResponseData(List<Itasrt> goodsList) {
 //        return null;
 //    }
     
     @Transactional
     public Itaimg saveItaimg(String imageGb,FileVo f) {
-    	Itaimg ii =new Itaimg(imageGb,f); 
-    	  jpaItaimgRepository.save(ii);
+    	Itaimg ii =new Itaimg(imageGb,f);
+        jpaItaimgRepository.save(ii);
     	
     	return ii;
     	
@@ -472,7 +464,6 @@ public class JpaGoodsService {
     public Itaimg getItaimg(Long uid) {
     	Itaimg r = jpaItaimgRepository.findById(uid) .orElse(null);
     	
-    	
     	return r;
     	
     }
@@ -481,10 +472,7 @@ public class JpaGoodsService {
     public void deleteItaimg(Itaimg ii) {
     	
      jpaItaimgRepository.delete(ii);
-    	
-    	
-    
-    	
+
     }
 
 

@@ -1,41 +1,23 @@
 package io.spring.controller;
 
-import java.util.HashMap;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import io.spring.dao.common.MyBatisCommonDao;
-import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.model.common.entity.Testenum2;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.common.MyBatisCommonService;
-import io.spring.service.goods.JpaGoodsService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/common")
+@RequiredArgsConstructor
 public class CommonController {
-	private Logger logger = LoggerFactory.getLogger(getClass());
+	private final MyBatisCommonService myBatisCommonService;
+	private final JpaCommonService jpaCommonService;
 
-	private MyBatisCommonService myBatisCommonService;
-	private JpaCommonService jpaCommonService;
-
-	
-
-	@Autowired
-	public CommonController(MyBatisCommonService myBatisCommonService,JpaCommonService jpaCommonService) {
-		this.myBatisCommonService = myBatisCommonService;
-		this.jpaCommonService = jpaCommonService;
-	}
 	@GetMapping(path="/brand_search")
 		public ResponseEntity selectBrandSearchList(@RequestParam(required = false) String codeId,@RequestParam(required = false) String codeNm) {
 	//public ResponseEntity selectBrandSearchList() {

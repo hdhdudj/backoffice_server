@@ -2,18 +2,17 @@ package io.spring.model.goods.entity;
 
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Entity
@@ -21,7 +20,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "itasrn")
-public class Itasrn {
+public class Itasrn extends CommonProps {
     private final static Logger logger = LoggerFactory.getLogger(Itasrn.class);
     public Itasrn(Itasrn itasrn){
         this.historyGb = itasrn.getHistoryGb();
@@ -63,16 +62,7 @@ public class Itasrn {
 //    private String seq;
 
     private Date effEndDt;
-    @CreationTimestamp
-    private Date regDt;
-    @UpdateTimestamp
-    private Date updDt;
-    @Column(nullable = true)
-    private Long updId;
-    @Column(nullable = true)
-    private Long regId;
 
-    @Column(nullable = true)
     private Float localSale;
     private String shortageYn;
 //    private String addDeliGb;

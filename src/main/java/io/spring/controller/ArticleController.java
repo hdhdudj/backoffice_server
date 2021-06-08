@@ -10,6 +10,7 @@ import io.spring.dao.article.MyBatisArticleDao;
 import io.spring.dao.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,15 +28,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/articles/{slug}")
+@RequiredArgsConstructor
 public class ArticleController {
-    private ArticleQueryService articleQueryService;
-    private MyBatisArticleDao articleRepository;
-
-    @Autowired
-    public ArticleController(ArticleQueryService articleQueryService, MyBatisArticleDao articleRepository) {
-        this.articleQueryService = articleQueryService;
-        this.articleRepository = articleRepository;
-    }
+    private final ArticleQueryService articleQueryService;
+    private final MyBatisArticleDao articleRepository;
 
     @GetMapping
     public ResponseEntity<?> article(@PathVariable("slug") String slug,

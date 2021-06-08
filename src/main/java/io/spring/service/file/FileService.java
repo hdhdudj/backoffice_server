@@ -7,7 +7,6 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
@@ -31,34 +30,36 @@ public class FileService {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
 //	private  static final String FTP_PREPIX_URL = "https://trdst.hgodo.com";
-	
-	
+
+	@Value("${ftp.host}")
 	private String FTP_HOST;
-	
+	@Value("${ftp.id}")
 	private String FTP_ID;
-	
+	@Value("${ftp.password}")
 	private String FTP_PASSWORD;
-	
-	private String FTP_EDITOR_PATH;	
+	@Value("${ftp.editor_path}")
+	private String FTP_EDITOR_PATH;
+	@Value("${ftp.image_path}")
 	private String FTP_IMAGE_PATH;	
 	
 	private int FTP_PORT=21;
+	@Value("${ftp.prefix_url}")
 	private String FTP_PREPIX_URL;
 	
-	 @Autowired
-	    public FileService(@Value("${ftp.host}") String FTP_HOST,@Value("${ftp.id}") String FTP_ID,@Value("${ftp.password}") String FTP_PASSWORD,@Value("${ftp.editor_path}") String FTP_EDITOR_PATH,@Value("${ftp.image_path}") String FTP_IMAGE_PATH,
-	    		@Value("${ftp.prefix_url}") String FTP_PREPIX_URL) {
-
-			this.FTP_HOST = FTP_HOST;
-			
-			this.FTP_ID=FTP_ID;
-			
-			this.FTP_PASSWORD=FTP_PASSWORD;
-			
-			this.FTP_EDITOR_PATH=FTP_EDITOR_PATH;	
-			this.FTP_IMAGE_PATH=FTP_IMAGE_PATH;	
-			this.FTP_PREPIX_URL=FTP_PREPIX_URL;
-	    }  
+//	 @Autowired
+//	    public FileService(@Value("${ftp.host}") String FTP_HOST,@Value("${ftp.id}") String FTP_ID,@Value("${ftp.password}") String FTP_PASSWORD,@Value("${ftp.editor_path}") String FTP_EDITOR_PATH,@Value("${ftp.image_path}") String FTP_IMAGE_PATH,
+//	    		@Value("${ftp.prefix_url}") String FTP_PREPIX_URL) {
+//
+//			this.FTP_HOST = FTP_HOST;
+//
+//			this.FTP_ID=FTP_ID;
+//
+//			this.FTP_PASSWORD=FTP_PASSWORD;
+//
+//			this.FTP_EDITOR_PATH=FTP_EDITOR_PATH;
+//			this.FTP_IMAGE_PATH=FTP_IMAGE_PATH;
+//			this.FTP_PREPIX_URL=FTP_PREPIX_URL;
+//	    }
 
 	 public String deleteFile(FileVo f) {
 		 

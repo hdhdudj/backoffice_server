@@ -101,17 +101,35 @@ public class GoodsInsertRequestData {
 		private String addPrice;
 		private String shortYn;
 	}
-
-	// image 관련
-	private List<String> uploadImage;
-	private List<String> deleteImage;
-
 	@Getter
 	@Setter
 	public static class Attributes {
 		private String seq;
 		private String value;
 		private String variationGb;
+	}
+
+	// image 관련
+	private List<UploadMainImage> uploadMainImage;
+	private List<UploadAddImage> uploadAddImage;
+	private List<String> deleteImage;
+	@Getter
+	@Setter
+	public static class UploadMainImage{
+		private String uid;
+		private String fileName;
+		private String filePath;
+		private String url;
+		private String imageGb;
+	}
+	@Getter
+	@Setter
+	public static class UploadAddImage{
+		private String uid;
+		private String fileName;
+		private String filePath;
+		private String url;
+		private String imageGb;
 	}
 
 	@Override
@@ -131,7 +149,7 @@ public class GoodsInsertRequestData {
 				+ ", buyTax=" + buyTax + ", buySupplyDiscount=" + buySupplyDiscount + ", buyRrpIncrement="
 				+ buyRrpIncrement + ", buyExchangeRate=" + buyExchangeRate + ", sizeType=" + sizeType
 				+ ", mdDiscountRate=" + mdDiscountRate + ", description=" + description + ", items=" + items
-				+ ", attributes=" + attributes + ", uploadImage=" + uploadImage + ", deleteImage=" + deleteImage + "]";
+				+ ", attributes=" + attributes + ", uploadMainImage=" + uploadMainImage + ", deleteImage=" + deleteImage + "]";
 	}
 	
 	

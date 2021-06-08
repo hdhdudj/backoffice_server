@@ -1,16 +1,14 @@
 package io.spring.model.goods.entity;
 
+import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.idclass.ItvariId;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @Entity
 @Table(name = "itvari")
@@ -18,7 +16,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @IdClass(ItvariId.class)
-public class Itvari {
+public class Itvari extends CommonProps {
 
     /**
      *
@@ -60,13 +58,6 @@ public class Itvari {
     private String optionNm;
     private String variationGb;
     private String delYn;
-
-    @CreationTimestamp
-    private Date regDt;
-    @UpdateTimestamp
-    private Date updDt;
-    private Long regId;
-    private Long updId;
 
     // itasrt 연관 관계
     @ManyToOne(fetch = FetchType.LAZY)

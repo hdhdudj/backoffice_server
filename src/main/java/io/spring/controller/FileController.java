@@ -8,10 +8,10 @@ import io.spring.model.file.response.FileUploadFileResponseData;
 import io.spring.model.goods.entity.Itaimg;
 import io.spring.service.file.FileService;
 import io.spring.service.goods.JpaGoodsService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,15 +19,12 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @RestController
 @RequestMapping(value="/file")
+@RequiredArgsConstructor
 public class FileController {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
-	@Autowired
-	private FileService fileService ;
-	
-
-	@Autowired
-	private JpaGoodsService jpaGoodsService ;
+	private final FileService fileService ;
+	private final JpaGoodsService jpaGoodsService ;
 	
 	@PostMapping("/uploadFile")
     public ResponseEntity uploadFile(@RequestParam("imageGb") String imageGb,@RequestParam("file") MultipartFile file) {

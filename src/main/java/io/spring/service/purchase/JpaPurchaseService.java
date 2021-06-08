@@ -5,20 +5,24 @@ import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.deposit.JpaLsdpspRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
-import io.spring.jparepos.purchase.*;
+import io.spring.jparepos.purchase.JpaLspchbRepository;
+import io.spring.jparepos.purchase.JpaLspchdRepository;
+import io.spring.jparepos.purchase.JpaLspchmRepository;
+import io.spring.jparepos.purchase.JpaLspchsRepository;
 import io.spring.model.common.entity.SequenceData;
 import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.idclass.ItitmtId;
-import io.spring.model.purchase.entity.*;
+import io.spring.model.purchase.entity.Lspchb;
+import io.spring.model.purchase.entity.Lspchd;
+import io.spring.model.purchase.entity.Lspchm;
+import io.spring.model.purchase.entity.Lspchs;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import io.spring.model.purchase.response.PurchaseSelectDetailResponseData;
 import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,11 +30,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class JpaPurchaseService {
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-
     private final JpaLspchmRepository jpaLspchmRepository;
     private final JpaLsdpspRepository jpaLsdpspRepository;
     private final JpaLspchbRepository jpaLspchbRepository;
@@ -39,8 +42,7 @@ public class JpaPurchaseService {
     private final JpaItitmtRepository jpaItitmtRepository;
     private final JpaCommonService jpaCommonService;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
-    @Autowired
-    private EntityManager em;
+    private final EntityManager em;
 
     /**
      * 21-05-03 Pecan
@@ -100,7 +102,7 @@ public class JpaPurchaseService {
             effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
         }
         catch (Exception e){
-            logger.debug(e.getMessage());
+            log.debug(e.getMessage());
         }
         Lspchs lspchs = jpaLspchsRepository.findByPurchaseNoAndEffEndDt(purchaseInsertRequestData.getPurchaseNo(), effEndDt);
         if(lspchs == null){ // insert
@@ -154,7 +156,7 @@ public class JpaPurchaseService {
                 doomDate = Utilities.getStringToDate(StringFactory.getDoomDay());
             }
             catch(Exception e){
-                logger.debug(e.getMessage());
+                log.debug(e.getMessage());
             }
             Lspchb lspchb = jpaLspchbRepository.findByPurchaseNoAndPurchaseSeqAndEffEndDt(purchaseInsertRequestData.getPurchaseNo(), items.getPurchaseSeq(), doomDate);
             if(lspchb == null){ // insert

@@ -1,39 +1,27 @@
 package io.spring.controller;
 
-import io.spring.infrastructure.util.exception.ResourceNotFoundException;
-import io.spring.model.ArticleData;
-import io.spring.service.ArticleQueryService;
 import io.spring.dao.article.Article;
 import io.spring.dao.article.MyBatisArticleDao;
 import io.spring.dao.favorite.ArticleFavorite;
 import io.spring.dao.favorite.MyBatisArticleFavoriteDao;
 import io.spring.dao.user.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.spring.infrastructure.util.exception.ResourceNotFoundException;
+import io.spring.model.ArticleData;
+import io.spring.service.ArticleQueryService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 
 @RestController
 @RequestMapping(path = "articles/{slug}/favorite")
+@RequiredArgsConstructor
 public class ArticleFavoriteController {
-    private MyBatisArticleFavoriteDao myBatisArticleFavoriteDao;
-    private MyBatisArticleDao articleRepository;
-    private ArticleQueryService articleQueryService;
-
-    @Autowired
-    public ArticleFavoriteController(MyBatisArticleFavoriteDao myBatisArticleFavoriteDao,
-                                     MyBatisArticleDao articleRepository,
-                                     ArticleQueryService articleQueryService) {
-        this.myBatisArticleFavoriteDao = myBatisArticleFavoriteDao;
-        this.articleRepository = articleRepository;
-        this.articleQueryService = articleQueryService;
-    }
+    private final MyBatisArticleFavoriteDao myBatisArticleFavoriteDao;
+    private final MyBatisArticleDao articleRepository;
+    private final ArticleQueryService articleQueryService;
 
     @PostMapping
     public ResponseEntity favoriteArticle(@PathVariable("slug") String slug,
