@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.spring.dao.common.MyBatisCommonDao;
-import io.spring.dao.goods.MyBatisGoodsDao;
-import io.spring.model.goods.entity.Itcatg;
 
 @Service
 public class MyBatisCommonService {
@@ -30,6 +28,12 @@ public class MyBatisCommonService {
 		
 				
 		
+		public List<HashMap<String, Object>> getPurchaseVendorSearchList(HashMap<String, Object> param) {
+			List<HashMap<String, Object>> list = myBatisCommonDao.getPurchaseVendorSearchList(param);
+
+			return list;
+		}
+
 		public LinkedList<String> findUpperCategory(String categoryId) {
 			
 			System.out.println("findUpperCategory");

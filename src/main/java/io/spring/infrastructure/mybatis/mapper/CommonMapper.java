@@ -12,4 +12,7 @@ public interface CommonMapper {
 	HashMap<String, Object> getCategory(HashMap<String, Object> param);
 	List<HashMap<String, Object>> getBrandSearchList(HashMap<String, Object> param);
 
+	List<HashMap<String, Object>> getPurchaseVendorSearchList(HashMap<String, Object> param);
+
+
 }

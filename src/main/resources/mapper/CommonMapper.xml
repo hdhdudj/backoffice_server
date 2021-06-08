@@ -31,6 +31,20 @@
 				and brand_nm like CONCAT('%',#{codeNm}, '%') 
     	]]>
 		
+	</select>
+	
+	
+	        
+	<select id="getPurchaseVendorSearchList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    	<![CDATA[
+			select vendor_id codeId,vd_nm codeNm
+				from cmvdmr
+				where 1=1
+				and vendor_id like CONCAT(#{codeId}, '%') 
+				and vd_nm like CONCAT('%',#{codeNm}, '%') 
+				and vendor_type='01'
+    	]]>
+		
 	</select>    
 
 

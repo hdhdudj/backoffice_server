@@ -18,4 +18,5 @@ public class MyBatisGoodsService {
 
         return goodsList;
     }
+
 }

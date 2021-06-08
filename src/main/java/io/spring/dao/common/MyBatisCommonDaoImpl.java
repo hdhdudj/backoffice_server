@@ -38,6 +38,11 @@ public class MyBatisCommonDaoImpl implements MyBatisCommonDao {
 		return commonMapper.getBrandSearchList(param);
 	}
 	
+	@Override
+	public List<HashMap<String, Object>> getPurchaseVendorSearchList(HashMap<String, Object> param) {
+		// TODO Auto-generated method stub
+		return commonMapper.getPurchaseVendorSearchList(param);
+	}
 	
 	
 	
