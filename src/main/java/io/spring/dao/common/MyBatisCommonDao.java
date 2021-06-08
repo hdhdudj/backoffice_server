@@ -7,4 +7,6 @@ public interface MyBatisCommonDao {
 	HashMap<String, Object> getSequence(HashMap<String, Object> param);
 	HashMap<String, Object> getCategory(HashMap<String, Object> param);
 	List<HashMap<String, Object>> getBrandSearchList(HashMap<String, Object> param);
+
+	List<HashMap<String, Object>> getPurchaseVendorSearchList(HashMap<String, Object> param);
 }

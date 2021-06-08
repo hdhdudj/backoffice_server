@@ -1,15 +1,11 @@
 package io.spring.jparepos.goods;
 
-import java.util.List;
-
+import io.spring.model.goods.entity.Itaimg;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import io.spring.model.goods.entity.Itaimg;
-import io.spring.model.goods.entity.Ititmd;
+import java.util.List;
 
 public interface JpaItaimgRepository extends JpaRepository<Itaimg, Long> {
 	
 	List<Itaimg> findByAssortIdAndImageGb(String assortId,String imageGb);
-	
-
 }

@@ -33,10 +33,10 @@ public class JpaGoodsService {
     private final JpaItasrdRepository jpaItasrdRepository;
     private final JpaItitmmRepository jpaItitmmRepository;
     private final JpaItitmdRepository jpaItitmdRepository;
+    private final JpaItaimgRepository jpaItaimgRepository;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
     private final EntityManager em;
     
-    private final JpaItaimgRepository jpaItaimgRepository;
 
 
     public List<Itasrt> findAll() {
@@ -70,24 +70,26 @@ public class JpaGoodsService {
         List<Ititmm> ititmmList = this.saveItemList(goodsInsertRequestData);
         // ititmd에 item 이력 저장
         List<Ititmd> ititmdList = this.saveItemHistoryList(goodsInsertRequestData, ititmmList);
-        // 메인 이미지 정보와 메인 이미지 저장
-        this.saveMainImage(goodsInsertRequestData);
-        // 추가 이미지 정보와 추가 이미지 저장
-        this.saveAddImage(goodsInsertRequestData);
+
+        // itaimg에 assortId 업데이트 시켜주기
+        this.updateItaimgAssortId(goodsInsertRequestData, itasrt.getAssortId());
 
         List<GoodsInsertResponseData.Attributes> attributesList = makeGoodsResponseAttributes(itvariList);
         List<GoodsInsertResponseData.Items> itemsList = makeGoodsResponseItems(ititmmList);
         return makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
     }
 
-    private void saveAddImage(GoodsInsertRequestData goodsInsertRequestData) {
-        // itaimg에 이미지 정보 저장
-        // 이미지 파일 ftp로 저장
-    }
-
-    private void saveMainImage(GoodsInsertRequestData goodsInsertRequestData) {
-        // itaimg에 이미지 정보 저장
-        // 이미지 파일 ftp로 저장
+    private void updateItaimgAssortId(GoodsInsertRequestData goodsInsertRequestData, String assortId) {
+        List<GoodsInsertRequestData.UploadMainImage> uploadMainImageList = goodsInsertRequestData.getUploadMainImage();
+        List<GoodsInsertRequestData.UploadAddImage> uploadAddImageList = goodsInsertRequestData.getUploadAddImage();
+        for(GoodsInsertRequestData.UploadMainImage uploadMainImage : uploadMainImageList){
+            Itaimg itaimg = jpaItaimgRepository.findById(uploadMainImage.getUid()).orElseGet(() -> null);
+            itaimg.setAssortId(assortId);
+        }
+        for(GoodsInsertRequestData.UploadAddImage uploadAddImage : uploadAddImageList){
+            Itaimg itaimg = jpaItaimgRepository.findById(uploadAddImage.getUid()).orElseGet(() -> null);
+            itaimg.setAssortId(assortId);
+        }
     }
 
     private List<GoodsInsertResponseData.Attributes> makeGoodsResponseAttributes(List<Itvari> itvariList){

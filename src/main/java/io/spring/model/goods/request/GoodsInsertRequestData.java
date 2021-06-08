@@ -116,7 +116,7 @@ public class GoodsInsertRequestData {
 	@Getter
 	@Setter
 	public static class UploadMainImage{
-		private String uid;
+		private Long uid;
 		private String fileName;
 		private String filePath;
 		private String url;
@@ -125,7 +125,7 @@ public class GoodsInsertRequestData {
 	@Getter
 	@Setter
 	public static class UploadAddImage{
-		private String uid;
+		private Long uid;
 		private String fileName;
 		private String filePath;
 		private String url;
