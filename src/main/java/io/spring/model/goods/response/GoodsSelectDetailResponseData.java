@@ -1,8 +1,10 @@
 package io.spring.model.goods.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import io.spring.model.goods.entity.Itaimg;
 import io.spring.model.goods.entity.Itasrt;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -148,8 +150,43 @@ public class GoodsSelectDetailResponseData {
     }
 
     // image 관련
-    private List<String> uploadImage;
+    private List<UploadMainImage> uploadMainImage;
+    private List<UploadAddImage> uploadAddImage;
     private List<String> deleteImage;
+    @Getter
+    @Setter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class UploadMainImage{
+        public UploadMainImage(Itaimg itaimg){
+            this.uid = itaimg.getImageSeq();
+            this.name = itaimg.getImageName();
+            this.imageGb = itaimg.getImageGb();
+            this.status = itaimg.getImageStatus();
+        }
+        private Long uid;
+        private String name;
+        @JsonIgnore
+        private String url;
+        private String imageGb;
+        private String status;
+    }
+    @Getter
+    @Setter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class UploadAddImage{
+        public UploadAddImage(Itaimg itaimg){
+            this.uid = itaimg.getImageSeq();
+            this.name = itaimg.getImageName();
+            this.imageGb = itaimg.getImageGb();
+            this.status = itaimg.getImageStatus();
+        }
+        private Long uid;
+        private String name;
+        @JsonIgnore
+        private String url;
+        private String imageGb;
+        private String status;
+    }
 
     @Getter
     @Setter

@@ -37,6 +37,8 @@ public class JpaGoodsService {
     private final JpaItaimgRepository jpaItaimgRepository;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
 
+    private final JpaTmmapiRepository jpaTmmapiRepository;
+
     private final FileService fileService;
 
     private final EntityManager em;
@@ -64,6 +66,8 @@ public class JpaGoodsService {
     public GoodsInsertResponseData sequenceInsertOrUpdateGoods(GoodsInsertRequestData goodsInsertRequestData){
         // itasrt에 goods 정보 저장
         Itasrt itasrt = this.saveItasrt(goodsInsertRequestData);
+        // tmmapi에 저장
+        this.saveTmmapi(itasrt);
         // itsrn에 goods 이력 저장
         Itasrn itasrn = this.saveItasrn(goodsInsertRequestData);
         // itasrd에 문구 저장
@@ -81,6 +85,9 @@ public class JpaGoodsService {
         List<GoodsInsertResponseData.Attributes> attributesList = makeGoodsResponseAttributes(itvariList);
         List<GoodsInsertResponseData.Items> itemsList = makeGoodsResponseItems(ititmmList);
         return makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
+    }
+    private void saveTmmapi(Itasrt itasrt){
+        jpaTmmapiRepository.save(new Tmmapi(itasrt));
     }
 
     private void updateItaimgAssortId(GoodsInsertRequestData goodsInsertRequestData, String assortId) {
@@ -371,11 +378,38 @@ public class JpaGoodsService {
         List<GoodsSelectDetailResponseData.Description> descriptions = makeDescriptions(itasrt.getItasrdList());
         List<GoodsSelectDetailResponseData.Attributes> attributesList = makeAttributesList(itasrt.getItvariList());
         List<GoodsSelectDetailResponseData.Items> itemsList = makeItemsList(itasrt.getItitmmList());
+        List<GoodsSelectDetailResponseData.UploadMainImage> uploadMainImageList = makeUploadMainImageList(itasrt.getItaimg());
+        List<GoodsSelectDetailResponseData.UploadAddImage> uploadAddImageList = makeUploadAddImageList(itasrt.getItaimg());
         goodsSelectDetailResponseData.setDescription(descriptions);
         goodsSelectDetailResponseData.setAttributes(attributesList);
         goodsSelectDetailResponseData.setItems(itemsList);
+        goodsSelectDetailResponseData.setUploadMainImage(uploadMainImageList);
+        goodsSelectDetailResponseData.setUploadAddImage(uploadAddImageList);
         return goodsSelectDetailResponseData;
     }
+
+    private List<GoodsSelectDetailResponseData.UploadAddImage> makeUploadAddImageList(List<Itaimg> itaimgList) {
+        List<GoodsSelectDetailResponseData.UploadAddImage> uploadAddImageList = new ArrayList<>();
+        for(Itaimg itaimg : itaimgList){
+            if(itaimg.getImageGb().equals(StringFactory.getGbTwo())) {
+                GoodsSelectDetailResponseData.UploadAddImage uploadAddImage = new GoodsSelectDetailResponseData.UploadAddImage(itaimg);
+                uploadAddImageList.add(uploadAddImage);
+            }
+        }
+        return uploadAddImageList;
+    }
+
+    private List<GoodsSelectDetailResponseData.UploadMainImage> makeUploadMainImageList(List<Itaimg> itaimgList) {
+        List<GoodsSelectDetailResponseData.UploadMainImage> uploadMainImageList = new ArrayList<>();
+        for(Itaimg itaimg : itaimgList){
+            if(itaimg.getImageGb().equals(StringFactory.getGbOne())){
+                GoodsSelectDetailResponseData.UploadMainImage uploadMainImage = new GoodsSelectDetailResponseData.UploadMainImage(itaimg);
+                uploadMainImageList.add(uploadMainImage);
+            }
+        }
+        return uploadMainImageList;
+    }
+
     // ititmm -> items 형태로 바꿔주는 함수
     private List<GoodsSelectDetailResponseData.Items> makeItemsList(List<Ititmm> ititmmList) {
         List<GoodsSelectDetailResponseData.Items> itemsList = new ArrayList<>();
@@ -433,8 +467,8 @@ public class JpaGoodsService {
     public GoodsSelectListResponseData getGoodsList(String shortageYn, Date regDtBegin, Date regDtEnd) {
         TypedQuery<Itasrt> query =
                 em.createQuery("select t from Itasrt t " +
-                                "join fetch t.itbrnd b " +
-                                "join fetch t.itcatg c " +
+                                "left join fetch t.itbrnd b " +
+                                "left join fetch t.itcatg c " +
                                 "where t.regDt " +
                                 "between ?1 " +
                                 "and ?2 " +

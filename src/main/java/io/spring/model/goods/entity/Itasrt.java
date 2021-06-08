@@ -1,6 +1,7 @@
 package io.spring.model.goods.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import lombok.AccessLevel;
@@ -40,7 +41,7 @@ public class Itasrt extends CommonProps {
 		this.shortageYn = goodsInsertRequestData.getShortageYn();
 		this.brandId = goodsInsertRequestData.getBrandId();
 		this.dispCategoryId = goodsInsertRequestData.getDispCategoryId();
-		this.siteGb = "01";
+		this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
 		this.asVendorId = goodsInsertRequestData.getAsVendorId();
 		this.manufactureNm = goodsInsertRequestData.getManufactureNm();
 		this.deliPrice = goodsInsertRequestData.getDeliPrice();
@@ -140,11 +141,14 @@ public class Itasrt extends CommonProps {
 	private Itbrnd itbrnd; // itbrnd 연관관계
 
 	@JoinColumn(name="dispCategoryId", referencedColumnName = "categoryId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private Itcatg itcatg; // itcatg 연관관계
-	
-	
+
+	@JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+	@OneToMany(fetch = FetchType.LAZY)
+	@JsonIgnore
+	private List<Itaimg> itaimg; // itaimg 연관관계
 
 //	@OneToOne
 //	@JoinColumn(name = "brand_id", referencedColumnName = "brand_id", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
