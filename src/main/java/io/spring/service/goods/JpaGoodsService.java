@@ -1,13 +1,39 @@
 package io.spring.service.goods;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.infrastructure.util.exception.ResourceNotFoundException;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
-import io.spring.jparepos.goods.*;
+import io.spring.jparepos.goods.JpaItaimgRepository;
+import io.spring.jparepos.goods.JpaItasrdRepository;
+import io.spring.jparepos.goods.JpaItasrnRepository;
+import io.spring.jparepos.goods.JpaItasrtRepository;
+import io.spring.jparepos.goods.JpaItitmdRepository;
+import io.spring.jparepos.goods.JpaItitmmRepository;
+import io.spring.jparepos.goods.JpaItvariRepository;
+import io.spring.jparepos.goods.JpaTmmapiRepository;
 import io.spring.model.common.entity.SequenceData;
 import io.spring.model.file.FileVo;
-import io.spring.model.goods.entity.*;
+import io.spring.model.goods.entity.Itaimg;
+import io.spring.model.goods.entity.Itasrd;
+import io.spring.model.goods.entity.Itasrn;
+import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.goods.entity.Ititmd;
+import io.spring.model.goods.entity.Ititmm;
+import io.spring.model.goods.entity.Itvari;
+import io.spring.model.goods.entity.Tmmapi;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.goods.response.GoodsInsertResponseData;
 import io.spring.model.goods.response.GoodsSelectDetailResponseData;
@@ -15,12 +41,6 @@ import io.spring.model.goods.response.GoodsSelectListResponseData;
 import io.spring.service.file.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import java.util.*;
 
 @Slf4j
 @Service
@@ -43,6 +63,7 @@ public class JpaGoodsService {
 
     private final EntityManager em;
     
+
 
 
     public List<Itasrt> findAll() {
@@ -130,25 +151,60 @@ public class JpaGoodsService {
     private Itasrt saveItasrt(GoodsInsertRequestData goodsInsertRequestData) {
         Itasrt itasrt = jpaItasrtRepository.findById(goodsInsertRequestData.getAssortId()).orElseGet(() -> new Itasrt(goodsInsertRequestData));
 //        itasrt.setUpdDt(new Date());
+
         itasrt.setAssortNm(goodsInsertRequestData.getAssortNm());
         itasrt.setAssortColor(goodsInsertRequestData.getAssortColor());
+
+		itasrt.setDispCategoryId(goodsInsertRequestData.getDispCategoryId());
+
         itasrt.setBrandId(goodsInsertRequestData.getBrandId());
+
         itasrt.setOrigin(goodsInsertRequestData.getOrigin());
+
         itasrt.setManufactureNm(goodsInsertRequestData.getManufactureNm());
         itasrt.setAssortModel(goodsInsertRequestData.getAssortModel());
+
+		itasrt.setOptionGbName(goodsInsertRequestData.getOptionGbName());
+		itasrt.setTaxGb(goodsInsertRequestData.getTaxGb());
+		itasrt.setAssortState(goodsInsertRequestData.getAssortState());
         itasrt.setShortageYn(goodsInsertRequestData.getShortageYn());
+
         itasrt.setLocalPrice(goodsInsertRequestData.getLocalPrice());
+		itasrt.setLocalSale(goodsInsertRequestData.getLocalSale());
         itasrt.setDeliPrice(goodsInsertRequestData.getDeliPrice());
+
         itasrt.setMargin(goodsInsertRequestData.getMargin());
+
         itasrt.setMdRrp(goodsInsertRequestData.getMdRrp());
         itasrt.setMdYear(goodsInsertRequestData.getMdYear());
-        itasrt.setMdTax(goodsInsertRequestData.getMdTax());
         itasrt.setMdVatrate(goodsInsertRequestData.getMdVatrate());
         itasrt.setMdDiscountRate(goodsInsertRequestData.getMdDiscountRate());
         itasrt.setMdGoodsVatrate(goodsInsertRequestData.getMdGoodsVatrate());
         itasrt.setBuyWhere(goodsInsertRequestData.getBuyWhere());
-        itasrt.setMdMargin(goodsInsertRequestData.getMdMargin());
-        itasrt.setBuyExchangeRate(goodsInsertRequestData.getBuyExchangeRate());
+		itasrt.setBuySupplyDiscount(goodsInsertRequestData.getBuySupplyDiscount());
+		itasrt.setBuyExchangeRate(goodsInsertRequestData.getBuyExchangeRate());
+		itasrt.setBuyRrpIncrement(goodsInsertRequestData.getBuyRrpIncrement());
+
+		itasrt.setSellStaDt(goodsInsertRequestData.getSellStaDt());
+		itasrt.setSellEndDt(goodsInsertRequestData.getSellEndDt());
+
+		itasrt.setAsWidth(goodsInsertRequestData.getAsWidth());
+		itasrt.setAsLength(goodsInsertRequestData.getAsLength());
+		itasrt.setAsHeight(goodsInsertRequestData.getAsHeight());
+		itasrt.setWeight(goodsInsertRequestData.getWeight());
+
+		itasrt.setAssortGb(goodsInsertRequestData.getAssortGb());
+
+		itasrt.setMdTax(goodsInsertRequestData.getMdTax());
+
+		itasrt.setMdMargin(goodsInsertRequestData.getMdMargin());
+
+		itasrt.setMdGoodsVatrate(goodsInsertRequestData.getMdGoodsVatrate());
+
+		itasrt.setBuyTax(goodsInsertRequestData.getBuyTax());
+
+		itasrt.setOptionUseYn(goodsInsertRequestData.getOptionUseYn());
+
         jpaItasrtRepository.save(itasrt);
         return itasrt;
     }
@@ -374,7 +430,12 @@ public class JpaGoodsService {
     public GoodsSelectDetailResponseData getGoodsDetailPage(String assortId) {
         Itasrt itasrt = jpaItasrtRepository.findById(assortId).orElseThrow(() -> new ResourceNotFoundException());
     	
+		System.out.println(itasrt);
+
         GoodsSelectDetailResponseData goodsSelectDetailResponseData = new GoodsSelectDetailResponseData(itasrt);
+
+		// 카테고리벨류
+
         List<GoodsSelectDetailResponseData.Description> descriptions = makeDescriptions(itasrt.getItasrdList());
         List<GoodsSelectDetailResponseData.Attributes> attributesList = makeAttributesList(itasrt.getItvariList());
         List<GoodsSelectDetailResponseData.Items> itemsList = makeItemsList(itasrt.getItitmmList());
@@ -417,15 +478,17 @@ public class JpaGoodsService {
             GoodsSelectDetailResponseData.Items item = new GoodsSelectDetailResponseData.Items();
             item.setItemId(ititmm.getItemId());
             Itvari op1 = jpaItvariRepository.findByAssortIdAndSeq(ititmm.getAssortId(), ititmm.getVariationSeq1());
-            item.setVariationValue1(op1.getOptionNm());
-            item.setVariationSeq1(op1.getSeq());
+			item.setValue1(op1.getOptionNm());
+			item.setSeq1(op1.getSeq());
+			item.setStatus1("r");
             if(ititmm.getVariationSeq2() != null){
                 Itvari op2 = jpaItvariRepository.findByAssortIdAndSeq(ititmm.getAssortId(), ititmm.getVariationSeq2());
-                item.setVariationSeq2(op2.getSeq());
-                item.setVariationValue2(op2.getOptionNm());
+				item.setSeq2(op2.getSeq());
+				item.setValue2(op2.getOptionNm());
+				item.setStatus2("r");
             }
             item.setAddPrice(ititmm.getAddPrice());
-            item.setShortYn(ititmm.getShortYn());
+			item.setShortageYn(ititmm.getShortYn());
             itemsList.add(item);
         }
         return itemsList;

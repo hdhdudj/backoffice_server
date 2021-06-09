@@ -1,14 +1,17 @@
 package io.spring.model.goods.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@ToString
 @Getter
 @Setter
 public class GoodsInsertRequestData {
@@ -42,7 +45,7 @@ public class GoodsInsertRequestData {
 	private String manufactureNm;
 	private Float deliPrice;
 	private Float localPrice;
-	private Float localDeliFee;
+	private Float localDeliFee; 
 	private Float localSale; // itasrn에도 들어감
 	private String assortColor;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
@@ -64,6 +67,8 @@ public class GoodsInsertRequestData {
 	private Float buyExchangeRate;
 	private String sizeType;
 	private Float mdDiscountRate;
+	private String vendorId;
+	private String optionUseYn;
 
 
 	// itasrd
@@ -132,28 +137,10 @@ public class GoodsInsertRequestData {
 		private String status;
 	}
 
-	@Override
-	public String toString() {
-		return "GoodsInsertRequestData [code=" + code + ", message=" + message + ", assortId=" + assortId + ", regDt="
-				+ regDt + ", regId=" + regId + ", updId=" + updId + ", updDt=" + updDt + ", assortNm=" + assortNm
-				+ ", assortModel=" + assortModel + ", optionGbName=" + optionGbName + ", margin=" + margin + ", taxGb="
-				+ taxGb + ", assortGb=" + assortGb + ", assortState=" + assortState + ", asWidth=" + asWidth
-				+ ", asLength=" + asLength + ", asHeight=" + asHeight + ", weight=" + weight + ", origin=" + origin
-				+ ", shortageYn=" + shortageYn + ", brandId=" + brandId + ", dispCategoryId=" + dispCategoryId
-				+ ", siteGb=" + siteGb + ", asVendorId=" + asVendorId + ", manufactureNm=" + manufactureNm
-				+ ", deliPrice=" + deliPrice + ", localPrice=" + localPrice + ", localDeliFee=" + localDeliFee
-				+ ", localSale=" + localSale + ", assortColor=" + assortColor + ", sellStaDt=" + sellStaDt
-				+ ", sellEndDt=" + sellEndDt + ", mdRrp=" + mdRrp + ", mdTax=" + mdTax + ", mdYear=" + mdYear
-				+ ", mdMargin=" + mdMargin + ", mdVatrate=" + mdVatrate + ", mdOfflinePrice=" + mdOfflinePrice
-				+ ", mdOnlinePrice=" + mdOnlinePrice + ", mdGoodsVatrate=" + mdGoodsVatrate + ", buyWhere=" + buyWhere
-				+ ", buyTax=" + buyTax + ", buySupplyDiscount=" + buySupplyDiscount + ", buyRrpIncrement="
-				+ buyRrpIncrement + ", buyExchangeRate=" + buyExchangeRate + ", sizeType=" + sizeType
-				+ ", mdDiscountRate=" + mdDiscountRate + ", description=" + description + ", items=" + items
-				+ ", attributes=" + attributes + ", uploadMainImage=" + uploadMainImage + ", deleteImage=" + deleteImage + "]";
-	}
 	
 	
 	
+
 
 //	@Getter
 //	@Setter

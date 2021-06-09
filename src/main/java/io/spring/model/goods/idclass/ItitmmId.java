@@ -1,10 +1,10 @@
 package io.spring.model.goods.idclass;
 
+import java.io.Serializable;
+
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ItitmmId implements Serializable {

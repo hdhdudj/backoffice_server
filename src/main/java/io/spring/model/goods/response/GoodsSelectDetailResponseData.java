@@ -1,9 +1,16 @@
 package io.spring.model.goods.response;
 
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.springframework.context.annotation.PropertySource;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import io.spring.infrastructure.util.PropertyUtil;
 import io.spring.model.goods.entity.Itaimg;
 import io.spring.model.goods.entity.Itasrt;
 import lombok.AccessLevel;
@@ -11,11 +18,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
-import java.util.List;
-
 @Getter
 @Setter
+@PropertySource("classpath:application.properties")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GoodsSelectDetailResponseData {
     public GoodsSelectDetailResponseData(Itasrt itasrt){
@@ -45,6 +50,7 @@ public class GoodsSelectDetailResponseData {
         this.buyExchangeRate = itasrt.getBuyExchangeRate();
         this.buyRrpIncrement = itasrt.getBuyRrpIncrement();
         
+
         this.sellStaDt=itasrt.getSellStaDt();
         this.sellEndDt=itasrt.getSellEndDt();
         
@@ -55,12 +61,25 @@ public class GoodsSelectDetailResponseData {
         this.weight=itasrt.getWeight();
         this.deliPrice = itasrt.getDeliPrice();
         
+		this.buyTax = itasrt.getBuyTax();
+		this.mdTax = itasrt.getMdTax();
+		this.vendorId = itasrt.getVendorId();
+
+		this.brandNm = (itasrt.getItbrnd() != null ? itasrt.getItbrnd().getBrandNm() : "");
+		this.vendorNm = (itasrt.getCmvdmr() != null ? itasrt.getCmvdmr().getVdNm() : "");
+
+		this.optionUseYn = itasrt.getOptionUseYn();
+		
+		this.dispCategoryId = itasrt.getDispCategoryId();	
+
+		// this.brandNm = itasr
+
 //        this.regDt = itasrt.getRegDt();
 //        this.updDt = itasrt.getUpdDt();
     }
 
     
-        // itasrt, itvari, itasrd 공통
+	// itasrt, itvari, itasrd 怨듯넻
     private String assortId;
 //    @CreationTimestamp
 //    private Date regDt;
@@ -82,7 +101,7 @@ public class GoodsSelectDetailResponseData {
     private Float asHeight;
     private Float weight;
     private String origin;
-    private String shortageYn; // itasrn에도
+	private String shortageYn; // itasrn�뿉�룄
     private String brandId;
     private String dispCategoryId;
     private String siteGb;
@@ -91,7 +110,7 @@ public class GoodsSelectDetailResponseData {
     private Float deliPrice;
     private Float localPrice;
     private Float localDeliFee;
-    private Float localSale; // itasrn에도 들어감
+	private Float localSale; // itasrn�뿉�룄 �뱾�뼱媛�
     private String assortColor;
     
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
@@ -113,9 +132,17 @@ public class GoodsSelectDetailResponseData {
     private Float buyExchangeRate;
     private String sizeType;
     private Float mdDiscountRate;
+	private String vendorId;
+	private String optionUseYn;
+
+	private String brandNm;
+	private String vendorNm;
+
+	private LinkedList<String> categoryValue;
 
     // itasrd
-    private List<GoodsSelectDetailResponseData.Description> description; // html (메모 상세) - long memo, text (메모 간략) - short memo
+	private List<GoodsSelectDetailResponseData.Description> description; // html (硫붾え �긽�꽭) - long memo, text (硫붾え 媛꾨왂)
+																			// - short memo
     @Getter
     @Setter
     public static class Description{
@@ -141,15 +168,17 @@ public class GoodsSelectDetailResponseData {
     public static class Items{
         //		private String assortId;
         private String itemId;
-        private String variationSeq1;
-        private String variationSeq2;
-        private String variationValue1;
-        private String variationValue2;
+		private String seq1;
+		private String seq2;
+		private String value1;
+		private String value2;
         private String addPrice;
-        private String shortYn;
+		private String shortageYn;
+		private String status1;
+		private String status2;
     }
 
-    // image 관련
+	// image 愿��젴
     private List<UploadMainImage> uploadMainImage;
     private List<UploadAddImage> uploadAddImage;
     private List<String> deleteImage;
@@ -158,14 +187,18 @@ public class GoodsSelectDetailResponseData {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class UploadMainImage{
         public UploadMainImage(Itaimg itaimg){
+
+			String prefixUrl = PropertyUtil.getProperty("ftp.prefix_url");
+
             this.uid = itaimg.getImageSeq();
             this.name = itaimg.getImageName();
             this.imageGb = itaimg.getImageGb();
             this.status = itaimg.getImageStatus();
+			this.url = prefixUrl + itaimg.getImagePath() + itaimg.getImageName();
+
         }
         private Long uid;
         private String name;
-        @JsonIgnore
         private String url;
         private String imageGb;
         private String status;
@@ -175,14 +208,16 @@ public class GoodsSelectDetailResponseData {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class UploadAddImage{
         public UploadAddImage(Itaimg itaimg){
+			String prefixUrl = PropertyUtil.getProperty("ftp.prefix_url");
+
             this.uid = itaimg.getImageSeq();
             this.name = itaimg.getImageName();
             this.imageGb = itaimg.getImageGb();
             this.status = itaimg.getImageStatus();
+			this.url = prefixUrl + itaimg.getImagePath() + itaimg.getImageName();
         }
         private Long uid;
         private String name;
-        @JsonIgnore
         private String url;
         private String imageGb;
         private String status;

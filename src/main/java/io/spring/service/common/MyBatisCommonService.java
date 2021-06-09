@@ -51,8 +51,8 @@ public class MyBatisCommonService {
 				return null;
 			}
 			
-			System.out.println(category.get("categoryId").toString());
 			
+
 			a.addFirst(category.get("categoryId").toString());
 			
 			String upCatId="";
@@ -78,8 +78,7 @@ public class MyBatisCommonService {
 			
 		 
 		    }
-			
-			System.out.println(a);
+
 			return a;
 		}		
 		
