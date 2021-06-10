@@ -87,7 +87,9 @@ public class JpaGoodsService {
         return makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
     }
     private void saveTmmapi(Itasrt itasrt){
-        jpaTmmapiRepository.save(new Tmmapi(itasrt));
+        Tmmapi tmmapi = new Tmmapi(itasrt);
+        tmmapi.setJoinStatus(StringFactory.getGbOne()); // 01 하드코딩
+        jpaTmmapiRepository.save(tmmapi);
     }
 
     private void updateItaimgAssortId(GoodsInsertRequestData goodsInsertRequestData, String assortId) {
