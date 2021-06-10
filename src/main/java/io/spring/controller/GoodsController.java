@@ -1,20 +1,5 @@
 package io.spring.controller;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.flywaydb.core.internal.util.StringUtils;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
@@ -28,6 +13,15 @@ import io.spring.service.common.MyBatisCommonService;
 import io.spring.service.goods.JpaGoodsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.flywaydb.core.internal.util.StringUtils;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -101,8 +95,8 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 	}
 
-	@GetMapping(path = "/getgoodsdetail")
-	public ResponseEntity getGoodsDetailJpa(@RequestParam("assortId") String assortId){
+	@GetMapping(path = "/{assortId}")
+	public ResponseEntity getGoodsDetailJpa(@PathVariable("assortId") String assortId){
 		log.debug("get goods detail page");
 		log.debug(assortId);
 		
@@ -122,7 +116,11 @@ public class GoodsController {
 	@GetMapping(path="/getgoodslistjpa")
 	public ResponseEntity getGoodsListJpa(@RequestParam String shortageYn, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtBegin, @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @RequestParam Date regDtEnd){
 		log.debug("get goods list data");
-		List<GoodsSelectListResponseData.Goods> responseData = jpaGoodsService.getGoodsList(shortageYn, regDtBegin, regDtEnd).getGoodsList();
+		GoodsSelectListResponseData goodsSelectListResponseData = jpaGoodsService.getGoodsList(shortageYn, regDtBegin, regDtEnd);
+		List<GoodsSelectListResponseData.Goods> responseData = null;
+		if(goodsSelectListResponseData != null){
+			responseData = goodsSelectListResponseData.getGoodsList();
+		}
 		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
 		if(responseData == null){
 			return null;
