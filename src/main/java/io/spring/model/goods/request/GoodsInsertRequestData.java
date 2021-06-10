@@ -1,15 +1,14 @@
 package io.spring.model.goods.request;
 
-import java.util.Date;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.Date;
+import java.util.List;
 
 @ToString
 @Getter
@@ -68,6 +67,7 @@ public class GoodsInsertRequestData {
 	private String sizeType;
 	private Float mdDiscountRate;
 	private String vendorId;
+	@Expose
 	private String optionUseYn;
 
 
