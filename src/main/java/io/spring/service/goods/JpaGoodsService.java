@@ -185,9 +185,6 @@ public class JpaGoodsService {
 
 		itasrt.setBuyTax(goodsInsertRequestData.getBuyTax());
 
-		if(goodsInsertRequestData.getOptionUseYn().equals(StringFactory.getGbTwo())){
-		    goodsInsertRequestData.setOptionUseYn(null);
-        }
 		itasrt.setOptionUseYn(goodsInsertRequestData.getOptionUseYn());
 
         jpaItasrtRepository.save(itasrt);

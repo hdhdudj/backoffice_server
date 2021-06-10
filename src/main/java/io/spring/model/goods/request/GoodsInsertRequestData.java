@@ -67,7 +67,6 @@ public class GoodsInsertRequestData {
 	private String sizeType;
 	private Float mdDiscountRate;
 	private String vendorId;
-	@Expose
 	private String optionUseYn;
 
 
