@@ -25,4 +25,6 @@ public interface GoodsMapper {
     String selectMaxSeqItasrt(GoodsInsertRequestData goodsInsertRequestData);
 
 	List<HashMap<String, Object>> getGoodsList(HashMap<String, Object> param);
+
+	List<HashMap<String, Object>> getGoodsItemList(HashMap<String, Object> param);
 }

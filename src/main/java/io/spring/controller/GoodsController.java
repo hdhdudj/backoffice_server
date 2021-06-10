@@ -130,6 +130,33 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 	}
 
+	// 상품리스트조회(ititmm)
+	@GetMapping(path = "/goods-item")
+	public ResponseEntity getGoodsItem(@RequestParam String shortageYn,
+			@RequestParam(required = false) String assortId, @RequestParam(required = false) String assortNm,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtBegin,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtEnd) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+
+		param.put("shortageYn", shortageYn);
+		param.put("regDtBegin", regDtBegin);
+		param.put("regDtEnd", regDtEnd);
+		if (assortId != null) {
+			param.put("assortId", assortId);
+		}
+
+		if (assortNm != null) {
+			param.put("assortNm", assortNm);
+		}
+
+		List<HashMap<String, Object>> responseData = goodsRepository.getGoodsItemList(param);
+		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
+		if (responseData == null) {
+			return null;
+		}
+		return ResponseEntity.ok(res);
+	}
+
 	@GetMapping(path="/getgoodslistmybatis")
 	public ResponseEntity getGoodsList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtBegin,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtEnd,

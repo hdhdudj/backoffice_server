@@ -146,16 +146,19 @@
 	</select>	
 
 
+
+
 	
 	<select id="getGoodsItemList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	  <![CDATA[	
 			select
 			i.assort_id as assortId
 			 ,i.assort_nm as assortNm
 			 ,i.shortage_yn as shortageYn
 			 ,im.item_id as itemId
 			 ,im.short_yn as itemShortageYn
-			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq1 and iv.variation_gb='01' and del_yn='02' ) option_nm1
-			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq2 and iv.variation_gb='02' and del_yn='02' ) option_nm2			 
+			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq1 and iv.variation_gb='01' and del_yn='02' ) optionNm1
+			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq2 and iv.variation_gb='02' and del_yn='02' ) optionNm2			 
 			 ,i.brand_id as brandId
 			 ,ib.brand_nm as brandNm
 			 ,i.disp_category_id as dispCategoryId
@@ -166,9 +169,23 @@
 		LEFT JOIN itcatg ic ON i.disp_category_id = ic.category_id
 		,ititmm im		
 		where 	1=1
+		]]>
+	<if test='assortId != null'>
+			 <![CDATA[		
+		and i.assort_id = #{assortId}
+			 ]]>
+			</if>
+	<if test='assortNm != null'>
+			 <![CDATA[		
+		and i.assort_nm like CONCAT( '%',  #{assortNm}, '%') 
+			 ]]>
+			</if>		
+					
+				 		<![CDATA[		  
 		  and i.reg_Dt between #{regDtBegin} and  #{regDtEnd}
 		  and i.shortage_yn =#{shortageYn}
-		  and i.assort_id = im.assort_id;
+		  and i.assort_id = im.assort_id
+		  ]]>
 	</select>	
 
 

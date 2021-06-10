@@ -3,11 +3,10 @@ package io.spring.service.goods;
 import java.util.HashMap;
 import java.util.List;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.spring.dao.goods.MyBatisGoodsDao;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -19,5 +18,11 @@ public class MyBatisGoodsService {
 
         return goodsList;
     }
+
+	public List<HashMap<String, Object>> getGoodsItemList(HashMap<String, Object> param) {
+		List<HashMap<String, Object>> goodsList = myBatisGoodsDao.getGoodsItemList(param);
+
+		return goodsList;
+	}
 
 }
