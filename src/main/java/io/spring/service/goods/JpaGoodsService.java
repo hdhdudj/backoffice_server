@@ -77,6 +77,8 @@ public class JpaGoodsService {
         List<Itvari> itvariList = this.saveItvariList(goodsInsertRequestData);
         // ititmm에 assort_id별 item 저장
         List<Ititmm> ititmmList = this.saveItemList(goodsInsertRequestData);
+        // tmitem에 저장
+        this.saveTmitem(ititmmList);
         // ititmd에 item 이력 저장
         List<Ititmd> ititmdList = this.saveItemHistoryList(goodsInsertRequestData, ititmmList);
 
@@ -87,6 +89,13 @@ public class JpaGoodsService {
         List<GoodsInsertResponseData.Items> itemsList = makeGoodsResponseItems(ititmmList);
         return makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
     }
+
+    private void saveTmitem(List<Ititmm> ititmmList) {
+        for(Ititmm ititmm : ititmmList){
+//            Tmitem tmitem = new Tmitem();
+        }
+    }
+
     private void saveTmmapi(Itasrt itasrt){
         Tmmapi tmmapi = new Tmmapi(itasrt);
         tmmapi.setJoinStatus(StringFactory.getGbOne()); // 01 하드코딩
@@ -506,12 +515,12 @@ public class JpaGoodsService {
             Itvari op1 = jpaItvariRepository.findByAssortIdAndSeq(ititmm.getAssortId(), ititmm.getVariationSeq1());
 			item.setValue1(op1.getOptionNm());
 			item.setSeq1(op1.getSeq());
-			item.setStatus1("r");
+			item.setStatus1(StringFactory.getStrR()); // r 하드코딩
             if(ititmm.getVariationSeq2() != null){
                 Itvari op2 = jpaItvariRepository.findByAssortIdAndSeq(ititmm.getAssortId(), ititmm.getVariationSeq2());
 				item.setSeq2(op2.getSeq());
 				item.setValue2(op2.getOptionNm());
-				item.setStatus2("r");
+				item.setStatus2(StringFactory.getStrR()); // r 하드코딩
             }
             item.setAddPrice(ititmm.getAddPrice());
 			item.setShortageYn(ititmm.getShortYn());
