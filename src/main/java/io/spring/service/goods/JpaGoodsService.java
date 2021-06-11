@@ -38,6 +38,7 @@ public class JpaGoodsService {
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
 
     private final JpaTmmapiRepository jpaTmmapiRepository;
+    private final JpaTmitemRepository jpaTmitemRepository;
 
     private final FileService fileService;
 
@@ -92,7 +93,8 @@ public class JpaGoodsService {
 
     private void saveTmitem(List<Ititmm> ititmmList) {
         for(Ititmm ititmm : ititmmList){
-//            Tmitem tmitem = new Tmitem();
+            Tmitem tmitem = new Tmitem(ititmm);
+            jpaTmitemRepository.save(tmitem);
         }
     }
 

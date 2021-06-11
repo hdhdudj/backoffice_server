@@ -1,7 +1,9 @@
 package io.spring.model.goods.idclass;
 
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
+import java.util.Date;
 
 public class TmitemId implements Serializable {
     //default serial version id, required for serializable classes.
@@ -10,6 +12,8 @@ public class TmitemId implements Serializable {
     private String channelGb;
     private String assortId;
     private String itemId;
-    private String effStaDt;
-    private String effEndDt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+    private Date effStaDt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+    private Date effEndDt;
 }
