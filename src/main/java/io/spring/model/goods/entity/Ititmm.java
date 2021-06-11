@@ -23,16 +23,30 @@ public class Ititmm extends CommonProps {
         this.shortYn = items.getShortYn();
         this.addPrice = items.getAddPrice();
     }
+
+    public Ititmm(GoodsInsertRequestData goodsInsertRequestData){
+        this.assortId = goodsInsertRequestData.getAssortId();
+        this.itemNm = goodsInsertRequestData.getAssortNm();
+        this.shortYn = goodsInsertRequestData.getShortageYn();
+    }
+
     @Id
     private String assortId;
     @Id
     private String itemId;
     private String itemNm;
     private String shortYn;
+    private Long minCnt;
+    private Long maxCnt;
+    private Long dayDeliCnt;
+    private Long totDeliCnt;
     private String variationGb1;
     private String variationSeq1;
     private String variationGb2;
     private String variationSeq2;
+    private String setYn;
+    private String orderLmtYn;
+    private Long orderLmtCnt;
     private String addPrice;
 
     // itasrt 연관 관계
