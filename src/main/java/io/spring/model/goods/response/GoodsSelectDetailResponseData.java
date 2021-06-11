@@ -1,15 +1,8 @@
 package io.spring.model.goods.response;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.springframework.context.annotation.PropertySource;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
 import io.spring.infrastructure.util.PropertyUtil;
 import io.spring.model.goods.entity.Itaimg;
 import io.spring.model.goods.entity.Itasrt;
@@ -17,6 +10,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.context.annotation.PropertySource;
+
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -172,7 +170,7 @@ public class GoodsSelectDetailResponseData {
 		private String seq2;
 		private String value1;
 		private String value2;
-        private String addPrice;
+        private Float addPrice;
 		private String shortageYn;
 		private String status1;
 		private String status2;
