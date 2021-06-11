@@ -102,7 +102,7 @@ public class GoodsInsertRequestData {
 		private String variationSeq2;
 		private String variationValue1;
 		private String variationValue2;
-		private String addPrice;
+		private Float addPrice;
 		private String shortYn;
 	}
 	@Getter

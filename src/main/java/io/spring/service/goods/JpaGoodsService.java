@@ -38,6 +38,7 @@ public class JpaGoodsService {
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
 
     private final JpaTmmapiRepository jpaTmmapiRepository;
+    private final JpaTmitemRepository jpaTmitemRepository;
 
     private final FileService fileService;
 
@@ -69,7 +70,7 @@ public class JpaGoodsService {
         Itasrt itasrt = this.saveItasrt(goodsInsertRequestData);
         // tmmapi에 저장
         this.saveTmmapi(itasrt);
-        // itsrn에 goods 이력 저장
+        // itasrn에 goods 이력 저장
         Itasrn itasrn = this.saveItasrn(goodsInsertRequestData);
         // itasrd에 문구 저장
         List<Itasrd> itasrd = this.saveItasrd(goodsInsertRequestData);
@@ -77,6 +78,8 @@ public class JpaGoodsService {
         List<Itvari> itvariList = this.saveItvariList(goodsInsertRequestData);
         // ititmm에 assort_id별 item 저장
         List<Ititmm> ititmmList = this.saveItemList(goodsInsertRequestData);
+        // tmitem에 저장
+        this.saveTmitem(ititmmList);
         // ititmd에 item 이력 저장
         List<Ititmd> ititmdList = this.saveItemHistoryList(goodsInsertRequestData, ititmmList);
 
@@ -87,6 +90,14 @@ public class JpaGoodsService {
         List<GoodsInsertResponseData.Items> itemsList = makeGoodsResponseItems(ititmmList);
         return makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
     }
+
+    private void saveTmitem(List<Ititmm> ititmmList) {
+        for(Ititmm ititmm : ititmmList){
+            Tmitem tmitem = new Tmitem(ititmm);
+            jpaTmitemRepository.save(tmitem);
+        }
+    }
+
     private void saveTmmapi(Itasrt itasrt){
         Tmmapi tmmapi = new Tmmapi(itasrt);
         tmmapi.setJoinStatus(StringFactory.getGbOne()); // 01 하드코딩
@@ -184,7 +195,7 @@ public class JpaGoodsService {
 		itasrt.setMdGoodsVatrate(goodsInsertRequestData.getMdGoodsVatrate());
 
 		itasrt.setBuyTax(goodsInsertRequestData.getBuyTax());
-
+        // 옵션과 옵션에 따른 아이템들의 존재 여부. 미존재시 단품 옵션 1개, 단품 옵션 내역을 가진 아이템 1개가 생성돼야 함.
 		itasrt.setOptionUseYn(goodsInsertRequestData.getOptionUseYn());
 
         jpaItasrtRepository.save(itasrt);
@@ -192,7 +203,7 @@ public class JpaGoodsService {
     }
 
     /**
-     * 21-04-28 Peca
+     * 21-04-28 Pecan
      * 물품 정보 이력 insert, update
      * @param goodsInsertRequestData
      * @return Itasrn Object
@@ -267,6 +278,9 @@ public class JpaGoodsService {
      * @return List<Itvari>
      */
     private List<Itvari> saveItvariList(GoodsInsertRequestData goodsInsertRequestData) {
+        if(goodsInsertRequestData.getOptionUseYn().equals(StringFactory.getGbTwo())){ // optionUseYn이 02, 즉 단품인 경우
+            return saveSingleOption(goodsInsertRequestData); // 단품 옵션 1개를 저장하는 함수
+        }
         List<GoodsInsertRequestData.Attributes> attributes = goodsInsertRequestData.getAttributes();
         List<Itvari> itvariList = new ArrayList<>();
 
@@ -297,12 +311,35 @@ public class JpaGoodsService {
     }
 
     /**
+     * 21-06-11 Pecan
+     * 단품 옵션 1개를 저장하는 함수
+     * @param goodsInsertRequestData
+     * @return
+     */
+    private List<Itvari> saveSingleOption(GoodsInsertRequestData goodsInsertRequestData) {
+        List<Itvari> itvariList = new ArrayList<>();
+        Itvari itvari = new Itvari(goodsInsertRequestData);
+        
+        itvari.setSeq(StringFactory.getFourStartCd()); // 0001
+        itvari.setOptionGb(StringFactory.getGbOne()); // 01
+        itvari.setImgYn(StringFactory.getGbTwo()); // 02
+        itvari.setOptionNm(StringFactory.getStrSingleGoods()); // 단품
+        itvari.setVariationGb(StringFactory.getGbOne()); // 01
+        jpaItvariRepository.save(itvari);
+        itvariList.add(itvari);
+        return itvariList;
+    }
+
+    /**
      * 21-04-28 Pecan
      * 아이템 정보 insert, update
      * @param goodsInsertRequestData
      * @return List<Ititmm>
      */
     private List<Ititmm> saveItemList(GoodsInsertRequestData goodsInsertRequestData) {
+        if(goodsInsertRequestData.getOptionUseYn().equals(StringFactory.getGbTwo())){
+            return saveSingleItem(goodsInsertRequestData);
+        }
         List<GoodsInsertRequestData.Items> itemList = goodsInsertRequestData.getItems();
         List<Ititmm> ititmmList = new ArrayList<>();
         for(GoodsInsertRequestData.Items item : itemList){
@@ -352,6 +389,24 @@ public class JpaGoodsService {
             jpaItitmmRepository.save(ititmm);
             ititmmList.add(ititmm);
         }
+        return ititmmList;
+    }
+
+    /**
+     * 21-06-11 Pecan
+     * 단품 옵션을 가진 아이템 1개를 저장하는 함수
+     * @param goodsInsertRequestData
+     * @return
+     */
+    private List<Ititmm> saveSingleItem(GoodsInsertRequestData goodsInsertRequestData) {
+        List<Ititmm> ititmmList = new ArrayList<>();
+        Ititmm ititmm = new Ititmm(goodsInsertRequestData);
+
+        ititmm.setItemId(StringFactory.getFourStartCd()); // 0001
+        ititmm.setVariationGb1(StringFactory.getGbOne()); // 01
+        ititmm.setVariationSeq1(StringFactory.getFourStartCd()); // 0001
+        jpaItitmmRepository.save(ititmm);
+        ititmmList.add(ititmm);
         return ititmmList;
     }
 
@@ -462,12 +517,12 @@ public class JpaGoodsService {
             Itvari op1 = jpaItvariRepository.findByAssortIdAndSeq(ititmm.getAssortId(), ititmm.getVariationSeq1());
 			item.setValue1(op1.getOptionNm());
 			item.setSeq1(op1.getSeq());
-			item.setStatus1("r");
+			item.setStatus1(StringFactory.getStrR()); // r 하드코딩
             if(ititmm.getVariationSeq2() != null){
                 Itvari op2 = jpaItvariRepository.findByAssortIdAndSeq(ititmm.getAssortId(), ititmm.getVariationSeq2());
 				item.setSeq2(op2.getSeq());
 				item.setValue2(op2.getOptionNm());
-				item.setStatus2("r");
+				item.setStatus2(StringFactory.getStrR()); // r 하드코딩
             }
             item.setAddPrice(ititmm.getAddPrice());
 			item.setShortageYn(ititmm.getShortYn());

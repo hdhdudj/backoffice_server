@@ -1,5 +1,6 @@
 package io.spring.model.goods.entity;
 
+import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.idclass.ItitmmId;
 import io.spring.model.goods.request.GoodsInsertRequestData;
@@ -23,17 +24,31 @@ public class Ititmm extends CommonProps {
         this.shortYn = items.getShortYn();
         this.addPrice = items.getAddPrice();
     }
+
+    public Ititmm(GoodsInsertRequestData goodsInsertRequestData){
+        this.assortId = goodsInsertRequestData.getAssortId();
+        this.itemNm = goodsInsertRequestData.getAssortNm();
+        this.shortYn = goodsInsertRequestData.getShortageYn();
+    }
+
     @Id
     private String assortId;
     @Id
     private String itemId;
     private String itemNm;
     private String shortYn;
+    private Long minCnt = 0l; // 하드코딩
+    private Long maxCnt = 0l; // 하드코딩
+    private Long dayDeliCnt;
+    private Long totDeliCnt;
     private String variationGb1;
     private String variationSeq1;
     private String variationGb2;
     private String variationSeq2;
-    private String addPrice;
+    private String setYn = StringFactory.getGbTwo(); // 02 하드코딩
+    private String orderLmtYn;
+    private Long orderLmtCnt;
+    private Float addPrice = 0f; // 하드코딩
 
     // itasrt 연관 관계
     @ManyToOne(fetch = FetchType.LAZY)

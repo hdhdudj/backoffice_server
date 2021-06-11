@@ -1,5 +1,6 @@
 package io.spring.model.goods.entity;
 
+import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.idclass.ItvariId;
 import io.spring.model.goods.request.GoodsInsertRequestData;
@@ -54,7 +55,7 @@ public class Itvari extends CommonProps {
     private String seq;
 
     private String optionGb;
-    private String imgYn;
+    private String imgYn = StringFactory.getGbTwo(); // 02 하드코딩
     private String optionNm;
     private String variationGb;
     private String delYn;

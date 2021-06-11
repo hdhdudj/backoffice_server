@@ -68,4 +68,12 @@ public class StringFactory {
     @Getter
     private final static String dUpperStr = "D";
 
+    // itvari 관련
+    @Getter
+    private final static String strSingleGoods = "단품";
+
+    // code
+    @Getter
+    private final static String strR = "r";
+
 }
