@@ -164,6 +164,8 @@
 			 ,i.disp_category_id as dispCategoryId
  			 ,ic.category_nm as categoryNm
 			 ,f_categoryFullPath(i.disp_category_id) fullCategoryNm
+			 ,i.md_rrp mdRrp
+			 ,i.buy_supply_discount buySupplyDiscount
 		from itasrt i
 		LEFT JOIN itbrnd ib ON i.brand_id = ib.brand_id
 		LEFT JOIN itcatg ic ON i.disp_category_id = ic.category_id
