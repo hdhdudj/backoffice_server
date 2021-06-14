@@ -41,6 +41,7 @@ public class Tmitem extends CommonProps {
         this.variationGb2 = ititmm.getVariationGb2();
         this.variationSeq1 = ititmm.getVariationSeq1();
         this.variationSeq2 = ititmm.getVariationSeq2();
+        this.optionPrice = ititmm.getAddPrice();
     }
     @Id
     private String channelGb = StringFactory.getGbOne(); // 01 하드코딩
@@ -61,4 +62,5 @@ public class Tmitem extends CommonProps {
     private String variationSeq2;
     private String channelGoodsNo;
     private String channelOptionsNo;
+    private Float optionPrice;
 }
