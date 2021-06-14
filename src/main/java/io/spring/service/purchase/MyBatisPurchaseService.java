@@ -1,12 +1,12 @@
 package io.spring.service.purchase;
 
-import io.spring.dao.purchase.MyBatisPurchaseDao;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.HashMap;
 import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import io.spring.dao.purchase.MyBatisPurchaseDao;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -17,4 +17,14 @@ public class MyBatisPurchaseService {
         List<HashMap<String, Object>> purchaseList = myBatisPurchaseDao.getPurchaseList(param);
         return purchaseList;
     }
+
+	public List<HashMap<String, Object>> getOrderListByPurchaseVendor(HashMap<String, Object> param) {
+		List<HashMap<String, Object>> purchaseList = myBatisPurchaseDao.getOrderListByPurchaseVendor(param);
+		return purchaseList;
+	}
+
+	public List<HashMap<String, Object>> getOrderListByPurchaseVendorItem(HashMap<String, Object> param) {
+		List<HashMap<String, Object>> purchaseList = myBatisPurchaseDao.getOrderListByPurchaseVendorItem(param);
+		return purchaseList;
+	}
 }
