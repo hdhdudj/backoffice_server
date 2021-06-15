@@ -8,7 +8,6 @@ import io.spring.jparepos.goods.*;
 import io.spring.model.common.entity.SequenceData;
 import io.spring.model.file.FileVo;
 import io.spring.model.goods.entity.*;
-import io.spring.model.goods.idclass.TmmapiId;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.goods.response.GoodsInsertResponseData;
 import io.spring.model.goods.response.GoodsSelectDetailResponseData;
@@ -100,14 +99,7 @@ public class JpaGoodsService {
         for(Ititmm ititmm : ititmmList){
             Tmitem tmitem = jpaTmitemRepository.findByChannelGbAndAssortIdAndItemId(StringFactory.getGbOne(), ititmm.getAssortId(), ititmm.getItemId())
                     .orElseGet(() -> new Tmitem(ititmm)); // channelGb 01 하드코딩
-            tmitem.setEffStaDt(new Date()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
-            try
-            {
-                tmitem.setEffEndDt(Utilities.getStringToDate(StringFactory.getDoomDay())); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
-            }
-            catch (Exception e){
-                log.debug(e.getMessage());
-            }
+
             tmitem.setShortYn(ititmm.getShortYn());
             tmitem.setVariationGb1(ititmm.getVariationGb1());
             tmitem.setVariationGb2(ititmm.getVariationGb2());
@@ -124,7 +116,7 @@ public class JpaGoodsService {
      * @param itasrt
      */
     private void saveTmmapi(Itasrt itasrt){
-        Tmmapi tmmapi = jpaTmmapiRepository.findById(new TmmapiId(StringFactory.getGbOne(), itasrt.getAssortId()))
+        Tmmapi tmmapi = jpaTmmapiRepository.findByChannelGbAndAssortId(StringFactory.getGbOne(), itasrt.getAssortId())
                 .orElseGet(() ->new Tmmapi(itasrt)); // channelGb 01 하드코딩
         tmmapi.setJoinStatus(StringFactory.getGbTwo()); // 01 : 고도몰 반영 성공, 02 : 아직 고도몰에 미반영 혹은 반영 실패 (01로 바꾸는 건 batch에서)
         tmmapi.setUploadType(StringFactory.getGbTwo()); // 01 : 신규, 02 : 신규아님(수정)

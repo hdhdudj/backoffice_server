@@ -2,6 +2,7 @@ package io.spring.model.goods.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.idclass.TmitemId;
 import lombok.AccessLevel;
@@ -27,6 +28,14 @@ public class Tmitem extends CommonProps {
     public Tmitem(Ititmm ititmm){
         this.assortId = ititmm.getAssortId();
         this.itemId = ititmm.getItemId();
+        this.effStaDt = new Date(); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
+        try
+        {
+            this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
+        }
+        catch (Exception e){
+            log.debug(e.getMessage());
+        }
     }
 
     @Id
