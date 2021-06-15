@@ -92,6 +92,10 @@ public class JpaGoodsService {
         return makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
     }
 
+    /**
+     * Pecan
+     * tmitem : insert, update 공용 함수
+      */
     private void saveTmitem(List<Ititmm> ititmmList) {
         for(Ititmm ititmm : ititmmList){
             Tmitem tmitem = jpaTmitemRepository.findByChannelGbAndAssortIdAndItemId(StringFactory.getGbOne(), ititmm.getAssortId(), ititmm.getItemId())
@@ -114,6 +118,11 @@ public class JpaGoodsService {
         }
     }
 
+    /**
+     * Pecan
+     * tmmapi : insert, update 공용 함수
+     * @param itasrt
+     */
     private void saveTmmapi(Itasrt itasrt){
         Tmmapi tmmapi = jpaTmmapiRepository.findById(new TmmapiId(StringFactory.getGbOne(), itasrt.getAssortId()))
                 .orElseGet(() ->new Tmmapi(itasrt)); // channelGb 01 하드코딩
@@ -126,6 +135,12 @@ public class JpaGoodsService {
         jpaTmmapiRepository.save(tmmapi);
     }
 
+    /**
+     * Pecan
+     * itaimg에 생성한 assortId 심어주는 함수
+     * @param goodsInsertRequestData
+     * @param assortId
+     */
     private void updateItaimgAssortId(GoodsInsertRequestData goodsInsertRequestData, String assortId) {
         List<GoodsInsertRequestData.UploadMainImage> uploadMainImageList = goodsInsertRequestData.getUploadMainImage();
         List<GoodsInsertRequestData.UploadAddImage> uploadAddImageList = goodsInsertRequestData.getUploadAddImage();
