@@ -126,12 +126,13 @@ public class JpaGoodsService {
     private void saveTmmapi(Itasrt itasrt){
         Tmmapi tmmapi = jpaTmmapiRepository.findById(new TmmapiId(StringFactory.getGbOne(), itasrt.getAssortId()))
                 .orElseGet(() ->new Tmmapi(itasrt)); // channelGb 01 하드코딩
-        tmmapi.setJoinStatus(StringFactory.getGbOne()); // 01 하드코딩
+        tmmapi.setJoinStatus(StringFactory.getGbTwo()); // 01 : 고도몰 반영 성공, 02 : 아직 고도몰에 미반영 혹은 반영 실패 (01로 바꾸는 건 batch에서)
+        tmmapi.setUploadType(StringFactory.getGbTwo()); // 01 : 신규, 02 : 신규아님(수정)
+        tmmapi.setUploadYn(StringFactory.getGbTwo()); // 01 : 업로드 완료, 02 : 업로드 미완료
         tmmapi.setAssortNm(itasrt.getAssortNm());
         tmmapi.setStandardPrice(itasrt.getLocalPrice());
         tmmapi.setSalePrice(itasrt.getLocalSale());
         tmmapi.setShortageYn(itasrt.getShortageYn());
-        tmmapi.setUploadType(StringFactory.getGbOne()); // 01 : 아직 고도몰에 미반영, 02 : 고도몰 반영완료
         jpaTmmapiRepository.save(tmmapi);
     }
 
