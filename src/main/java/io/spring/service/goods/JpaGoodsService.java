@@ -8,6 +8,7 @@ import io.spring.jparepos.goods.*;
 import io.spring.model.common.entity.SequenceData;
 import io.spring.model.file.FileVo;
 import io.spring.model.goods.entity.*;
+import io.spring.model.goods.idclass.TmmapiId;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.goods.response.GoodsInsertResponseData;
 import io.spring.model.goods.response.GoodsSelectDetailResponseData;
@@ -93,14 +94,35 @@ public class JpaGoodsService {
 
     private void saveTmitem(List<Ititmm> ititmmList) {
         for(Ititmm ititmm : ititmmList){
-            Tmitem tmitem = new Tmitem(ititmm);
+            Tmitem tmitem = jpaTmitemRepository.findByChannelGbAndAssortIdAndItemId(StringFactory.getGbOne(), ititmm.getAssortId(), ititmm.getItemId())
+                    .orElseGet(() -> new Tmitem(ititmm)); // channelGb 01 하드코딩
+            tmitem.setEffStaDt(new Date()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
+            try
+            {
+                tmitem.setEffEndDt(Utilities.getStringToDate(StringFactory.getDoomDay())); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
+            }
+            catch (Exception e){
+                log.debug(e.getMessage());
+            }
+            tmitem.setShortYn(ititmm.getShortYn());
+            tmitem.setVariationGb1(ititmm.getVariationGb1());
+            tmitem.setVariationGb2(ititmm.getVariationGb2());
+            tmitem.setVariationSeq1(ititmm.getVariationSeq1());
+            tmitem.setVariationSeq2(ititmm.getVariationSeq2());
+            tmitem.setOptionPrice(ititmm.getAddPrice());
             jpaTmitemRepository.save(tmitem);
         }
     }
 
     private void saveTmmapi(Itasrt itasrt){
-        Tmmapi tmmapi = new Tmmapi(itasrt);
+        Tmmapi tmmapi = jpaTmmapiRepository.findById(new TmmapiId(StringFactory.getGbOne(), itasrt.getAssortId()))
+                .orElseGet(() ->new Tmmapi(itasrt)); // channelGb 01 하드코딩
         tmmapi.setJoinStatus(StringFactory.getGbOne()); // 01 하드코딩
+        tmmapi.setAssortNm(itasrt.getAssortNm());
+        tmmapi.setStandardPrice(itasrt.getLocalPrice());
+        tmmapi.setSalePrice(itasrt.getLocalSale());
+        tmmapi.setShortageYn(itasrt.getShortageYn());
+        tmmapi.setUploadType(StringFactory.getGbOne()); // 01 : 아직 고도몰에 미반영, 02 : 고도몰 반영완료
         jpaTmmapiRepository.save(tmmapi);
     }
 

@@ -136,11 +136,6 @@ public class GoodsInsertRequestData {
 		private String status;
 	}
 
-	
-	
-	
-
-
 //	@Getter
 //	@Setter
 //	public static class SeqAndValue{

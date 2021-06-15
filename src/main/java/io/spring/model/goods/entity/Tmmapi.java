@@ -25,11 +25,6 @@ import java.util.Date;
 public class Tmmapi extends CommonProps {
     public Tmmapi(Itasrt itasrt){
         this.assortId = itasrt.getAssortId();
-        this.assortNm = itasrt.getAssortNm();
-        this.standardPrice = itasrt.getLocalPrice();
-        this.salePrice = itasrt.getLocalSale();
-        this.shortageYn = itasrt.getShortageYn();
-
     }
     @Id
     private String channelGb = StringFactory.getGbOne(); // 01 하드코딩;
