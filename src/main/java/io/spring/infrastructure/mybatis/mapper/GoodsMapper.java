@@ -1,11 +1,10 @@
 package io.spring.infrastructure.mybatis.mapper;
 
-import java.util.HashMap;
-import java.util.List;
-
+import io.spring.model.goods.request.GoodsInsertRequestData;
 import org.apache.ibatis.annotations.Mapper;
 
-import io.spring.model.goods.request.GoodsInsertRequestData;
+import java.util.HashMap;
+import java.util.List;
 
 @Mapper
 public interface GoodsMapper {
@@ -18,7 +17,7 @@ public interface GoodsMapper {
 
 	String selectMaxSeqItasrd(GoodsInsertRequestData goodsInsertRequestData);
 
-    HashMap<String, Object> selectOneSeqOptionGb(GoodsInsertRequestData.Items items);
+    HashMap<String, Object> selectOneSeqOptionNm(String assortId, String optionNm);
 
     String selectMaxItemIdItitmm(GoodsInsertRequestData goodsInsertRequestData);
 

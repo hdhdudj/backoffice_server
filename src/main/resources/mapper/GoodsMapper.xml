@@ -33,12 +33,12 @@
 		]]>
     </select>
 
-	<select id="selectOneSeqOptionGb" resultType="HashMap">
+	<select id="selectOneSeqOptionNm" resultType="HashMap">
     	<![CDATA[
 		select seq, option_gb from itvari where assort_id = #{assortId} and option_nm = #{optionNm}
 		]]>
     </select>
-    
+
 	<insert id="insertGoods">
 		<![CDATA[ 
 		insert into  itasrt
