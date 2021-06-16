@@ -5,6 +5,8 @@ import org.flywaydb.core.internal.util.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * 21-05-03 Pecan
@@ -48,7 +50,22 @@ public class Utilities {
         }
         return getDate;
     }
-    
-    
-    
+
+    /**
+     * 21-06-16 Pecan
+     * stream 사용시 list로 collect할 때 list의 원소 개수가 1개면 해당 객체를 반환해주는 함수
+     * @param <T>
+     * @return
+     */
+    public static <T> Collector<T, ?, T> toSingleton() {
+        return Collectors.collectingAndThen(
+                Collectors.toList(),
+                list -> {
+                    if (list.size() != 1) {
+                        throw new IllegalStateException();
+                    }
+                    return list.get(0);
+                }
+        );
+    }
 }

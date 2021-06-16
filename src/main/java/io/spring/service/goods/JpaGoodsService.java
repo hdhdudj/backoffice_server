@@ -371,6 +371,7 @@ public class JpaGoodsService {
         if(goodsInsertRequestData.getOptionUseYn().equals(StringFactory.getGbTwo())){
             return saveSingleItem(goodsInsertRequestData);
         }
+        List<Itvari> itvariList = jpaItvariRepository.findAll();
         List<GoodsInsertRequestData.Items> itemList = goodsInsertRequestData.getItems();
         List<Ititmm> ititmmList = new ArrayList<>();
         for(GoodsInsertRequestData.Items item : itemList){
@@ -389,21 +390,22 @@ public class JpaGoodsService {
             else{ // 객체에 item id가 있으면 해당 객체가 이미 존재하므로 객체를 가져옴 (update)
                 ititmm = jpaItitmmRepository.findByAssortIdAndItemId(goodsInsertRequestData.getAssortId(), itemId);
             }
-            System.out.println("1 : "+System.currentTimeMillis());
             // 옵션1 관련값 찾아넣기
-            Itvari op1 = jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), item.getVariationValue1());
+//            Itvari op1 = jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), item.getVariationValue1());
+            Itvari op1 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getOptionNm().equals(item.getVariationValue1()))
+                    .collect(Utilities.toSingleton());
             if(op1 != null){
                 ititmm.setVariationGb1(op1.getOptionGb());
                 ititmm.setVariationSeq1(op1.getSeq());
             }
-            System.out.println("2 : "+System.currentTimeMillis());
             // 옵션2 관련값 찾아넣기
-            Itvari op2 = jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), item.getVariationValue2());
+            Itvari op2 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getOptionNm().equals(item.getVariationValue2()))
+                    .collect(Utilities.toSingleton());
+//            Itvari op2 = jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), item.getVariationValue2());
             if(op2 != null){
                 ititmm.setVariationGb2(op2.getOptionGb());
                 ititmm.setVariationSeq2(op2.getSeq());
             }
-            System.out.println("3 : "+System.currentTimeMillis());
 //            String[] optionNmList = item.getValue().split(StringFactory.getSplitGb());
 //            // itvari에서 옵션 형질 찾아오기
 //            for(String optionNm : optionNmList){
