@@ -1,5 +1,6 @@
 package io.spring.service.goods;
 
+import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.infrastructure.util.exception.ResourceNotFoundException;
@@ -30,7 +31,7 @@ public class JpaGoodsService {
     private final JpaItasrnRepository jpaItasrnRepository;
     private final JpaItvariRepository jpaItvariRepository;
 //    private MyBatisCommonDao myBatisCommonDao;
-//    private MyBatisGoodsDao myBatisGoodsDao;
+    private final MyBatisGoodsDao myBatisGoodsDao;
     private final JpaItasrdRepository jpaItasrdRepository;
     private final JpaItitmmRepository jpaItitmmRepository;
     private final JpaItitmdRepository jpaItitmdRepository;
@@ -388,18 +389,21 @@ public class JpaGoodsService {
             else{ // 객체에 item id가 있으면 해당 객체가 이미 존재하므로 객체를 가져옴 (update)
                 ititmm = jpaItitmmRepository.findByAssortIdAndItemId(goodsInsertRequestData.getAssortId(), itemId);
             }
+            System.out.println("1 : "+System.currentTimeMillis());
             // 옵션1 관련값 찾아넣기
             Itvari op1 = jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), item.getVariationValue1());
             if(op1 != null){
                 ititmm.setVariationGb1(op1.getOptionGb());
                 ititmm.setVariationSeq1(op1.getSeq());
             }
+            System.out.println("2 : "+System.currentTimeMillis());
             // 옵션2 관련값 찾아넣기
             Itvari op2 = jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), item.getVariationValue2());
             if(op2 != null){
                 ititmm.setVariationGb2(op2.getOptionGb());
                 ititmm.setVariationSeq2(op2.getSeq());
             }
+            System.out.println("3 : "+System.currentTimeMillis());
 //            String[] optionNmList = item.getValue().split(StringFactory.getSplitGb());
 //            // itvari에서 옵션 형질 찾아오기
 //            for(String optionNm : optionNmList){
@@ -421,6 +425,65 @@ public class JpaGoodsService {
         }
         return ititmmList;
     }
+
+//    private List<Ititmm> saveItemList(GoodsInsertRequestData goodsInsertRequestData) {
+//        if(goodsInsertRequestData.getOptionUseYn().equals(StringFactory.getGbTwo())){
+//            return saveSingleItem(goodsInsertRequestData);
+//        }
+//        List<GoodsInsertRequestData.Items> itemList = goodsInsertRequestData.getItems();
+//        List<Ititmm> ititmmList = new ArrayList<>();
+//        for(GoodsInsertRequestData.Items item : itemList){
+//            String itemId = item.getItemId(); // item id를 객체가 갖고 있으면 그것을 이용
+//            Ititmm ititmm = new Ititmm(goodsInsertRequestData.getAssortId(), item);
+//            if(itemId == null || itemId.trim().equals("")){ // 객체에 item id가 없으면 jpa에서 max값을 가져옴
+//                itemId = jpaItitmmRepository.findMaxItemIdByAssortId(goodsInsertRequestData.getAssortId());
+//                if(itemId == null || itemId.trim().equals("")){ // jpa에서 max값을 가져왔는데 null이면 해당 assort id에 item id가 존재하지 않으므로 초기값(0001)을 설정
+//                    itemId = StringFactory.getFourStartCd();
+//                }
+//                else { // jpa에서 max값을 가져온 경우 1을 더한 후 item id로 삼음
+//                    itemId = Utilities.plusOne(itemId, 4);
+//                }
+//                ititmm.setItemId(itemId);
+//            }
+//            else{ // 객체에 item id가 있으면 해당 객체가 이미 존재하므로 객체를 가져옴 (update)
+//                ititmm = jpaItitmmRepository.findByAssortIdAndItemId(goodsInsertRequestData.getAssortId(), itemId);
+//            }
+//            System.out.println("1 : "+System.currentTimeMillis());
+//            // 옵션1 관련값 찾아넣기
+//            HashMap<String, Object> op1 = myBatisGoodsDao.selectOneSeqOptionNm(goodsInsertRequestData.getAssortId(), item.getVariationValue1());//jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), item.getVariationValue1());
+//            if(op1 != null){
+//                ititmm.setVariationGb1((String)op1.get("optionGb"));
+//                ititmm.setVariationSeq1((String)op1.get("seq"));
+//            }
+//            System.out.println("2 : "+System.currentTimeMillis());
+//            // 옵션2 관련값 찾아넣기
+//            HashMap<String, Object> op2 = myBatisGoodsDao.selectOneSeqOptionNm(goodsInsertRequestData.getAssortId(), item.getVariationValue2()); //Itvari op2 = jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), item.getVariationValue2());
+//            if(op2 != null){
+//                ititmm.setVariationGb2((String)op2.get("optionGb"));
+//                ititmm.setVariationSeq2((String)op2.get("seq"));
+//            }
+//            System.out.println("3 : "+System.currentTimeMillis());
+////            String[] optionNmList = item.getValue().split(StringFactory.getSplitGb());
+////            // itvari에서 옵션 형질 찾아오기
+////            for(String optionNm : optionNmList){
+////                Itvari op = jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), optionNm);
+////                String opGb = op.getOptionGb();
+////                if(opGb.equals(StringFactory.getGbOne())){ // optionGb이 01인 경우
+////                    ititmm.setVariationGb1(opGb);
+////                    ititmm.setVariationSeq1(op.getSeq());
+////                }
+////                else if(opGb.equals(StringFactory.getGbTwo())){ // optionGb이 02인 경우
+////                    ititmm.setVariationGb2(opGb);
+////                    ititmm.setVariationSeq2(op.getSeq());
+////                }
+////            }
+//            ititmm.setAddPrice(item.getAddPrice());
+//            ititmm.setShortYn(item.getShortYn());
+//            jpaItitmmRepository.save(ititmm);
+//            ititmmList.add(ititmm);
+//        }
+//        return ititmmList;
+//    }
 
     /**
      * 21-06-11 Pecan

@@ -1,9 +1,9 @@
 package io.spring.dao.goods;
 
+import io.spring.model.goods.request.GoodsInsertRequestData;
+
 import java.util.HashMap;
 import java.util.List;
-
-import io.spring.model.goods.request.GoodsInsertRequestData;
 
 public interface MyBatisGoodsDao {
 
@@ -17,7 +17,7 @@ public interface MyBatisGoodsDao {
 
 	String selectMaxSeqItasrd(GoodsInsertRequestData goodsInsertRequestData);
 
-	HashMap<String, Object> selectOneSeqOptionGb(GoodsInsertRequestData.Items items);
+	HashMap<String, Object> selectOneSeqOptionNm(String assortId, String optionNm);
 
 	String selectMaxItemIdItitmm(GoodsInsertRequestData goodsInsertRequestData);
 
