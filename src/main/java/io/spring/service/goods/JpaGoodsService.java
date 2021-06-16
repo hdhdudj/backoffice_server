@@ -1,41 +1,13 @@
 package io.spring.service.goods;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.infrastructure.util.exception.ResourceNotFoundException;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
-import io.spring.jparepos.goods.JpaItaimgRepository;
-import io.spring.jparepos.goods.JpaItasrdRepository;
-import io.spring.jparepos.goods.JpaItasrnRepository;
-import io.spring.jparepos.goods.JpaItasrtRepository;
-import io.spring.jparepos.goods.JpaItitmdRepository;
-import io.spring.jparepos.goods.JpaItitmmRepository;
-import io.spring.jparepos.goods.JpaItvariRepository;
-import io.spring.jparepos.goods.JpaTmitemRepository;
-import io.spring.jparepos.goods.JpaTmmapiRepository;
+import io.spring.jparepos.goods.*;
 import io.spring.model.common.entity.SequenceData;
 import io.spring.model.file.FileVo;
-import io.spring.model.goods.entity.Itaimg;
-import io.spring.model.goods.entity.Itasrd;
-import io.spring.model.goods.entity.Itasrn;
-import io.spring.model.goods.entity.Itasrt;
-import io.spring.model.goods.entity.Ititmd;
-import io.spring.model.goods.entity.Ititmm;
-import io.spring.model.goods.entity.Itvari;
-import io.spring.model.goods.entity.Tmitem;
-import io.spring.model.goods.entity.Tmmapi;
+import io.spring.model.goods.entity.*;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.goods.response.GoodsInsertResponseData;
 import io.spring.model.goods.response.GoodsSelectDetailResponseData;
@@ -43,6 +15,12 @@ import io.spring.model.goods.response.GoodsSelectListResponseData;
 import io.spring.service.file.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -88,42 +66,28 @@ public class JpaGoodsService {
      */
     @Transactional
     public GoodsInsertResponseData sequenceInsertOrUpdateGoods(GoodsInsertRequestData goodsInsertRequestData){
-
-		System.out.println("saveItasrt : " + System.currentTimeMillis());
-
         // itasrt에 goods 정보 저장
         Itasrt itasrt = this.saveItasrt(goodsInsertRequestData);
         // tmmapi에 저장
-		System.out.println("saveTmmapi : " + System.currentTimeMillis());
         this.saveTmmapi(itasrt);
         // itasrn에 goods 이력 저장
-		System.out.println("saveItasrn : " + System.currentTimeMillis());
         Itasrn itasrn = this.saveItasrn(goodsInsertRequestData);
         // itasrd에 문구 저장
-		System.out.println("saveItasrd : " + System.currentTimeMillis());
         List<Itasrd> itasrd = this.saveItasrd(goodsInsertRequestData);
         // itvari에 assort_id별 옵션요소 저장(색상, 사이즈)
-		System.out.println("saveItvariList : " + System.currentTimeMillis());
         List<Itvari> itvariList = this.saveItvariList(goodsInsertRequestData);
         // ititmm에 assort_id별 item 저장
-		System.out.println("saveItemList : " + System.currentTimeMillis());
         List<Ititmm> ititmmList = this.saveItemList(goodsInsertRequestData);
         // tmitem에 저장
-		System.out.println("saveTmitem : " + System.currentTimeMillis());
         this.saveTmitem(ititmmList);
         // ititmd에 item 이력 저장
-		System.out.println("ititmdList : " + System.currentTimeMillis());
         List<Ititmd> ititmdList = this.saveItemHistoryList(goodsInsertRequestData, ititmmList);
 
         // itaimg에 assortId 업데이트 시켜주기
-		System.out.println("updateItaimgAssortId : " + System.currentTimeMillis());
         this.updateItaimgAssortId(goodsInsertRequestData, itasrt.getAssortId());
 
-		System.out.println("makeGoodsResponseAttributes : " + System.currentTimeMillis());
         List<GoodsInsertResponseData.Attributes> attributesList = makeGoodsResponseAttributes(itvariList);
-		System.out.println("makeGoodsResponseItems : " + System.currentTimeMillis());
         List<GoodsInsertResponseData.Items> itemsList = makeGoodsResponseItems(ititmmList);
-
         return makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
     }
 
@@ -411,11 +375,7 @@ public class JpaGoodsService {
         for(GoodsInsertRequestData.Items item : itemList){
             String itemId = item.getItemId(); // item id를 객체가 갖고 있으면 그것을 이용
             Ititmm ititmm = new Ititmm(goodsInsertRequestData.getAssortId(), item);
-
             if(itemId == null || itemId.trim().equals("")){ // 객체에 item id가 없으면 jpa에서 max값을 가져옴
-
-				System.out.println("1 : " + System.currentTimeMillis());
-
                 itemId = jpaItitmmRepository.findMaxItemIdByAssortId(goodsInsertRequestData.getAssortId());
                 if(itemId == null || itemId.trim().equals("")){ // jpa에서 max값을 가져왔는데 null이면 해당 assort id에 item id가 존재하지 않으므로 초기값(0001)을 설정
                     itemId = StringFactory.getFourStartCd();
@@ -426,19 +386,15 @@ public class JpaGoodsService {
                 ititmm.setItemId(itemId);
             }
             else{ // 객체에 item id가 있으면 해당 객체가 이미 존재하므로 객체를 가져옴 (update)
-				System.out.println("2 : " + System.currentTimeMillis());
                 ititmm = jpaItitmmRepository.findByAssortIdAndItemId(goodsInsertRequestData.getAssortId(), itemId);
             }
-			System.out.println("3 : " + System.currentTimeMillis());
             // 옵션1 관련값 찾아넣기
             Itvari op1 = jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), item.getVariationValue1());
             if(op1 != null){
                 ititmm.setVariationGb1(op1.getOptionGb());
                 ititmm.setVariationSeq1(op1.getSeq());
             }
-			System.out.println("4 : " + System.currentTimeMillis());
             // 옵션2 관련값 찾아넣기
-
             Itvari op2 = jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), item.getVariationValue2());
             if(op2 != null){
                 ititmm.setVariationGb2(op2.getOptionGb());
