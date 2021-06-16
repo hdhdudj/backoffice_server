@@ -18,7 +18,6 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @IdClass(ItitmmId.class)
 public class Ititmm extends CommonProps {
-
     public Ititmm(String assortId, GoodsInsertRequestData.Items items){
         this.assortId = assortId;
         this.shortYn = items.getShortYn();
@@ -29,6 +28,11 @@ public class Ititmm extends CommonProps {
         this.assortId = goodsInsertRequestData.getAssortId();
         this.itemNm = goodsInsertRequestData.getAssortNm();
         this.shortYn = goodsInsertRequestData.getShortageYn();
+    }
+
+    @Override
+    public String toString(){
+        return "Ititmm : assortId="+this.assortId + ", itemId=" + this.itemId;
     }
 
     @Id

@@ -61,9 +61,15 @@ public class Utilities {
         return Collectors.collectingAndThen(
                 Collectors.toList(),
                 list -> {
-                    if (list.size() != 1) {
+                    if(list.size() == 0){
+//                        System.out.println("list.size() : " + list.size());
+                        return null;
+                    }
+                    else if (list.size() > 1) {
+//                        System.out.println("list.size() : " + list.size());
                         throw new IllegalStateException();
                     }
+//                    System.out.println("list.size() : " + list.size());
                     return list.get(0);
                 }
         );
