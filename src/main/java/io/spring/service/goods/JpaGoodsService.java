@@ -615,12 +615,12 @@ public class JpaGoodsService {
         for(Ititmm ititmm : ititmmList){
             GoodsSelectDetailResponseData.Items item = new GoodsSelectDetailResponseData.Items();
             item.setItemId(ititmm.getItemId());
-            Itvari op1 = jpaItvariRepository.findByAssortIdAndSeq(ititmm.getAssortId(), ititmm.getVariationSeq1());
+            Itvari op1 = ititmm.getItvari1();//jpaItvariRepository.findByAssortIdAndSeq(ititmm.getAssortId(), ititmm.getVariationSeq1());
 			item.setValue1(op1.getOptionNm());
 			item.setSeq1(op1.getSeq());
 			item.setStatus1(StringFactory.getStrR()); // r 하드코딩
             if(ititmm.getVariationSeq2() != null){
-                Itvari op2 = jpaItvariRepository.findByAssortIdAndSeq(ititmm.getAssortId(), ititmm.getVariationSeq2());
+                Itvari op2 = ititmm.getItvari2();//jpaItvariRepository.findByAssortIdAndSeq(ititmm.getAssortId(), ititmm.getVariationSeq2());
 				item.setSeq2(op2.getSeq());
 				item.setValue2(op2.getOptionNm());
 				item.setStatus2(StringFactory.getStrR()); // r 하드코딩
@@ -696,9 +696,7 @@ public class JpaGoodsService {
     public Itaimg saveItaimg(String imageGb,FileVo f) {
     	Itaimg ii =new Itaimg(imageGb,f);
         jpaItaimgRepository.save(ii);
-    	
     	return ii;
-    	
     }
     
    
