@@ -47,7 +47,7 @@ public class Tmmapi extends CommonProps {
     private Float upDeliMaxPrice;
     private String upShortageYn;
     private String upJoinMakerId;
-    private String uploadType;
+    private String uploadType; // = StringFactory.getGbOne(); // 01 하드코딩
     private String uploadYn;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date uploadDt = Utilities.getStringToDate(StringFactory.getDoomDay());
