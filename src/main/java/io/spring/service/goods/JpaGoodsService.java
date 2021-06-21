@@ -4,6 +4,7 @@ import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.infrastructure.util.exception.ResourceNotFoundException;
+import io.spring.jparepos.category.JpaIfCategoryRepository;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.goods.*;
 import io.spring.model.common.entity.SequenceData;
@@ -37,6 +38,7 @@ public class JpaGoodsService {
     private final JpaItitmdRepository jpaItitmdRepository;
     private final JpaItaimgRepository jpaItaimgRepository;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
+    private final JpaIfCategoryRepository jpaIfCategoryRepository;
 
     private final JpaTmmapiRepository jpaTmmapiRepository;
     private final JpaTmitemRepository jpaTmitemRepository;
@@ -199,6 +201,7 @@ public class JpaGoodsService {
         itasrt.setAssortColor(goodsInsertRequestData.getAssortColor());
 
 		itasrt.setDispCategoryId(goodsInsertRequestData.getDispCategoryId());
+        itasrt.setCategoryId(getGodoCateCd(goodsInsertRequestData.getDispCategoryId()));
 
         itasrt.setBrandId(goodsInsertRequestData.getBrandId());
 
@@ -251,6 +254,21 @@ public class JpaGoodsService {
 //        jpaItasrtRepository.save(itasrt);
         em.persist(itasrt);
         return itasrt;
+    }
+
+    // 우리 카테고리로 고도몰 카테고리코드 가져오기
+    private String getGodoCateCd(String cateId){
+        System.out.println("+++++ cateId : " + cateId);
+        String cateCd = null;
+        IfCategory ifCategory = jpaIfCategoryRepository.findByChannelGbAndCategoryId(StringFactory.getGbOne(), cateId);
+        if (ifCategory == null) {
+            log.debug("category code is not exist.");
+            return cateCd;
+        }
+        cateCd = ifCategory.getChannelCategoryId();
+
+        System.out.println("+++++ cateCd : " + cateCd);
+        return cateCd;
     }
 
     /**
