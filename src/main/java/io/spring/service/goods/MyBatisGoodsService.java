@@ -25,4 +25,10 @@ public class MyBatisGoodsService {
 		return goodsList;
 	}
 
+	public List<HashMap<String, Object>> getGoodsItemListWithCategory(HashMap<String, Object> param) {
+		List<HashMap<String, Object>> goodsList = myBatisGoodsDao.getGoodsItemListWithCategory(param);
+
+		return goodsList;
+	}
+
 }

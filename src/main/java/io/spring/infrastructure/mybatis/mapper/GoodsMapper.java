@@ -1,10 +1,11 @@
 package io.spring.infrastructure.mybatis.mapper;
 
-import io.spring.model.goods.request.GoodsInsertRequestData;
-import org.apache.ibatis.annotations.Mapper;
-
 import java.util.HashMap;
 import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import io.spring.model.goods.request.GoodsInsertRequestData;
 
 @Mapper
 public interface GoodsMapper {
@@ -25,5 +26,8 @@ public interface GoodsMapper {
 
 	List<HashMap<String, Object>> getGoodsList(HashMap<String, Object> param);
 
+
 	List<HashMap<String, Object>> getGoodsItemList(HashMap<String, Object> param);
+
+	List<HashMap<String, Object>> getGoodsItemListWithCategory(HashMap<String, Object> param);
 }

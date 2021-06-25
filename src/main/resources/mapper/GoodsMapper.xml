@@ -189,6 +189,26 @@
 		  and i.assort_id = im.assort_id
 		  ]]>
 	</select>	
+	
+	
+	<select id="getGoodsItemListWithCategory" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	 <![CDATA[	
+
+			select aaa.assort_id assortId
+			,aaa.assort_nm assortNm
+			,aaa.disp_category_id dispCategoryId
+			,aaa.fullCatePathId fullCatePathId
+			from (
+			select aa.assort_id
+			,aa.assort_nm
+			,aa.disp_category_id
+			,f_categoryFullPathId(aa.disp_category_id) fullCatePathId 
+			from itasrt aa
+			) aaa 
+			where aaa.fullCatePathId like CONCAT( #{category}, '%') 
+	 		COLLATE utf8mb4_unicode_ci
+	 ]]>
+	</select>
 
 
 

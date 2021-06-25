@@ -1,5 +1,21 @@
 package io.spring.controller;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.flywaydb.core.internal.util.StringUtils;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
@@ -13,15 +29,6 @@ import io.spring.service.common.MyBatisCommonService;
 import io.spring.service.goods.JpaGoodsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.flywaydb.core.internal.util.StringUtils;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -148,6 +155,21 @@ public class GoodsController {
 		}
 
 		List<HashMap<String, Object>> responseData = goodsRepository.getGoodsItemList(param);
+		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
+		if (responseData == null) {
+			return null;
+		}
+		return ResponseEntity.ok(res);
+	}
+
+	// 상품리스트조회(ititmm)
+	@GetMapping(path = "/goods-item-fullcategory")
+	public ResponseEntity getGoodsItemWithCategory(@RequestParam String category) {
+		HashMap<String, Object> param = new HashMap<String, Object>();
+
+		param.put("category", category);
+
+		List<HashMap<String, Object>> responseData = goodsRepository.getGoodsItemListWithCategory(param);
 		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
 		if (responseData == null) {
 			return null;
