@@ -3,11 +3,10 @@ package io.spring.dao.common;
 import java.util.HashMap;
 import java.util.List;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import io.spring.infrastructure.mybatis.mapper.CommonMapper;
+import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
@@ -42,6 +41,17 @@ public class MyBatisCommonDaoImpl implements MyBatisCommonDao {
 	}
 	
 	
+	@Override
+	public List<HashMap<String, Object>> getCommonStorage(HashMap<String, Object> param) {
+		// TODO Auto-generated method stub
+		return commonMapper.getCommonStorage(param);
+	}
+
+	@Override
+	public List<HashMap<String, Object>> getCommonPurchaseVendor(HashMap<String, Object> param) {
+		// TODO Auto-generated method stub
+		return commonMapper.getCommonPurchaseVendor(param);
+	}
 	
 	
 

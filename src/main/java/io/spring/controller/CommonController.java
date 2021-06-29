@@ -3,9 +3,6 @@ package io.spring.controller;
 import java.util.HashMap;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,11 +15,6 @@ import io.spring.model.common.entity.Testenum2;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.common.MyBatisCommonService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/common")
@@ -94,6 +86,38 @@ public class CommonController {
 			res = new ApiResponseMessage<List<HashMap<String, Object>>>("SUCCESS", "", r);
 		} else {
 			res = new ApiResponseMessage<List<HashMap<String, Object>>>("ERROR", "ERROR", null);
+		}
+
+		return ResponseEntity.ok(res);
+	}
+
+	@GetMapping(path = "/get_purchase_goods_init_data")
+	public ResponseEntity selectPurchaseGoodsInitData() {
+//public ResponseEntity selectBrandSearchList() {
+
+		HashMap<String, Object> p1 = new HashMap<String, Object>();
+		HashMap<String, Object> p2 = new HashMap<String, Object>();
+
+		List<HashMap<String, Object>> r = myBatisCommonService.getCommonPurchaseVendor(p1);
+
+		List<HashMap<String, Object>> l = myBatisCommonService.getCommonStorage(p2);
+
+		HashMap<String, Object> m = new HashMap<String, Object>();
+
+		if (r.size() > 0) {
+			m.put("PurchaseVendors", r);
+		}
+
+		if (l.size() > 0) {
+			m.put("Storages", l);
+		}
+
+		ApiResponseMessage res = null;
+
+		if (m.size() > 0) {
+			res = new ApiResponseMessage<HashMap<String, Object>>("SUCCESS", "", m);
+		} else {
+			res = new ApiResponseMessage<HashMap<String, Object>>("ERROR", "ERROR", null);
 		}
 
 		return ResponseEntity.ok(res);

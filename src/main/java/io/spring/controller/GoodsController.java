@@ -164,10 +164,30 @@ public class GoodsController {
 
 	// 상품리스트조회(ititmm)
 	@GetMapping(path = "/goods-item-fullcategory")
-	public ResponseEntity getGoodsItemWithCategory(@RequestParam String category) {
+	public ResponseEntity getGoodsItemWithCategory(@RequestParam(required = false) String assortId,
+			@RequestParam(required = false) String assortNm, @RequestParam(required = false) String purchaseVendorId,
+			@RequestParam(required = false) String brandId, @RequestParam(required = false) String category) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 
-		param.put("category", category);
+		if (assortId != null) {
+			param.put("assortId", assortId);
+		}
+
+		if (assortNm != null) {
+			param.put("assortNm", assortNm);
+		}
+
+		if (purchaseVendorId != null) {
+			param.put("purchaseVendorId", purchaseVendorId);
+		}
+
+		if (brandId != null) {
+			param.put("brandId", brandId);
+		}
+
+		if (category != null) {
+			param.put("category", category);
+		}
 
 		List<HashMap<String, Object>> responseData = goodsRepository.getGoodsItemListWithCategory(param);
 		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);

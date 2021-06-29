@@ -34,6 +34,18 @@ public class MyBatisCommonService {
 			return list;
 		}
 
+		public List<HashMap<String, Object>> getCommonPurchaseVendor(HashMap<String, Object> param) {
+			List<HashMap<String, Object>> list = myBatisCommonDao.getCommonPurchaseVendor(param);
+
+			return list;
+		}
+
+		public List<HashMap<String, Object>> getCommonStorage(HashMap<String, Object> param) {
+			List<HashMap<String, Object>> list = myBatisCommonDao.getCommonStorage(param);
+
+			return list;
+		}
+
 		public LinkedList<String> findUpperCategory(String categoryId) {
 			
 			System.out.println("findUpperCategory");

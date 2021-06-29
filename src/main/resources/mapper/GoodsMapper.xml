@@ -171,6 +171,7 @@
 		LEFT JOIN itcatg ic ON i.disp_category_id = ic.category_id
 		,ititmm im		
 		where 	1=1
+		
 		]]>
 	<if test='assortId != null'>
 			 <![CDATA[		
@@ -194,20 +195,78 @@
 	<select id="getGoodsItemListWithCategory" parameterType="java.util.HashMap" resultType="java.util.HashMap">
 	 <![CDATA[	
 
-			select aaa.assort_id assortId
-			,aaa.assort_nm assortNm
-			,aaa.disp_category_id dispCategoryId
+			select aaa.assortId assortId
+			,aaa.assortNm assortNm
+			,aaa.shortageYn shortageYn
+			,aaa.itemId
+			,aaa.itemShortageYn
+			,aaa.optionNm1
+			,aaa.optionNm2
+			,aaa.brandId
+			,aaa.brandNm
+			,aaa.dispCategoryId dispCategoryId
+			,aaa.categoryNm categoryNm
+			,aaa.fullCategoryNm fullCategoryNm
+			,aaa.mdRrp 
+			,aaa.buySupplyDiscount
 			,aaa.fullCatePathId fullCatePathId
 			from (
-			select aa.assort_id
-			,aa.assort_nm
-			,aa.disp_category_id
-			,f_categoryFullPathId(aa.disp_category_id) fullCatePathId 
-			from itasrt aa
-			) aaa 
-			where aaa.fullCatePathId like CONCAT( #{category}, '%') 
+			select
+			i.assort_id as assortId
+			 ,i.assort_nm as assortNm
+			 ,i.shortage_yn as shortageYn
+			 ,im.item_id as itemId
+			 ,im.short_yn as itemShortageYn
+			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq1 and iv.variation_gb='01' and del_yn='02' ) optionNm1
+			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq2 and iv.variation_gb='02' and del_yn='02' ) optionNm2			 
+			 ,i.brand_id as brandId
+			 ,ib.brand_nm as brandNm
+			 ,i.disp_category_id as dispCategoryId
+ 			 ,ic.category_nm as categoryNm
+			 ,f_categoryFullPath(i.disp_category_id) fullCategoryNm
+			 ,i.md_rrp mdRrp
+			 ,i.buy_supply_discount buySupplyDiscount
+			 	,f_categoryFullPathId(i.disp_category_id) fullCatePathId
+		from itasrt i
+		LEFT JOIN itbrnd ib ON i.brand_id = ib.brand_id
+		LEFT JOIN itcatg ic ON i.disp_category_id = ic.category_id
+		,ititmm im		
+			where 1=1
+			and i.assort_id = im.assort_id 
+			 ]]>
+			<if test='assortId != null'>
+			 <![CDATA[		
+					and i.assort_id =#{assortId} 
+			 ]]>
+			</if>		
+			<if test='assortNm != null'>
+			 <![CDATA[		
+				and i.assort_nm like CONCAT( '%',  #{assortNm}, '%') 
+			 ]]>
+			</if>		
+			<if test='purchaseVendorId != null'>
+			 <![CDATA[		
+					and i.vendor_id =#{purchaseVendorId} 
+			 ]]>
+			</if>		
+			<if test='brandId != null'>
+			 <![CDATA[		
+					and i.brand_id =#{brandId} 
+			 ]]>
+			</if>			
+		 <![CDATA[		
+			) aaa
+			where 1=1
+			 ]]>
+			<if test='category != null'>
+				 <![CDATA[		
+			and aaa.fullCatePathId like CONCAT( #{category}, '%')
+			]]>
+			</if>	
+			 <![CDATA[				 
 	 		COLLATE utf8mb4_unicode_ci
-	 ]]>
+	 		]]>
+	
 	</select>
 
 
