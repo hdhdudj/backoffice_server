@@ -1,17 +1,18 @@
 package io.spring.infrastructure.util;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.spring.service.JwtService;
-import io.spring.dao.user.User;
+import java.util.Date;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.Optional;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.spring.dao.user.User;
+import io.spring.service.JwtService;
 
 @Component
 public class DefaultJwtService implements JwtService {
@@ -33,6 +34,12 @@ public class DefaultJwtService implements JwtService {
             .signWith(SignatureAlgorithm.HS512, secret)
             .compact();
     }
+
+	@Override
+	public String toRefreshToken(User user) {
+		return Jwts.builder().setSubject(user.getId()).setExpiration(expireTimeFromNow())
+				.signWith(SignatureAlgorithm.HS512, secret).compact();
+	}
 
     @Override
     public Optional<String> getSubFromToken(String token) {
