@@ -87,6 +87,9 @@ public class PurchaseController {
 	@PostMapping(path = "")
     public ResponseEntity savePurchaseJpa(@RequestBody PurchaseInsertRequestData purchaseInsertRequestData){
         logger.debug("insert or update purchase by jpa");
+
+
+
 		purchaseInsertRequestData.setPurchaseNo(
 				jpaCommonService.getStrNumberId(StringFactory.getCUpperStr(), purchaseInsertRequestData.getPurchaseNo(),
 						StringFactory.getPurchaseSeqStr(), StringFactory.getIntEight())); // purchaseNo 채번

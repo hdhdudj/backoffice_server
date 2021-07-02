@@ -1,14 +1,17 @@
 package io.spring.model.purchase.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 @Getter
 @Setter
+@ToString
 //@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PurchaseInsertRequestData {
     /**
@@ -47,7 +50,11 @@ public class PurchaseInsertRequestData {
     private String delivery;
     private String payment;
     private String carrier;
-    private List<Items> items;
+
+
+	private List<Items> items;
+
+	// private List<Items> items;
 
     // lspchs
     private Date effStaDt;
@@ -82,8 +89,10 @@ public class PurchaseInsertRequestData {
     private Long tempQty;
     private Float stockAmt;
 
+
     @Getter
     @Setter
+	@ToString
     public static class Items{
         private String assortId;
         private String itemId;
@@ -92,5 +101,8 @@ public class PurchaseInsertRequestData {
         private Long purchaseQty;
         private Float purchaseUnitAmt;
         private String purchaseStatus;
+		private String orderId;
+		private String orderSeq;
     }
+
 }

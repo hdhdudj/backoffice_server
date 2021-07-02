@@ -78,6 +78,9 @@ public class JpaPurchaseService {
         Lspchm lspchm = jpaLspchmRepository.findByPurchaseNo(purchaseInsertRequestData.getPurchaseNo()).orElseGet(() -> null);
         if(lspchm == null){ // insert
             lspchm = new Lspchm(purchaseInsertRequestData);
+            
+			lspchm.setPurchaseStatus("01"); //
+
         }
         else { // update
             lspchm.setPurchaseDt(purchaseInsertRequestData.getPurchaseDt());
@@ -145,10 +148,13 @@ public class JpaPurchaseService {
                 }
                 lspchd = new Lspchd(purchaseInsertRequestData.getPurchaseNo(), purchaseSeq);
             }
+
             lspchd.setPurchaseQty(item.getPurchaseQty());
             lspchd.setPurchaseUnitAmt(item.getPurchaseUnitAmt());
             lspchd.setAssortId(item.getAssortId());
             lspchd.setItemId(item.getItemId());
+			lspchd.setOrderId(item.getOrderId());
+			lspchd.setOrderSeq(item.getOrderSeq());
 			lspchd.setSiteGb("01");
 			lspchd.setVendorId("000001");
             jpaLspchdRepository.save(lspchd);
@@ -242,8 +248,12 @@ public class JpaPurchaseService {
                 ititmt.setTempQty(items.getPurchaseQty());
             }
             else{ // update
+
+
+
                 ititmt.setTempQty(ititmt.getTempQty() + items.getPurchaseQty());
             }
+
             ititmt.setStockGb(purchaseInsertRequestData.getStockGb());
             ititmt.setStockAmt(purchaseInsertRequestData.getStockAmt());
             ititmt.setVendorId(purchaseInsertRequestData.getVendorId());
