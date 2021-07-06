@@ -18,12 +18,14 @@ import io.spring.service.JwtService;
 public class DefaultJwtService implements JwtService {
     private String secret;
     private int sessionTime;
+	private long refreshTime;
 
     @Autowired
     public DefaultJwtService(@Value("${jwt.secret}") String secret,
-                             @Value("${jwt.sessionTime}") int sessionTime) {
+			@Value("${jwt.sessionTime}") int sessionTime, @Value("${jwt.jwtRefreshExpirationMs}") long refreshTime) {
         this.secret = secret;
         this.sessionTime = sessionTime;
+		this.refreshTime = refreshTime;
     }
 
     @Override
@@ -37,7 +39,8 @@ public class DefaultJwtService implements JwtService {
 
 	@Override
 	public String toRefreshToken(User user) {
-		return Jwts.builder().setSubject(user.getId()).setExpiration(expireTimeFromNow())
+
+		return Jwts.builder().setSubject(user.getId()).setExpiration(ExpireTimeFromNow_RefreshToken())
 				.signWith(SignatureAlgorithm.HS512, secret).compact();
 	}
 
@@ -52,6 +55,13 @@ public class DefaultJwtService implements JwtService {
     }
 
     private Date expireTimeFromNow() {
-        return new Date(System.currentTimeMillis() + sessionTime * 1000);
+
+		System.out.println(sessionTime);
+		return new Date(System.currentTimeMillis() + sessionTime);
     }
+
+	private Date ExpireTimeFromNow_RefreshToken() {
+		return new Date(System.currentTimeMillis() + refreshTime);
+	}
+
 }
