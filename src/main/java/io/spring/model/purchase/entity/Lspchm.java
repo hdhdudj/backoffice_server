@@ -1,6 +1,19 @@
 package io.spring.model.purchase.entity;
 
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
@@ -9,12 +22,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
 
 @Slf4j
 @Entity
@@ -46,7 +53,8 @@ public class Lspchm {
         this.newLocalTax = this.localTax;
         this.disPrice = purchaseInsertRequestData.getDisPrice();
         this.newDisPrice = this.disPrice;
-        this.purchaseGb = StringFactory.getGbOne(); // "01" : 일반발주
+		// this.purchaseGb = StringFactory.getGbOne(); // "01" : 일반발주
+		this.purchaseGb = purchaseInsertRequestData.getPurchaseGb();
         this.purchaseVendorId = purchaseInsertRequestData.getPurchaseVendorId();
         this.storeCd = purchaseInsertRequestData.getStoreCd(); // "00001"
         this.oStoreCd = purchaseInsertRequestData.getOStoreCd();
