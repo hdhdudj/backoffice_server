@@ -1,11 +1,12 @@
 package io.spring.model.purchase.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.Date;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -85,6 +86,8 @@ public class PurchaseInsertRequestData {
     @Getter
     @Setter
     public static class Items{
+		private String orderId;
+		private String orderSeq;
         private String assortId;
         private String itemId;
         private String itemGrade = "11";
