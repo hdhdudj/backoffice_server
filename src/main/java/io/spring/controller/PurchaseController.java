@@ -22,6 +22,7 @@ import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import io.spring.model.purchase.response.PurchaseSelectDetailResponseData;
 import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
+import io.spring.service.order.JpaOrderService;
 import io.spring.service.purchase.JpaPurchaseService;
 import io.spring.service.purchase.MyBatisPurchaseService;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,14 @@ public class PurchaseController {
 
     private final JpaPurchaseService jpaPurchaseService;
     private final JpaCommonService jpaCommonService;
+    
+    private final JpaOrderService jpaOrderService;
+    
     private final MyBatisPurchaseService myBatisPurchaseService;
+    
+    
+    
+
 //    public PurchaseController(JpaPurchaseService jpaPurchaseService, JpaCommonService jpaCommonService, MyBatisPurchaseService myBatisPurchaseService){
 //        this.jpaCommonService = jpaCommonService;
 //        this.jpaPurchaseService = jpaPurchaseService;
@@ -94,6 +102,8 @@ public class PurchaseController {
 				jpaCommonService.getStrNumberId(StringFactory.getCUpperStr(), purchaseInsertRequestData.getPurchaseNo(),
 						StringFactory.getPurchaseSeqStr(), StringFactory.getIntEight())); // purchaseNo 채번
 		String purchaseNo = jpaPurchaseService.savePurchaseSquence(purchaseInsertRequestData);
+
+		// jpaOrderService.updateStatusCd("O2106100714498480", "0001", "B02");
 
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), purchaseNo);
         if(res == null){

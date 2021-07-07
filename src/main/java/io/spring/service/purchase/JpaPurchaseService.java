@@ -18,6 +18,9 @@ import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.deposit.JpaLsdpspRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
+import io.spring.jparepos.order.JpaTbOrderDetailRepository;
+import io.spring.jparepos.order.JpaTbOrderHistoryRepository;
+import io.spring.jparepos.order.JpaTbOrderMasterRepository;
 import io.spring.jparepos.purchase.JpaLspchbRepository;
 import io.spring.jparepos.purchase.JpaLspchdRepository;
 import io.spring.jparepos.purchase.JpaLspchmRepository;
@@ -26,6 +29,8 @@ import io.spring.model.common.entity.SequenceData;
 import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.idclass.ItitmtId;
+import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.order.entity.TbOrderHistory;
 import io.spring.model.purchase.entity.Lspchb;
 import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.entity.Lspchm;
@@ -49,6 +54,11 @@ public class JpaPurchaseService {
     private final JpaItitmtRepository jpaItitmtRepository;
     private final JpaCommonService jpaCommonService;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
+
+	private final JpaTbOrderMasterRepository tbOrderMasterRepository;
+	private final JpaTbOrderDetailRepository tbOrderDetailRepository;
+	private final JpaTbOrderHistoryRepository tbOrderHistoryrRepository;
+
     private final EntityManager em;
 
     /**
@@ -151,6 +161,9 @@ public class JpaPurchaseService {
 
             lspchd.setPurchaseQty(item.getPurchaseQty());
             lspchd.setPurchaseUnitAmt(item.getPurchaseUnitAmt());
+
+			lspchd.setOrderId(item.getOrderId());
+			lspchd.setOrderSeq(item.getOrderSeq());;
             lspchd.setAssortId(item.getAssortId());
             lspchd.setItemId(item.getItemId());
 			lspchd.setOrderId(item.getOrderId());
@@ -200,6 +213,17 @@ public class JpaPurchaseService {
             lspchb.setCancelGb(StringFactory.getNinetyNine()); // 추후 수정
             jpaLspchbRepository.save(lspchb);
             lspchbList.add(lspchb);
+
+			String purchaseGb = purchaseInsertRequestData.getPurchaseGb();
+			String purchaseStatus = purchaseInsertRequestData.getPurchaseStatus();
+
+			if (purchaseGb.equals("01")) {
+				if (purchaseStatus.equals("01")) {
+					updateOrderStatusCd(items.getOrderId(), items.getOrderSeq(), "B02");
+				}
+
+			}
+
         }
         return lspchbList;
     }
@@ -239,17 +263,34 @@ public class JpaPurchaseService {
 
     private List<Ititmt> saveItitmt(PurchaseInsertRequestData purchaseInsertRequestData) {
         List<Ititmt> ititmtList = new ArrayList<>();
+
+		String purchaseGb = purchaseInsertRequestData.getPurchaseGb();
+
         for(PurchaseInsertRequestData.Items items : purchaseInsertRequestData.getItems()){
             ItitmtId ititmtId = new ItitmtId(purchaseInsertRequestData, items);
             Ititmt ititmt = jpaItitmtRepository.findById(ititmtId).orElseGet(() -> null);
             if(ititmt == null){ // insert
+
                 ititmt = new Ititmt(ititmtId);
-                ititmt.setTempIndicateQty(0L);
+
                 ititmt.setTempQty(items.getPurchaseQty());
+
+				if (purchaseGb.equals("02")) {
+					ititmt.setTempIndicateQty(0L);
+				} else {
+					ititmt.setTempIndicateQty(items.getPurchaseQty());
+				}
+
             }
             else{ // update
 
 
+
+				if (purchaseGb.equals("02")) {
+					ititmt.setTempIndicateQty(ititmt.getTempIndicateQty());
+				} else {
+					ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() + items.getPurchaseQty());
+				}
 
                 ititmt.setTempQty(ititmt.getTempQty() + items.getPurchaseQty());
             }
@@ -335,6 +376,35 @@ public class JpaPurchaseService {
         return purchaseSelectListResponseData;
     }
     
+	private void updateOrderStatusCd(String orderId, String orderSeq, String statusCd) {
+
+		TbOrderDetail tod = tbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
+
+		List<TbOrderHistory> tohs = tbOrderHistoryrRepository.findByOrderIdAndOrderSeqAndEffEndDt(orderId, orderSeq,
+				Utilities.getStringToDate(StringFactory.getDoomDay()));
+
+		
+
+		tod.setStatusCd(statusCd);
+
+		Date newEffEndDate = new Date();
+
+		for (int i = 0; i < tohs.size(); i++) {
+			tohs.get(i).setEffEndDt(newEffEndDate);
+			tohs.get(i).setLastYn("002");
+		}
+
+		TbOrderHistory toh = new TbOrderHistory(orderId, orderSeq, statusCd, "001", newEffEndDate,
+				Utilities.getStringToDate(StringFactory.getDoomDay()));
+
+		tohs.add(toh);
+
+		tbOrderDetailRepository.save(tod);
+
+		tbOrderHistoryrRepository.saveAll(tohs);
+
+	}
+
     /**
      * Table 초기화 함수
      */

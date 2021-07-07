@@ -40,7 +40,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)).and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
 				.antMatchers(HttpMethod.OPTIONS).permitAll().antMatchers(HttpMethod.GET, "/articles/feed")
-				.authenticated().antMatchers(HttpMethod.POST, "/users", "/users/login", "/test").permitAll()
+				.authenticated().antMatchers(HttpMethod.POST, "/users", "/users/login", "/users/refreshtoken", "/test").permitAll()
 				.antMatchers(HttpMethod.GET, "/tests").permitAll().antMatchers(HttpMethod.GET, "/orderList").permitAll()
 				.antMatchers(HttpMethod.POST, "/testa").permitAll()
 				.antMatchers(HttpMethod.GET, "/order/orders").permitAll()

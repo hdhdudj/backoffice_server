@@ -63,19 +63,16 @@
 							select
 								tod.assort_id ,
 								tod.item_id ,
-								tod.qty ,
-								ifnull((select sum(aa.temp_qty - aa.temp_indicate_qty) from ititmt aa where aa.assort_id = tod.assort_id and aa.item_id = tod.item_id and aa.stock_gb = '01' ), 0) temp_qty ,
-								ifnull((select sum(aa.qty - aa.ship_indicate_qty) from ititmc aa where aa.assort_id = tod.assort_id and aa.item_id = tod.item_id and aa.stock_gb = '01' ), 0) stock_qty
+								tod.qty 
 							from
 								tb_order_detail tod
 							where
-								status_cd = 'A01' ) aaa ,
+								status_cd = 'B01' ) aaa ,
 							itasrt bbb
 						where
 							1 = 1
 							and aaa.assort_id = bbb.assort_id
-							and aaa.temp_qty = 0
-							and aaa.stock_qty = 0 ) aaaa
+							 ) aaaa
 					group by
 						aaaa.vendor_id ,
 						aaaa.vd_nm
@@ -103,17 +100,17 @@
     	
     	<![CDATA[
 				select
-					bbb.vendor_id vendorId,
-					bbb.vd_nm vdNm, 
-					bbb.assort_id assortId,
-					bbb.assort_nm assortNm,
-					bbb.item_id itemId,
-					concat(bbb.option_nm1, ifnull(CONCAT('-', bbb.option_nm2), '')) optionNm,
-					sum(bbb.qty) purchaseQty,
-					sum(bbb.temp_qty) tempQty,
-					sum(bbb.stock_qty) stockQty,
-					bbb.md_rrp rrp,
-					bbb.buy_supply_discount discountRate
+					bbb1.order_id orderId,
+					bbb1.order_seq orderSeq,
+					bbb1.vendor_id vendorId,
+					bbb1.vd_nm vdNm, 
+					bbb1.assort_id assortId,
+					bbb1.assort_nm assortNm,
+					bbb1.item_id itemId,
+					concat(bbb1.option_nm1, ifnull(CONCAT('-', bbb1.option_nm2), '')) optionNm,
+					bbb1.qty purchaseQty,
+					bbb1.md_rrp rrp,
+					bbb1.buy_supply_discount discountRate
 				from
 					(
 					select
@@ -146,15 +143,15 @@
 					from
 						(
 						select
+						tod.order_id,
+						tod.order_seq,
 							tod.assort_id ,
 							tod.item_id ,
-							tod.qty ,
-							ifnull((select sum(aa.temp_qty - aa.temp_indicate_qty) from ititmt aa where aa.assort_id = tod.assort_id and aa.item_id = tod.item_id and aa.stock_gb = '01' ), 0) temp_qty ,
-							ifnull((select sum(aa.qty - aa.ship_indicate_qty) from ititmc aa where aa.assort_id = tod.assort_id and aa.item_id = tod.item_id and aa.stock_gb = '01' ), 0) stock_qty
+							tod.qty 
 						from
 							tb_order_detail tod
 						where
-							status_cd = 'A01' ) aaa ,
+							status_cd = 'B01' ) aaa ,
 						itasrt bbb,
 						ititmm ccc
 					where
@@ -162,18 +159,10 @@
 						and aaa.assort_id = bbb.assort_id
 						and aaa.assort_id = ccc.assort_id
 						and aaa.item_id = ccc.item_id
-						and aaa.temp_qty = 0
-						and aaa.stock_qty = 0 ) bbb
+						 ) bbb1
 				where
-					vendor_id = #{vendorId}
-				group by
-					bbb.vendor_id,
-					bbb.vd_nm,
-					bbb.assort_id,
-					bbb.assort_nm,
-					bbb.item_id ,
-					bbb.md_rrp ,
-					bbb.buy_supply_discount
+					bbb1.vendor_id = #{vendorId}
+			
 
 
 	
