@@ -96,21 +96,26 @@ public class JpaOrderService {
      * @param tbOrderDetail
      */
     private void changeOrderStatusWhenImport(TbOrderDetail tbOrderDetail) {
-        String assortId = tbOrderDetail.getAssortId();
-        String itemId = tbOrderDetail.getItemId();
-        String storageId = tbOrderDetail.getStorageId();
-        // ititmm 불러오기
-        Ititmc ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, storageId);
-        // ititmt 불러오기
-        Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, storageId);
-        if(ititmc.getQty() - ititmc.getShipIndicateQty()  > 0){ // (총 들어온 애들) - (이미 팔기로 예약된 애들)> 0
-            tbOrderDetail.setStatusCd(StringFactory.getStrC04()); // 입고완료 : C04
-        }
-        else{
-            tbOrderDetail.setStatusCd(StringFactory.getStrB01()); // 발주대기 : B01
-        }
+        // 1.국내재고, 2.국내입고예정, 3.해외재고, 4.해외입고예정 확인 후 주문상태 변경.
+        // 입고예정이면 입고예정 data 생성.
+
+        // 1. 국내재고 확인 (tbOrderDetail의 storageId 확인)
+
+        // 2. 국내입고예정 재고 확인
+
+        // 3. 해외재고 확인 (itasrt의 storageId 확인)
+
+        // 4. 해외입고예정 재고 확인
+
     }
 
+    /**
+     * JB
+     * orderDetail의 orderStatusCd를 update할 때 orderDetail과 orderHistory를 한꺼번에 update 시켜주는 함수
+     * @param orderId
+     * @param orderSeq
+     * @param statusCd
+     */
 	public void updateOrderStatusCd(String orderId, String orderSeq, String statusCd) {
 
 		TbOrderDetail tod = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
