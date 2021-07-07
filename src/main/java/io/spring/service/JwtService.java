@@ -9,5 +9,7 @@ import java.util.Optional;
 public interface JwtService {
     String toToken(User user);
 
+	String toRefreshToken(User user);
+
     Optional<String> getSubFromToken(String token);
 }

@@ -1,20 +1,26 @@
 package io.spring.service.order;
 
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.goods.JpaItasrtRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.goods.JpaItitmmRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
+import io.spring.jparepos.order.JpaTbOrderHistoryRepository;
+import io.spring.jparepos.order.JpaTbOrderMasterRepository;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.order.entity.TbOrderHistory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -24,7 +30,9 @@ public class JpaOrderService {
     private final JpaItitmtRepository jpaItitmtRepository;
     private final JpaItitmcRepository jpaItitmcRepository;
     private final JpaItasrtRepository jpaItasrtRepository;
+    private final JpaTbOrderMasterRepository jpaTbOrderMasterRepository;
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
+    private final JpaTbOrderHistoryRepository jpaTbOrderHistoryRepository;
     private final EntityManager em;
 
     // orderId, orderSeq를 받아 주문 상태를 변경해주는 함수
@@ -99,5 +107,36 @@ public class JpaOrderService {
     }
 
 
+
+
+
+
+	public void updateOrderStatusCd(String orderId, String orderSeq, String statusCd) {
+
+		TbOrderDetail tod = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
+
+		List<TbOrderHistory> tohs = jpaTbOrderHistoryRepository.findByOrderIdAndOrderSeqAndEffEndDt(orderId, orderSeq,
+				Utilities.getStringToDate(StringFactory.getDoomDay()));
+		
+
+		tod.setStatusCd(statusCd);
+		 
+		 
+		Date newEffEndDate = new Date();
+
+		for (int i = 0; i < tohs.size(); i++) {
+			tohs.get(i).setEffEndDt(newEffEndDate);
+			tohs.get(i).setLastYn("002");
+		 }
+
+			TbOrderHistory toh = new TbOrderHistory(orderId, orderSeq, statusCd, "001", newEffEndDate,
+				Utilities.getStringToDate(StringFactory.getDoomDay()));
+
+		tohs.add(toh);
+
+        jpaTbOrderDetailRepository.save(tod);
+
+        jpaTbOrderHistoryRepository.saveAll(tohs);
+	}
 
 }

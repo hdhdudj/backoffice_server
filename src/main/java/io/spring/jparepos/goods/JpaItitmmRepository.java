@@ -13,6 +13,4 @@ public interface JpaItitmmRepository extends JpaRepository<Ititmm, ItitmmId> {
     List<Ititmm> findByAssortId(String assortId);
 
     Ititmm findByAssortIdAndItemId(String assortId, String itemId);
-
-    Ititmm findByAssortIdAndItemIdAndStorageId(String assortId, String itemId, String storageId);
 }

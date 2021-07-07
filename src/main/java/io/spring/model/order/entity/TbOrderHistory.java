@@ -20,6 +20,18 @@ import java.util.Date;
 @Table(name="tb_order_history")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TbOrderHistory extends CommonProps {
+	public TbOrderHistory(String orderId, String orderSeq, String statusCd, String lastYn, Date effStartDt,
+						  Date effEndDt) {
+
+		this.orderId = orderId;
+		this.orderSeq = orderSeq;
+		this.statusCd = statusCd;
+		this.lastYn = lastYn;
+		this.effStartDt = effStartDt;
+		this.effEndDt = effEndDt;
+
+	}
+
     public TbOrderHistory(TbOrderDetail tbOrderDetail){
         this.orderId = tbOrderDetail.getOrderId();
         orderSeq = tbOrderDetail.getOrderSeq();//StringUtils.leftPad(StringFactory.getStrOne(), 3,'0'); // 001 하드코딩

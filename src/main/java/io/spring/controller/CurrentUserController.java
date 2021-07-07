@@ -1,15 +1,12 @@
 package io.spring.controller;
 
-import com.fasterxml.jackson.annotation.JsonRootName;
-import io.spring.infrastructure.util.exception.InvalidRequestException;
-import io.spring.service.UserQueryService;
-import io.spring.model.UserWithToken;
-import io.spring.model.UserData;
-import io.spring.dao.user.User;
-import io.spring.dao.user.UserRepository;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.validation.Valid;
 import javax.validation.constraints.Email;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,10 +18,16 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import com.fasterxml.jackson.annotation.JsonRootName;
+
+import io.spring.dao.user.User;
+import io.spring.dao.user.UserRepository;
+import io.spring.infrastructure.util.exception.InvalidRequestException;
+import io.spring.model.UserData;
+import io.spring.model.UserWithToken;
+import io.spring.service.UserQueryService;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @RestController
 @RequestMapping(path = "/user")
@@ -32,8 +35,9 @@ public class CurrentUserController {
     private UserQueryService userQueryService;
     private UserRepository userRepository;
 
+
     @Autowired
-    public CurrentUserController(UserQueryService userQueryService, UserRepository userRepository) {
+	public CurrentUserController(UserQueryService userQueryService, UserRepository userRepository) {
         this.userQueryService = userQueryService;
         this.userRepository = userRepository;
     }
@@ -42,8 +46,10 @@ public class CurrentUserController {
     public ResponseEntity currentUser(@AuthenticationPrincipal User currentUser,
                                       @RequestHeader(value = "Authorization") String authorization) {
         UserData userData = userQueryService.findById(currentUser.getId()).get();
+        //
+        
         return ResponseEntity.ok(userResponse(
-            new UserWithToken(userData, authorization.split(" ")[1])
+				new UserWithToken(userData, authorization.split(" ")[1], "")
         ));
     }
 
@@ -66,7 +72,7 @@ public class CurrentUserController {
         userRepository.save(currentUser);
         UserData userData = userQueryService.findById(currentUser.getId()).get();
         return ResponseEntity.ok(userResponse(
-            new UserWithToken(userData, token.split(" ")[1])
+				new UserWithToken(userData, token.split(" ")[1], "")
         ));
     }
 

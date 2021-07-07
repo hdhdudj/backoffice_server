@@ -1,6 +1,5 @@
 package io.spring.model;
 
-import io.spring.model.UserData;
 import lombok.Getter;
 
 @Getter
@@ -10,13 +9,15 @@ public class UserWithToken {
     private String bio;
     private String image;
     private String token;
+	private String refreshToken;
 
-    public UserWithToken(UserData userData, String token) {
+	public UserWithToken(UserData userData, String token, String refreshToken) {
         this.email = userData.getEmail();
         this.username = userData.getUsername();
         this.bio = userData.getBio();
         this.image = userData.getImage();
         this.token = token;
+		this.refreshToken = refreshToken;
     }
 
 }
