@@ -94,11 +94,11 @@ public class StringFactory {
     @Getter
     private final static String strB02 = "B02"; // 발주완료
     @Getter
-    private final static String strC01 = "C01"; // 해외입고완료
+    private final static String strC01 = "C01"; // 해외입고완료 (수입에만 존재)
     @Getter
-    private final static String strC02 = "C02"; // 이동지시
+    private final static String strC02 = "C02"; // 이동지시 (수입에만 존재)
     @Getter
-    private final static String strC03 = "C03"; // 이동지시완료
+    private final static String strC03 = "C03"; // 이동지시완료 (수입에만 존재)
     @Getter
     private final static String strC04 = "C04"; // 입고완료
     @Getter

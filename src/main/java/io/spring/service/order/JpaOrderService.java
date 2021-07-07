@@ -21,6 +21,7 @@ import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -60,6 +61,8 @@ public class JpaOrderService {
      * @param tbOrderDetail
      */
     private void changeOrderStatusWhenDirect(TbOrderDetail tbOrderDetail) {
+        List<TbOrderDetail> tbOrderDetailsC04 = jpaTbOrderDetailRepository.findAll().stream()
+                .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList()); // 주문코드가 CO4인 애들의 list
         // assortId로 itasrt 찾아오기
 //        Itasrt itasrt = jpaItasrtRepository.findById(tbOrderDetail.getAssortId()).orElseGet(() -> null);
 //        if(itasrt == null){
@@ -73,14 +76,16 @@ public class JpaOrderService {
         Ititmc ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, storageId);
         // ititmt 불러오기
         Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, storageId);
-        if(ititmc.getQty() - ititmc.getShipIndicateQty() > 0){ // (총 들어온 애들) - (이미 팔기로 예약된 애들)> 0
+        if(ititmc.getQty() - ititmc.getShipIndicateQty() - tbOrderDetailsC04.size() > 0){ // (총 들어온 애들) - (이미 팔기로 예약된 애들) - (입고 완료 상태인 애들) > 0
             tbOrderDetail.setStatusCd(StringFactory.getStrC04()); // 입고완료 : C04
         }
         else if(ititmt.getTempQty() - ititmt.getTempIndicateQty() > 0){
-            tbOrderDetail.setStatusCd(StringFactory.getStrB01()); // 발주대기 : B01
+            ititmt.setTempQty(ititmt.getTempQty()-1);
+            em.persist(ititmt);
+            tbOrderDetail.setStatusCd(StringFactory.getStrB02()); // 발주완료 : B02
         }
         else {
-            tbOrderDetail.setStatusCd(StringFactory.getStrB02()); // 발주완료 : B02
+            tbOrderDetail.setStatusCd(StringFactory.getStrB01()); // 발주대기 : B01
         }
     }
     
@@ -98,7 +103,7 @@ public class JpaOrderService {
         Ititmc ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, storageId);
         // ititmt 불러오기
         Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, storageId);
-        if(ititmc.getQty() - ititmc.getShipIndicateQty() > 0){ // (총 들어온 애들) - (이미 팔기로 예약된 애들)> 0
+        if(ititmc.getQty() - ititmc.getShipIndicateQty()  > 0){ // (총 들어온 애들) - (이미 팔기로 예약된 애들)> 0
             tbOrderDetail.setStatusCd(StringFactory.getStrC04()); // 입고완료 : C04
         }
         else{
