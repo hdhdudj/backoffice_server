@@ -26,6 +26,10 @@ public class StringFactory {
     @Getter
     private final static String splitGb = "\\^\\|\\^";
 
+    // number
+    @Getter
+    private final static String strTwo = "2";
+
     // jpaPurchaseService
     @Getter
     private final static String purchaseSeqStr = "seq_LSPCHM";
@@ -75,5 +79,9 @@ public class StringFactory {
     // code
     @Getter
     private final static String strR = "r";
+
+    // 기호
+    @Getter
+    private final static String strAt = "@";
 
 }

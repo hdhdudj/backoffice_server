@@ -114,4 +114,11 @@ public class OrderController {
 		// UserWithToken(userData, jwtService.toToken(user))));
 	}
 
+
+	@RequestMapping(path = "/orderstatus", method = RequestMethod.GET)
+	public ResponseEntity changeOrderStatus(@RequestParam String assortGb, @RequestParam String assortId){
+
+		return null;
+	}
+
 }
