@@ -4,9 +4,9 @@ import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.order.MyBatisOrderDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.service.common.JpaCommonService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.spring.service.order.JpaOrderService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,25 +16,24 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.List;
 
-
+@Slf4j
 @RestController
 @RequestMapping(value = "/order")
+@RequiredArgsConstructor
 public class OrderController {
+	private final MyBatisOrderDao myBatisOrderDao;
+	private final MyBatisCommonDao myBatisCommonDao;
 
-	private Logger logger = LoggerFactory.getLogger(getClass());
+	private final JpaCommonService jpaCommonService;
+	private final JpaOrderService jpaOrderService;
 
-	private MyBatisOrderDao myBatisOrderDao;
-	private MyBatisCommonDao myBatisCommonDao;
-
-	private JpaCommonService jpaCommonService;
-
-	@Autowired
-	public OrderController(MyBatisOrderDao myBatisOrderDao, MyBatisCommonDao myBatisCommonDao,
-			JpaCommonService jpaCommonService) {
-		this.myBatisOrderDao = myBatisOrderDao;
-		this.myBatisCommonDao = myBatisCommonDao;
-		this.jpaCommonService = jpaCommonService;
-	}
+//	@Autowired
+//	public OrderController(MyBatisOrderDao myBatisOrderDao, MyBatisCommonDao myBatisCommonDao,
+//			JpaCommonService jpaCommonService) {
+//		this.myBatisOrderDao = myBatisOrderDao;
+//		this.myBatisCommonDao = myBatisCommonDao;
+//		this.jpaCommonService = jpaCommonService;
+//	}
 
 	@RequestMapping(path = "/orders", method = RequestMethod.GET)
 	// public ResponseEntity selectOrderListByCondition(@Valid @RequestBody
@@ -47,7 +46,7 @@ public class OrderController {
 
 		/*
 		 * 
-		 * logger.debug("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+		 * log.debug("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 		 * 
 		 * HashMap<String, Object> arr = new HashMap<String, Object>();
 		 * 
@@ -79,9 +78,9 @@ public class OrderController {
 
 		// }
 
-		logger.debug(channelGb);
-		logger.debug(orderFromDt);
-		logger.debug(orderEndDt);
+		log.debug(channelGb);
+		log.debug(orderFromDt);
+		log.debug(orderEndDt);
 
 		long rx = jpaCommonService.getSequence("seq_TMPSEQ");
 
@@ -97,7 +96,7 @@ public class OrderController {
 		
 		ApiResponseMessage res = null;
 
-		// logger.debug(r.size());
+		// log.debug(r.size());
 
 
 		if (r.size() > 0) {
@@ -114,10 +113,10 @@ public class OrderController {
 		// UserWithToken(userData, jwtService.toToken(user))));
 	}
 
-
+	// orderId, orderSeq를 받아서 주문 상태를 바꿔주는 주소
 	@RequestMapping(path = "/orderstatus", method = RequestMethod.GET)
-	public ResponseEntity changeOrderStatus(@RequestParam String assortGb, @RequestParam String assortId){
-
+	public ResponseEntity changeOrderStatus(@RequestParam String orderId, @RequestParam String orderSeq){
+		jpaOrderService.changeOrderStatus(orderId, orderSeq);
 		return null;
 	}
 

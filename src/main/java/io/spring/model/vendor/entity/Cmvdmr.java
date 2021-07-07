@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import io.spring.model.common.entity.CommonProps;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -21,7 +22,7 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
-public class Cmvdmr {
+public class Cmvdmr extends CommonProps {
     @Id
     private String vendorId;
     private String vdNm;
@@ -30,10 +31,4 @@ public class Cmvdmr {
     private String delivery;
     private String payment;
     private String carrier;
-    private Long regId;
-    @CreationTimestamp
-    private Date regDt;
-    private Long updId;
-    @UpdateTimestamp
-    private Date updDt;
 }

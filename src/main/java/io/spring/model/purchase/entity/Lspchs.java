@@ -2,13 +2,13 @@ package io.spring.model.purchase.entity;
 
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.entity.CommonProps;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +20,7 @@ import java.util.Date;
 @Setter
 @Table(name="lspchs")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Lspchs {
+public class Lspchs extends CommonProps {
     private final static Logger logger = LoggerFactory.getLogger(Lspchs.class);
     public Lspchs(PurchaseInsertRequestData purchaseInsertRequestData){
         this.purchaseNo = purchaseInsertRequestData.getPurchaseNo();
@@ -50,10 +50,4 @@ public class Lspchs {
     private String purchaseStatus;
     @CreationTimestamp
     private Date effStaDt;
-    private Long regId;
-    @CreationTimestamp
-    private Date regDt;
-    private Long updId;
-    @UpdateTimestamp
-    private Date updDt;
 }

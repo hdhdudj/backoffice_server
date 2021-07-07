@@ -1,0 +1,103 @@
+package io.spring.service.order;
+
+import io.spring.infrastructure.util.StringFactory;
+import io.spring.jparepos.goods.JpaItasrtRepository;
+import io.spring.jparepos.goods.JpaItitmcRepository;
+import io.spring.jparepos.goods.JpaItitmmRepository;
+import io.spring.jparepos.goods.JpaItitmtRepository;
+import io.spring.jparepos.order.JpaTbOrderDetailRepository;
+import io.spring.model.goods.entity.Ititmc;
+import io.spring.model.goods.entity.Ititmt;
+import io.spring.model.order.entity.TbOrderDetail;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class JpaOrderService {
+    private final JpaItitmmRepository jpaItitmmRepository;
+    private final JpaItitmtRepository jpaItitmtRepository;
+    private final JpaItitmcRepository jpaItitmcRepository;
+    private final JpaItasrtRepository jpaItasrtRepository;
+    private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
+    private final EntityManager em;
+
+    // orderId, orderSeq를 받아 주문 상태를 변경해주는 함수
+    @Transactional
+    public void changeOrderStatus(String orderId, String orderSeq) {
+        // orderId, orderSeq로 해당하는 TbOrderDetail 찾아오기
+        TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
+        if(tbOrderDetail == null){
+            log.debug("There is no TbOrderDetail of " + orderId + " and " + orderSeq);
+            return;
+        }
+        String assortGb = tbOrderDetail.getAssortGb();
+        if(assortGb.equals(StringFactory.getGbOne())){ // assortGb == '01' : 직구
+            changeOrderStatusWhenDirect(tbOrderDetail);
+        }
+        else if(assortGb.equals(StringFactory.getGbTwo())){ // assortGb == '02' : 수입
+            changeOrderStatusWhenImport(tbOrderDetail);
+        }
+    }
+    
+    /**
+     * 직구(해외창고 -> 국내(현지) 주문자)일 때 주문상태 처리 함수
+     * Ititmc : 상품재고
+     * Ititmt : 상품입고예정재고
+     * @param tbOrderDetail
+     */
+    private void changeOrderStatusWhenDirect(TbOrderDetail tbOrderDetail) {
+        // assortId로 itasrt 찾아오기
+//        Itasrt itasrt = jpaItasrtRepository.findById(tbOrderDetail.getAssortId()).orElseGet(() -> null);
+//        if(itasrt == null){
+//            log.debug("There is no Itasrt of " + tbOrderDetail.getAssortId());
+//            return;
+//        }
+        String assortId = tbOrderDetail.getAssortId();
+        String itemId = tbOrderDetail.getItemId();
+        String storageId = tbOrderDetail.getStorageId();
+        // ititmm 불러오기
+        Ititmc ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, storageId);
+        // ititmt 불러오기
+        Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, storageId);
+        if(ititmc.getQty() - ititmc.getShipIndicateQty() > 0){ // (총 들어온 애들) - (이미 팔기로 예약된 애들)> 0
+            tbOrderDetail.setStatusCd(StringFactory.getStrC04()); // 입고완료 : C04
+        }
+        else if(ititmt.getTempQty() - ititmt.getTempIndicateQty() > 0){
+            tbOrderDetail.setStatusCd(StringFactory.getStrB01()); // 발주대기 : B01
+        }
+        else {
+            tbOrderDetail.setStatusCd(StringFactory.getStrB02()); // 발주완료 : B02
+        }
+    }
+    
+    /**
+     * 수입(해외창고 -> 현지창고 -> 현지 주문자)일 때 주문상태 처리 함수
+     * Ititmc : 상품재고
+     * Ititmt : 상품입고예정재고
+     * @param tbOrderDetail
+     */
+    private void changeOrderStatusWhenImport(TbOrderDetail tbOrderDetail) {
+        String assortId = tbOrderDetail.getAssortId();
+        String itemId = tbOrderDetail.getItemId();
+        String storageId = tbOrderDetail.getStorageId();
+        // ititmm 불러오기
+        Ititmc ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, storageId);
+        // ititmt 불러오기
+        Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, storageId);
+        if(ititmc.getQty() - ititmc.getShipIndicateQty() > 0){ // (총 들어온 애들) - (이미 팔기로 예약된 애들)> 0
+            tbOrderDetail.setStatusCd(StringFactory.getStrC04()); // 입고완료 : C04
+        }
+        else{
+            tbOrderDetail.setStatusCd(StringFactory.getStrB01()); // 발주대기 : B01
+        }
+    }
+
+
+
+}

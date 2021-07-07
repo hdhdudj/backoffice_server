@@ -1,21 +1,9 @@
 package io.spring.model.purchase.entity;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.entity.CommonProps;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -23,13 +11,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.persistence.*;
+import java.util.Date;
+import java.util.List;
+
 @Slf4j
 @Entity
 @Table(name="lspchm")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Lspchm {
+public class Lspchm extends CommonProps {
     public Lspchm(PurchaseInsertRequestData purchaseInsertRequestData){
         this.purchaseNo = purchaseInsertRequestData.getPurchaseNo();
         this.purchaseDt = purchaseInsertRequestData.getPurchaseDt();
@@ -100,13 +92,4 @@ public class Lspchm {
     @JsonIgnore
     @JoinColumn(name = "purchaseNo", referencedColumnName = "purchaseNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     private List<Lspchd> lspchdList;
-
-
-
-    private Long regId;
-    @CreationTimestamp
-    private Date regDt;
-    private Long updId;
-    @UpdateTimestamp
-    private Date updDt;
 }

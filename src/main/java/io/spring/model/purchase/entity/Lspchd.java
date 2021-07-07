@@ -1,6 +1,7 @@
 package io.spring.model.purchase.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.purchase.idclass.LspchdId;
 import lombok.AccessLevel;
@@ -20,7 +21,7 @@ import java.util.List;
 @Table(name="lspchd")
 @IdClass(LspchdId.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Lspchd {
+public class Lspchd extends CommonProps {
     public Lspchd(String purchaseNo, String purchaseSeq){
         this.purchaseNo = purchaseNo;
         this.purchaseSeq = purchaseSeq;
@@ -79,11 +80,4 @@ public class Lspchd {
             @JoinColumn(name = "itemId", referencedColumnName = "itemId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
     })
     private Ititmm ititmm;
-
-    private Long regId;
-    @CreationTimestamp
-    private Date regDt;
-    private Long updId;
-    @UpdateTimestamp
-    private Date updDt;
 }

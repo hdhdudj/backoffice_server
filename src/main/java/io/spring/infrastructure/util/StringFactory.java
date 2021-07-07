@@ -83,5 +83,36 @@ public class StringFactory {
     // 기호
     @Getter
     private final static String strAt = "@";
-
+    
+    // 주문 상태코드
+    @Getter
+    private final static String strA01 = "A01"; // 주문접수
+    @Getter
+    private final static String strA02 = "A02"; // 주문확인
+    @Getter
+    private final static String strB01 = "B01"; // 발주대기
+    @Getter
+    private final static String strB02 = "B02"; // 발주완료
+    @Getter
+    private final static String strC01 = "C01"; // 해외입고완료
+    @Getter
+    private final static String strC02 = "C02"; // 이동지시
+    @Getter
+    private final static String strC03 = "C03"; // 이동지시완료
+    @Getter
+    private final static String strC04 = "C04"; // 입고완료
+    @Getter
+    private final static String strD01 = "D01"; // 출고지시
+    @Getter
+    private final static String strD02 = "D02"; // 출고
+    @Getter
+    private final static String strD03 = "D03"; // 국제운송
+    @Getter
+    private final static String strD04 = "D04"; // 통관
+    @Getter
+    private final static String strD05 = "D05"; // 국내운송
+    @Getter
+    private final static String strD06 = "D06"; // 배송완료
+    @Getter
+    private final static String strE01 = "E01"; // 구매확정
 }
