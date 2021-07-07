@@ -1,6 +1,18 @@
 package io.spring.model.order.entity;
 
+import java.util.Date;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
@@ -8,11 +20,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.CreationTimestamp;
-
-import javax.persistence.*;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -29,7 +36,6 @@ public class TbOrderHistory extends CommonProps {
 		this.lastYn = lastYn;
 		this.effStartDt = effStartDt;
 		this.effEndDt = effEndDt;
-
 	}
 
     public TbOrderHistory(TbOrderDetail tbOrderDetail){

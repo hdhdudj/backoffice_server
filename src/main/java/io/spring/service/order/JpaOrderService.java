@@ -106,11 +106,6 @@ public class JpaOrderService {
         }
     }
 
-
-
-
-
-
 	public void updateOrderStatusCd(String orderId, String orderSeq, String statusCd) {
 
 		TbOrderDetail tod = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
@@ -129,7 +124,7 @@ public class JpaOrderService {
 			tohs.get(i).setLastYn("002");
 		 }
 
-			TbOrderHistory toh = new TbOrderHistory(orderId, orderSeq, statusCd, "001", newEffEndDate,
+		TbOrderHistory toh = new TbOrderHistory(orderId, orderSeq, statusCd, "001", newEffEndDate,
 				Utilities.getStringToDate(StringFactory.getDoomDay()));
 
 		tohs.add(toh);
