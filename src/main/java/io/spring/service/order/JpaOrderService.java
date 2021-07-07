@@ -77,15 +77,15 @@ public class JpaOrderService {
         // ititmt 불러오기
         Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, storageId);
         if(ititmc.getQty() - ititmc.getShipIndicateQty() - tbOrderDetailsC04.size() > 0){ // (총 들어온 애들) - (이미 팔기로 예약된 애들) - (입고 완료 상태인 애들) > 0
-            tbOrderDetail.setStatusCd(StringFactory.getStrC04()); // 입고완료 : C04
+            updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrC04()); // 입고완료 : C04
         }
         else if(ititmt.getTempQty() - ititmt.getTempIndicateQty() > 0){
             ititmt.setTempQty(ititmt.getTempQty()-1);
             em.persist(ititmt);
-            tbOrderDetail.setStatusCd(StringFactory.getStrB02()); // 발주완료 : B02
+            updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrB02()); // 발주완료 : B02
         }
         else {
-            tbOrderDetail.setStatusCd(StringFactory.getStrB01()); // 발주대기 : B01
+            updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrB01()); // 발주대기 : B01
         }
     }
     
