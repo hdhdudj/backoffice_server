@@ -9,6 +9,7 @@ import io.spring.jparepos.goods.JpaItitmtRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.order.JpaTbOrderHistoryRepository;
 import io.spring.jparepos.order.JpaTbOrderMasterRepository;
+import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.order.entity.TbOrderDetail;
@@ -96,17 +97,50 @@ public class JpaOrderService {
      * @param tbOrderDetail
      */
     private void changeOrderStatusWhenImport(TbOrderDetail tbOrderDetail) {
+        String assortId = tbOrderDetail.getAssortId();
+        String itemId = tbOrderDetail.getItemId();
+        String domesticStorageId = tbOrderDetail.getStorageId(); // 주문자 현지(국내?) 창고 id (국내창고)
+
+        List<TbOrderDetail> tbOrderDetailsC04 = jpaTbOrderDetailRepository.findAll().stream()
+                .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList()); // 주문코드가 CO4인 애들의 list
+        List<TbOrderDetail> domTbOrderDetailsC04 = tbOrderDetailsC04.stream().filter(x -> x.getStorageId().equals(domesticStorageId)).collect(Collectors.toList());
+        long sumOfAllTbOrderDetailsC04 = tbOrderDetailsC04.stream().map(x -> x.getQty()).reduce((a,b) -> a+b).get(); // C04인 애들의 sum(qty)
+        long sumOfDomTbOrderDetailsC04 = domTbOrderDetailsC04.stream().map(x -> x.getQty()).reduce((a,b) -> a+b).get(); // C04고 국내창고인 애들의 sum(qty)
+        log.debug("----- sumOfDomTbOrderDetailsC04 : " + sumOfDomTbOrderDetailsC04);
+        Itasrt itasrt = jpaItasrtRepository.findById(tbOrderDetail.getAssortId()).orElseGet(() -> null);
+        String overseaStorageId = itasrt.getStorageId(); // 물건의 산지(?) 창고 id (해외창고)
+        // 국내창고 ititmc 불러오기
+        Ititmc domItitmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, domesticStorageId);
+        // 국내창고 ititmt 불러오기
+        Ititmt domItitmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, domesticStorageId);
+        // 해외창고 ititmc 불러오기
+        Ititmc ovrsItitmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, overseaStorageId);
+        // 해외창고 ititmt 불러오기
+        Ititmt ovrsItitmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, overseaStorageId);
+
         // 1.국내재고, 2.국내입고예정, 3.해외재고, 4.해외입고예정 확인 후 주문상태 변경.
         // 입고예정이면 입고예정 data 생성.
 
         // 1. 국내재고 확인 (tbOrderDetail의 storageId 확인)
-
+        if(domItitmc.getQty() - domItitmc.getShipIndicateQty() - sumOfDomTbOrderDetailsC04 > 0){
+            updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrB02()); // 발주완료 : B02
+        }
         // 2. 국내입고예정 재고 확인
-
+        else if(domItitmt.getTempQty() - domItitmt.getTempIndicateQty() > 0){
+            domItitmt.setTempQty(domItitmt.getTempQty() - sumOfDomTbOrderDetailsC04);
+            em.persist(domItitmt);
+            updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrB02()); // 발주완료 : B02
+        }
         // 3. 해외재고 확인 (itasrt의 storageId 확인)
-
+        else if(ovrsItitmc.getQty() - ovrsItitmc.getShipIndicateQty() - sumOfAllTbOrderDetailsC04 > 0){
+            updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrB02()); // 발주완료 : B02
+        }
         // 4. 해외입고예정 재고 확인
-
+        else if(ovrsItitmt.getTempQty() - ovrsItitmt.getTempIndicateQty() > 0){
+            ovrsItitmt.setTempQty(ovrsItitmt.getTempQty() - sumOfAllTbOrderDetailsC04);
+            em.persist(ovrsItitmt);
+            updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrB02()); // 발주완료 : B02
+        }
     }
 
     /**
