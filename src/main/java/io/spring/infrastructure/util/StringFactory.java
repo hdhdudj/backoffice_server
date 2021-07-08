@@ -100,7 +100,7 @@ public class StringFactory {
     @Getter
     private final static String strC03 = "C03"; // 이동지시완료 (수입에만 존재)
     @Getter
-    private final static String strC04 = "C04"; // 입고완료
+    private final static String strC04 = "C04"; // 국내(현지)입고완료
     @Getter
     private final static String strD01 = "D01"; // 출고지시
     @Getter
