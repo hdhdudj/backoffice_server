@@ -66,24 +66,22 @@ public class JpaOrderService {
                 .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList()); // 주문코드가 CO4인 애들의 list
         long sumOfTbOrderDetailsC04 = tbOrderDetailsC04.stream().map(x -> x.getQty()).reduce((a,b) -> a+b).get(); // C04인 애들의 sum(qty)
         // assortId로 itasrt 찾아오기
-//        Itasrt itasrt = jpaItasrtRepository.findById(tbOrderDetail.getAssortId()).orElseGet(() -> null);
-//        if(itasrt == null){
-//            log.debug("There is no Itasrt of " + tbOrderDetail.getAssortId());
-//            return;
-//        }
+        Itasrt itasrt = jpaItasrtRepository.findById(tbOrderDetail.getAssortId()).orElseGet(() -> null);
         String assortId = tbOrderDetail.getAssortId();
         String itemId = tbOrderDetail.getItemId();
-        String storageId = tbOrderDetail.getStorageId();
+        String storageId = itasrt.getStorageId();
         // ititmm 불러오기
         Ititmc ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, storageId);
         // ititmt 불러오기
         Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, storageId);
-        if(ititmc.getQty() - ititmc.getShipIndicateQty() - sumOfTbOrderDetailsC04 > 0){ // (총 들어온 애들) - (이미 팔기로 예약된 애들) - (국내입고 완료 상태인 애들) > 0
+        if(ititmc.getQty() - ititmc.getShipIndicateQty() - sumOfTbOrderDetailsC04 - tbOrderDetail.getQty() >= 0){ // (총 들어온 애들) - (이미 팔기로 예약된 애들) - (국내입고 완료 상태인 애들) > 0
             updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrC04()); // 입고완료 : C04
         }
-        else if(ititmt.getTempQty() - ititmt.getTempIndicateQty() > 0){
-            ititmt.setTempQty(ititmt.getTempQty()-1);
+        else if(ititmt.getTempQty() - ititmt.getTempIndicateQty() - tbOrderDetail.getQty() >= 0){
+            ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() + tbOrderDetail.getQty());
             em.persist(ititmt);
+            // 발주 data 변경하기 (lspchm,lspchd,lspchs,lspchb,lsdpsp)
+
             updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrB02()); // 발주완료 : B02
         }
         else {
@@ -135,7 +133,8 @@ public class JpaOrderService {
             // ititmt 주문발주에 물량만큼 더하기
             domItitmt.setTempIndicateQty(domItitmt.getTempIndicateQty() + tbOrderDetail.getQty());
             em.persist(domItitmt);
-            // 발주 data 변경하기
+            // 발주 data 변경하기 (lspchm,lspchd,lspchs,lspchb,lsdpsp)
+
             updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrC03()); // 이동지시완료 : C03
         }
         // 3. 해외재고 확인 (itasrt의 storageId 확인)
@@ -147,7 +146,8 @@ public class JpaOrderService {
             // ititmt 주문발주에 물량만큼 더하기
             ovrsItitmt.setTempIndicateQty(ovrsItitmt.getTempIndicateQty() + tbOrderDetail.getQty());
             em.persist(ovrsItitmt);
-            // 발주 data 변경하기
+            // 발주 data 변경하기 (lspchm,lspchd,lspchs,lspchb,lsdpsp)
+
             updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrB02()); // 발주완료 : B02
         }
         else {
