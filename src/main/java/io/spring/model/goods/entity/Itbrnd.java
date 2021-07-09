@@ -1,20 +1,19 @@
 package io.spring.model.goods.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import io.spring.model.common.entity.CommonProps;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Getter
 @Setter
-@ToString
+//@ToString
 @Table(name="itbrnd")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Itbrnd extends CommonProps {

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "ititmm")
@@ -17,7 +18,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @IdClass(ItitmmId.class)
-public class Ititmm extends CommonProps {
+public class Ititmm extends CommonProps implements Serializable {
     public Ititmm(String assortId, GoodsInsertRequestData.Items items){
         this.assortId = assortId;
         this.shortYn = items.getShortYn();

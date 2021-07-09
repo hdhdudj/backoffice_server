@@ -14,6 +14,7 @@ import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
+import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class JpaOrderService {
     private final JpaTbOrderMasterRepository jpaTbOrderMasterRepository;
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
     private final JpaTbOrderHistoryRepository jpaTbOrderHistoryRepository;
+    private final JpaPurchaseService jpaPurchaseService;
     private final EntityManager em;
 
     // orderId, orderSeq를 받아 주문 상태를 변경해주는 함수
@@ -81,7 +83,7 @@ public class JpaOrderService {
             ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() + tbOrderDetail.getQty());
             em.persist(ititmt);
             // 발주 data 변경하기 (lspchm,lspchd,lspchs,lspchb,lsdpsp)
-
+            jpaPurchaseService.makePurchaseData(itasrt, ititmc, ititmt);
             updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrB02()); // 발주완료 : B02
         }
         else {
@@ -134,7 +136,7 @@ public class JpaOrderService {
             domItitmt.setTempIndicateQty(domItitmt.getTempIndicateQty() + tbOrderDetail.getQty());
             em.persist(domItitmt);
             // 발주 data 변경하기 (lspchm,lspchd,lspchs,lspchb,lsdpsp)
-
+            jpaPurchaseService.makePurchaseData(itasrt, domItitmc, domItitmt);
             updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrC03()); // 이동지시완료 : C03
         }
         // 3. 해외재고 확인 (itasrt의 storageId 확인)
@@ -147,7 +149,7 @@ public class JpaOrderService {
             ovrsItitmt.setTempIndicateQty(ovrsItitmt.getTempIndicateQty() + tbOrderDetail.getQty());
             em.persist(ovrsItitmt);
             // 발주 data 변경하기 (lspchm,lspchd,lspchs,lspchb,lsdpsp)
-
+            jpaPurchaseService.makePurchaseData(itasrt, ovrsItitmc, ovrsItitmt);
             updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrB02()); // 발주완료 : B02
         }
         else {
