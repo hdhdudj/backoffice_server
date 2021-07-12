@@ -1,5 +1,14 @@
 package io.spring.service.order;
 
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
+
+import org.springframework.stereotype.Service;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.goods.JpaItasrtRepository;
@@ -17,7 +26,6 @@ import io.spring.model.order.entity.TbOrderHistory;
 import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -197,7 +205,8 @@ public class JpaOrderService {
 
 		tohs.add(toh);
 
-        jpaTbOrderDetailRepository.save(tod);
+
+		jpaTbOrderDetailRepository.save(tod);
 
         jpaTbOrderHistoryRepository.saveAll(tohs);
 	}
