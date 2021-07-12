@@ -27,22 +27,23 @@ import lombok.Setter;
 @Table(name="tb_order_history")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TbOrderHistory extends CommonProps {
+	public TbOrderHistory(String orderId, String orderSeq, String statusCd, String lastYn, Date effStartDt,
+						  Date effEndDt) {
+
+		this.orderId = orderId;
+		this.orderSeq = orderSeq;
+		this.statusCd = statusCd;
+		this.lastYn = lastYn;
+		this.effStartDt = effStartDt;
+		this.effEndDt = effEndDt;
+	}
+
     public TbOrderHistory(TbOrderDetail tbOrderDetail){
         this.orderId = tbOrderDetail.getOrderId();
         orderSeq = tbOrderDetail.getOrderSeq();//StringUtils.leftPad(StringFactory.getStrOne(), 3,'0'); // 001 하드코딩
         lastYn = StringUtils.leftPad(StringFactory.getStrTwo(), 3,'0'); // 002 하드코딩
         effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
     }
-
-	public TbOrderHistory(String orderId, String orderSeq, String statusCd, String lastYn, Date effStartDt,
-			Date effEndDt) {
-		this.orderId = orderId;
-		this.orderSeq = orderSeq;
-		this.statusCd = statusCd;
-		this.lastYn = statusCd;
-		this.effStartDt = effStartDt;
-		this.effEndDt = effEndDt;
-	}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,5 +57,4 @@ public class TbOrderHistory extends CommonProps {
     private Date effStartDt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date effEndDt;
-
 }

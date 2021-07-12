@@ -3,6 +3,7 @@ package io.spring.model.deposit.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.vendor.entity.Cmvdmr;
 import lombok.AccessLevel;
@@ -10,8 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.flywaydb.core.internal.util.StringUtils;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -21,7 +20,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name="lsdpsm")
-public class Lsdpsm {
+public class Lsdpsm extends CommonProps {
     public Lsdpsm(DepositInsertRequestData depositInsertRequestData){
         this.depositNo = depositInsertRequestData.getDepositNo();
         this.depositDt = depositInsertRequestData.getDepositDt();
@@ -44,12 +43,6 @@ public class Lsdpsm {
     private Date finishYymm;
     private String depositType;
     private String storeCd;
-    private Long regId;
-    @CreationTimestamp
-    private Date regDt;
-    private Long updId;
-    @UpdateTimestamp
-    private Date updDt;
     private String depositVendorId;
 
     // 연관 관계

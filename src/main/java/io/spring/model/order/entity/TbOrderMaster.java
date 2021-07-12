@@ -1,6 +1,5 @@
 package io.spring.model.order.entity;
 
-
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -14,6 +13,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -40,5 +44,4 @@ public class TbOrderMaster extends CommonProps {
     private String channelOrderNo;
     private String custPcode;
     private String orderMemo;
-
 }

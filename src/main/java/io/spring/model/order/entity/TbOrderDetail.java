@@ -108,10 +108,4 @@ public class TbOrderDetail extends CommonProps
     @JsonIgnore
     @NotFound(action = NotFoundAction.IGNORE)
     private Ititmm ititmm; // ititmm 연관관계
-
-//    @Override
-//    public boolean equals(Object obj){
-//        return this.orderId.equals(((TbOrderDetail)obj).getOrderId()) && this.orderSeq.equals(((TbOrderDetail)obj).getOrderSeq()) && this.statusCd.equals(((TbOrderDetail)obj).getStatusCd()) && this.assortGb.equals(((TbOrderDetail)obj).getAssortGb()) && this.assortId.equals(((TbOrderDetail)obj).getAssortId()) && this.itemId.equals(((TbOrderDetail)obj).getItemId()) && this.goodsNm.equals(((TbOrderDetail)obj).getGoodsNm()) && this.optionInfo.equals(((TbOrderDetail)obj).getOptionInfo()) && this.setGb.equals(((TbOrderDetail)obj).getSetGb()) && this.setOrderId.equals(((TbOrderDetail)obj).getSetOrderId()) && this.setOrderSeq.equals(((TbOrderDetail)obj).getSetOrderSeq()) && this.qty == ((TbOrderDetail)obj).getQty() && this.itemAmt == ((TbOrderDetail)obj).getItemAmt() && this.goodsPrice == ((TbOrderDetail)obj).getGoodsPrice() && this.salePrice == ((TbOrderDetail)obj).getSalePrice() && this.goodsDcPrice == ((TbOrderDetail)obj).getGoodsDcPrice() && this.memberDcPrice == ((TbOrderDetail)obj).getMemberDcPrice() && this.couponDcPrice == ((TbOrderDetail)obj).getCouponDcPrice() && this.adminDcPrice == ((TbOrderDetail)obj).getAdminDcPrice() && this.dcSumPrice == ((TbOrderDetail)obj).getDcSumPrice() && this.deliPrice == ((TbOrderDetail)obj).getDeliPrice() && this.deliMethod.equals(((TbOrderDetail)obj).getDeliMethod()) && this.channelOrderNo.equals(((TbOrderDetail)obj).getChannelOrderNo()) && this.channelOrderSeq.equals(((TbOrderDetail)obj).getChannelOrderSeq()) && this.lastGb.equals(((TbOrderDetail)obj).getLastGb()) && this.lastCategoryId.equals(((TbOrderDetail)obj).getLastCategoryId()) && this.storageId.equals(((TbOrderDetail)obj).getStorageId());
-//    }
-
 }

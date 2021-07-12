@@ -1,19 +1,25 @@
 package io.spring.model.purchase.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.goods.entity.Ititmc;
+import io.spring.model.goods.entity.Ititmt;
+import lombok.*;
+
 import java.util.Date;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
 @ToString
-//@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PurchaseInsertRequestData {
+
+    // 입고예정에 의한 주문발주시 이용
+    public PurchaseInsertRequestData(Itasrt itasrt, Ititmc ititmc, Ititmt ititmt) {
+
+    }
+
     /**
      * 21-05-03 Pecan
      * 발주 insert request dto

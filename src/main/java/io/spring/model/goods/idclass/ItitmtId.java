@@ -15,6 +15,12 @@ import java.util.Date;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ItitmtId implements Serializable {
     //default serial version id, required for serializable classes.
+    private static final long serialVersionUID = 1L;
+
+    public ItitmtId(String storageId, String assortId, String itemId, String itemGrade){
+
+    }
+
     public ItitmtId(PurchaseInsertRequestData purchaseInsertRequestData, PurchaseInsertRequestData.Items items){
         this.storageId = purchaseInsertRequestData.getStoreCd();
         this.assortId = items.getAssortId();
@@ -30,10 +36,9 @@ public class ItitmtId implements Serializable {
         this.itemId = item.getItemId();
         this.itemGrade = item.getItemGrade();
         this.effStaDt = depositInsertRequestData.getDepositDt();
-        this.effEndDt = depositInsertRequestData.getDepositDt();
+        this.effEndDt = this.effStaDt;
     }
 
-    private static final long serialVersionUID = 1L;
     private String storageId;
     private String assortId;
     private String itemId;

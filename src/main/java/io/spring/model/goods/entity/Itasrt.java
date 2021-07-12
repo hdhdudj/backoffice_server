@@ -1,5 +1,6 @@
 package io.spring.model.goods.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
@@ -78,31 +79,126 @@ public class Itasrt extends CommonProps {
 
 	@Id
 	private String assortId;
-
 	private String assortNm;
+	private String assortDnm;
+	private String assortEnm;
 	private String assortModel;
+	private String payMthCd;
+	private String couponYn;
+	private String packYn;
+	private String deliConfirmYn;
+	private String deliMth;
+	private String addDeliGb;
+	private Float deliCharge;
+	private Long deliInterval;
 	private Float margin;
+	private String marginGb;
+	private String marginApp;
 	private String taxGb;
+	private String adultGb;
+	private String unionApply;
+	private String cardFreeGb;
+	private String divideMth;
 	private String assortGb;
 	private String assortState;
+	private String reasonCd;
+	private String vendorTrGb;
+	private String siteUrl;
+	private String luxuryYn;
 	private Float asWidth;
 	private Float asLength;
 	private Float asHeight;
 	private Float weight;
+	private Long imgCnt;
+	private String cardLimitYn;
+	private String searchYn;
+	private String sizeId;
 	private String origin;
-	private String shortageYn; // itasrn에도
+	private String quality;
+	private Long leadTime;
+	private String deliSure;
+	private String reserveYn;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+	private Date resStaDt;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+	private Date resEndDt;
+	private String claimSureYn;
+	private String defaultYn;
+	private String recommYn;
+	private Long recommCnt;
+	private Long recommQty;
+	private String btMarkYn;
+	private String shortageYn;
+	private String sendbackRejectYn;
+	private String setGb;
+	private String userId;
+	private String categoryId;
 	private String brandId;
 	private String dispCategoryId;
-	private String categoryId;
+	private String hsCode;
+	private String unit;
+	private String vendorId;
+	private String alAssortId;
+	private String drtSalesGb;
+	private String templateId;
+	private String drtSalesRatio;
+	private String speTaxYn;
+	private String preItemYn;
+	private String srhExpYn;
+	private String nonsaleYn;
 	private String siteGb;
 	private String asVendorId;
+	private String deliNrgGb;
 	private String manufactureNm;
+	private String delayRewardYn;
+	private Float callDisLimit;
 	private Float deliPrice;
 	private Float localPrice;
+	private Float initLocalPrice;
+	private Float localSale;
+	private Float estiPrice;
+	private String invoiceNm;
 	private Float localDeliFee;
-	private Float localSale; // itasrn에도 들어감
+	private String cardFreeYn;
+	private String itemAbbNm;
+	private String disGb;
+	private Float disRate;
+	private Float reserveGive;
+	private Float bonusReserve;
+	private Float cashbagPoint;
+	private String plGbn;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+	private Date plFromDt;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+	private Date plToDt;
+	private String storageId;
+	private String optionGb;
+	private String shopSaleGb;
+	private String sendbackPayGb;
+	private String sendbackChangeYn;
+	private String directPathNrgCd;
+	private String marginCd;
+	private String directPathGb;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+	private Date resShipStaDt;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+	private Date resShipEndDt;
+	private String imgType;
+	private String onlinedispYn;
+	private String payType;
+	private String freeGiftYn;
+	private String currencyUnit;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+	private Date disStartDt;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+	private Date disEndDt;
+	private String workGb;
+	private Float cardFee;
+	private String assortGrade;
 	private String assortColor;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
 	private Date sellStaDt;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
 	private Date sellEndDt;
 	private Float mdRrp;
 	private String mdTax;
@@ -117,13 +213,9 @@ public class Itasrt extends CommonProps {
 	private Float buySupplyDiscount;
 	private Float buyRrpIncrement;
 	private Float buyExchangeRate;
-//	private String sizeType;
 	private Float mdDiscountRate;
 	private String optionGbName;
 	private String optionUseYn;
-	private String vendorId;
-
-
 
 	//// 다른 테이블과 엮으면 나오는 프로퍼티들
 	@JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
@@ -164,108 +256,4 @@ public class Itasrt extends CommonProps {
 	@JsonIgnore
 	@NotFound(action = NotFoundAction.IGNORE)
 	private Cmvdmr cmvdmr; // cmvdmr 연관관계
-
-//	@OneToOne
-//	@JoinColumn(name = "brand_id", referencedColumnName = "brand_id", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
-//	@JsonIgnore
-//	@ManyToOne(fetch = FetchType.LAZY) // 연관관계
-//	private Itbrnd itbrnd;
-//	@ManyToOne(fetch = FetchType.LAZY) // 연관관계
-//	@JoinColumn(name = "disp_category_id", referencedColumnName = "category_id", insertable=false, updatable=false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
-//	private Itcatg itcatg;
-
-//	private String brandNm;
-//	private String categoryNm;
-//	private String assortDnm;
-//	private String assortEnm;
-//	private String payMthCd;
-//	private String couponYn;
-//	private String packYn;
-//	private String deliConfirmYn;
-//	private String deliMth;
-//	private String addDeliGb;
-//	private String deliCharge;
-//	private String deliInterval;
-//	private String marginGb;
-//	private String marginApp;
-//	private String adultGb;
-//	private String unionApply;
-//	private String cardFreeGb;
-//	private String divideMth;
-//	private String reasonCd;
-//	private String vendorTrGb;
-//	private String siteUrl;
-//	private String luxuryYn;
-//	private String weight;
-//	private String imgCnt;
-//	private String cardLimitYn;
-//	private String searchYn;
-//	private String sizeId;
-//	private String quality;
-//	private String leadTime;
-//	private String deliSure;
-//	private String reserveYn;
-//	private String resStaDt;
-//	private String resEndDt;
-//	private String claimSureYn;
-//	private String defaultYn;
-//	private String recommYn;
-//	private String recommCnt;
-//	private String recommQty;
-//	private String btMarkYn;
-//	private String sendbackRejectYn;
-//	private String setGb;
-//	private String userId;
-//	private String categoryId;
-//	private String hsCode;
-//	private String unit;
-//	private String vendorId;
-//	private String alAssortId;
-//	private String drtSalesGb;
-//	private String templateId;
-//	private String drtSalesRatio;
-//	private String speTaxYn;
-//	private String preItemYn;
-//	private String srhExpYn;
-//	private String nonsaleYn;
-//	private String deliNrgGb;
-//	private String delayRewardYn;
-//	private String callDisLimit;
-//	private String initLocalPrice;
-//	private String estiPrice;
-//	private String invoiceNm;
-//	private String localDeliFee;
-//	private String cardFreeYn;
-//	private String itemAbbNm;
-//	private String disGb;
-//	private String disRate;
-//	private String reserveGive;
-//	private String bonusReserve;
-//	private String cashbagPoint;
-//	private String plGbn;
-//	private String plFromDt;
-//	private String plToDt;
-//	private String storageId;
-//	private String optionGb;
-//	private String shopSaleGb;
-//	private String sendbackPayGb;
-//	private String sendbackChangeYn;
-//	private String directPathNrgCd;
-//	private String marginCd;
-//	private String directPathGb;
-//	private String resShipStaDt;
-//	private String resShipEndDt;
-//	private String imgType;
-//	private String onlinedispYn;
-//	private String payType;
-//	private String freeGiftYn;
-//	private String currencyUnit;
-//	private String disStartDt;
-//	private String disEndDt;
-//	private String workGb;
-//	private String cardFee;
-//	private String assortGrade;
-//	private String mdTax;
-//	private String mdYear;
-//	private String mdMargin;
 }

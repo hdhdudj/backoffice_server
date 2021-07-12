@@ -1,18 +1,5 @@
 package io.spring.service.purchase;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
@@ -27,6 +14,8 @@ import io.spring.jparepos.purchase.JpaLspchmRepository;
 import io.spring.jparepos.purchase.JpaLspchsRepository;
 import io.spring.model.common.entity.SequenceData;
 import io.spring.model.deposit.entity.Lsdpsp;
+import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.order.entity.TbOrderDetail;
@@ -41,6 +30,12 @@ import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -425,5 +420,20 @@ public class JpaPurchaseService {
         jpaLsdpspRepository.deleteAll();
         jpaItitmtRepository.deleteAll();
 
+    }
+
+    // tbOrderDetail에서 발주 data가 만들어질 때 쓰는 함수 (lspchm, lspchd, lspchs, lspchb, lsdpsp)
+    @Transactional
+    public void makePurchaseData(Itasrt itasrt, Ititmc ititmc, Ititmt ititmt) {
+        String purchaseNo = jpaLspchmRepository.findMaxPurchaseNo();
+
+        PurchaseInsertRequestData purchaseInsertRequestData = new PurchaseInsertRequestData(itasrt, ititmc, ititmt);
+        purchaseInsertRequestData.setPurchaseNo(purchaseNo);
+
+        saveLspchm(purchaseInsertRequestData);
+        saveLspchd(purchaseInsertRequestData);
+        saveLspchs(purchaseInsertRequestData);
+        saveLspchb(purchaseInsertRequestData);
+        saveLsdpsp(purchaseInsertRequestData);
     }
 }
