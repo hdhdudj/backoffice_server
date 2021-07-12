@@ -8,11 +8,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -22,6 +19,38 @@ import java.util.List;
 @IdClass(LspchdId.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lspchd extends CommonProps {
+    public Lspchd(Lspchd lspchd){
+        this.purchaseNo = lspchd.getPurchaseNo();
+        this.purchaseSeq = lspchd.getPurchaseSeq();
+        this.assortId = lspchd.getAssortId();
+        this.itemId = lspchd.getItemId();
+        this.purchaseQty = lspchd.getPurchaseQty();
+        this.purchaseUnitAmt = lspchd.getPurchaseUnitAmt();
+        this.purchaseItemAmt = lspchd.getPurchaseItemAmt();
+        this.itemGrade = lspchd.getItemGrade();
+        this.vatGb = lspchd.getVatGb();
+        this.setGb = lspchd.getSetGb();
+        this.mailsendYn = lspchd.getMailsendYn();
+        this.memo = lspchd.getMemo();
+        this.siteGb = lspchd.getSiteGb();
+        this.vendorId = lspchd.getVendorId();
+        this.raNo = lspchd.getRaNo();
+        this.itemAmt = lspchd.getItemAmt();
+        this.newItemAmt = lspchd.getNewItemAmt();
+        this.transAmt = lspchd.getTransAmt();
+        this.newTransAmt = lspchd.getNewTransAmt();
+        this.taxAmt = lspchd.getTaxAmt();
+        this.newTaxAmt = lspchd.getNewTaxAmt();
+        this.saleAmt = lspchd.getSaleAmt();
+        this.newSaleAmt = lspchd.getNewSaleAmt();
+        this.orderId = lspchd.getOrderId();
+        this.orderSeq = lspchd.getOrderSeq();
+        this.depositNo = lspchd.getDepositNo();
+        this.depositSeq = lspchd.getDepositSeq();
+        this.setShipId = lspchd.getSetShipId();
+        this.setShipSeq = lspchd.getSetShipSeq();
+        this.siteOrderNo = lspchd.getSiteOrderNo();
+    }
     public Lspchd(String purchaseNo, String purchaseSeq){
         this.purchaseNo = purchaseNo;
         this.purchaseSeq = purchaseSeq;

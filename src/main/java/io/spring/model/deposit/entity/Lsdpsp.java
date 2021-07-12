@@ -2,6 +2,8 @@ package io.spring.model.deposit.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.infrastructure.util.Utilities;
+import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,7 +17,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Slf4j
@@ -25,14 +26,21 @@ import java.util.Date;
 @Table(name="lsdpsp")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lsdpsp implements Serializable {
+    public Lsdpsp(String depositPlanId, Lspchd lspchd){
+        this.depositPlanId = depositPlanId;
+        this.smReservationDt = Utilities.getStringToDate(StringFactory.getDoomDay());
+        this.purchasePlanQty = lspchd.getPurchaseQty();
+        this.purchaseTakeQty = 0l;
+        this.assortId = lspchd.getAssortId();
+        this.itemId = lspchd.getItemId();
+        this.planStatus = StringFactory.getGbOne(); // 01 하드코딩
+        this.purchaseNo = lspchd.getPurchaseNo();
+        this.purchaseSeq = lspchd.getPurchaseSeq();
+        this.claimItemYn = StringFactory.getGbTwo(); // 02 하드코딩
+    }
     public Lsdpsp(PurchaseInsertRequestData purchaseInsertRequestData, PurchaseInsertRequestData.Items items){
         this.depositPlanId = purchaseInsertRequestData.getDepositPlanId();
-        try{
-            this.smReservationDt = new SimpleDateFormat(StringFactory.getDateFormat()).parse(StringFactory.getDoomDay());
-        }
-        catch(Exception e){
-            log.debug(e.getMessage());
-        }
+        this.smReservationDt = Utilities.getStringToDate(StringFactory.getDoomDay());
         this.purchasePlanQty = items.getPurchaseQty();
         this.purchaseTakeQty = 0L;
         this.assortId = items.getAssortId();
