@@ -51,9 +51,9 @@ public class JpaOrderService {
 
 		tohs.add(toh);
 
-			tbOrderDetailRepository.save(tod);
+		tbOrderDetailRepository.save(tod);
 
-			tbOrderHistoryrRepository.saveAll(tohs);
+		tbOrderHistoryrRepository.saveAll(tohs);
 		 
 
 

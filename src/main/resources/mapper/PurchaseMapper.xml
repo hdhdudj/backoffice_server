@@ -92,8 +92,75 @@
 		
 		 		
     </select>
-
+         <select id="getPurchase" parameterType="java.util.HashMap"  resultType="HashMap">
     
+		    select aaa.purchase_no 
+		,aaa.purchase_dt 
+		,aaa.purchase_status 
+		,aaa.purchase_gb 
+		,aaa.purchase_vendor_id 
+		,ifnull((select bb.vd_nm from cmvdmr bb where bb.vendor_id = aaa.purchase_vendor_id), '거래처없음') vd_nm 
+		,aaa.store_cd 
+		,(select bb.storage_nm from cmstgm bb where bb.storage_id = aaa.store_cd) vd_nm 
+		,aaa.terms 
+		,aaa.delivery 
+		,aaa.payment 
+		,aaa.carrier 
+		from lspchm aaa
+		where aaa.purchase_no=#{purchaseNo}
+      </select>
+
+        <select id="getPurchaseItems" parameterType="java.util.HashMap"  resultType="HashMap">
+				        
+				select aaa.purchase_no,
+				aaa.purchase_seq,
+				ddd.purchase_gb,
+				aaa.order_id,
+				aaa.order_seq,
+				ccc.assort_id,
+				ccc.item_id,
+				bbb.assort_nm,
+				(select tod.deli_method from tb_order_detail tod where tod.order_id = aaa.order_id and tod.order_seq = aaa.order_seq) deli_method ,
+				(
+									select
+										iv.option_nm
+									from
+										itvari iv
+									where
+										iv.assort_id = ccc.assort_id
+										and iv.seq = ccc.variation_seq1
+										and iv.variation_gb = '01'
+				and del_yn = '02' ) option_nm1 ,
+				
+				(
+				select
+					iv.option_nm
+				from
+					itvari iv
+				where
+					iv.assort_id = ccc.assort_id
+					and iv.seq = ccc.variation_seq2
+					and iv.variation_gb = '02'
+				and del_yn = '02' ) option_nm2
+				,bbb.md_rrp 
+				,bbb.buy_supply_discount 
+				,aaa.purchase_qty 
+				,aaa.purchase_unit_amt 
+					from lspchd aaa,
+						lspchm ddd,
+					itasrt bbb,
+					ititmm ccc
+				
+				where
+					1 = 1
+					and aaa.purchase_no=#{purchaseNo}
+					and aaa.purchase_no = ddd.purchase_no
+				and aaa.assort_id = bbb.assort_id
+				and aaa.assort_id = ccc.assort_id
+				and aaa.item_id = ccc.item_id
+        
+        
+        </select>
     
 
     <select id="getOrderListByPurchaseVendorItem" parameterType="java.util.HashMap"  resultType="HashMap">
