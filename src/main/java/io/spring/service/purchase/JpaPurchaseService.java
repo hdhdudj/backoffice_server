@@ -426,21 +426,29 @@ public class JpaPurchaseService {
 
     // tbOrderDetail에서 발주 data가 만들어질 때 쓰는 함수 (lspchm, lspchd, lspchs, lspchb, lsdpsp)
     @Transactional
-    public void makePurchaseData(TbOrderDetail tbOrderDetail, Itasrt itasrt, Ititmc ititmc, Ititmt ititmt, String purchaseGb) {
+    public TbOrderDetail makePurchaseData(TbOrderDetail tbOrderDetail, Itasrt itasrt, Ititmc ititmc, Ititmt ititmt, String purchaseGb) {
         // 1. lspchd를 찾아오기 (m, b도 딸려와야 함)
-        List<Lspchd> lspchdList = jpaLspchdRepository.findByAssortIdAndItemId(ititmc.getAssortId(), ititmc.getItemId());
+        List<Lspchd> lspchdList = jpaLspchdRepository.findByAssortIdAndItemId(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
 //        Lspchm lspchm = lspchdList.get(0).getLspchm();
         // 2. d, b 저장
         Lspchd lspchd = null;
         Lspchb lspchb = null;
         // purchaseGb = 01, dealTypeCd = 02 여야 함(??)
         // 2. lspchb 중 purchaseStatus가 01인 애들만 남기기
+        int num = 0;
         for(Lspchd item : lspchdList){
-            // d의 수량이 tbOrderDetail의 수량보다 같거나 크고, d의 purchaseStatus가 01일 때
-            if(item.getPurchaseQty() >= tbOrderDetail.getQty() && item.getLspchb().get(0).getPurchaseStatus().equals(StringFactory.getGbOne())){
+            // d의 수량이 tbOrderDetail의 수량보다 작고, d의 purchaseStatus가 01일 때
+            if(item.getPurchaseQty() < tbOrderDetail.getQty() && item.getLspchb().get(0).getPurchaseStatus().equals(StringFactory.getGbOne())){
                 lspchd = item;
                 lspchb = lspchd.getLspchb().get(0);
+                break;
             }
+            else if(item.getLspchb().get(0).getPurchaseStatus().equals(StringFactory.getGbOne())){
+                num++;
+            }
+        }
+        if(num > 0 && lspchd != null){
+            return tbOrderDetail;
         }
         String newPurchaseSeq = Utilities.plusOne(lspchd.getPurchaseSeq(),4);
         lspchd.setPurchaseSeq(newPurchaseSeq);
@@ -460,5 +468,7 @@ public class JpaPurchaseService {
         String depositPlanId = jpaItitmtRepository.findMaxDepositPlanId();
         Lsdpsp lsdpsp = new Lsdpsp(depositPlanId, lspchd);
         jpaLsdpspRepository.save(lsdpsp);
+
+        return null;
     }
 }
