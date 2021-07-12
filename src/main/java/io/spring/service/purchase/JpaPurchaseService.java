@@ -65,14 +65,14 @@ public class JpaPurchaseService {
      */
     @Transactional
     public String savePurchaseSquence(PurchaseInsertRequestData purchaseInsertRequestData) {
-        // lspchb (발주 디테일 이력)
-        List<Lspchb> lspchbList = this.saveLspchb(purchaseInsertRequestData);
-        // lspchm (발주마스터)
-        Lspchm lspchm = this.saveLspchm(purchaseInsertRequestData, lspchbList);
-        // lspchs (발주 상태 이력)
-        Lspchs lspchs = this.saveLspchs(purchaseInsertRequestData);
         // lspchd (발주 디테일)
         List<Lspchd> lspchdList = this.saveLspchd(purchaseInsertRequestData);
+        // lspchm (발주마스터)
+        Lspchm lspchm = this.saveLspchm(purchaseInsertRequestData, lspchdList);
+        // lspchb (발주 디테일 이력)
+        List<Lspchb> lspchbList = this.saveLspchb(purchaseInsertRequestData);
+        // lspchs (발주 상태 이력)
+        Lspchs lspchs = this.saveLspchs(purchaseInsertRequestData);
         // lsdpsp (입고 예정)
         List<Lsdpsp> lsdpsp = this.saveLsdpsp(purchaseInsertRequestData);
         // ititmt (예정 재고)
