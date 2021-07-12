@@ -1,14 +1,5 @@
 package io.spring.service.order;
 
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
-
-import org.springframework.stereotype.Service;
-
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.goods.JpaItasrtRepository;
@@ -26,7 +17,14 @@ import io.spring.model.order.entity.TbOrderHistory;
 import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -46,7 +44,16 @@ public class JpaOrderService {
     @Transactional
     public void changeOrderStatus(String orderId, String orderSeq) {
         // orderId, orderSeq로 해당하는 TbOrderDetail 찾아오기
-        TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
+        TypedQuery<TbOrderDetail> query =
+                em.createQuery("select td from TbOrderDetail td " +
+                                "join fetch td.tbOrderMaster tm " +
+                                "left join fetch td.ititmm it " +
+                                "where td.orderId = ?1" +
+                                "and td.orderSeq = ?2 "
+                        , TbOrderDetail.class);
+        query.setParameter(1, orderId).setParameter(2, orderSeq);
+        TbOrderDetail tbOrderDetail = query.getSingleResult();
+//        TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
         if(tbOrderDetail == null){
             log.debug("There is no TbOrderDetail of " + orderId + " and " + orderSeq);
             return;
@@ -86,8 +93,15 @@ public class JpaOrderService {
             ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() + tbOrderDetail.getQty());
             em.persist(ititmt);
             // 발주 data 변경하기 (lspchm,lspchd,lspchs,lspchb,lsdpsp)
-            jpaPurchaseService.makePurchaseData(itasrt, ititmc, ititmt);
-            updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrB02()); // 발주완료 : B02
+            TbOrderDetail tbOrderDetail1 = jpaPurchaseService.makePurchaseData(tbOrderDetail, itasrt, ititmc, ititmt, StringFactory.getGbTwo());
+            String statusCd = null;
+            if(tbOrderDetail1 != null){
+                statusCd = StringFactory.getStrB01(); // 발주대기 : B01
+            }
+            else{
+                statusCd = StringFactory.getStrB02(); // 발주완료 : B02
+            }
+            updateOrderStatusCd(tbOrderDetail1.getOrderId(), tbOrderDetail.getOrderSeq(), statusCd);
         }
         else {
             updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrB01()); // 발주대기 : B01
@@ -114,8 +128,8 @@ public class JpaOrderService {
                 .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList()); // 주문코드가 CO4(국내입고완료)인 애들의 list
 //        List<TbOrderDetail> ovrsTbOrderDetailsC01 = tbOrderDetailsC01.stream().filter(x -> x.getStorageId().equals(overseaStorageId)).collect(Collectors.toList());
         List<TbOrderDetail> domTbOrderDetailsC04 = tbOrderDetailsC04.stream().filter(x -> x.getStorageId().equals(domesticStorageId)).collect(Collectors.toList());
-        long sumOfTbOrderDetailsC01 = tbOrderDetailsC01.stream().map(x -> x.getQty()).reduce((a,b) -> a+b).get(); // C01인 애들의 sum(qty) (창고 id는 불요)
-        long sumOfDomTbOrderDetailsC04 = domTbOrderDetailsC04.stream().map(x -> x.getQty()).reduce((a,b) -> a+b).get(); // C04고 국내창고인 애들의 sum(qty)
+        long sumOfTbOrderDetailsC01 = tbOrderDetailsC01.stream().map(x -> {if(x.getQty() == null){return 0l;}else {return x.getQty();}}).reduce((a,b) -> a+b).get(); // C01인 애들의 sum(qty) (창고 id는 불요)
+        long sumOfDomTbOrderDetailsC04 = domTbOrderDetailsC04.stream().map(x -> {if(x.getQty() == null){return 0l;}else {return x.getQty();}}).reduce((a,b) -> a+b).get(); // C04고 국내창고인 애들의 sum(qty)
         log.debug("----- sumOfDomTbOrderDetailsC04 : " + sumOfDomTbOrderDetailsC04);
         // 국내창고 ititmc 불러오기
         Ititmc domItitmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, domesticStorageId);
@@ -139,7 +153,7 @@ public class JpaOrderService {
             domItitmt.setTempIndicateQty(domItitmt.getTempIndicateQty() + tbOrderDetail.getQty());
             em.persist(domItitmt);
             // 발주 data 변경하기 (lspchm,lspchd,lspchs,lspchb,lsdpsp)
-            jpaPurchaseService.makePurchaseData(itasrt, domItitmc, domItitmt);
+            jpaPurchaseService.makePurchaseData(tbOrderDetail, itasrt, domItitmc, domItitmt, StringFactory.getGbTwo());
             updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrC03()); // 이동지시완료 : C03
         }
         // 3. 해외재고 확인 (itasrt의 storageId 확인)
@@ -152,8 +166,15 @@ public class JpaOrderService {
             ovrsItitmt.setTempIndicateQty(ovrsItitmt.getTempIndicateQty() + tbOrderDetail.getQty());
             em.persist(ovrsItitmt);
             // 발주 data 변경하기 (lspchm,lspchd,lspchs,lspchb,lsdpsp)
-            jpaPurchaseService.makePurchaseData(itasrt, ovrsItitmc, ovrsItitmt);
-            updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrB02()); // 발주완료 : B02
+            TbOrderDetail tbOrderDetail1 = jpaPurchaseService.makePurchaseData(tbOrderDetail, itasrt, ovrsItitmc, ovrsItitmt, StringFactory.getGbOne());
+            String statusCd = null;
+            if(tbOrderDetail1 != null){
+                statusCd = StringFactory.getStrB01(); // 발주대기 : B01
+            }
+            else{
+                statusCd = StringFactory.getStrB02(); // 발주완료 : B02
+            }
+            updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), statusCd);
         }
         else {
             updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrB01()); // 발주대기 : B01

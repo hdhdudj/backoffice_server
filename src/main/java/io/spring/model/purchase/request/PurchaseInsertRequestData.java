@@ -1,9 +1,13 @@
 package io.spring.model.purchase.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.spring.infrastructure.util.StringFactory;
+import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
+import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.order.entity.TbOrderMaster;
 import lombok.*;
 
 import java.util.Date;
@@ -16,8 +20,21 @@ import java.util.List;
 public class PurchaseInsertRequestData {
 
     // 입고예정에 의한 주문발주시 이용
-    public PurchaseInsertRequestData(Itasrt itasrt, Ititmc ititmc, Ititmt ititmt) {
+    public PurchaseInsertRequestData(TbOrderMaster tbOrderMaster, TbOrderDetail tbOrderDetail, Itasrt itasrt, Ititmc ititmc, Ititmt ititmt, String purchaseGb) {
+        // lspchm
+        this.purchaseStatus = StringFactory.getGbOne(); // 01 : 발주, 05 : 취소
+        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 23:59:59 하드코딩
+        this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
+        this.vendorId = StringFactory.getFourStartCd(); // "0001" 하드코딩
+        this.siteOrderNo = null;
+        this.siteTrackNo = null;
+//        this.localPrice = tbOrderDetail.get
 
+        this.assortId = itasrt.getAssortId();
+        this.itemId = ititmt.getItemId();
+        this.itemGrade = ititmt.getItemGrade();
+
+        this.purchaseDt = new Date();
     }
 
     /**
@@ -40,14 +57,14 @@ public class PurchaseInsertRequestData {
     private String purchaseRemark;
     private String siteOrderNo;
     private String siteTrackNo;
-    private Long localPrice;
-    private Long newLocalPrice;
-    private Long localDeliFee;
-    private Long newLocalDeliFee;
-    private Long localTax;
-    private Long newLocalTax;
-    private Long disPrice;
-    private Long newDisPrice;
+    private Float localPrice;
+    private Float newLocalPrice;
+    private Float localDeliFee;
+    private Float newLocalDeliFee;
+    private Float localTax;
+    private Float newLocalTax;
+    private Float disPrice;
+    private Float newDisPrice;
     private String purchaseGb;
     private String purchaseVendorId;
     private String storeCd;
@@ -59,8 +76,6 @@ public class PurchaseInsertRequestData {
 
 
 	private List<Items> items;
-
-	// private List<Items> items;
 
     // lspchs
     private Date effStaDt;

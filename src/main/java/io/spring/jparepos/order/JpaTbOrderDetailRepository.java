@@ -14,5 +14,4 @@ public interface JpaTbOrderDetailRepository extends JpaRepository<TbOrderDetail,
     String findMaxOrderSeqWhereOrderId(String orderId);
 
     TbOrderDetail findByOrderIdAndOrderSeq(String orderId, String orderSeq);
-
 }

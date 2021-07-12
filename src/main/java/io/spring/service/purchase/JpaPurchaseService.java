@@ -72,14 +72,14 @@ public class JpaPurchaseService {
 
     @Transactional
     public String savePurchaseSquence(PurchaseInsertRequestData purchaseInsertRequestData) {
-        // lspchm (발주마스터)
-        Lspchm lspchm = this.saveLspchm(purchaseInsertRequestData);
-        // lspchs (발주 상태 이력)
-        Lspchs lspchs = this.saveLspchs(purchaseInsertRequestData);
         // lspchd (발주 디테일)
         List<Lspchd> lspchdList = this.saveLspchd(purchaseInsertRequestData);
+        // lspchm (발주마스터)
+        Lspchm lspchm = this.saveLspchm(purchaseInsertRequestData, lspchdList);
         // lspchb (발주 디테일 이력)
         List<Lspchb> lspchbList = this.saveLspchb(purchaseInsertRequestData);
+        // lspchs (발주 상태 이력)
+        Lspchs lspchs = this.saveLspchs(purchaseInsertRequestData);
         // lsdpsp (입고 예정)
         List<Lsdpsp> lsdpsp = this.saveLsdpsp(purchaseInsertRequestData);
         // ititmt (예정 재고)
@@ -87,12 +87,12 @@ public class JpaPurchaseService {
         return lspchm.getPurchaseNo();
     }
 
-    private Lspchm saveLspchm(PurchaseInsertRequestData purchaseInsertRequestData) {
+    private Lspchm saveLspchm(PurchaseInsertRequestData purchaseInsertRequestData, List<Lspchd> lspchdList) {
         Lspchm lspchm = jpaLspchmRepository.findByPurchaseNo(purchaseInsertRequestData.getPurchaseNo()).orElseGet(() -> null);
         if(lspchm == null){ // insert
             lspchm = new Lspchm(purchaseInsertRequestData);
             
-			lspchm.setPurchaseStatus("01"); //
+			lspchm.setPurchaseStatus(StringFactory.getGbOne()); // 01 하드코딩
 
         }
         else { // update
@@ -114,6 +114,8 @@ public class JpaPurchaseService {
             lspchm.setPayment(purchaseInsertRequestData.getPayment());
             lspchm.setCarrier(purchaseInsertRequestData.getCarrier());
         }
+        float localPriceSum = lspchdList.stream().map(x->x.getItemAmt()).reduce((a,b)->a+b).get();
+        lspchm.setLocalPrice(localPriceSum);
         jpaLspchmRepository.save(lspchm);
         return lspchm;
     }
@@ -432,16 +434,49 @@ public class JpaPurchaseService {
 
     // tbOrderDetail에서 발주 data가 만들어질 때 쓰는 함수 (lspchm, lspchd, lspchs, lspchb, lsdpsp)
     @Transactional
-    public void makePurchaseData(Itasrt itasrt, Ititmc ititmc, Ititmt ititmt) {
-        String purchaseNo = jpaLspchmRepository.findMaxPurchaseNo();
+    public TbOrderDetail makePurchaseData(TbOrderDetail tbOrderDetail, Itasrt itasrt, Ititmc ititmc, Ititmt ititmt, String purchaseGb) {
+        // 1. lspchd를 찾아오기 (m, b도 딸려와야 함)
+        List<Lspchd> lspchdList = jpaLspchdRepository.findByAssortIdAndItemId(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
+//        Lspchm lspchm = lspchdList.get(0).getLspchm();
+        // 2. d, b 저장
+        Lspchd lspchd = null;
+        Lspchb lspchb = null;
+        // purchaseGb = 01, dealTypeCd = 02 여야 함(??)
+        // 2. lspchb 중 purchaseStatus가 01인 애들만 남기기
+        int num = 0;
+        for(Lspchd item : lspchdList){
+            // d의 수량이 tbOrderDetail의 수량보다 작고, d의 purchaseStatus가 01일 때
+            if(item.getPurchaseQty() < tbOrderDetail.getQty() && item.getLspchb().get(0).getPurchaseStatus().equals(StringFactory.getGbOne())){
+                lspchd = item;
+                lspchb = lspchd.getLspchb().get(0);
+                break;
+            }
+            else if(item.getLspchb().get(0).getPurchaseStatus().equals(StringFactory.getGbOne())){
+                num++;
+            }
+        }
+        if(num > 0 && lspchd != null){
+            return tbOrderDetail;
+        }
+        String newPurchaseSeq = Utilities.plusOne(lspchd.getPurchaseSeq(),4);
+        lspchd.setPurchaseSeq(newPurchaseSeq);
+        lspchb.setPurchaseSeq(newPurchaseSeq);
+        Lspchd newLspchd = new Lspchd(lspchd);
+        Lspchb newLspchb = new Lspchb(lspchb);
+        newLspchd.setPurchaseQty(-tbOrderDetail.getQty());
+        jpaLspchdRepository.save(newLspchd);
+        jpaLspchbRepository.save(newLspchb);
+        // 3. s 저장
+        Lspchs lspchs = jpaLspchsRepository.findByPurchaseNoAndEffEndDt(lspchd.getPurchaseNo(), Utilities.getStringToDate(StringFactory.getDoomDay()));
+        lspchs.setEffEndDt(new Date());
+        Lspchs newLspchs = new Lspchs(lspchs);
+        jpaLspchsRepository.save(lspchs);
+        jpaLspchsRepository.save(newLspchs);
+        // 4. lsdpsp 저장
+        String depositPlanId = jpaItitmtRepository.findMaxDepositPlanId();
+        Lsdpsp lsdpsp = new Lsdpsp(depositPlanId, lspchd);
+        jpaLsdpspRepository.save(lsdpsp);
 
-        PurchaseInsertRequestData purchaseInsertRequestData = new PurchaseInsertRequestData(itasrt, ititmc, ititmt);
-        purchaseInsertRequestData.setPurchaseNo(purchaseNo);
-
-        saveLspchm(purchaseInsertRequestData);
-        saveLspchd(purchaseInsertRequestData);
-        saveLspchs(purchaseInsertRequestData);
-        saveLspchb(purchaseInsertRequestData);
-        saveLsdpsp(purchaseInsertRequestData);
+        return null;
     }
 }
