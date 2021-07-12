@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -64,14 +65,14 @@ public class JpaPurchaseService {
      */
     @Transactional
     public String savePurchaseSquence(PurchaseInsertRequestData purchaseInsertRequestData) {
+        // lspchb (발주 디테일 이력)
+        List<Lspchb> lspchbList = this.saveLspchb(purchaseInsertRequestData);
         // lspchm (발주마스터)
-        Lspchm lspchm = this.saveLspchm(purchaseInsertRequestData);
+        Lspchm lspchm = this.saveLspchm(purchaseInsertRequestData, lspchbList);
         // lspchs (발주 상태 이력)
         Lspchs lspchs = this.saveLspchs(purchaseInsertRequestData);
         // lspchd (발주 디테일)
         List<Lspchd> lspchdList = this.saveLspchd(purchaseInsertRequestData);
-        // lspchb (발주 디테일 이력)
-        List<Lspchb> lspchbList = this.saveLspchb(purchaseInsertRequestData);
         // lsdpsp (입고 예정)
         List<Lsdpsp> lsdpsp = this.saveLsdpsp(purchaseInsertRequestData);
         // ititmt (예정 재고)
@@ -79,7 +80,7 @@ public class JpaPurchaseService {
         return lspchm.getPurchaseNo();
     }
 
-    private Lspchm saveLspchm(PurchaseInsertRequestData purchaseInsertRequestData) {
+    private Lspchm saveLspchm(PurchaseInsertRequestData purchaseInsertRequestData, List<Lspchd> lspchdList) {
         Lspchm lspchm = jpaLspchmRepository.findByPurchaseNo(purchaseInsertRequestData.getPurchaseNo()).orElseGet(() -> null);
         if(lspchm == null){ // insert
             lspchm = new Lspchm(purchaseInsertRequestData);
@@ -106,6 +107,8 @@ public class JpaPurchaseService {
             lspchm.setPayment(purchaseInsertRequestData.getPayment());
             lspchm.setCarrier(purchaseInsertRequestData.getCarrier());
         }
+        float localPriceSum = lspchdList.stream().map(x->x.getItemAmt()).reduce((a,b)->a+b).get();
+        lspchm.setLocalPrice(localPriceSum);
         jpaLspchmRepository.save(lspchm);
         return lspchm;
     }
@@ -424,16 +427,24 @@ public class JpaPurchaseService {
 
     // tbOrderDetail에서 발주 data가 만들어질 때 쓰는 함수 (lspchm, lspchd, lspchs, lspchb, lsdpsp)
     @Transactional
-    public void makePurchaseData(Itasrt itasrt, Ititmc ititmc, Ititmt ititmt) {
-        String purchaseNo = jpaLspchmRepository.findMaxPurchaseNo();
+    public void makePurchaseData(TbOrderDetail tbOrderDetail, Itasrt itasrt, Ititmc ititmc, Ititmt ititmt, String purchaseGb) {
+//        PurchaseInsertRequestData purchaseInsertRequestData = new PurchaseInsertRequestData(tbOrderDetail.getTbOrderMaster(), tbOrderDetail, itasrt, ititmc, ititmt, purchaseGb);
+//        purchaseInsertRequestData.setPurchaseNo(purchaseNo);
 
-        PurchaseInsertRequestData purchaseInsertRequestData = new PurchaseInsertRequestData(itasrt, ititmc, ititmt);
-        purchaseInsertRequestData.setPurchaseNo(purchaseNo);
+//        saveLspchm(purchaseInsertRequestData);
+//        saveLspchd(purchaseInsertRequestData);
+//        saveLspchs(purchaseInsertRequestData);
+//        saveLspchb(purchaseInsertRequestData);
+//        saveLsdpsp(purchaseInsertRequestData);
+        // 1. lspchd를 찾아오기 (m, b도 딸려와야 함)
+        List<Lspchd> lspchdList = jpaLspchdRepository.findByAssortIdAndItemId(ititmc.getAssortId(), ititmc.getItemId());
+        Lspchm lspchm = lspchdList.get(0).getLspchm();
+        // purchaseGb = 01, dealTypeCd = 02 여야 함(??)
+        // 2. lspchb 중 purchaseStatus가 01인 애들만 남기기
+        for(Lspchd lspchd : lspchdList){
+            List<Lspchb> lspchbList = lspchd.getLspchb();
+            lspchd.setLspchb(lspchbList.stream().filter(x -> x.getPurchaseStatus() == StringFactory.getGbOne()).collect(Collectors.toList()));
+        }
 
-        saveLspchm(purchaseInsertRequestData);
-        saveLspchd(purchaseInsertRequestData);
-        saveLspchs(purchaseInsertRequestData);
-        saveLspchb(purchaseInsertRequestData);
-        saveLsdpsp(purchaseInsertRequestData);
     }
 }
