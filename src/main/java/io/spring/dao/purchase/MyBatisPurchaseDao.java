@@ -10,4 +10,8 @@ public interface MyBatisPurchaseDao {
 
 	List<HashMap<String, Object>> getOrderListByPurchaseVendorItem(HashMap<String, Object> param);
 
+	HashMap<String, Object> getPurchase(HashMap<String, Object> param);
+
+	List<HashMap<String, Object>> getPurchaseItems(HashMap<String, Object> param);
+
 }

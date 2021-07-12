@@ -1,8 +1,26 @@
 package io.spring.controller;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
+import io.spring.model.purchase.request.PurchaseUpdateRequestData;
+import io.spring.model.purchase.response.PurchaseItemResponseData;
 import io.spring.model.purchase.response.PurchaseSelectDetailResponseData;
 import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
@@ -10,15 +28,6 @@ import io.spring.service.order.JpaOrderService;
 import io.spring.service.purchase.JpaPurchaseService;
 import io.spring.service.purchase.MyBatisPurchaseService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/purchase")
@@ -72,6 +81,29 @@ public class PurchaseController {
 
 	}
 
+	@GetMapping(path = "/{purchaseNo}")
+	public ResponseEntity getPurchase(@PathVariable("purchaseNo") String purchaseNo) {
+		logger.debug("get purchase detail page");
+
+		HashMap<String, Object> m = new HashMap<String, Object>();
+
+		m.put("purchaseNo", purchaseNo);
+
+		PurchaseItemResponseData responseData = myBatisPurchaseService.getPurchase(m);
+		// List<HashMap<String, Object>> items =
+		// myBatisPurchaseService.getPurchaseItems(m);
+
+		// PurchaseSelectDetailResponseData responseData =
+		// jpaPurchaseService.getPurchaseDetailPage(purchaseNo);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
+				responseData);
+		if (responseData == null) {
+			return null;
+		}
+		return ResponseEntity.ok(res);
+	}
+
     @GetMapping(path = "/getpurchasedetail")
     public ResponseEntity getPurchaseDetailJpa(@RequestParam(required = true) String purchaseNo){
         logger.debug("get purchase detail page");
@@ -85,10 +117,11 @@ public class PurchaseController {
         return ResponseEntity.ok(res);
     }
 
-	@PostMapping(path = "/savebyjpa")
+	@PostMapping(path = "")
     public ResponseEntity savePurchaseJpa(@RequestBody PurchaseInsertRequestData purchaseInsertRequestData){
         logger.debug("insert or update purchase by jpa");
 
+		System.out.println("insert or update purchase by jpa");
 
 
 		purchaseInsertRequestData.setPurchaseNo(
@@ -104,6 +137,28 @@ public class PurchaseController {
         }
         return ResponseEntity.ok(res);
     }
+
+	@PostMapping(path = "/{purchaseNo}")
+	public ResponseEntity updatePurchaseJpa(@PathVariable("purchaseNo") String purchaseNo,
+			@RequestBody PurchaseUpdateRequestData req) {
+		logger.debug("insert or update purchase by jpa");
+
+
+
+//		req.setPurchaseNo(jpaCommonService.getStrNumberId(StringFactory.getCUpperStr(), req.getPurchaseNo(),
+		// StringFactory.getPurchaseSeqStr(), StringFactory.getIntEight())); //
+		// purchaseNo 채번
+
+//		String purchaseNo1 = jpaPurchaseService.savePurchaseSquence(req);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
+				purchaseNo);
+		if (res == null) {
+			return null;
+		}
+		return ResponseEntity.ok(res);
+	}
+
     // 발주 detail page
     @GetMapping(path="/purchasedetailjpa")
     public ResponseEntity getPurchaseDetailPage(@RequestParam String purchaseNo) {

@@ -94,33 +94,34 @@
     </select>
          <select id="getPurchase" parameterType="java.util.HashMap"  resultType="HashMap">
     
-		    select aaa.purchase_no 
-		,aaa.purchase_dt 
-		,aaa.purchase_status 
-		,aaa.purchase_gb 
-		,aaa.purchase_vendor_id 
-		,ifnull((select bb.vd_nm from cmvdmr bb where bb.vendor_id = aaa.purchase_vendor_id), '거래처없음') vd_nm 
-		,aaa.store_cd 
-		,(select bb.storage_nm from cmstgm bb where bb.storage_id = aaa.store_cd) vd_nm 
-		,aaa.terms 
-		,aaa.delivery 
-		,aaa.payment 
-		,aaa.carrier 
+		    select aaa.purchase_no purchaseNo 
+		,aaa.purchase_dt  purchaseDt
+		,aaa.purchase_status  purchaseStatus
+		,aaa.purchase_gb  purchaseGb
+		,aaa.purchase_vendor_id purchaseVendorId
+		,ifnull((select bb.vd_nm from cmvdmr bb where bb.vendor_id = aaa.purchase_vendor_id), '거래처없음') purchaseVendorNm  
+		,aaa.store_cd storeCd
+		,(select bb.storage_nm from cmstgm bb where bb.storage_id = aaa.store_cd) storageNm 
+		,aaa.terms terms
+		,aaa.delivery delivery  
+		,aaa.payment payment  
+		,aaa.carrier carrier 
+		,aaa.site_order_no siteOrderNo
 		from lspchm aaa
 		where aaa.purchase_no=#{purchaseNo}
       </select>
 
         <select id="getPurchaseItems" parameterType="java.util.HashMap"  resultType="HashMap">
 				        
-				select aaa.purchase_no,
-				aaa.purchase_seq,
-				ddd.purchase_gb,
-				aaa.order_id,
-				aaa.order_seq,
-				ccc.assort_id,
-				ccc.item_id,
-				bbb.assort_nm,
-				(select tod.deli_method from tb_order_detail tod where tod.order_id = aaa.order_id and tod.order_seq = aaa.order_seq) deli_method ,
+				select aaa.purchase_no purchaseNo,
+				aaa.purchase_seq purchaseSeq,
+				ddd.purchase_gb purchaseGb,
+				aaa.order_id orderId,
+				aaa.order_seq orderSeq,
+				ccc.assort_id assortId,
+				ccc.item_id itemId,
+				bbb.assort_nm assortNm,
+				(select tod.deli_method from tb_order_detail tod where tod.order_id = aaa.order_id and tod.order_seq = aaa.order_seq) deliMethod ,
 				(
 									select
 										iv.option_nm
@@ -130,7 +131,7 @@
 										iv.assort_id = ccc.assort_id
 										and iv.seq = ccc.variation_seq1
 										and iv.variation_gb = '01'
-				and del_yn = '02' ) option_nm1 ,
+				and del_yn = '02' ) optionNm1 ,
 				
 				(
 				select
@@ -141,11 +142,19 @@
 					iv.assort_id = ccc.assort_id
 					and iv.seq = ccc.variation_seq2
 					and iv.variation_gb = '02'
-				and del_yn = '02' ) option_nm2
-				,bbb.md_rrp 
-				,bbb.buy_supply_discount 
-				,aaa.purchase_qty 
-				,aaa.purchase_unit_amt 
+				and del_yn = '02' ) optionNm2
+				,bbb.md_rrp mdRrp
+				,bbb.buy_supply_discount buySupplyDiscount 
+				,aaa.purchase_qty purchaseQty
+				,aaa.purchase_unit_amt purchaseUnitAmt
+				,(
+				select ddd.purchase_status
+				from lspchb ddd
+				where ddd.purchase_no = aaa.purchase_no
+				and  ddd.purchase_seq = aaa.purchase_seq
+				and ddd.eff_end_dt='9999-12-31 23:59:59'
+				LIMIT 1
+				) purchaseStatus
 					from lspchd aaa,
 						lspchm ddd,
 					itasrt bbb,

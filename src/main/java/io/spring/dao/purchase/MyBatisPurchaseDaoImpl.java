@@ -33,4 +33,14 @@ public class MyBatisPurchaseDaoImpl implements MyBatisPurchaseDao {
 		return purchaseMapper.getOrderListByPurchaseVendorItem(param);
 	}
 
+	@Override
+	public HashMap<String, Object> getPurchase(HashMap<String, Object> param) {
+		return purchaseMapper.getPurchase(param);
+	}
+
+	@Override
+	public List<HashMap<String, Object>> getPurchaseItems(HashMap<String, Object> param) {
+		return purchaseMapper.getPurchaseItems(param);
+	}
+
 }
