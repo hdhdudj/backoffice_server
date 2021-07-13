@@ -23,30 +23,26 @@ import java.util.Date;
 public class Lspchb extends CommonProps {
     private final static Logger logger = LoggerFactory.getLogger(Lspchb.class);
     public Lspchb(PurchaseInsertRequestData purchaseInsertRequestData){
-        try
-        {
-            this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
-        }
-        catch (Exception e){
-            logger.debug(e.getMessage());
-        }
+        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
         this.purchaseNo = purchaseInsertRequestData.getPurchaseNo();
         this.purchaseSeq = purchaseInsertRequestData.getPurchaseSeq();
         this.purchaseStatus = purchaseInsertRequestData.getPurchaseStatus();
         this.cancelGb = StringFactory.getNinetyNine();
     }
     public Lspchb(Lspchb lspchb){
-        try
-        {
-            this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
-        }
-        catch (Exception e){
-            logger.debug(e.getMessage());
-        }
+        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
         this.purchaseNo = lspchb.getPurchaseNo();
         this.purchaseSeq = lspchb.getPurchaseSeq();
         this.purchaseStatus = lspchb.getPurchaseStatus();
         this.cancelGb = StringFactory.getNinetyNine();
+    }
+    public Lspchb(Lspchd lspchd){
+        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
+        this.purchaseNo = lspchd.getPurchaseNo();
+        this.purchaseSeq = lspchd.getPurchaseSeq();
+        this.purchaseStatus = StringFactory.getGbOne(); // 01 하드코딩
+        this.cancelGb = StringFactory.getNinetyNine();
+        this.purchaseQty = lspchd.getPurchaseQty();
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,4 +54,5 @@ public class Lspchb extends CommonProps {
     private Date effStaDt;
     private String purchaseStatus;
     private String cancelGb;
+    private Long purchaseQty;
 }
