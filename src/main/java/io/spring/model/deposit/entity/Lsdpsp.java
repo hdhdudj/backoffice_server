@@ -1,7 +1,18 @@
 package io.spring.model.deposit.entity;
 
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
@@ -12,10 +23,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.Date;
 
 @Slf4j
 @Entity
@@ -40,6 +47,7 @@ public class Lsdpsp extends CommonProps implements Serializable {
         this.claimItemYn = StringFactory.getGbTwo(); // 02 하드코딩
 //		this.purchaseGb =
 		this.dealtypeCd = "03";// 03 하드코딩 입고예정주문
+		this.planStatus = StringFactory.getGbOne();
     }
     public Lsdpsp(PurchaseInsertRequestData purchaseInsertRequestData, PurchaseInsertRequestData.Items items){
         this.depositPlanId = purchaseInsertRequestData.getDepositPlanId();
@@ -56,6 +64,7 @@ public class Lsdpsp extends CommonProps implements Serializable {
         this.claimItemYn = StringFactory.getGbTwo(); // 02
 		this.purchaseGb = purchaseInsertRequestData.getPurchaseGb();
 		this.dealtypeCd = purchaseInsertRequestData.getDealtypeCd();
+		this.planStatus = StringFactory.getGbOne();
 
     }
 
@@ -73,6 +82,7 @@ public class Lsdpsp extends CommonProps implements Serializable {
         this.claimItemYn = lsdpsp.getClaimItemYn();
         this.purchaseGb = lsdpsp.getPurchaseGb();
         this.dealtypeCd = lsdpsp.getDealtypeCd();
+		this.planStatus = StringFactory.getGbOne();
     }
     @Id
     private String depositPlanId;
