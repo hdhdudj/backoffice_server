@@ -1,5 +1,6 @@
 package io.spring.model.purchase.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
@@ -34,14 +35,14 @@ public class Lspchb extends CommonProps {
         this.purchaseNo = lspchb.getPurchaseNo();
         this.purchaseSeq = lspchb.getPurchaseSeq();
         this.purchaseStatus = lspchb.getPurchaseStatus();
-        this.cancelGb = StringFactory.getNinetyNine();
+        this.cancelGb = StringFactory.getNinetyNine(); // 99 하드코딩
     }
     public Lspchb(Lspchd lspchd){
         this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
         this.purchaseNo = lspchd.getPurchaseNo();
         this.purchaseSeq = lspchd.getPurchaseSeq();
         this.purchaseStatus = StringFactory.getGbOne(); // 01 하드코딩
-        this.cancelGb = StringFactory.getNinetyNine();
+        this.cancelGb = StringFactory.getNinetyNine(); // 99 하드코딩
         this.purchaseQty = lspchd.getPurchaseQty();
     }
     @Id
@@ -49,8 +50,10 @@ public class Lspchb extends CommonProps {
     private Long seq;
     private String purchaseNo;
     private String purchaseSeq;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date effEndDt;
     @CreationTimestamp
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date effStaDt;
     private String purchaseStatus;
     private String cancelGb;

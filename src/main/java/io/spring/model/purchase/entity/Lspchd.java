@@ -19,9 +19,9 @@ import java.util.List;
 @IdClass(LspchdId.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lspchd extends CommonProps {
-    public Lspchd(Lspchd lspchd){
+    public Lspchd(Lspchd lspchd, String purchaseSeq){
         this.purchaseNo = lspchd.getPurchaseNo();
-        this.purchaseSeq = lspchd.getPurchaseSeq();
+        this.purchaseSeq = purchaseSeq;
         this.assortId = lspchd.getAssortId();
         this.itemId = lspchd.getItemId();
         this.purchaseQty = lspchd.getPurchaseQty();

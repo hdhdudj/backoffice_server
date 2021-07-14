@@ -1,8 +1,10 @@
 package io.spring.model.deposit.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.entity.CommonProps;
 import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import lombok.AccessLevel;
@@ -10,12 +12,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -25,7 +23,7 @@ import java.util.Date;
 @Setter
 @Table(name="lsdpsp")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Lsdpsp implements Serializable {
+public class Lsdpsp extends CommonProps implements Serializable {
     public Lsdpsp(String depositPlanId, Lspchd lspchd){
         this.depositPlanId = depositPlanId;
         this.smReservationDt = Utilities.getStringToDate(StringFactory.getDoomDay());
@@ -67,11 +65,13 @@ public class Lsdpsp implements Serializable {
     private String purchaseSeq;
     private String planChgReason;
     private String claimItemYn;
-    private Long regId;
-    private Long updId;
-    @CreationTimestamp
-    private Date regDt;
-    @UpdateTimestamp
-    private Date updDt;
 
+    // 연관관계 : lspchd
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumns({
+            @JoinColumn(name = "purchaseNo", referencedColumnName = "purchaseNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+            @JoinColumn(name = "purchaseSeq", referencedColumnName = "purchaseSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+    })
+    private Lspchd lspchd;
 }

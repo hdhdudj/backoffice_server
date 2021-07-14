@@ -437,33 +437,31 @@ public class JpaPurchaseService {
         List<Lspchd> lspchdList1 = new ArrayList<>();
         for(Lspchd lspchd : lspchdList){
             List<Lspchb> lspchbList = lspchd.getLspchb();
-            int num = lspchbList.stream().filter(x->x.getEffEndDt().equals(Utilities.getStringToDate(StringFactory.getDoomDay()))&&x.getPurchaseStatus().equals(StringFactory.getGbOne())).collect(Collectors.toList()).size();
+            Date date = Utilities.getStringToDate(StringFactory.getDoomDay());
+         //   int num = lspchbList.stream().filter(x->x.getPurchaseStatus().equals(StringFactory.getGbOne())&& x.getEffEndDt().compareTo(Utilities.getStringToDate(StringFactory.getDoomDay()))==0      ).collect(Collectors.toList()).size(); //.forEach(x -> System.out.println("ㅡㅡㅡㅡㅡ compare : "+date.compareTo(x.getEffEndDt())));
+            int num = lspchbList.stream().filter(x->x.getPurchaseStatus().equals(StringFactory.getGbOne())&& x.getEffEndDt().compareTo(date)==0).collect(Collectors.toList()).size(); //.forEach(x -> System.out.println("ㅡㅡㅡㅡㅡ compare : "+date.compareTo(x.getEffEndDt())));
+
             if(num > 0){
-                lspchdList1.add(lspchd);
+               lspchdList1.add(lspchd);
             }
         }
         lspchdList = lspchdList1;
         // 4. d, b 저장
         Lspchd lspchd = null;
-        int num = 0;
         for(Lspchd item : lspchdList){
             // d의 수량이 tbOrderDetail의 수량보다 작을 때
-            if(item.getPurchaseQty() < tbOrderDetail.getQty()){
+            if(item.getPurchaseQty() >= tbOrderDetail.getQty()){
                 lspchd = item;
                 break;
             }
-            else {
-                num++;
-            }
         }
-        if(num > 0 && lspchd != null){
+        if(lspchd == null){
             return tbOrderDetail;
         }
         String newPurchaseSeq = Utilities.plusOne(lspchd.getPurchaseSeq(),4);
-        lspchd.setPurchaseSeq(newPurchaseSeq);
-        Lspchd newLspchd = new Lspchd(lspchd);
-        newLspchd.setPurchaseQty(-tbOrderDetail.getQty());
-        updateLspchdAndLspchb(newLspchd);
+        Lspchd newLspchd = new Lspchd(lspchd, newPurchaseSeq);
+        newLspchd.setPurchaseQty(lspchd.getPurchaseQty() + tbOrderDetail.getQty());
+        updateLspchdAndLspchb(lspchd, newLspchd);
         // 3. s 저장
         Lspchs lspchs = jpaLspchsRepository.findByPurchaseNoAndEffEndDt(lspchd.getPurchaseNo(), Utilities.getStringToDate(StringFactory.getDoomDay()));
         lspchs.setEffEndDt(new Date());
@@ -479,12 +477,13 @@ public class JpaPurchaseService {
     }
 
     // d와 b를 한꺼번에 업데이트하는 함수
-    private void updateLspchdAndLspchb(Lspchd lspchd){
-        Lspchb lspchb = lspchd.getLspchb().stream().filter(x->x.getEffEndDt().equals(Utilities.getStringToDate(StringFactory.getDoomDay()))).collect(Collectors.toList()).get(0);
+    private void updateLspchdAndLspchb(Lspchd lspchd, Lspchd newLspchd){
+        Lspchb lspchb = lspchd.getLspchb().get(0);
         lspchb.setEffEndDt(new Date());
         Lspchb newLspchb = new Lspchb(lspchd);
-        jpaLspchdRepository.save(lspchd);
+//        jpaLspchdRepository.save(lspchd);
         jpaLspchbRepository.save(lspchb);
         jpaLspchbRepository.save(newLspchb);
+        jpaLspchdRepository.save(newLspchd);
     }
 }
