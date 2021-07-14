@@ -198,16 +198,22 @@ public class PurchaseController {
 
     // 발주 list get (mybatis)
     @GetMapping(path="/purchaselistmybatis")
-    public ResponseEntity getPurchaseListMyBatis(@RequestParam String purchaseVendorId,@RequestParam String assortId, String purchaseStatus, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDt, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDt){
+	public ResponseEntity getPurchaseListMyBatis(@RequestParam(required = false) String purchaseVendorId,
+			@RequestParam(required = false) String dealtypeCd, @RequestParam(required = false) String assortId,
+			@RequestParam(required = false) String purchaseStatus,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDt,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDt) {
         logger.debug("get purchase list - mybatis");
 
         HashMap<String, Object> param = new HashMap<>();
 
         param.put("purchaseVendorId", purchaseVendorId);
+		param.put("dealtypeCd", dealtypeCd);
         param.put("assortId", assortId);
         param.put("purchaseStatus", purchaseStatus);
         param.put("startDt", startDt);
         param.put("endDt", endDt);
+
 
         List<HashMap<String, Object>> result = myBatisPurchaseService.getPurchaseList(param);
 

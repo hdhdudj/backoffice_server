@@ -3,36 +3,77 @@
 <mapper namespace="io.spring.infrastructure.mybatis.mapper.PurchaseMapper">
     <select id="selectPurchaseListByCondition" resultType="HashMap">
         <![CDATA[
-        select a.purchase_no,
-               b.purchase_seq,
-               a.purchase_vendor_id,
-               b.assort_id,
-               b.item_id,
-               b.purchase_qty,
-               b.purchase_unit_amt,
-               b.site_order_no,
+        select a.purchase_no purchaseNo,
+               b.purchase_seq purchaseSeq,
+               a.purchase_vendor_id purchaseVendorId,
+               ifnull((select bb.vd_nm from cmvdmr bb where bb.vendor_id = a.purchase_vendor_id), '거래처없음') purchaseVendorNm ,
+				a.store_cd storeCd,
+				(select bb.storage_nm from cmstgm bb where bb.storage_id = a.store_cd) storageNm,
+				a.dealtype_cd dealtypeCd, 
+               b.assort_id assortId,
+               b.item_id itemId,
+               c.assort_nm assortNm,
+               b.purchase_qty purchaseQty,
+               b.purchase_unit_amt purchaseUnitAmt,
+               b.site_order_no siteOrderNo,
                (select b1.option_nm
                 from ititmm b2, itvari b1
                 where b2.assort_id=b.assort_id
                   And b2.item_id= b.item_id
                   And  b2.assort_id = b1.assort_id
                   and b2.variation_gb1 = b1.variation_gb
-                  and  b2.variation_seq1=b1.seq) opt1,
+                  and  b2.variation_seq1=b1.seq) optionNm1,
                (select b1.option_nm
                 from ititmm b2, itvari b1
                 where b2.assort_id=b.assort_id
                   And b2.item_id= b.item_id
                   And  b2.assort_id = b1.assort_id
                   and b2.variation_gb2 = b1.variation_gb
-                  and  b2.variation_seq2=b1.seq) opt2
+                  and  b2.variation_seq2=b1.seq) optionNm2,
+(
+				select ddd.purchase_status
+				from lspchb ddd
+				where ddd.purchase_no = b.purchase_no
+				and  ddd.purchase_seq = b.purchase_seq
+				and ddd.eff_end_dt='9999-12-31 23:59:59'
+				LIMIT 1
+				) purchaseStatus                  
         from lspchm a,
-             lspchd b
+             lspchd b,
+             itasrt c
         where a.purchase_dt between #{startDt} and #{endDt}
-          and a.purchase_vendor_id = #{purchaseVendorId}
-          and a.purchase_no = b.purchase_no
-          and b.assort_id = #{assortId}
-          and a.purchase_status = #{purchaseStatus}
+        and a.purchase_no = b.purchase_no
+            and b.assort_id = c.assort_id
+        
+     
         ]]>
+        <if test='purchaseVendorId != null'>
+			 <![CDATA[		
+          and a.purchase_vendor_id = #{purchaseVendorId}
+           ]]>
+			</if>
+        <if test='dealtypeCd != null'>
+			 <![CDATA[		
+          and a.dealtype_cd = #{dealtypeCd}
+           ]]>
+			</if>			
+                <if test='purchaseStatus != null'>
+			 <![CDATA[		
+             and a.purchase_status = #{purchaseStatus}
+           ]]>
+			</if>	
+          
+          
+              <if test='assortId != null'>
+			 <![CDATA[		
+         and b.assort_id = #{assortId}
+           ]]>
+			</if>			
+       
+    		
+       
+          
+    
     </select>
     
     

@@ -1,7 +1,21 @@
 package io.spring.model.deposit.entity;
 
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+<<<<<<< HEAD
 import com.fasterxml.jackson.annotation.JsonIgnore;
+=======
+
+>>>>>>> 4f298fa536f30ff74a848e9e7678e6c47a295810
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
@@ -25,6 +39,9 @@ import java.util.Date;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lsdpsp extends CommonProps implements Serializable {
     public Lsdpsp(String depositPlanId, Lspchd lspchd){
+
+		// todo:purchaseGb 를 입력하는 부분이 추가되야함.
+
         this.depositPlanId = depositPlanId;
         this.smReservationDt = Utilities.getStringToDate(StringFactory.getDoomDay());
         this.purchasePlanQty = lspchd.getPurchaseQty();
@@ -35,6 +52,8 @@ public class Lsdpsp extends CommonProps implements Serializable {
         this.purchaseNo = lspchd.getPurchaseNo();
         this.purchaseSeq = lspchd.getPurchaseSeq();
         this.claimItemYn = StringFactory.getGbTwo(); // 02 하드코딩
+		// this.purchaseGb =
+		this.dealtypeCd = "03";// 03 하드코딩 입고예정주문
     }
     public Lsdpsp(PurchaseInsertRequestData purchaseInsertRequestData, PurchaseInsertRequestData.Items items){
         this.depositPlanId = purchaseInsertRequestData.getDepositPlanId();
@@ -49,6 +68,9 @@ public class Lsdpsp extends CommonProps implements Serializable {
         this.purchaseNo = purchaseInsertRequestData.getPurchaseNo();
         this.purchaseSeq = items.getPurchaseSeq();
         this.claimItemYn = StringFactory.getGbTwo(); // 02
+		this.purchaseGb = purchaseInsertRequestData.getPurchaseGb();
+		this.dealtypeCd = purchaseInsertRequestData.getDealtypeCd();
+
     }
     @Id
     private String depositPlanId;
@@ -65,6 +87,8 @@ public class Lsdpsp extends CommonProps implements Serializable {
     private String purchaseSeq;
     private String planChgReason;
     private String claimItemYn;
+	private String purchaseGb;
+	private String dealtypeCd;
 
     // 연관관계 : lspchd
     @ManyToOne
