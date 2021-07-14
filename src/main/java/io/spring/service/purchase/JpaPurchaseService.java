@@ -1,18 +1,5 @@
 package io.spring.service.purchase;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
@@ -43,6 +30,13 @@ import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -440,21 +434,28 @@ public class JpaPurchaseService {
     public TbOrderDetail makePurchaseData(TbOrderDetail tbOrderDetail, Itasrt itasrt, Ititmc ititmc, Ititmt ititmt, String purchaseGb) {
         // 1. lspchd를 찾아오기 (m, b도 딸려와야 함)
         List<Lspchd> lspchdList = jpaLspchdRepository.findByAssortIdAndItemId(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
-//        Lspchm lspchm = lspchdList.get(0).getLspchm();
-        // 2. d, b 저장
+        // 2. m의 dealTypeCd = 02, purchaseGb = 01인 애들을 필터
+        lspchdList = lspchdList.stream().filter(x->x.getLspchm().getDealtypeCd().equals(StringFactory.getGbTwo())&&x.getLspchm().getPurchaseGb().equals(StringFactory.getGbOne())).collect(Collectors.toList());
+        // 3. lspchb 중 purchaseStatus가 01인 애들만 남기기
+        List<Lspchd> lspchdList1 = new ArrayList<>();
+        for(Lspchd lspchd : lspchdList){
+            List<Lspchb> lspchbList = lspchd.getLspchb();
+            int num = lspchbList.stream().filter(x->x.getEffEndDt().equals(Utilities.getStringToDate(StringFactory.getDoomDay()))&&x.getPurchaseStatus().equals(StringFactory.getGbOne())).collect(Collectors.toList()).size();
+            if(num > 0){
+                lspchdList1.add(lspchd);
+            }
+        }
+        lspchdList = lspchdList1;
+        // 4. d, b 저장
         Lspchd lspchd = null;
-        Lspchb lspchb = null;
-        // purchaseGb = 01, dealTypeCd = 02 여야 함(??)
-        // 2. lspchb 중 purchaseStatus가 01인 애들만 남기기
         int num = 0;
         for(Lspchd item : lspchdList){
-            // d의 수량이 tbOrderDetail의 수량보다 작고, d의 purchaseStatus가 01일 때
-            if(item.getPurchaseQty() < tbOrderDetail.getQty() && item.getLspchb().get(0).getPurchaseStatus().equals(StringFactory.getGbOne())){
+            // d의 수량이 tbOrderDetail의 수량보다 작을 때
+            if(item.getPurchaseQty() < tbOrderDetail.getQty()){
                 lspchd = item;
-                lspchb = lspchd.getLspchb().get(0);
                 break;
             }
-            else if(item.getLspchb().get(0).getPurchaseStatus().equals(StringFactory.getGbOne())){
+            else {
                 num++;
             }
         }
@@ -463,12 +464,9 @@ public class JpaPurchaseService {
         }
         String newPurchaseSeq = Utilities.plusOne(lspchd.getPurchaseSeq(),4);
         lspchd.setPurchaseSeq(newPurchaseSeq);
-        lspchb.setPurchaseSeq(newPurchaseSeq);
         Lspchd newLspchd = new Lspchd(lspchd);
-        Lspchb newLspchb = new Lspchb(lspchb);
         newLspchd.setPurchaseQty(-tbOrderDetail.getQty());
-        jpaLspchdRepository.save(newLspchd);
-        jpaLspchbRepository.save(newLspchb);
+        updateLspchdAndLspchb(newLspchd);
         // 3. s 저장
         Lspchs lspchs = jpaLspchsRepository.findByPurchaseNoAndEffEndDt(lspchd.getPurchaseNo(), Utilities.getStringToDate(StringFactory.getDoomDay()));
         lspchs.setEffEndDt(new Date());
@@ -481,5 +479,15 @@ public class JpaPurchaseService {
         jpaLsdpspRepository.save(lsdpsp);
 
         return null;
+    }
+
+    // d와 b를 한꺼번에 업데이트하는 함수
+    private void updateLspchdAndLspchb(Lspchd lspchd){
+        Lspchb lspchb = lspchd.getLspchb().stream().filter(x->x.getEffEndDt().equals(Utilities.getStringToDate(StringFactory.getDoomDay()))).collect(Collectors.toList()).get(0);
+        lspchb.setEffEndDt(new Date());
+        Lspchb newLspchb = new Lspchb(lspchd);
+        jpaLspchdRepository.save(lspchd);
+        jpaLspchbRepository.save(lspchb);
+        jpaLspchbRepository.save(newLspchb);
     }
 }

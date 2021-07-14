@@ -128,8 +128,8 @@ public class JpaOrderService {
                 .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList()); // 주문코드가 CO4(국내입고완료)인 애들의 list
 //        List<TbOrderDetail> ovrsTbOrderDetailsC01 = tbOrderDetailsC01.stream().filter(x -> x.getStorageId().equals(overseaStorageId)).collect(Collectors.toList());
         List<TbOrderDetail> domTbOrderDetailsC04 = tbOrderDetailsC04.stream().filter(x -> x.getStorageId().equals(domesticStorageId)).collect(Collectors.toList());
-        long sumOfTbOrderDetailsC01 = tbOrderDetailsC01.stream().map(x -> {if(x.getQty() == null){return 0l;}else {return x.getQty();}}).reduce((a,b) -> a+b).get(); // C01인 애들의 sum(qty) (창고 id는 불요)
-        long sumOfDomTbOrderDetailsC04 = domTbOrderDetailsC04.stream().map(x -> {if(x.getQty() == null){return 0l;}else {return x.getQty();}}).reduce((a,b) -> a+b).get(); // C04고 국내창고인 애들의 sum(qty)
+        long sumOfTbOrderDetailsC01 = tbOrderDetailsC01.stream().map(x -> {if(x.getQty() == null){return 0l;}else {return x.getQty();}}).reduce((a,b) -> a+b).get(); // C01인 애들의 sum(domQty) (창고 id는 불요)
+        long sumOfDomTbOrderDetailsC04 = domTbOrderDetailsC04.stream().map(x -> {if(x.getQty() == null){return 0l;}else {return x.getQty();}}).reduce((a,b) -> a+b).get(); // C04고 국내창고인 애들의 sum(domQty)
         log.debug("----- sumOfDomTbOrderDetailsC04 : " + sumOfDomTbOrderDetailsC04);
         // 국내창고 ititmc 불러오기
         Ititmc domItitmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, domesticStorageId);
@@ -139,31 +139,39 @@ public class JpaOrderService {
         Ititmc ovrsItitmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, overseaStorageId);
         // 해외창고 ititmt 불러오기
         Ititmt ovrsItitmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, overseaStorageId);
+        long domQty = domItitmc == null? 0l:domItitmc.getQty();
+        long domShipIndQty = domItitmc == null? 0l:domItitmc.getShipIndicateQty();
+        long domTempQty = domItitmt == null? 0l:domItitmt.getTempQty();
+        long domTempIndQty = domItitmt == null? 0l:domItitmt.getTempIndicateQty();
+        long ovrsQty = ovrsItitmc == null? 0l:ovrsItitmc.getQty();
+        long ovrsShipIndQty = ovrsItitmc == null? 0l:ovrsItitmc.getShipIndicateQty();
+        long ovrsTempQty = ovrsItitmt == null? 0l:ovrsItitmt.getTempQty();
+        long ovrsTempIndQty = ovrsItitmt == null? 0l:ovrsItitmt.getTempIndicateQty();
 
         // 1.국내재고, 2.국내입고예정, 3.해외재고, 4.해외입고예정 확인 후 주문상태 변경.
         // 입고예정이면 입고예정 data 생성.
 
         // 1. 국내재고 확인 (tbOrderDetail의 storageId 확인)
-        if(domItitmc.getQty() - domItitmc.getShipIndicateQty() - sumOfDomTbOrderDetailsC04 - tbOrderDetail.getQty() >= 0){
+        if(domQty - domShipIndQty - sumOfDomTbOrderDetailsC04 - tbOrderDetail.getQty() >= 0){
             updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrC04()); // 국내(현지)입고완료 : C04
         }
         // 2. 국내입고예정 재고 확인
-        else if(domItitmt.getTempQty() - domItitmt.getTempIndicateQty() - tbOrderDetail.getQty() >= 0){
+        else if(domTempQty - domTempIndQty - tbOrderDetail.getQty() >= 0){
             // ititmt 주문발주에 물량만큼 더하기
-            domItitmt.setTempIndicateQty(domItitmt.getTempIndicateQty() + tbOrderDetail.getQty());
+            domItitmt.setTempIndicateQty(domTempIndQty + tbOrderDetail.getQty());
             em.persist(domItitmt);
             // 발주 data 변경하기 (lspchm,lspchd,lspchs,lspchb,lsdpsp)
             jpaPurchaseService.makePurchaseData(tbOrderDetail, itasrt, domItitmc, domItitmt, StringFactory.getGbTwo());
             updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrC03()); // 이동지시완료 : C03
         }
         // 3. 해외재고 확인 (itasrt의 storageId 확인)
-        else if(ovrsItitmc.getQty() - ovrsItitmc.getShipIndicateQty() - sumOfTbOrderDetailsC01 - tbOrderDetail.getQty() >= 0){
+        else if(ovrsQty - ovrsShipIndQty - sumOfTbOrderDetailsC01 - tbOrderDetail.getQty() >= 0){
             updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), StringFactory.getStrC01()); // 해외입고완료 : C01
         }
         // 4. 해외입고예정 재고 확인
-        else if(ovrsItitmt.getTempQty() - ovrsItitmt.getTempIndicateQty() - tbOrderDetail.getQty() >= 0){
+        else if(ovrsTempQty - ovrsTempIndQty - tbOrderDetail.getQty() >= 0){
             // ititmt 주문발주에 물량만큼 더하기
-            ovrsItitmt.setTempIndicateQty(ovrsItitmt.getTempIndicateQty() + tbOrderDetail.getQty());
+            ovrsItitmt.setTempIndicateQty(ovrsTempIndQty + tbOrderDetail.getQty());
             em.persist(ovrsItitmt);
             // 발주 data 변경하기 (lspchm,lspchd,lspchs,lspchb,lsdpsp)
             TbOrderDetail tbOrderDetail1 = jpaPurchaseService.makePurchaseData(tbOrderDetail, itasrt, ovrsItitmc, ovrsItitmt, StringFactory.getGbOne());
