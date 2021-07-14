@@ -1,6 +1,16 @@
 package io.spring.model.purchase.entity;
 
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
@@ -10,10 +20,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
 
 @Slf4j
 @Entity
@@ -54,6 +60,8 @@ public class Lspchm extends CommonProps {
         this.delivery = purchaseInsertRequestData.getDelivery();
         this.payment = purchaseInsertRequestData.getPayment();
         this.carrier = purchaseInsertRequestData.getCarrier();
+
+		this.dealtypeCd = purchaseInsertRequestData.getDealtypeCd();
 
     }
     @Id

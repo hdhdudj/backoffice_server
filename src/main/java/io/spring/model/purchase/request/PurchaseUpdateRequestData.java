@@ -21,6 +21,8 @@ public class PurchaseUpdateRequestData {
 	private String itemId; // lspchd, lsdpsp
 	private String itemGrade; // lspchd, ititmt
 
+	private String dealtypeCd;
+
 	private String purchaseRemark;
 	private String siteOrderNo;
 	private String siteTrackNo;

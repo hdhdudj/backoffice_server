@@ -1,6 +1,10 @@
 package io.spring.model.purchase.request;
 
+import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.entity.Itasrt;
@@ -8,10 +12,11 @@ import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderMaster;
-import lombok.*;
-
-import java.util.Date;
-import java.util.List;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -50,6 +55,8 @@ public class PurchaseInsertRequestData {
     private String assortId; // lspchd, lsdpsp, ititmt
     private String itemId; // lspchd, lsdpsp
     private String itemGrade; // lspchd, ititmt
+
+	private String dealtypeCd;
 
     // lspchm
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")

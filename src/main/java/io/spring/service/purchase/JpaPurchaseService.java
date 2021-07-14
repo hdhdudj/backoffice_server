@@ -113,6 +113,9 @@ public class JpaPurchaseService {
             lspchm.setDelivery(purchaseInsertRequestData.getDelivery());
             lspchm.setPayment(purchaseInsertRequestData.getPayment());
             lspchm.setCarrier(purchaseInsertRequestData.getCarrier());
+            
+            lspchm.setDealtypeCd(purchaseInsertRequestData.getDealtypeCd());
+            
         }
         float localPriceSum = lspchdList.stream().map(x->x.getItemAmt()).reduce((a,b)->a+b).get();
         lspchm.setLocalPrice(localPriceSum);

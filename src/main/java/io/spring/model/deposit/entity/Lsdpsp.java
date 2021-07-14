@@ -1,6 +1,17 @@
 package io.spring.model.deposit.entity;
 
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.purchase.entity.Lspchd;
@@ -10,14 +21,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.io.Serializable;
-import java.util.Date;
 
 @Slf4j
 @Entity
@@ -27,6 +30,9 @@ import java.util.Date;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lsdpsp implements Serializable {
     public Lsdpsp(String depositPlanId, Lspchd lspchd){
+
+		// todo:purchaseGb 를 입력하는 부분이 추가되야함.
+
         this.depositPlanId = depositPlanId;
         this.smReservationDt = Utilities.getStringToDate(StringFactory.getDoomDay());
         this.purchasePlanQty = lspchd.getPurchaseQty();
@@ -37,6 +43,8 @@ public class Lsdpsp implements Serializable {
         this.purchaseNo = lspchd.getPurchaseNo();
         this.purchaseSeq = lspchd.getPurchaseSeq();
         this.claimItemYn = StringFactory.getGbTwo(); // 02 하드코딩
+		// this.purchaseGb =
+		this.dealtypeCd = "03";// 03 하드코딩 입고예정주문
     }
     public Lsdpsp(PurchaseInsertRequestData purchaseInsertRequestData, PurchaseInsertRequestData.Items items){
         this.depositPlanId = purchaseInsertRequestData.getDepositPlanId();
@@ -51,6 +59,9 @@ public class Lsdpsp implements Serializable {
         this.purchaseNo = purchaseInsertRequestData.getPurchaseNo();
         this.purchaseSeq = items.getPurchaseSeq();
         this.claimItemYn = StringFactory.getGbTwo(); // 02
+		this.purchaseGb = purchaseInsertRequestData.getPurchaseGb();
+		this.dealtypeCd = purchaseInsertRequestData.getDealtypeCd();
+
     }
     @Id
     private String depositPlanId;
@@ -67,6 +78,8 @@ public class Lsdpsp implements Serializable {
     private String purchaseSeq;
     private String planChgReason;
     private String claimItemYn;
+	private String purchaseGb;
+	private String dealtypeCd;
     private Long regId;
     private Long updId;
     @CreationTimestamp
