@@ -12,6 +12,9 @@ public interface JpaLsdpspRepository extends JpaRepository<Lsdpsp, String> {
     @Query("select max(l.purchaseSeq) as maxVal from Lsdpsp as l where l.purchaseNo = ?1")
     String findMaxPurchaseSeqByPurchaseNo(String purchaseNo);
 
-    @Query("select p from Lsdpsp p join fetch Lspchd d join fetch Lspchb b where p.assortId=?1 and p.itemId=?2")
+    @Query(value = "select nextval('seq_LSDPSP') as nextval", nativeQuery = true)
+    String findMaxDepositPlanId();
+
+    @Query("select p from Lsdpsp p join fetch p.lspchd d join fetch d.lspchb b where p.assortId=?1 and p.itemId=?2")
     List<Lsdpsp> findByAssortIdAndItemId(String assortId, String itemId);
 }

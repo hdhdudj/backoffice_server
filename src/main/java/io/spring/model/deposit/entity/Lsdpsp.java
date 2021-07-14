@@ -58,6 +58,22 @@ public class Lsdpsp extends CommonProps implements Serializable {
 		this.dealtypeCd = purchaseInsertRequestData.getDealtypeCd();
 
     }
+
+    public Lsdpsp(String depositPlanId, Lsdpsp lsdpsp) {
+        this.depositPlanId = depositPlanId;
+        this.smReservationDt = lsdpsp.getSmReservationDt();
+        this.assortId = lsdpsp.getAssortId();
+        this.itemId = lsdpsp.getItemId();
+        this.planStatus = lsdpsp.getPlanStatus();
+        this.orderId = lsdpsp.getOrderId();
+        this.orderSeq = lsdpsp.getOrderSeq();
+        this.purchaseNo = lsdpsp.getPurchaseNo();
+        this.purchaseSeq = lsdpsp.getPurchaseSeq();
+        this.planChgReason = lsdpsp.getPlanChgReason();
+        this.claimItemYn = lsdpsp.getClaimItemYn();
+        this.purchaseGb = lsdpsp.getPurchaseGb();
+        this.dealtypeCd = lsdpsp.getDealtypeCd();
+    }
     @Id
     private String depositPlanId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
@@ -84,4 +100,5 @@ public class Lsdpsp extends CommonProps implements Serializable {
             @JoinColumn(name = "purchaseSeq", referencedColumnName = "purchaseSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
     })
     private Lspchd lspchd;
+
 }
