@@ -1,18 +1,7 @@
 package io.spring.model.deposit.entity;
 
-import java.io.Serializable;
-import java.util.Date;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
@@ -37,7 +26,7 @@ import java.util.Date;
 public class Lsdpsp extends CommonProps implements Serializable {
     public Lsdpsp(String depositPlanId, Lspchd lspchd){
 
-		// todo:purchaseGb 를 입력하는 부분이 추가되야함.
+		// todo:purchaseGb 를 입력하는 부분이 추가되야함. -> 바깥에서 set으로 추가됨.
 
         this.depositPlanId = depositPlanId;
         this.smReservationDt = Utilities.getStringToDate(StringFactory.getDoomDay());
@@ -49,7 +38,7 @@ public class Lsdpsp extends CommonProps implements Serializable {
         this.purchaseNo = lspchd.getPurchaseNo();
         this.purchaseSeq = lspchd.getPurchaseSeq();
         this.claimItemYn = StringFactory.getGbTwo(); // 02 하드코딩
-		// this.purchaseGb =
+//		this.purchaseGb =
 		this.dealtypeCd = "03";// 03 하드코딩 입고예정주문
     }
     public Lsdpsp(PurchaseInsertRequestData purchaseInsertRequestData, PurchaseInsertRequestData.Items items){

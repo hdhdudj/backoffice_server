@@ -158,16 +158,16 @@ public class JpaOrderService {
         String statusCd;
 
         // 1. 국내재고 확인 (tbOrderDetail의 storageId 확인)
-        System.out.println("ㅡㅡㅡㅡㅡ domQty : " + domQty);
-        System.out.println("ㅡㅡㅡㅡㅡ domShipIndQty : " + domShipIndQty);
-        System.out.println("ㅡㅡㅡㅡㅡ domTempQty : " + domTempQty);
-        System.out.println("ㅡㅡㅡㅡㅡ domTempIndQty : " + domTempIndQty);
-        System.out.println("ㅡㅡㅡㅡㅡ tbOrderDetail.getQty() : " + tbOrderDetail.getQty());
-        System.out.println("ㅡㅡㅡㅡㅡ sumOfTbOrderDetailsC01 : " + sumOfTbOrderDetailsC01);
-        System.out.println("ㅡㅡㅡㅡㅡ ovrsQty : " + ovrsQty);
-        System.out.println("ㅡㅡㅡㅡㅡ ovrsShipIndQty : " + ovrsShipIndQty);
-        System.out.println("ㅡㅡㅡㅡㅡ ovrsTempQty : " + ovrsTempQty);
-        System.out.println("ㅡㅡㅡㅡㅡ ovrsTempIndQty : " + ovrsTempIndQty);
+//        System.out.println("ㅡㅡㅡㅡㅡ domQty : " + domQty);
+//        System.out.println("ㅡㅡㅡㅡㅡ domShipIndQty : " + domShipIndQty);
+//        System.out.println("ㅡㅡㅡㅡㅡ domTempQty : " + domTempQty);
+//        System.out.println("ㅡㅡㅡㅡㅡ domTempIndQty : " + domTempIndQty);
+//        System.out.println("ㅡㅡㅡㅡㅡ tbOrderDetail.getQty() : " + tbOrderDetail.getQty());
+//        System.out.println("ㅡㅡㅡㅡㅡ sumOfTbOrderDetailsC01 : " + sumOfTbOrderDetailsC01);
+//        System.out.println("ㅡㅡㅡㅡㅡ ovrsQty : " + ovrsQty);
+//        System.out.println("ㅡㅡㅡㅡㅡ ovrsShipIndQty : " + ovrsShipIndQty);
+//        System.out.println("ㅡㅡㅡㅡㅡ ovrsTempQty : " + ovrsTempQty);
+//        System.out.println("ㅡㅡㅡㅡㅡ ovrsTempIndQty : " + ovrsTempIndQty);
 
         if(domQty - domShipIndQty - sumOfDomTbOrderDetailsC04 - tbOrderDetail.getQty() >= 0){
             statusCd = StringFactory.getStrC04(); // 국내(현지)입고완료 : C04

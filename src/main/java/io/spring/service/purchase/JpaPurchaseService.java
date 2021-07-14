@@ -432,29 +432,31 @@ public class JpaPurchaseService {
     // tbOrderDetail에서 발주 data가 만들어질 때 쓰는 함수 (lspchm, lspchd, lspchs, lspchb, lsdpsp)
     @Transactional
     public TbOrderDetail makePurchaseData(TbOrderDetail tbOrderDetail, Itasrt itasrt, Ititmc ititmc, Ititmt ititmt, String purchaseGb) {
-        // 1. lspchd를 찾아오기 (m, b도 딸려와야 함)
-        List<Lspchd> lspchdList = jpaLspchdRepository.findByAssortIdAndItemId(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
-        // 2. m의 dealTypeCd = 02, purchaseGb = 01인 애들을 필터
-        lspchdList = lspchdList.stream().filter(x->x.getLspchm().getDealtypeCd().equals(StringFactory.getGbTwo())&&x.getLspchm().getPurchaseGb().equals(StringFactory.getGbOne())).collect(Collectors.toList());
+        // 1. lsdpsp 찾아오기 (d 딸려옴, d에 따라 b도 딸려옴)
+        List<Lsdpsp> lsdpspList = jpaLsdpspRepository.findByAssortIdAndItemId(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
+//        List<Lspchd> lspchdList = jpaLspchdRepository.findByAssortIdAndItemId(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
+        // 2. dealTypeCd = 02, purchaseGb = 01인 애들을 필터
+//        lspchdList = lspchdList.stream().filter(x->x.getLspchm().getDealtypeCd().equals(StringFactory.getGbTwo())&&x.getLspchm().getPurchaseGb().equals(StringFactory.getGbOne())).collect(Collectors.toList());
+        lsdpspList = lsdpspList.stream().filter(x->x.getDealtypeCd().equals(StringFactory.getGbTwo())&&x.getPurchaseGb().equals(StringFactory.getGbOne())).collect(Collectors.toList());
         // 3. lspchb 중 purchaseStatus가 01인 애들만 남기기
-        List<Lspchd> lspchdList1 = new ArrayList<>();
-        for(Lspchd lspchd : lspchdList){
-            List<Lspchb> lspchbList = lspchd.getLspchb();
+        List<Lsdpsp> lsdpspList1 = new ArrayList<>();
+        for(Lsdpsp lsdpsp : lsdpspList){
+            List<Lspchb> lspchbList = lsdpsp.getLspchd().getLspchb();
             Date date = Utilities.getStringToDate(StringFactory.getDoomDay());
          //   int num = lspchbList.stream().filter(x->x.getPurchaseStatus().equals(StringFactory.getGbOne())&& x.getEffEndDt().compareTo(Utilities.getStringToDate(StringFactory.getDoomDay()))==0      ).collect(Collectors.toList()).size(); //.forEach(x -> System.out.println("ㅡㅡㅡㅡㅡ compare : "+date.compareTo(x.getEffEndDt())));
             int num = lspchbList.stream().filter(x->x.getPurchaseStatus().equals(StringFactory.getGbOne())&& x.getEffEndDt().compareTo(date)==0).collect(Collectors.toList()).size(); //.forEach(x -> System.out.println("ㅡㅡㅡㅡㅡ compare : "+date.compareTo(x.getEffEndDt())));
 
             if(num > 0){
-               lspchdList1.add(lspchd);
+                lsdpspList1.add(lsdpsp);
             }
         }
-        lspchdList = lspchdList1;
+        lsdpspList = lsdpspList1;
         // 4. d, b 저장
         Lspchd lspchd = null;
-        for(Lspchd item : lspchdList){
+        for(Lsdpsp item : lsdpspList){
             // d의 수량이 tbOrderDetail의 수량보다 작을 때
-            if(item.getPurchaseQty() >= tbOrderDetail.getQty()){
-                lspchd = item;
+            if(item.getLspchd().getPurchaseQty() >= tbOrderDetail.getQty()){
+                lspchd = item.getLspchd();
                 break;
             }
         }
@@ -474,6 +476,7 @@ public class JpaPurchaseService {
         // 4. lsdpsp 저장
         String depositPlanId = jpaItitmtRepository.findMaxDepositPlanId();
         Lsdpsp lsdpsp = new Lsdpsp(depositPlanId, lspchd);
+        lsdpsp.setPurchaseGb(purchaseGb);
         jpaLsdpspRepository.save(lsdpsp);
 
         return null;
