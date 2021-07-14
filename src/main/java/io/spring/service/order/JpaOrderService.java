@@ -98,8 +98,8 @@ public class JpaOrderService {
             ititmt.setTempIndicateQty(tempIndQty + tbOrderDetail.getQty());
             em.persist(ititmt);
             // 발주 data 변경하기 (lspchm,lspchd,lspchs,lspchb,lsdpsp)
-            TbOrderDetail tbOrderDetail1 = jpaPurchaseService.makePurchaseData(tbOrderDetail, itasrt, ititmc, ititmt, StringFactory.getGbTwo());
-            if(tbOrderDetail1 != null){
+            boolean flag = jpaPurchaseService.makePurchaseData(tbOrderDetail, itasrt, ititmc, ititmt, StringFactory.getGbTwo());
+            if(!flag){
                 statusCd = StringFactory.getStrB01(); // 발주대기 : B01
             }
             else{
@@ -178,8 +178,8 @@ public class JpaOrderService {
             domItitmt.setTempIndicateQty(domTempIndQty + tbOrderDetail.getQty());
             em.persist(domItitmt);
             // 발주 data 변경하기 (lspchm,lspchd,lspchs,lspchb,lsdpsp)
-            TbOrderDetail tbOrderDetail1 = jpaPurchaseService.makePurchaseData(tbOrderDetail, itasrt, domItitmc, domItitmt, StringFactory.getGbTwo());
-            if(tbOrderDetail1 != null){
+            boolean flag = jpaPurchaseService.makePurchaseData(tbOrderDetail, itasrt, domItitmc, domItitmt, StringFactory.getGbTwo());
+            if(!flag){
                 statusCd = StringFactory.getStrB01(); // 발주대기 : B01
             }
             else{
@@ -196,8 +196,8 @@ public class JpaOrderService {
             ovrsItitmt.setTempIndicateQty(ovrsTempIndQty + tbOrderDetail.getQty());
             em.persist(ovrsItitmt);
             // 발주 data 변경하기 (lspchm,lspchd,lspchs,lspchb,lsdpsp)
-            TbOrderDetail tbOrderDetail1 = jpaPurchaseService.makePurchaseData(tbOrderDetail, itasrt, ovrsItitmc, ovrsItitmt, StringFactory.getGbOne());
-            if(tbOrderDetail1 != null){
+            boolean flag = jpaPurchaseService.makePurchaseData(tbOrderDetail, itasrt, ovrsItitmc, ovrsItitmt, StringFactory.getGbOne());
+            if(!flag){
                 statusCd = StringFactory.getStrB01(); // 발주대기 : B01
             }
             else{

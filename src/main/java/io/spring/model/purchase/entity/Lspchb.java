@@ -9,9 +9,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CreationTimestamp;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -22,7 +21,6 @@ import java.util.Date;
 @Table(name="lspchb")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lspchb extends CommonProps {
-    private final static Logger logger = LoggerFactory.getLogger(Lspchb.class);
     public Lspchb(PurchaseInsertRequestData purchaseInsertRequestData){
         this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
         this.purchaseNo = purchaseInsertRequestData.getPurchaseNo();

@@ -432,7 +432,7 @@ public class JpaPurchaseService {
 
     // tbOrderDetail에서 발주 data가 만들어질 때 쓰는 함수 (lspchm, lspchd, lspchs, lspchb, lsdpsp)
     @Transactional
-    public TbOrderDetail makePurchaseData(TbOrderDetail tbOrderDetail, Itasrt itasrt, Ititmc ititmc, Ititmt ititmt, String purchaseGb) {
+    public boolean makePurchaseData(TbOrderDetail tbOrderDetail, Itasrt itasrt, Ititmc ititmc, Ititmt ititmt, String purchaseGb) {
         // 1. lsdpsp 찾아오기 (d 딸려옴, d에 따라 b도 딸려옴)
         List<Lsdpsp> lsdpspList = jpaLsdpspRepository.findByAssortIdAndItemId(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
         // 2. dealTypeCd = 02, purchaseGb = 01인 애들을 필터
@@ -442,7 +442,8 @@ public class JpaPurchaseService {
         for(Lsdpsp lsdpsp : lsdpspList){
             List<Lspchb> lspchbList = lsdpsp.getLspchd().getLspchb();
             Date date = Utilities.getStringToDate(StringFactory.getDoomDay());
-            int num = lspchbList.stream().filter(x->x.getPurchaseStatus().equals(StringFactory.getGbOne())&& x.getEffEndDt().compareTo(date)==0).collect(Collectors.toList()).size(); //.forEach(x -> System.out.println("ㅡㅡㅡㅡㅡ compare : "+date.compareTo(x.getEffEndDt())));
+            lspchbList = lspchbList.stream().filter(x->x.getPurchaseStatus().equals(StringFactory.getGbOne())&& x.getEffEndDt().compareTo(date)==0).collect(Collectors.toList());
+            int num = lspchbList.size(); //.forEach(x -> System.out.println("ㅡㅡㅡㅡㅡ compare : "+date.compareTo(x.getEffEndDt())));
             if(num > 0){
                 lsdpspList1.add(lsdpsp);
             }
@@ -458,10 +459,12 @@ public class JpaPurchaseService {
             }
         }
         if(lsdpsp == null){ // 해당하는 psp가 없을 때 -> 발주대기
-            return tbOrderDetail;
+            return false;
         }
         // 기존 lsdpsp update하고 새로운 lsdpsp 추가
-        updateLsdpsp(lsdpsp, tbOrderDetail.getQty());
+        this.updateLsdpsp(lsdpsp, tbOrderDetail.getQty());
+        // lspchb, lspchd update 및 새 row 추가
+        this.updateLspchbd(lsdpsp.getLspchd(), tbOrderDetail.getQty());
 
 //        String newPurchaseSeq = Utilities.plusOne(lspchd.getPurchaseSeq(),4);
 //        Lspchd newLspchd = new Lspchd(lspchd, newPurchaseSeq);
@@ -479,7 +482,20 @@ public class JpaPurchaseService {
 //        lsdpsp.setPurchaseGb(purchaseGb);
 //        jpaLsdpspRepository.save(lsdpsp);
 
-        return null;
+        return true;
+    }
+
+    // lspchb,d 업뎃, 새 row 추가 함수
+    private void updateLspchbd(Lspchd lspchd, long qty) {
+        Lspchb lspchb = lspchd.getLspchb().get(0);
+        lspchb.setEffEndDt(new Date());
+        Lspchb newLspchb = new Lspchb(lspchb);
+        long newQty = lspchd.getPurchaseQty() + qty;
+        newLspchb.setPurchaseQty(newQty);
+        lspchd.setPurchaseQty(newQty);
+        jpaLspchbRepository.save(lspchb);
+        jpaLspchbRepository.save(newLspchb);
+        jpaLspchdRepository.save(lspchd);
     }
 
     // lsdpsp 업뎃, 새 row 추가 함수
