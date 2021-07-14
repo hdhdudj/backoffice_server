@@ -495,7 +495,12 @@ public class JpaPurchaseService {
      * @return
      */
     private void updateLspchs(String purchaseNo) {
-
+        Date doomDay = Utilities.getStringToDate(StringFactory.getDoomDay());
+        Lspchs lspchs = jpaLspchsRepository.findByPurchaseNoAndEffEndDt(purchaseNo, doomDay);
+        lspchs.setEffEndDt(new Date());
+        Lspchs newLspchs = new Lspchs(lspchs);
+        jpaLspchsRepository.save(lspchs);
+        jpaLspchsRepository.save(newLspchs);
     }
 
     /**

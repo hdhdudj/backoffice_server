@@ -32,6 +32,7 @@ public class Lspchs extends CommonProps {
         this.purchaseNo = lspchs.getPurchaseNo();
         this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
         this.purchaseStatus = lspchs.getPurchaseStatus();
+        this.effStaDt = lspchs.getEffStaDt();
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
