@@ -430,7 +430,10 @@ public class JpaPurchaseService {
 
     }
 
-    // tbOrderDetail에서 발주 data가 만들어질 때 쓰는 함수 (lspchm, lspchd, lspchs, lspchb, lsdpsp)
+    /**
+     * tbOrderDetail에서 발주 data가 만들어질 때 쓰는 함수 (lspchm, lspchd, lspchs, lspchb, lsdpsp)
+     * @return
+     */
     @Transactional
     public boolean makePurchaseData(TbOrderDetail tbOrderDetail, Itasrt itasrt, Ititmc ititmc, Ititmt ititmt, String purchaseGb) {
         // 1. lsdpsp 찾아오기 (d 딸려옴, d에 따라 b도 딸려옴)
@@ -465,6 +468,8 @@ public class JpaPurchaseService {
         this.updateLsdpsp(lsdpsp, tbOrderDetail.getQty());
         // lspchb, lspchd update 및 새 row 추가
         this.updateLspchbd(lsdpsp.getLspchd(), tbOrderDetail.getQty());
+        // lspchs 저장
+        this.updateLspchs(lsdpsp.getPurchaseNo());
 
 //        String newPurchaseSeq = Utilities.plusOne(lspchd.getPurchaseSeq(),4);
 //        Lspchd newLspchd = new Lspchd(lspchd, newPurchaseSeq);
@@ -485,7 +490,18 @@ public class JpaPurchaseService {
         return true;
     }
 
-    // lspchb,d 업뎃, 새 row 추가 함수
+    /**
+     * lspchs 업뎃 (꺾고 새 row 추가)
+     * @return
+     */
+    private void updateLspchs(String purchaseNo) {
+
+    }
+
+    /**
+     * lspchb,d 업뎃 (b는 꺾고 새 row 추가, d는 qty 값 변경)
+     * @return
+     */
     private void updateLspchbd(Lspchd lspchd, long qty) {
         Lspchb lspchb = lspchd.getLspchb().get(0);
         lspchb.setEffEndDt(new Date());
@@ -498,7 +514,10 @@ public class JpaPurchaseService {
         jpaLspchdRepository.save(lspchd);
     }
 
-    // lsdpsp 업뎃, 새 row 추가 함수
+    /**
+     * lsdpsp 업뎃, 새 row 추가 함수
+     * @return
+     */
     private void updateLsdpsp(Lsdpsp lsdpsp, long qty){
         long oldPlanQty = lsdpsp.getPurchasePlanQty();
         long oldTakeQty = lsdpsp.getPurchaseTakeQty();
@@ -514,12 +533,14 @@ public class JpaPurchaseService {
         jpaLsdpspRepository.save(lsdpsp);
     }
 
-    // d와 b를 한꺼번에 업데이트하는 함수
+    /**
+     * lsdpsd와 b를 한꺼번에 업데이트하는 함수
+     * @return
+     */
     private void updateLspchdAndLspchb(Lspchd lspchd, Lspchd newLspchd){
         Lspchb lspchb = lspchd.getLspchb().get(0);
         lspchb.setEffEndDt(new Date());
         Lspchb newLspchb = new Lspchb(lspchd);
-//        jpaLspchdRepository.save(lspchd);
         jpaLspchbRepository.save(lspchb);
         jpaLspchbRepository.save(newLspchb);
         jpaLspchdRepository.save(newLspchd);
