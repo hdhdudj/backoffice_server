@@ -220,9 +220,8 @@ public class JpaOrderService {
 	public void updateOrderStatusCd(String orderId, String orderSeq, String statusCd) {
 
 		TbOrderDetail tod = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
-
-		List<TbOrderHistory> tohs = jpaTbOrderHistoryRepository.findByOrderIdAndOrderSeqAndEffEndDt(orderId, orderSeq,
-				Utilities.getStringToDate(StringFactory.getDoomDay()));
+        Date date = Utilities.getStringToDate(StringFactory.getDoomDay());
+		List<TbOrderHistory> tohs = jpaTbOrderHistoryRepository.findByOrderIdAndOrderSeqAndEffEndDt(orderId, orderSeq, date);
 		
 
 		tod.setStatusCd(statusCd);

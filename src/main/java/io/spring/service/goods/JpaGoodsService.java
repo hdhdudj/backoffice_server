@@ -641,13 +641,17 @@ public class JpaGoodsService {
             GoodsSelectDetailResponseData.Items item = new GoodsSelectDetailResponseData.Items();
             item.setItemId(ititmm.getItemId());
             Itvari op1 = ititmm.getItvari1();//jpaItvariRepository.findByAssortIdAndSeq(ititmm.getAssortId(), ititmm.getVariationSeq1());
-			item.setValue1(op1.getOptionNm());
-			item.setSeq1(op1.getSeq());
+            String optionNm = op1 == null? null : op1.getOptionNm();
+            String seq = op1 == null? null : op1.getSeq();
+			item.setValue1(optionNm);
+			item.setSeq1(seq);
 			item.setStatus1(StringFactory.getStrR()); // r 하드코딩
             if(ititmm.getVariationSeq2() != null){
                 Itvari op2 = ititmm.getItvari2();//jpaItvariRepository.findByAssortIdAndSeq(ititmm.getAssortId(), ititmm.getVariationSeq2());
-				item.setSeq2(op2.getSeq());
-				item.setValue2(op2.getOptionNm());
+                optionNm = op2 == null? null : op2.getOptionNm();
+                seq = op2 == null? null : op2.getSeq();
+				item.setSeq2(optionNm);
+				item.setValue2(seq);
 				item.setStatus2(StringFactory.getStrR()); // r 하드코딩
             }
             item.setAddPrice(ititmm.getAddPrice());

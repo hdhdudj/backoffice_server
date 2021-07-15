@@ -28,6 +28,8 @@ public class StringFactory {
 
     // number
     @Getter
+    private final static String strOne = "1";
+    @Getter
     private final static String strTwo = "2";
 
     // jpaPurchaseService
