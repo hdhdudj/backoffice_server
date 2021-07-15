@@ -42,10 +42,10 @@ public class DepositController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping(path="/purchase/{purchaseNo}")
+    @GetMapping(path="/purchaseno/{purchaseNo}")
     public ResponseEntity getDepositListByPurchaseNo(@PathVariable String purchaseNo){
-        List<DepositListWithPurchaseInfoData> depositListWithPurchaseInfoDataList = jpaDepositService.getDepositListByPurchaseNo(purchaseNo);
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositListWithPurchaseInfoDataList);
+        DepositListWithPurchaseInfoData depositListWithPurchaseInfoData = jpaDepositService.getDepositListByPurchaseNo(purchaseNo);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositListWithPurchaseInfoData);
         return ResponseEntity.ok(res);
     }
 

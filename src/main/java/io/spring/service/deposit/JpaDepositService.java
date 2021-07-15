@@ -4,6 +4,7 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.deposit.*;
+import io.spring.jparepos.goods.JpaItasrtRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
 import io.spring.model.common.entity.SequenceData;
@@ -12,9 +13,11 @@ import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.deposit.response.DepositSelectDetailResponseData;
 import io.spring.model.deposit.response.DepositSelectListResponseData;
+import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.idclass.ItitmtId;
+import io.spring.model.purchase.entity.Lspchm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.internal.util.StringUtils;
@@ -37,6 +40,7 @@ public class JpaDepositService {
     private final JpaLsdpssRepository jpaLsdpssRepository;
     private final JpaLsdpdsRepository jpaLsdpdsRepository;
     private final JpaLsdpspRepository jpaLsdpspRepository;
+    private final JpaItasrtRepository jpaItasrtRepository;
     private final JpaItitmcRepository jpaItitmcRepository;
     private final JpaItitmtRepository jpaItitmtRepository;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
@@ -242,21 +246,29 @@ public class JpaDepositService {
     /**
      * 발주번호를 받아 해당 발주번호에 해당하는 입고리스트를 가져오는 함수 
      */
-    public List<DepositListWithPurchaseInfoData> getDepositListByPurchaseNo(String purchaseNo) {
+    public DepositListWithPurchaseInfoData getDepositListByPurchaseNo(String purchaseNo) {
         List<Lsdpsp> lsdpspList = jpaLsdpspRepository.findByPurchaseNo(purchaseNo);
-        List<DepositListWithPurchaseInfoData> depositListWithPurchaseInfoDataList = new ArrayList<>();
+        List<DepositListWithPurchaseInfoData.Deposit> depositList = new ArrayList<>();
+        Lspchm lspchm = null;
+        int i = 0;
         for(Lsdpsp lsdpsp : lsdpspList){
-            DepositListWithPurchaseInfoData depositListWithPurchaseInfoData = makeDepositSelectListResponseData(lsdpsp);
-            depositListWithPurchaseInfoDataList.add(depositListWithPurchaseInfoData);
+            if(i == 0){
+                lspchm = lsdpsp.getLspchd().getLspchm();
+            }
+            DepositListWithPurchaseInfoData.Deposit deposit = makeDepositSelectListResponseData(lsdpsp);
+            depositList.add(deposit);
+            i++;
         }
+        DepositListWithPurchaseInfoData depositListWithPurchaseInfoDataList = new DepositListWithPurchaseInfoData(lspchm, depositList);
         return depositListWithPurchaseInfoDataList;
     }
 
     /**
      * lsdpsp로 DepositSelectListResponseData 객체를 만드는 함수
      */
-    private DepositListWithPurchaseInfoData makeDepositSelectListResponseData(Lsdpsp lsdpsp) {
-        DepositListWithPurchaseInfoData depositSelectListResponseData = new DepositListWithPurchaseInfoData(lsdpsp);
-        return depositSelectListResponseData;
+    private DepositListWithPurchaseInfoData.Deposit makeDepositSelectListResponseData(Lsdpsp lsdpsp) {
+        Itasrt itasrt = jpaItasrtRepository.findByAssortId(lsdpsp.getAssortId());
+        DepositListWithPurchaseInfoData.Deposit deposit = new DepositListWithPurchaseInfoData.Deposit(itasrt, lsdpsp);
+        return deposit;
     }
 }
