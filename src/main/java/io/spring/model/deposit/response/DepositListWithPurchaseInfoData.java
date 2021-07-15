@@ -42,7 +42,7 @@ public class DepositListWithPurchaseInfoData {
             this.itemId = lsdpsp.getItemId();
             this.assortNm = itasrt.getAssortNm();
             this.optionNm1 = itasrt.getItvariList().get(0).getOptionNm();
-            this.optionNm2 = itasrt.getItvariList().get(1).getOptionNm();
+            this.optionNm2 = itasrt.getItvariList().size() <= 1? null:itasrt.getItvariList().get(1).getOptionNm();
             this.availableQty = lsdpsp.getPurchasePlanQty() - lsdpsp.getPurchaseTakeQty();
             this.depositQty = 0l;
             this.extraUnitcost = lsdpsp.getLspchd().getPurchaseUnitAmt(); // 확인 필요
