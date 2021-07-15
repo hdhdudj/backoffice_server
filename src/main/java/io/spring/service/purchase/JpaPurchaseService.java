@@ -280,11 +280,11 @@ public class JpaPurchaseService {
                 ititmt.setTempQty(items.getPurchaseQty());
             }
 
-            if (purchaseGb.equals("02")) { // 01 : 일반발주, 02 : 이동요청
-                ititmt.setTempIndicateQty(0L);
-            } else {
-                ititmt.setTempIndicateQty(items.getPurchaseQty());
-            }
+//            if (purchaseGb.equals("02")) { // 01 : 일반발주, 02 : 이동요청
+//                ititmt.setTempIndicateQty(0L);
+//            } else {
+//                ititmt.setTempIndicateQty(items.getPurchaseQty());
+//            }
 //
 //            }
 //            else{ // update
