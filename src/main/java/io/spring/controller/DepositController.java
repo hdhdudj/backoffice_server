@@ -3,6 +3,7 @@ package io.spring.controller;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.deposit.request.DepositInsertRequestData;
+import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.deposit.response.DepositSelectDetailResponseData;
 import io.spring.model.deposit.response.DepositSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
@@ -38,6 +39,13 @@ public class DepositController {
     public ResponseEntity getDepositDetailPage(@RequestParam String depositNo){
         DepositSelectDetailResponseData depositSelectDetailResponseData = jpaDepositService.getDetail(depositNo);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositSelectDetailResponseData);
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping(path="/purchase/{purchaseNo}")
+    public ResponseEntity getDepositListByPurchaseNo(@PathVariable String purchaseNo){
+        List<DepositListWithPurchaseInfoData> depositListWithPurchaseInfoDataList = jpaDepositService.getDepositListByPurchaseNo(purchaseNo);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositListWithPurchaseInfoDataList);
         return ResponseEntity.ok(res);
     }
 

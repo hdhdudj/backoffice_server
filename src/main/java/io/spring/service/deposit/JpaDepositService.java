@@ -9,6 +9,7 @@ import io.spring.jparepos.goods.JpaItitmtRepository;
 import io.spring.model.common.entity.SequenceData;
 import io.spring.model.deposit.entity.*;
 import io.spring.model.deposit.request.DepositInsertRequestData;
+import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.deposit.response.DepositSelectDetailResponseData;
 import io.spring.model.deposit.response.DepositSelectListResponseData;
 import io.spring.model.goods.entity.Ititmc;
@@ -104,7 +105,9 @@ public class JpaDepositService {
         for(DepositInsertRequestData.Item item : depositInsertRequestData.getItems()){
             Lsdpsp lsdpsp = jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(item.getPurchaseNo(), item.getPurchaseSeq());
             Ititmc ititmc = new Ititmc(depositInsertRequestData, item);
-            ititmc.setQty(lsdpsp.getPurchaseTakeQty() + ititmc.getQty());
+            long takeQty = lsdpsp.getPurchaseTakeQty() == null? 0l : lsdpsp.getPurchaseTakeQty();
+            long qty = ititmc.getQty() == null? 0l : ititmc.getQty();
+            ititmc.setQty(takeQty + qty);
             jpaItitmcRepository.save(ititmc);
             ititmcList.add(ititmc);
         }
@@ -150,6 +153,10 @@ public class JpaDepositService {
         return ititmtList;
     }
 
+    /**
+     * 입고번호를 통해 입고번호 상세 정보를 가져오는 함수
+     * @return
+     */
     public DepositSelectDetailResponseData getDetail(String depositNo){
         TypedQuery<Lsdpsd> query = em.createQuery("select d from Lsdpsd d join fetch d.lsdpsp p join fetch d.lsdpsm m join fetch d.lsdpds s " +
                 "where d.depositNo=?1 and s.effEndDt=?2", Lsdpsd.class);
@@ -194,6 +201,10 @@ public class JpaDepositService {
 
     }
 
+    /**
+     * 입고 리스트를 가져오는 함수 
+     * @return
+     */
     public List<DepositSelectListResponseData> getList(HashMap<String, Object> param) {
         List<DepositSelectListResponseData> depositSelectListResponseDataList = new ArrayList<>();
         TypedQuery<Lsdpsd> query = em.createQuery("select ld from Lsdpsd ld " +
@@ -226,5 +237,26 @@ public class JpaDepositService {
             depositSelectListResponseDataList.add(depositSelectListResponseData);
         }
         return depositSelectListResponseDataList;
+    }
+
+    /**
+     * 발주번호를 받아 해당 발주번호에 해당하는 입고리스트를 가져오는 함수 
+     */
+    public List<DepositListWithPurchaseInfoData> getDepositListByPurchaseNo(String purchaseNo) {
+        List<Lsdpsp> lsdpspList = jpaLsdpspRepository.findByPurchaseNo(purchaseNo);
+        List<DepositListWithPurchaseInfoData> depositListWithPurchaseInfoDataList = new ArrayList<>();
+        for(Lsdpsp lsdpsp : lsdpspList){
+            DepositListWithPurchaseInfoData depositListWithPurchaseInfoData = makeDepositSelectListResponseData(lsdpsp);
+            depositListWithPurchaseInfoDataList.add(depositListWithPurchaseInfoData);
+        }
+        return depositListWithPurchaseInfoDataList;
+    }
+
+    /**
+     * lsdpsp로 DepositSelectListResponseData 객체를 만드는 함수
+     */
+    private DepositListWithPurchaseInfoData makeDepositSelectListResponseData(Lsdpsp lsdpsp) {
+        DepositListWithPurchaseInfoData depositSelectListResponseData = new DepositListWithPurchaseInfoData(lsdpsp);
+        return depositSelectListResponseData;
     }
 }
