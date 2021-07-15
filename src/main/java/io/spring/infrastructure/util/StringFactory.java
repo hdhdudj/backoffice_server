@@ -24,6 +24,8 @@ public class StringFactory {
     @Getter
     private final static String gbTwo = "02";
     @Getter
+    private final static String gbThree = "03";
+    @Getter
     private final static String splitGb = "\\^\\|\\^";
 
     // number

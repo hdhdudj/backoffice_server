@@ -288,10 +288,9 @@ public class JpaPurchaseService {
 //
 //            }
 //            else{ // update
-
-            if (purchaseGb.equals("02")) {
-                ititmt.setTempIndicateQty(ititmt.getTempIndicateQty());
-            } else if(purchaseInsertRequestData.getDealtypeCd().equals(StringFactory.getGbOne())) { // 일반발주면서 주문발주일 때 (01: 주문발주 02:상품발주 03:입고예정 주문발주)
+            boolean x = purchaseInsertRequestData.getDealtypeCd().equals(StringFactory.getGbOne());
+            boolean y = purchaseInsertRequestData.getDealtypeCd().equals(StringFactory.getGbThree());
+            if(x || y) { // 일반발주면서 주문발주거나 입고예정 주문발주일 때 (01: 주문발주 02:상품발주 03:입고예정 주문발주)
                 ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() + items.getPurchaseQty());
             }
 
