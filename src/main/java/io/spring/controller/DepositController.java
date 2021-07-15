@@ -49,7 +49,15 @@ public class DepositController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping(path="/depositlistjpa")
+    @GetMapping(path="/updatedepositqty")
+    public ResponseEntity updateDepositQty(@RequestBody DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
+        DepositListWithPurchaseInfoData returnDep = jpaDepositService.updateDepositQty(depositListWithPurchaseInfoData);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), returnDep);
+        return ResponseEntity.ok(res);
+    }
+
+
+    @PostMapping(path="/depositlistjpa")
     public ResponseEntity getDepositListJpa(@RequestParam String depositVendorId,@RequestParam String assortId,@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDt,@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDt){
         HashMap<String, Object> param = new HashMap<>();
         param.put("depositVendorId", depositVendorId);

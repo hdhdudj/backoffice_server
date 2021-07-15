@@ -271,4 +271,8 @@ public class JpaDepositService {
         DepositListWithPurchaseInfoData.Deposit deposit = new DepositListWithPurchaseInfoData.Deposit(itasrt, lsdpsp);
         return deposit;
     }
+
+    public DepositListWithPurchaseInfoData updateDepositQty(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
+        return null;
+    }
 }
