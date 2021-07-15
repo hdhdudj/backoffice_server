@@ -158,7 +158,7 @@ public class JpaDepositService {
         List<Lsdpsd> lsdpsdList = query.getResultList();
         if(lsdpsdList.size() == 0){
             log.debug("lsdpsdList is empty.");
-            throw new IndexOutOfBoundsException();
+            return null;
         }
         List<DepositSelectDetailResponseData.Item> itemList = new ArrayList<>();
         for(Lsdpsd lsdpsd : lsdpsdList){
