@@ -504,7 +504,7 @@ public class JpaPurchaseService {
         long oldPlanQty = lsdpsp.getPurchasePlanQty();
         long oldTakeQty = lsdpsp.getPurchaseTakeQty();
         long newPurchasePlanQty = oldPlanQty - oldTakeQty;
-        lsdpsp.setPurchasePlanQty(oldTakeQty);
+//        lsdpsp.setPurchasePlanQty(oldTakeQty);
         String depositPlanId = StringUtils.leftPad(jpaLsdpspRepository.findMaxDepositPlanId(),9,'0');
         Lsdpsp newLsdpsp = new Lsdpsp(depositPlanId,lsdpsp);
         if(newPurchasePlanQty > 0){
