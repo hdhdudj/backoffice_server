@@ -33,6 +33,8 @@ public class StringFactory {
     private final static String strOne = "1";
     @Getter
     private final static String strTwo = "2";
+    @Getter
+    private final static String strEleven = "11";
 
     // jpaPurchaseService
     @Getter

@@ -26,10 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -272,8 +269,17 @@ public class JpaDepositService {
         return deposit;
     }
 
+    /**
+     * 입고 처리가능수량을 변경했을 때 수정하는 함수
+     */
     public DepositListWithPurchaseInfoData updateDepositQty(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
-        depositListWithPurchaseInfoData.
+        Date purchaseDt = depositListWithPurchaseInfoData.getPurchaseDt();
+        String storageId = depositListWithPurchaseInfoData.getStorageId();
+        for(DepositListWithPurchaseInfoData.Deposit deposit : depositListWithPurchaseInfoData.getDeposits()){
+            String assortId = deposit.getAssortId();
+            String itemId = deposit.getItemId();
+//            Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageId();
+        }
         return null;
     }
 }

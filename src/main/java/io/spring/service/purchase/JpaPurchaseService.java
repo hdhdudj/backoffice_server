@@ -14,8 +14,6 @@ import io.spring.jparepos.purchase.JpaLspchmRepository;
 import io.spring.jparepos.purchase.JpaLspchsRepository;
 import io.spring.model.common.entity.SequenceData;
 import io.spring.model.deposit.entity.Lsdpsp;
-import io.spring.model.goods.entity.Itasrt;
-import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.order.entity.TbOrderDetail;
@@ -430,7 +428,7 @@ public class JpaPurchaseService {
      * @return
      */
     @Transactional
-    public boolean makePurchaseData(TbOrderDetail tbOrderDetail, Itasrt itasrt, Ititmc ititmc, Ititmt ititmt, String purchaseGb) {
+    public boolean makePurchaseData(TbOrderDetail tbOrderDetail) {
         // 1. lsdpsp 찾아오기 (d 딸려옴, d에 따라 b도 딸려옴)
         List<Lsdpsp> lsdpspList = jpaLsdpspRepository.findByAssortIdAndItemId(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
         // 2. dealTypeCd = 02, purchaseGb = 01인 애들을 필터
