@@ -132,16 +132,16 @@ public class JpaOrderService {
                 .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList()); // 주문코드가 CO4(국내입고완료)인 애들의 list
 //        List<TbOrderDetail> ovrsTbOrderDetailsC01 = tbOrderDetailsC01.stream().filter(x -> x.getStorageId().equals(overseaStorageId)).collect(Collectors.toList());
         List<TbOrderDetail> domTbOrderDetailsC04 = tbOrderDetailsC04.stream().filter(x -> x.getStorageId().equals(domesticStorageId)).collect(Collectors.toList());
-        long sumOfTbOrderDetailsC01 = tbOrderDetailsC01.stream().map(x -> {if(x.getQty() == null){return 0l;}else {return x.getQty();}}).reduce((a,b) -> a+b).orElseGet(()->0l); // C01인 애들의 sum(domQty) (창고 id는 불요)
+//        long sumOfTbOrderDetailsC01 = tbOrderDetailsC01.stream().map(x -> {if(x.getQty() == null){return 0l;}else {return x.getQty();}}).reduce((a,b) -> a+b).orElseGet(()->0l); // C01인 애들의 sum(domQty) (창고 id는 불요)
         long sumOfDomTbOrderDetailsC04 = domTbOrderDetailsC04.stream().map(x -> {if(x.getQty() == null){return 0l;}else {return x.getQty();}}).reduce((a,b) -> a+b).orElseGet(()->0l); // C04고 국내창고인 애들의 sum(domQty)
         // 국내창고 ititmc 불러오기
         List<Ititmc> domItitmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGrade(assortId, itemId, domesticStorageId, StringFactory.getStrEleven());
         // 국내창고 ititmt 불러오기
         List<Ititmt> domItitmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGrade(assortId, itemId, domesticStorageId, StringFactory.getStrEleven());
         // 해외창고 ititmc 불러오기
-        List<Ititmc> ovrsItitmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGrade(assortId, itemId, domesticStorageId, StringFactory.getStrEleven());
+        List<Ititmc> ovrsItitmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGrade(assortId, itemId, overseaStorageId, StringFactory.getStrEleven());
         // 해외창고 ititmt 불러오기
-        List<Ititmt> ovrsItitmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGrade(assortId, itemId, domesticStorageId, StringFactory.getStrEleven());
+        List<Ititmt> ovrsItitmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGrade(assortId, itemId, overseaStorageId, StringFactory.getStrEleven());
 
 //        long domQty = domItitmc == null? 0l:domItitmc.getQty();
 //        long domShipIndQty = domItitmc == null? 0l:domItitmc.getShipIndicateQty();
@@ -151,15 +151,23 @@ public class JpaOrderService {
 //        long ovrsShipIndQty = ovrsItitmc == null? 0l:ovrsItitmc.getShipIndicateQty();
 //        long ovrsTempQty = ovrsItitmt == null? 0l:ovrsItitmt.getTempQty();
 //        long ovrsTempIndQty = ovrsItitmt == null? 0l:ovrsItitmt.getTempIndicateQty();
-        long sumOfDomQty = domItitmc.stream().map(x->{if(x.getQty() == null){return 0l;}else{return x.getQty();}}).reduce((a,b)->a+b).get();
-        long sumOfDomShipIndQty = domItitmc.stream().map(x->{if(x.getShipIndicateQty() == null){return 0l;}else{return x.getShipIndicateQty();}}).reduce((a,b)->a+b).get();
-        long sumOfDomTempQty = domItitmt.stream().map(x->{if(x.getTempQty() == null){return 0l;}else{return x.getTempQty();}}).reduce((a,b)->a+b).get();
-        long sumOfDomTempIndQty = domItitmt.stream().map(x->{if(x.getTempIndicateQty() == null){return 0l;}else{return x.getTempIndicateQty();}}).reduce((a,b)->a+b).get();
-        long sumOfOvrsQty = ovrsItitmc.stream().map(x->{if(x.getQty() == null){return 0l;}else{return x.getQty();}}).reduce((a,b)->a+b).get();
-        long sumOfOvrsShipIndQty = ovrsItitmc.stream().map(x->{if(x.getShipIndicateQty() == null){return 0l;}else{return x.getShipIndicateQty();}}).reduce((a,b)->a+b).get();
-        long sumOfOvrsTempQty = ovrsItitmt.stream().map(x->{if(x.getTempQty() == null){return 0l;}else{return x.getTempQty();}}).reduce((a,b)->a+b).get();
-        long sumOfOvrsTempIndQty = ovrsItitmt.stream().map(x->{if(x.getTempIndicateQty() == null){return 0l;}else{return x.getTempIndicateQty();}}).reduce((a,b)->a+b).get();
+        long sumOfDomQty = domItitmc.stream().map(x->{if(x.getQty() == null){return 0l;}else{return x.getQty();}}).reduce((a,b)->a+b).orElseGet(() -> 0l);
+        long sumOfDomShipIndQty = domItitmc.stream().map(x->{if(x.getShipIndicateQty() == null){return 0l;}else{return x.getShipIndicateQty();}}).reduce((a,b)->a+b).orElseGet(() -> 0l);
+        long sumOfDomTempQty = domItitmt.stream().map(x->{if(x.getTempQty() == null){return 0l;}else{return x.getTempQty();}}).reduce((a,b)->a+b).orElseGet(() -> 0l);
+        long sumOfDomTempIndQty = domItitmt.stream().map(x->{if(x.getTempIndicateQty() == null){return 0l;}else{return x.getTempIndicateQty();}}).reduce((a,b)->a+b).orElseGet(() -> 0l);
+        long sumOfOvrsQty = ovrsItitmc.stream().map(x->{if(x.getQty() == null){return 0l;}else{return x.getQty();}}).reduce((a,b)->a+b).orElseGet(() -> 0l);
+        long sumOfOvrsShipIndQty = ovrsItitmc.stream().map(x->{if(x.getShipIndicateQty() == null){return 0l;}else{return x.getShipIndicateQty();}}).reduce((a,b)->a+b).orElseGet(() -> 0l);
+        long sumOfOvrsTempQty = ovrsItitmt.stream().map(x->{if(x.getTempQty() == null){return 0l;}else{return x.getTempQty();}}).reduce((a,b)->a+b).orElseGet(() -> 0l);
+        long sumOfOvrsTempIndQty = ovrsItitmt.stream().map(x->{if(x.getTempIndicateQty() == null){return 0l;}else{return x.getTempIndicateQty();}}).reduce((a,b)->a+b).orElseGet(() -> 0l);
 
+        System.out.println("ㅡㅡㅡㅡㅡ sumOfDomQty : " + sumOfDomQty);
+        System.out.println("ㅡㅡㅡㅡㅡ sumOfDomShipIndQty : " + sumOfDomShipIndQty);
+        System.out.println("ㅡㅡㅡㅡㅡ sumOfDomTempQty : " + sumOfDomTempQty);
+        System.out.println("ㅡㅡㅡㅡㅡ sumOfDomTempIndQty : " + sumOfDomTempIndQty);
+        System.out.println("ㅡㅡㅡㅡㅡ sumOfOvrsQty : " + sumOfOvrsQty);
+        System.out.println("ㅡㅡㅡㅡㅡ sumOfOvrsShipIndQty : " + sumOfOvrsShipIndQty);
+        System.out.println("ㅡㅡㅡㅡㅡ sumOfOvrsTempQty : " + sumOfOvrsTempQty);
+        System.out.println("ㅡㅡㅡㅡㅡ sumOfOvrsTempIndQty : " + sumOfOvrsTempIndQty);
         // 1.국내재고, 2.국내입고예정, 3.해외재고, 4.해외입고예정 확인 후 주문상태 변경.
         // 입고예정이면 입고예정 data 생성.
 
@@ -233,13 +241,13 @@ public class JpaOrderService {
     private String loopItitmt(List<Ititmt> ititmtList, TbOrderDetail tbOrderDetail) {
         long orderQty = tbOrderDetail.getQty();
         for(Ititmt ititmt : ititmtList){
-            if(ititmt.getTempQty() >= orderQty + tbOrderDetail.getQty()){
-                ititmt.setTempIndicateQty(orderQty + tbOrderDetail.getQty());
+            if(ititmt.getTempQty() >= orderQty + ititmt.getTempIndicateQty()){
+                ititmt.setTempIndicateQty(orderQty + ititmt.getTempIndicateQty());
                 break;
             }
             else{
-                ititmt.setTempIndicateQty(ititmt.getTempQty());
                 orderQty = orderQty - (ititmt.getTempQty() - ititmt.getTempIndicateQty());
+                ititmt.setTempIndicateQty(ititmt.getTempQty());
             }
         }
         boolean flag = jpaPurchaseService.makePurchaseData(tbOrderDetail);
@@ -257,13 +265,13 @@ public class JpaOrderService {
     private void loopItitmc(List<Ititmc> ititmcList, TbOrderDetail tbOrderDetail){
         long orderQty = tbOrderDetail.getQty();
         for(Ititmc ititmc : ititmcList){
-            if(ititmc.getQty() >= orderQty + tbOrderDetail.getQty()){
-                ititmc.setShipIndicateQty(orderQty + tbOrderDetail.getQty());
+            if(ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()){
+                ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
                 break;
             }
             else{
-                ititmc.setShipIndicateQty(ititmc.getQty());
                 orderQty = orderQty - (ititmc.getQty() - ititmc.getShipIndicateQty());
+                ititmc.setShipIndicateQty(ititmc.getQty());
             }
         }
     }
