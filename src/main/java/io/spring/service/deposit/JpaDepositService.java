@@ -273,6 +273,7 @@ public class JpaDepositService {
     }
 
     public DepositListWithPurchaseInfoData updateDepositQty(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
+        depositListWithPurchaseInfoData.
         return null;
     }
 }
