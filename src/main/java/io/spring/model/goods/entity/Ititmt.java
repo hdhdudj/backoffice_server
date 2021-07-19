@@ -1,5 +1,6 @@
 package io.spring.model.goods.entity;
 
+import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.idclass.ItitmtId;
 import lombok.AccessLevel;
@@ -35,7 +36,7 @@ public class Ititmt extends CommonProps {
     @Id
     private String itemId;
     @Id
-    private String itemGrade;
+    private String itemGrade = StringFactory.getStrEleven(); // 11 하드코딩
     @Id
     private Date effEndDt;
     @Id

@@ -38,7 +38,7 @@ public class Ititmc extends CommonProps {
     @Id
     private String itemId;
     @Id
-    private String itemGrade;
+    private String itemGrade = StringFactory.getStrEleven(); // 11 하드코딩
     @Id
     private Date effEndDt;
     @Id

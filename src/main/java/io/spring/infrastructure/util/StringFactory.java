@@ -24,11 +24,17 @@ public class StringFactory {
     @Getter
     private final static String gbTwo = "02";
     @Getter
+    private final static String gbThree = "03";
+    @Getter
     private final static String splitGb = "\\^\\|\\^";
 
     // number
     @Getter
+    private final static String strOne = "1";
+    @Getter
     private final static String strTwo = "2";
+    @Getter
+    private final static String strEleven = "11";
 
     // jpaPurchaseService
     @Getter
