@@ -55,6 +55,20 @@ public class JpaDepositService {
         return depositInsertRequestData.getDepositNo();
     }
 
+    @Transactional
+    public String sequenceInsertDeposit2(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
+        // 발주 data 저장
+        // 1. lsdpsm 저장
+        // 2. lsdpsd 저장
+        // 3. lsdpds 저장
+        // 4. lsdpsp 저장
+        // 5. ititmc 저장
+        // 6. ititmt 저장
+        // 7. tbOrderdetail 저장
+
+        return null;
+    }
+
     private Lsdpsm saveLsdpsm(DepositInsertRequestData depositInsertRequestData){
         Lsdpsm lsdpsm = new Lsdpsm(depositInsertRequestData);
         jpaLsdpsmRepository.save(lsdpsm);
@@ -278,7 +292,23 @@ public class JpaDepositService {
         for(DepositListWithPurchaseInfoData.Deposit deposit : depositListWithPurchaseInfoData.getDeposits()){
             String assortId = deposit.getAssortId();
             String itemId = deposit.getItemId();
-//            Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageId();
+            Lsdpsp lsdpsp = jpaLsdpspRepository.findById(deposit.getDepositPlanId()).orElseGet(() -> null);
+            Long availableQty = lsdpsp.getPurchasePlanQty() - lsdpsp.getPurchaseTakeQty();
+            if(availableQty >= deposit.getDepositQty()){
+                lsdpsp.setPurchaseTakeQty(lsdpsp.getPurchaseTakeQty() + deposit.getDepositQty());
+                jpaLsdpspRepository.save(lsdpsp);
+            }
+            else{
+                log.debug("input qty is bigger than available qty.");
+                continue;
+            }
+            Ititmt ititmt = jpaItitmtRepository
+                    .findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDtAndDealtypeCd
+                            (assortId, itemId, storageId, StringFactory.getStrEleven(), purchaseDt, StringFactory.getGbOne()); // dealtypeCd = '01'인 애들(주문)
+            ititmt.setTempQty(ititmt.getTempQty() - deposit.getDepositQty());
+            Ititmc ititmc = new Ititmc(storageId, purchaseDt, deposit);
+            jpaItitmtRepository.save(ititmt);
+            jpaItitmcRepository.save(ititmc);
         }
         return null;
     }

@@ -35,6 +35,13 @@ public class DepositController {
         return ResponseEntity.ok(res);
     }
 
+    @PostMapping(path="/insert/deposits")
+    public ResponseEntity saveDepositListJpa(@RequestBody DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
+        String depositNo = jpaDepositService.sequenceInsertDeposit2(depositListWithPurchaseInfoData);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), depositNo);
+        return ResponseEntity.ok(res);
+    }
+
     @GetMapping(path="/depositdetailjpa")
     public ResponseEntity getDepositDetailPage(@RequestParam String depositNo){
         DepositSelectDetailResponseData depositSelectDetailResponseData = jpaDepositService.getDetail(depositNo);
@@ -49,7 +56,7 @@ public class DepositController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping(path="/updatedepositqty")
+    @PostMapping(path="/updatedepositqty")
     public ResponseEntity updateDepositQty(@RequestBody DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
         DepositListWithPurchaseInfoData returnDep = jpaDepositService.updateDepositQty(depositListWithPurchaseInfoData);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), returnDep);

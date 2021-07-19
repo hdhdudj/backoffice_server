@@ -3,6 +3,7 @@ package io.spring.model.goods.entity;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.request.DepositInsertRequestData;
+import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.goods.idclass.ItitmcId;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -26,8 +27,15 @@ public class Ititmc extends CommonProps {
         this.storageId = depositInsertRequestData.getStoreCd();
         this.assortId = item.getAssortId();
         this.itemId = item.getItemId();
-        this.itemGrade = item.getItemGrade();
         this.effEndDt = depositInsertRequestData.getDepositDt();
+        this.effStaDt = this.effEndDt;
+        this.stockGb = StringFactory.getGbOne(); // 01 하드코딩
+    }
+    public Ititmc(String storageId, Date purchaseDt, DepositListWithPurchaseInfoData.Deposit deposit) {
+        this.storageId = storageId;
+        this.assortId = deposit.getAssortId();
+        this.itemId = deposit.getItemId();
+        this.effEndDt = purchaseDt;
         this.effStaDt = this.effEndDt;
         this.stockGb = StringFactory.getGbOne(); // 01 하드코딩
     }
@@ -49,4 +57,6 @@ public class Ititmc extends CommonProps {
     private Float stockAmt;
     private String vendorId;
     private String siteGb;
+
+
 }
