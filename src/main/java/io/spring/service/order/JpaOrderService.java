@@ -327,6 +327,8 @@ public class JpaOrderService {
 	@Transactional
 	public void saveOrderStock(OrderStockMngInsertRequestData req) {
 
+		System.out.println(req.getUserNm());
+
 		if (req.getId() == "") {
 			OrderStock os = new OrderStock(req);
 			jpaOrderStockRepository.save(os);

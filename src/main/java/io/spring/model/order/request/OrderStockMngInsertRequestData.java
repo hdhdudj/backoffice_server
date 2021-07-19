@@ -57,4 +57,6 @@ public class OrderStockMngInsertRequestData {
 	private String origin;
 	private String googleDrive;
 
+	private String userNm;
+
 }

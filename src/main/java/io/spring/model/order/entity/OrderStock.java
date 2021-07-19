@@ -64,6 +64,7 @@ public class OrderStock extends CommonProps {
 		this.memo = o.getMemo();
 		this.origin = o.getOrigin();
 		this.googleDrive = o.getGoogleDrive();
+		this.userNm = o.getUserNm();
 
 	}
 
@@ -113,5 +114,6 @@ public class OrderStock extends CommonProps {
 	private String memo;
 	private String origin;
 	private String googleDrive;
+	private String userNm;
 
 }
