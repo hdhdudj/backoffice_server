@@ -1,30 +1,35 @@
 package io.spring.service.order;
 
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
+
+import org.springframework.stereotype.Service;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.goods.JpaItasrtRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.goods.JpaItitmmRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
+import io.spring.jparepos.order.JpaOrderStockRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.order.JpaTbOrderHistoryRepository;
 import io.spring.jparepos.order.JpaTbOrderMasterRepository;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
+import io.spring.model.order.entity.OrderStock;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
+import io.spring.model.order.request.OrderStockMngInsertRequestData;
 import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -38,6 +43,8 @@ public class JpaOrderService {
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
     private final JpaTbOrderHistoryRepository jpaTbOrderHistoryRepository;
     private final JpaPurchaseService jpaPurchaseService;
+	private final JpaOrderStockRepository jpaOrderStockRepository;
+
     private final EntityManager em;
 
     // orderId, orderSeq를 받아 주문 상태를 변경해주는 함수
@@ -123,7 +130,7 @@ public class JpaOrderService {
 
         String assortId = tbOrderDetail.getAssortId();
         String itemId = tbOrderDetail.getItemId();
-        String domesticStorageId = tbOrderDetail.getStorageId(); // 주문자 현지(국내?) 창고 id (국내창고)
+		String domesticStorageId = tbOrderDetail.getStorageId(); // 주문자 현지(국내?) 창고 id (국내창고)
         String overseaStorageId = itasrt.getStorageId(); // 물건의 산지(?) 창고 id (해외창고)
 
         List<TbOrderDetail> tbOrderDetailsC01 = jpaTbOrderDetailRepository.findAll().stream()
@@ -244,6 +251,72 @@ public class JpaOrderService {
 		jpaTbOrderDetailRepository.save(tod);
 
         jpaTbOrderHistoryRepository.saveAll(tohs);
+	}
+
+	public List<OrderStock> getOrderStock() {
+		return jpaOrderStockRepository.findAll();
+		
+
+	}
+
+	@Transactional
+	public void saveOrderStock(OrderStockMngInsertRequestData req) {
+
+		if (req.getId() == "") {
+			OrderStock os = new OrderStock(req);
+			jpaOrderStockRepository.save(os);
+		} else {
+			OrderStock o = jpaOrderStockRepository.findById(Long.parseLong(req.getId())).orElse(null);
+
+			if (o != null) {
+				OrderStock os = new OrderStock(req);
+
+				os.setId(o.getId());
+				jpaOrderStockRepository.save(os);
+
+			}
+
+			/*
+			 * o.setPurchaseVendor(req.getPurchaseVendor()); o.setBrand(req.getBrand());
+			 * o.setModelNo(req.getModelNo()); o.setAssortNm(req.getAssortNm());
+			 * o.setOptionInfo(req.getOptionInfo());
+			 * o.setTextOptionInfo(req.getTextOptionInfo());
+			 * 
+			 * 
+			 * if (req.getQty().length() > 0) {
+			 * 
+			 * o.setQty(Long.parseLong(req.getQty()));
+			 * 
+			 * 
+			 * } if (req.getUnitAmt().length() > 0) { o.setUnitAmt(req.getUnitAmt() == "" ?
+			 * null : Float.parseFloat(req.getUnitAmt())); } if (req.getOptionAmt().length()
+			 * > 0) { o.setOptionAmt(Float.parseFloat(req.getOptionAmt()));
+			 * 
+			 * } if (req.getAmt().length() > 0) { o.setAmt(Float.parseFloat(req.getAmt()));
+			 * } if (req.getDiscountRate().length() > 0) {
+			 * o.setDiscountRate(Float.parseFloat(req.getDiscountRate())); } if
+			 * (req.getRealAmt().length() > 0) {
+			 * o.setRealAmt(Float.parseFloat(req.getRealAmt())); }
+			 * 
+			 * o.setDeliMethod(req.getDeliMethod());
+			 * o.setRealDeliMethod(req.getRealDeliMethod()); o.setOrderNm(req.getOrderNm());
+			 * o.setOrderId(req.getOrderId()); o.setOrderDt(req.getOrderDt());
+			 * o.setOrderMemo(req.getOrderMemo()); o.setStockNo(req.getStockNo());
+			 * o.setPurchaseNo(req.getPurchaseNo()); o.setPi(req.getPi());
+			 * o.setEstimatedProductionDate(req.getEstimatedProductionDate());
+			 * o.setEstimatedShipmentDate(req.getEstimatedShipmentDate());
+			 * o.setEstimatedArrivalDate(req.getEstimatedArrivalDate());
+			 * o.setExpectedDeliveryDate(req.getExpectedDeliveryDate());
+			 * o.setBlNo(req.getBlNo()); o.setDeliveryPeriod(req.getDeliveryPeriod());
+			 * o.setStatusCd(req.getStatusCd()); o.setCarrier(req.getCarrier());
+			 * o.setPurchaseDt(req.getPurchaseDt()); o.setMemo(req.getMemo());
+			 * o.setOrigin(req.getOrigin()); o.setGoogleDrive(req.getGoogleDrive());
+			 */
+
+
+		}
+
+
 	}
 
 }

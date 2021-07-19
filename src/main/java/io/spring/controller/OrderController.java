@@ -1,20 +1,25 @@
 package io.spring.controller;
 
-import io.spring.dao.common.MyBatisCommonDao;
-import io.spring.dao.order.MyBatisOrderDao;
-import io.spring.infrastructure.util.ApiResponseMessage;
-import io.spring.service.common.JpaCommonService;
-import io.spring.service.order.JpaOrderService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.HashMap;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.List;
+import io.spring.dao.common.MyBatisCommonDao;
+import io.spring.dao.order.MyBatisOrderDao;
+import io.spring.infrastructure.util.ApiResponseMessage;
+import io.spring.model.order.entity.OrderStock;
+import io.spring.model.order.request.OrderStockMngInsertRequestData;
+import io.spring.service.common.JpaCommonService;
+import io.spring.service.order.JpaOrderService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
@@ -35,10 +40,49 @@ public class OrderController {
 //		this.jpaCommonService = jpaCommonService;
 //	}
 
+
+	@PostMapping(path = "/order-stock")
+	public ResponseEntity saveOrderStockMng(@RequestBody List<OrderStockMngInsertRequestData> req) {
+
+
+		for (OrderStockMngInsertRequestData o : req) {
+
+				jpaOrderService.saveOrderStock(o);
+
+		}
+
+		ApiResponseMessage res = null;
+
+		// log.debug(r.size());
+
+		res = new ApiResponseMessage<String>("SUCCESS", "", "");
+
+		return ResponseEntity.ok(res);
+
+	}
+
+	@RequestMapping(path = "/order-stock", method = RequestMethod.GET)
+	public ResponseEntity selectOrderStock() {
+
+		ApiResponseMessage res = null;
+
+		List<OrderStock> r = jpaOrderService.getOrderStock();
+
+		// log.debug(r.size());
+
+		if (r.size() > 0) {
+			res = new ApiResponseMessage<List<OrderStock>>("SUCCESS", "", r);
+		} else {
+			res = new ApiResponseMessage<List<HashMap<String, Object>>>("ERROR", "ERROR", null);
+		}
+
+		return ResponseEntity.ok(res);
+
+	}
+
 	@RequestMapping(path = "/orders", method = RequestMethod.GET)
 	// public ResponseEntity selectOrderListByCondition(@Valid @RequestBody
 	// Map<String, Object> param) {
-
 	public ResponseEntity selectOrderListByCondition(@RequestParam String channelGb, @RequestParam String orderFromDt,
 			@RequestParam String orderEndDt) {
 		
