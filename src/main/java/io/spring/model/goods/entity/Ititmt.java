@@ -40,7 +40,6 @@ public class Ititmt extends CommonProps {
         this.effStaDt = new Date();
         this.stockGb = StringFactory.getGbOne(); // 01 하드코딩
         this.tempIndicateQty = deposit.getDepositQty();
-        this.tempQty = deposit.getAvailableQty();
         this.stockAmt = deposit.getExtraUnitcost();
     }
     @Id

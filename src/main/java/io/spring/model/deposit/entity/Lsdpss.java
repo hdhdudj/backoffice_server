@@ -5,7 +5,6 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.request.DepositInsertRequestData;
-import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +26,7 @@ public class Lsdpss extends CommonProps {
         this.depositStatus = depositInsertRequestData.getDepositStatus();
         this.effStaDt = new Date();
     }
-    public Lsdpss(Lsdpsm lsdpsm, DepositListWithPurchaseInfoData.Deposit deposit) {
+    public Lsdpss(Lsdpsm lsdpsm) {
         this.depositNo = lsdpsm.getDepositNo();
         this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
         this.depositStatus = StringFactory.getGbOne(); // 01 하드코딩

@@ -19,4 +19,7 @@ public interface JpaLsdpspRepository extends JpaRepository<Lsdpsp, String> {
     List<Lsdpsp> findByAssortIdAndItemId(String assortId, String itemId);
 
     List<Lsdpsp> findByPurchaseNo(String purchaseNo);
+
+    @Query("select p from Lsdpsp p join fetch p.lspchd d join fetch d.lspchb b where p.depositPlanId=?1")
+    Lsdpsp findByDepositPlanId(String depositPlanId);
 }

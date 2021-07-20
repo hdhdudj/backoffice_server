@@ -34,6 +34,27 @@ public class Utilities {
         }
         return calcRes;
     }
+    /**
+     * 21-04-25 Pecan
+     * 유틸 함수 : "009"를 받아 정수화해서 1을 더한 후 "010"으로 return
+     * @param calcNeedStringNumber
+     * @param length
+     * @return String
+     */
+    public static String getStringNo(char alphabet, String calcNeedStringNumber, int length){ // 들어온 string의 숫자는 정수여야 함
+        if(calcNeedStringNumber == null){
+            return null;
+        }
+        String calcRes = "";
+        try{
+            calcRes = StringUtils.leftPad(Long.toString((long)Double.parseDouble(calcNeedStringNumber) + 1), length - 1, '0');
+        }
+        catch(Exception e){
+            log.debug(e.getMessage());
+        }
+        calcRes = alphabet + calcRes;
+        return calcRes;
+    }
 
     /**
      * 21-05-04 Pecan
