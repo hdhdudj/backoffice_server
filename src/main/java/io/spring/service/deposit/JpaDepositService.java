@@ -7,6 +7,7 @@ import io.spring.jparepos.deposit.*;
 import io.spring.jparepos.goods.JpaItasrtRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
+import io.spring.jparepos.purchase.JpaLspchmRepository;
 import io.spring.model.common.entity.SequenceData;
 import io.spring.model.deposit.entity.*;
 import io.spring.model.deposit.request.DepositInsertRequestData;
@@ -40,6 +41,7 @@ public class JpaDepositService {
     private final JpaItasrtRepository jpaItasrtRepository;
     private final JpaItitmcRepository jpaItitmcRepository;
     private final JpaItitmtRepository jpaItitmtRepository;
+    private final JpaLspchmRepository jpaLspchmRepository;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
     private final EntityManager em;
 
@@ -55,17 +57,20 @@ public class JpaDepositService {
         return depositInsertRequestData.getDepositNo();
     }
 
+    /**
+     * 발주조회 후 입고 데이터 저장
+     */
     @Transactional
     public String sequenceInsertDeposit2(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
         // 발주 data 저장
         // 1. lsdpsm 저장
-        Lsdpsm lsdpsm = this.saveLsdpsm(depositListWithPurchaseInfoData);
+        List<Lsdpsm> lsdpsmList = this.insertLsdpsm(depositListWithPurchaseInfoData);
         // 2. lsdpsd 저장
-        List<Lsdpsd> lsdpsdList = this.saveLsdpsd(depositListWithPurchaseInfoData);// lsdpsd (입고 디테일)
+        List<Lsdpsd> lsdpsdList = this.insertLsdpsd(depositListWithPurchaseInfoData, lsdpsmList);// lsdpsd (입고 디테일)
         // 3. lsdpss 저장
-        this.saveLsdpss(depositListWithPurchaseInfoData);// lsdpss (입고 마스터 이력)
+        this.insertLsdpss(depositListWithPurchaseInfoData);// lsdpss (입고 마스터 이력)
         // 4. lsdpds 저장
-        this.saveLsdpds(depositListWithPurchaseInfoData);// lsdpds (입고 디테일 이력)
+        this.insertLsdpds(depositListWithPurchaseInfoData);// lsdpds (입고 디테일 이력)
         // 5. lsdpsp 저장
         List<Lsdpsp> lsdpspList = this.saveLsdpsp(depositListWithPurchaseInfoData);// lsdpsp (입고 예정)
         // 6. ititmc 저장
@@ -77,10 +82,14 @@ public class JpaDepositService {
         return null;
     }
 
-    private Lsdpsm saveLsdpsm(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
-        Lsdpsm lsdpsm = new Lsdpsm(depositListWithPurchaseInfoData);
-        jpaLsdpsmRepository.save(lsdpsm);
-        return lsdpsm;
+    private List<Lsdpsm> insertLsdpsm(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
+        List<Lsdpsm> lsdpsmList = new ArrayList<>();
+        for(DepositListWithPurchaseInfoData.Deposit deposit : depositListWithPurchaseInfoData.getDeposits()){
+            Lsdpsm lsdpsm = new Lsdpsm(deposit, depositListWithPurchaseInfoData);
+            lsdpsmList.add(lsdpsm);
+            jpaLsdpsmRepository.save(lsdpsm);
+        }
+        return lsdpsmList;
     }
 
     private Lsdpsm saveLsdpsm(DepositInsertRequestData depositInsertRequestData){
@@ -109,9 +118,11 @@ public class JpaDepositService {
         return lsdpsdList;
     }
 
-    private List<Lsdpsd> saveLsdpsd(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
+    private List<Lsdpsd> insertLsdpsd(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData, List<Lsdpsm> lsdpsmList){
         List<Lsdpsd> lsdpsdList = new ArrayList<>();
-
+        for(DepositListWithPurchaseInfoData.Deposit deposit : depositListWithPurchaseInfoData.getDeposits()){
+            
+        }
         return lsdpsdList;
     }
 
@@ -120,7 +131,7 @@ public class JpaDepositService {
         jpaLsdpssRepository.save(lsdpss);
     }
 
-    private void saveLsdpss(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
+    private void insertLsdpss(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
         Lsdpss lsdpss = new Lsdpss(depositListWithPurchaseInfoData);
         jpaLsdpssRepository.save(lsdpss);
     }
@@ -140,7 +151,7 @@ public class JpaDepositService {
         }
     }
 
-    private void saveLsdpds(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
+    private void insertLsdpds(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
         for(DepositListWithPurchaseInfoData.Deposit deposit : depositListWithPurchaseInfoData.getDeposits()){
 
         }
@@ -360,8 +371,8 @@ public class JpaDepositService {
                 continue;
             }
             Ititmt ititmt = jpaItitmtRepository
-                    .findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDtAndDealtypeCd
-                            (assortId, itemId, storageId, StringFactory.getStrEleven(), purchaseDt, StringFactory.getGbOne()); // dealtypeCd = '01'인 애들(주문)
+                    .findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt
+                            (assortId, itemId, storageId, StringFactory.getStrEleven(), purchaseDt); // dealtypeCd = '01'인 애들(주문)
             ititmt.setTempQty(ititmt.getTempQty() - deposit.getDepositQty());
             Ititmc ititmc = new Ititmc(storageId, purchaseDt, deposit);
             jpaItitmtRepository.save(ititmt);

@@ -34,8 +34,16 @@ public class Lsdpsm extends CommonProps {
         this.depositVendorId = depositInsertRequestData.getDepositVendorId();
     }
 
-    public Lsdpsm(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
-
+    public Lsdpsm(DepositListWithPurchaseInfoData.Deposit deposit, DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
+        this.depositNo = deposit.getDepositPlanId();
+        this.depositDt = new Date();
+        this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
+        this.depositGb = StringFactory.getGbOne(); // 01 하드코딩
+        this.vendorId = depositListWithPurchaseInfoData.getPurchaseVendorId();
+        this.finishYymm = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
+        this.depositType = StringFactory.getGbOne(); // 01 하드코딩
+        this.storeCd = depositListWithPurchaseInfoData.getStorageId();
+//        this.depositVendorId = deposit.
     }
 
     @Id
@@ -54,4 +62,5 @@ public class Lsdpsm extends CommonProps {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "depositVendorId", referencedColumnName="vendorId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     private Cmvdmr cmvdmr;
+
 }
