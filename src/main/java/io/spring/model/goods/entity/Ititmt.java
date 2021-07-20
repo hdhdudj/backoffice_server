@@ -1,12 +1,15 @@
 package io.spring.model.goods.entity;
 
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
+import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.goods.idclass.ItitmtId;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -29,6 +32,17 @@ public class Ititmt extends CommonProps {
         this.effEndDt = ititmtId.getEffEndDt();
         this.effStaDt = ititmtId.getEffStaDt();
     }
+    public Ititmt(Date purchaseDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit) {
+        this.storageId = storageId;
+        this.assortId = deposit.getAssortId();
+        this.itemId = deposit.getItemId();
+        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
+        this.effStaDt = new Date();
+        this.stockGb = StringFactory.getGbOne(); // 01 하드코딩
+        this.tempIndicateQty = deposit.getDepositQty();
+        this.tempQty = deposit.getAvailableQty();
+        this.stockAmt = deposit.getExtraUnitcost();
+    }
     @Id
     private String storageId;
     @Id
@@ -45,6 +59,6 @@ public class Ititmt extends CommonProps {
     private Long tempIndicateQty;
     private Long tempQty;
     private Float stockAmt;
-    private String vendorId;
-    private String siteGb;
+    private String vendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
+    private String siteGb = StringFactory.getGbOne(); // 01 하드코딩
 }

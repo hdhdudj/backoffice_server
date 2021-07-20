@@ -56,12 +56,12 @@ public class DepositController {
         return ResponseEntity.ok(res);
     }
 
-    @PostMapping(path="/updatedepositqty")
-    public ResponseEntity updateDepositQty(@RequestBody DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
-        DepositListWithPurchaseInfoData returnDep = jpaDepositService.updateDepositQty(depositListWithPurchaseInfoData);
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), returnDep);
-        return ResponseEntity.ok(res);
-    }
+//    @PostMapping(path="/updatedepositqty")
+//    public ResponseEntity updateDepositQty(@RequestBody DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
+//        DepositListWithPurchaseInfoData returnDep = jpaDepositService.updateDepositQty(depositListWithPurchaseInfoData);
+//        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), returnDep);
+//        return ResponseEntity.ok(res);
+//    }
 
 
     @PostMapping(path="/depositlistjpa")

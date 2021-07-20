@@ -71,12 +71,14 @@ public class JpaDepositService {
         this.insertLsdpss(lsdpsm, depositListWithPurchaseInfoData);
         // 4. lsdpds 저장 (입고 디테일 이력)
         this.insertLsdpds(lsdpsdList, depositListWithPurchaseInfoData);
-        // 5. lsdpsp 저장 (입고 예정)
-        List<Lsdpsp> lsdpspList = this.saveLsdpsp(depositListWithPurchaseInfoData);
-        // 6. ititmc 저장 (상품 재고)
-        List<Ititmc> ititmcList = this.saveItitmc(depositListWithPurchaseInfoData);
-        // 7. ititmt 저장 (입고예정재고)
-        List<Ititmt> ititmtList = this.saveItitmt(depositListWithPurchaseInfoData);
+        // 5. lsdpsp, ititmc, ititmt의 수량 관련값 변경
+        this.updateDepositQty(depositListWithPurchaseInfoData);
+//        // 5. lsdpsp 저장 (입고 예정)
+//        List<Lsdpsp> lsdpspList = this.updateLsdpsp(depositListWithPurchaseInfoData);
+//        // 6. ititmc 저장 (상품 재고)
+//        List<Ititmc> ititmcList = this.updateItitmc(depositListWithPurchaseInfoData);
+//        // 7. ititmt 저장 (입고예정재고)
+//        List<Ititmt> ititmtList = this.updateItitmt(depositListWithPurchaseInfoData);
         // 8. tbOrderdetail 저장
 
         return null;
@@ -365,7 +367,7 @@ public class JpaDepositService {
     /**
      * 입고 처리가능수량을 변경했을 때 수정하는 함수
      */
-    public DepositListWithPurchaseInfoData updateDepositQty(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
+    private DepositListWithPurchaseInfoData updateDepositQty(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
         Date purchaseDt = depositListWithPurchaseInfoData.getPurchaseDt();
         String storageId = depositListWithPurchaseInfoData.getStorageId();
         for(DepositListWithPurchaseInfoData.Deposit deposit : depositListWithPurchaseInfoData.getDeposits()){
@@ -381,14 +383,29 @@ public class JpaDepositService {
                 log.debug("input qty is bigger than available qty.");
                 continue;
             }
-            Ititmt ititmt = jpaItitmtRepository
-                    .findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt
-                            (assortId, itemId, storageId, StringFactory.getStrEleven(), purchaseDt); // dealtypeCd = '01'인 애들(주문)
-            ititmt.setTempQty(ititmt.getTempQty() - deposit.getDepositQty());
-            Ititmc ititmc = new Ititmc(storageId, purchaseDt, deposit);
-            jpaItitmtRepository.save(ititmt);
-            jpaItitmcRepository.save(ititmc);
+            this.saveItitmt(purchaseDt, storageId, deposit);
+            this.updateItitmc(purchaseDt, storageId, deposit);
         }
         return null;
+    }
+
+    private Ititmc updateItitmc(Date purchaseDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit) {
+        Ititmc ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(deposit.getAssortId(),deposit.getItemId(),storageId,StringFactory.getStrEleven(), purchaseDt);
+        ititmc.setShipIndicateQty(deposit.getDepositQty());
+        jpaItitmcRepository.save(ititmc);
+        return ititmc;
+    }
+
+    private Ititmt saveItitmt(Date purchaseDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit){
+        Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt
+                        (deposit.getAssortId(), deposit.getItemId(), storageId, StringFactory.getStrEleven(), purchaseDt); // dealtypeCd = '01'인 애들(주문)
+        if(ititmt == null){
+            ititmt = new Ititmt(purchaseDt, storageId, deposit);
+        }
+        else{
+            ititmt.setTempIndicateQty(deposit.getDepositQty());
+        }
+        jpaItitmtRepository.save(ititmt);
+        return ititmt;
     }
 }
