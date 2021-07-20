@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.deposit.request.DepositInsertRequestData;
+import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,9 @@ public class Lsdpss {
         this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
         this.depositStatus = depositInsertRequestData.getDepositStatus();
         this.effStaDt = new Date();
+    }
+    public Lsdpss(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
+
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -59,14 +59,28 @@ public class JpaDepositService {
     public String sequenceInsertDeposit2(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
         // 발주 data 저장
         // 1. lsdpsm 저장
+        Lsdpsm lsdpsm = this.saveLsdpsm(depositListWithPurchaseInfoData);
         // 2. lsdpsd 저장
-        // 3. lsdpds 저장
-        // 4. lsdpsp 저장
-        // 5. ititmc 저장
-        // 6. ititmt 저장
-        // 7. tbOrderdetail 저장
+        List<Lsdpsd> lsdpsdList = this.saveLsdpsd(depositListWithPurchaseInfoData);// lsdpsd (입고 디테일)
+        // 3. lsdpss 저장
+        this.saveLsdpss(depositListWithPurchaseInfoData);// lsdpss (입고 마스터 이력)
+        // 4. lsdpds 저장
+        this.saveLsdpds(depositListWithPurchaseInfoData);// lsdpds (입고 디테일 이력)
+        // 5. lsdpsp 저장
+        List<Lsdpsp> lsdpspList = this.saveLsdpsp(depositListWithPurchaseInfoData);// lsdpsp (입고 예정)
+        // 6. ititmc 저장
+        List<Ititmc> ititmcList = this.saveItitmc(depositListWithPurchaseInfoData);// ititmc (상품 재고)
+        // 7. ititmt 저장
+        List<Ititmt> ititmtList = this.saveItitmt(depositListWithPurchaseInfoData);// ititmt (입고예정재고)
+        // 8. tbOrderdetail 저장
 
         return null;
+    }
+
+    private Lsdpsm saveLsdpsm(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
+        Lsdpsm lsdpsm = new Lsdpsm(depositListWithPurchaseInfoData);
+        jpaLsdpsmRepository.save(lsdpsm);
+        return lsdpsm;
     }
 
     private Lsdpsm saveLsdpsm(DepositInsertRequestData depositInsertRequestData){
@@ -95,8 +109,19 @@ public class JpaDepositService {
         return lsdpsdList;
     }
 
+    private List<Lsdpsd> saveLsdpsd(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
+        List<Lsdpsd> lsdpsdList = new ArrayList<>();
+
+        return lsdpsdList;
+    }
+
     private void saveLsdpss(DepositInsertRequestData depositInsertRequestData){
         Lsdpss lsdpss = new Lsdpss(depositInsertRequestData);
+        jpaLsdpssRepository.save(lsdpss);
+    }
+
+    private void saveLsdpss(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
+        Lsdpss lsdpss = new Lsdpss(depositListWithPurchaseInfoData);
         jpaLsdpssRepository.save(lsdpss);
     }
 
@@ -115,18 +140,10 @@ public class JpaDepositService {
         }
     }
 
-    private List<Ititmc> saveItitmc(DepositInsertRequestData depositInsertRequestData) {
-        List<Ititmc> ititmcList = new ArrayList<>();
-        for(DepositInsertRequestData.Item item : depositInsertRequestData.getItems()){
-            Lsdpsp lsdpsp = jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(item.getPurchaseNo(), item.getPurchaseSeq());
-            Ititmc ititmc = new Ititmc(depositInsertRequestData, item);
-            long takeQty = lsdpsp.getPurchaseTakeQty() == null? 0l : lsdpsp.getPurchaseTakeQty();
-            long qty = ititmc.getQty() == null? 0l : ititmc.getQty();
-            ititmc.setQty(takeQty + qty);
-            jpaItitmcRepository.save(ititmc);
-            ititmcList.add(ititmc);
+    private void saveLsdpds(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
+        for(DepositListWithPurchaseInfoData.Deposit deposit : depositListWithPurchaseInfoData.getDeposits()){
+
         }
-        return ititmcList;
     }
 
     private List<Lsdpsp> saveLsdpsp(DepositInsertRequestData depositInsertRequestData) {
@@ -143,6 +160,37 @@ public class JpaDepositService {
             lsdpspList.add(lsdpsp);
         }
         return lsdpspList;
+    }
+
+    private List<Lsdpsp> saveLsdpsp(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
+        List<DepositListWithPurchaseInfoData.Deposit> depositList = depositListWithPurchaseInfoData.getDeposits();
+        List<Lsdpsp> lsdpspList = new ArrayList<>();
+        for(DepositListWithPurchaseInfoData.Deposit deposit : depositList){
+
+        }
+        return lsdpspList;
+    }
+
+    private List<Ititmc> saveItitmc(DepositInsertRequestData depositInsertRequestData) {
+        List<Ititmc> ititmcList = new ArrayList<>();
+        for(DepositInsertRequestData.Item item : depositInsertRequestData.getItems()){
+            Lsdpsp lsdpsp = jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(item.getPurchaseNo(), item.getPurchaseSeq());
+            Ititmc ititmc = new Ititmc(depositInsertRequestData, item);
+            long takeQty = lsdpsp.getPurchaseTakeQty() == null? 0l : lsdpsp.getPurchaseTakeQty();
+            long qty = ititmc.getQty() == null? 0l : ititmc.getQty();
+            ititmc.setQty(takeQty + qty);
+            jpaItitmcRepository.save(ititmc);
+            ititmcList.add(ititmc);
+        }
+        return ititmcList;
+    }
+
+    private List<Ititmc> saveItitmc(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
+        List<Ititmc> ititmcList = new ArrayList<>();
+        for(DepositListWithPurchaseInfoData.Deposit deposit : depositListWithPurchaseInfoData.getDeposits()){
+
+        }
+        return ititmcList;
     }
 
     private List<Ititmt> saveItitmt(DepositInsertRequestData depositInsertRequestData) {
@@ -164,6 +212,15 @@ public class JpaDepositService {
             ititmt.setTempQty(tempQty);
             jpaItitmtRepository.save(ititmt);
             ititmtList.add(ititmt);
+        }
+        return ititmtList;
+    }
+
+    private List<Ititmt> saveItitmt(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
+        List<DepositListWithPurchaseInfoData.Deposit> depositList = depositListWithPurchaseInfoData.getDeposits();
+        List<Ititmt> ititmtList = new ArrayList<>();
+        for(DepositListWithPurchaseInfoData.Deposit deposit : depositListWithPurchaseInfoData.getDeposits()){
+
         }
         return ititmtList;
     }

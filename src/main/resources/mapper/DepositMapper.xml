@@ -8,5 +8,12 @@
         select * from itasrt
         ]]>
     </select>
+    
+    <select id="selectAbleDepositList" parameterType="java.util.HashMap"  resultType="HashMap">
+    	
+    </select>
+    
+    
+    
 
 </mapper>
