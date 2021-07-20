@@ -42,6 +42,8 @@ public class StringFactory {
     @Getter
     private final static String depositPlanId = "seq_LSDPSP";
     @Getter
+    private final static String depositNo = "seq_LSDPSM";
+    @Getter
     private final static String ninetyNine = "99";
     @Getter
     private final static int intNine = 9;

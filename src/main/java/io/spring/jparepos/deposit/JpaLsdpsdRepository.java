@@ -9,5 +9,5 @@ public interface JpaLsdpsdRepository extends JpaRepository<Lsdpsd, LsdpsdId> {
     @Query("select max(d.depositSeq) from Lsdpsd d where d.depositNo = ?1")
     String findMaxDepositSeqByDepositNo(String depositNo);
 
-//    List<Lsdpsd> findByDepositNo(String depositNo);
+    Lsdpsd findByDepositNoAndDepositSeq(String depositNo, String depositSeq);
 }

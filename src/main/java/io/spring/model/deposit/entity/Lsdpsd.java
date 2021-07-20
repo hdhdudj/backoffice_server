@@ -3,8 +3,10 @@ package io.spring.model.deposit.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.idclass.LsdpsdId;
 import io.spring.model.deposit.request.DepositInsertRequestData;
+import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmm;
 import lombok.AccessLevel;
@@ -12,8 +14,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.flywaydb.core.internal.util.StringUtils;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -24,7 +24,7 @@ import java.util.Date;
 @Table(name="lsdpsd")
 @IdClass(LsdpsdId.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Lsdpsd{
+public class Lsdpsd extends CommonProps {
     public Lsdpsd(String depositNo, DepositInsertRequestData.Item item){
         this.depositNo = depositNo;
         this.depositSeq = item.getDepositSeq();
@@ -38,12 +38,31 @@ public class Lsdpsd{
         this.deliPrice = this.depositQty * this.extraUnitcost;
         this.extraCost = this.deliPrice;
         this.extraQty = this.depositQty;
-        this.finishYymm = Utilities.getStringToDate(StringFactory.getDoomDay());
+        this.finishYymm = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
         this.depositType = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01' 입고
         this.siteGb = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
         this.vendorId = StringUtils.leftPad("1", 6, '0');
         this.inputNo = item.getPurchaseNo();
         this.inputSeq = item.getPurchaseSeq();
+    }
+    public Lsdpsd(Lsdpsm lsdpsm, String depositSeq, DepositListWithPurchaseInfoData.Deposit deposit) {
+        this.depositNo = lsdpsm.getDepositNo();
+        this.depositSeq = depositSeq;
+        this.assortId = deposit.getAssortId();
+        this.itemId = deposit.getItemId();
+        this.itemGrade = StringFactory.getStrEleven(); // 11 하드코딩
+        this.extraClsCd = StringFactory.getGbOne(); // 01 하드코딩
+        this.depositQty = deposit.getDepositQty();
+        this.extraUnitcost = deposit.getExtraUnitcost();
+        this.deliPrice = extraUnitcost * depositQty; // 단가 * 개수
+        this.extraCost = extraUnitcost * depositQty; // 단가 * 개수
+        this.extraQty = deposit.getDepositQty();
+        this.finishYymm = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
+        this.depositType = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01' 입고
+        this.siteGb = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
+        this.vendorId = StringUtils.leftPad("1", 6, '0'); // 000001 하드코딩
+        this.inputNo = deposit.getPurchaseNo();
+        this.inputSeq = deposit.getPurchaseSeq();
     }
     @Id
     private String depositNo;
@@ -55,7 +74,7 @@ public class Lsdpsd{
     private String extraClsCd;
     private Long depositQty;
     private Float deliPrice;
-    private Float salePrice;
+    private Float salePrice = 0f;
     private Float extraUnitcost;
     private Float extraCost;
     private Long extraQty;
@@ -69,12 +88,6 @@ public class Lsdpsd{
     private String minDepositSeq;
     private String inputNo;
     private String inputSeq;
-    private Long regId;
-    @CreationTimestamp
-    private Date regDt;
-    private Long updId;
-    @UpdateTimestamp
-    private Date updDt;
     private Date excAppDt;
 
 
@@ -111,6 +124,7 @@ public class Lsdpsd{
             @JoinColumn(name = "itemId", referencedColumnName="itemId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
     })
     private Ititmm ititmm;
+
 
 //    // 연관 관계 ititmc
 //    @ManyToOne
