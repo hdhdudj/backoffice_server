@@ -532,7 +532,7 @@ public class JpaPurchaseService {
      *  depositService에서 이용하는 함수로, 입고 데이터 생성 후 부분입고/완전입고 여부를 따져 lsdchm,b,s의 purchaseStatus를 변경해줌.
      *  (01 : 기본, 03 : 부분입고, 05 : 완전입고)
      */
-    public void changePurchaseStatus(List<Lsdpsp> lsdpspList) {
+    public Lspchm changePurchaseStatus(List<Lsdpsp> lsdpspList) {
         List<Lspchb> lspchbList = new ArrayList<>();
         for(Lsdpsp lsdpsp : lsdpspList){
             Lspchd lspchd = lsdpsp.getLspchd();
@@ -553,6 +553,7 @@ public class JpaPurchaseService {
         }
         Lspchm lspchm = lsdpspList.get(0).getLspchd().getLspchm();
         this.changePurchaseStatusOfLspchm(lspchm, lspchbList);
+        return lspchm;
     }
 
     /**
