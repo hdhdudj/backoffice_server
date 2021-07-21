@@ -100,7 +100,19 @@ public class JpaDepositService {
                 String orderSeq = lspchd.getOrderSeq();
                 Lspchm lspchm = lspchd.getLspchm();
                 TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId,orderSeq);
-
+                String statusCd;
+                if(tbOrderDetail.getAssortGb().equals(StringFactory.getGbOne())){ // 직구
+                    statusCd = StringFactory.getStrC04();
+                }
+                else{ //if(tbOrderDetail.getAssortGb().equals(StringFactory.getGbTwo())){ // 수입
+                    if (tbOrderDetail.getStorageId().equals(lspchm.getStoreCd())){ // 국내입고완료
+                        statusCd = StringFactory.getStrC04();
+                    }
+                    else {
+                        statusCd = StringFactory.getStrC01();
+                    }
+                }
+                jpaOrderService.updateOrderStatusCd(orderId, orderSeq, statusCd);
             }
         }
     }
@@ -150,7 +162,7 @@ public class JpaDepositService {
             String depositSeq = StringUtils.leftPad(Integer.toString(index), 4, '0');
             Lsdpsd lsdpsd = new Lsdpsd(lsdpsm, depositSeq, deposit);
             lsdpsdList.add(lsdpsd);
-//            jpaLsdpsdRepository.save(lsdpsd);
+            jpaLsdpsdRepository.save(lsdpsd);
             index++;
         }
         return lsdpsdList;
@@ -192,7 +204,7 @@ public class JpaDepositService {
             }
             Lsdpds lsdpds = new Lsdpds(lsdpsdList.get(i), depositList.get(i));
             lsdpdsList.add(lsdpds);
-//            jpaLsdpdsRepository.save(lsdpds);
+            jpaLsdpdsRepository.save(lsdpds);
         }
         return lsdpdsList;
     }

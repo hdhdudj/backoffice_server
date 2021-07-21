@@ -65,7 +65,7 @@ public class TbOrderDetail extends CommonProps
     private String orderSeq;
 
     private String statusCd;
-    private String assortGb;
+    private String assortGb; // 01 : 직구, 02 : 수입
     private String assortId;
     private String itemId;
     private String goodsNm;
