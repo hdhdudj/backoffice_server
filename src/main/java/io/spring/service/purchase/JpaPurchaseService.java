@@ -563,6 +563,7 @@ public class JpaPurchaseService {
      * 해당 purchaseNo의 b가 모두 완전입고면 m도 완전입고, 하나라도 부분입고면 m은 부분입고.
      */
     private void changePurchaseStatusOfLspchm(Lspchm lspchm, List<Lspchb> lspchbList) {
+        lspchm.setPurchaseStatus(StringFactory.getGbFive());
         for(Lspchb lspchb : lspchbList){
             if(lspchb.getPurchaseStatus().equals(StringFactory.getGbThree())){
                 lspchm.setPurchaseStatus(StringFactory.getGbThree());
