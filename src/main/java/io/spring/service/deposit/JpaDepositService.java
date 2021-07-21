@@ -105,11 +105,11 @@ public class JpaDepositService {
                     statusCd = StringFactory.getStrC04();
                 }
                 else{ //if(tbOrderDetail.getAssortGb().equals(StringFactory.getGbTwo())){ // 수입
-                    if (tbOrderDetail.getStorageId().equals(lspchm.getStoreCd())){ // 국내입고완료
-                        statusCd = StringFactory.getStrC04();
+                    if (tbOrderDetail.getStorageId().equals(lspchm.getStoreCd())){
+                        statusCd = StringFactory.getStrC04(); // 국내입고완료
                     }
                     else {
-                        statusCd = StringFactory.getStrC01();
+                        statusCd = StringFactory.getStrC01(); // 해외입고완료
                     }
                 }
                 jpaOrderService.updateOrderStatusCd(orderId, orderSeq, statusCd);

@@ -539,7 +539,9 @@ public class JpaPurchaseService {
             long newQty = lspchd.getPurchaseQty() - lsdpsp.getPurchaseTakeQty();
             lspchd.setPurchaseQty(lspchd.getPurchaseQty() - newQty);
             Date doomDay = Utilities.getStringToDate(StringFactory.getDoomDay());
-            Lspchb lspchb = lspchd.getLspchb().stream().filter(x->x.getEffEndDt().equals(doomDay)).collect(Collectors.toList()).get(0);
+            List<Lspchb> lspchbList1 = lspchd.getLspchb();
+            lspchbList1 = lspchbList1.stream().filter(x->x.getEffEndDt().compareTo(doomDay)==0).collect(Collectors.toList());
+            Lspchb lspchb = lspchbList1.get(0);
             if(lspchd.getPurchaseQty() > 0){ // 부분입고 : 03
                 lspchb.setPurchaseStatus(StringFactory.getGbThree()); // purchaseStatus : 03으로 설정
             }
