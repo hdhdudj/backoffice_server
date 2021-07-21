@@ -26,6 +26,7 @@ import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import io.spring.model.purchase.response.PurchaseSelectDetailResponseData;
 import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
+import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -545,8 +546,11 @@ public class JpaPurchaseService {
             if(lspchd.getPurchaseQty() > 0){ // 부분입고 : 03
                 lspchb.setPurchaseStatus(StringFactory.getGbThree()); // purchaseStatus : 03으로 설정
             }
-            else { // 완전입고 : 05
+            else if(lspchd.getPurchaseQty() == 0){ // 완전입고 : 05
                 lspchb.setPurchaseStatus(StringFactory.getGbFive()); // purchaseStatus : 05로 설정
+            }
+            else if(lspchd.getPurchaseQty() < 0){
+                throw new ValueException("purchaseQty must bigger than 0..");
             }
             lspchbList.add(lspchb);
             jpaLspchbRepository.save(lspchb);
