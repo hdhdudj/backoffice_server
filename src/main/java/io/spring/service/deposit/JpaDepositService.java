@@ -407,7 +407,7 @@ public class JpaDepositService {
             Long purchasePlanQty = lsdpsp.getPurchasePlanQty() == null? 0l : lsdpsp.getPurchasePlanQty();
             Long purchaseTakeQty = lsdpsp.getPurchaseTakeQty() == null? 0l : lsdpsp.getPurchaseTakeQty();;
             Long availableQty = purchasePlanQty - purchaseTakeQty;
-            String dealtypeCd = lsdpsp.getLspchd().getLspchm().getDealtypeCd();
+            String dealtypeCd = lsdpsp.getDealtypeCd();
             boolean notGoodsPurchaseAndAvailableQty = availableQty >= deposit.getDepositQty() && !dealtypeCd.equals(StringFactory.getGbOne());
             boolean orderPurchaseAndCompleteDeposit = availableQty == deposit.getDepositQty() && dealtypeCd.equals(StringFactory.getGbOne());
             if(notGoodsPurchaseAndAvailableQty || orderPurchaseAndCompleteDeposit){ // '주문발주가 아니고 부분입고or완전입고' or '주문발주이고 완전입고'
@@ -423,7 +423,9 @@ public class JpaDepositService {
                 log.debug("input qty is bigger than available qty.");
                 continue;
             }
-            this.saveItitmt(purchaseDt, storageId, deposit);
+            if(dealtypeCd.equals(StringFactory.getGbOne())){ // 주문발주일 때만 찾아서 indQty 변경
+                this.saveItitmt(purchaseDt, storageId, deposit);
+            }
             this.saveItitmc(purchaseDt, storageId, deposit);
         }
         return lsdpspList;
@@ -445,7 +447,7 @@ public class JpaDepositService {
             log.debug("There is no proper ititmt. Check data.");
             return null;
         }
-        else{
+        else {
             ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() + deposit.getDepositQty());
         }
         jpaItitmtRepository.save(ititmt);
