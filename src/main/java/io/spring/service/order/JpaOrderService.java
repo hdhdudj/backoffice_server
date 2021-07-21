@@ -79,12 +79,9 @@ public class JpaOrderService {
      * @param tbOrderDetail
      */
     private void changeOrderStatusWhenDirect(TbOrderDetail tbOrderDetail) {
-        Itasrt itasrt = jpaItasrtRepository.findById(tbOrderDetail.getAssortId()).orElseGet(() -> null);
-
         String assortId = tbOrderDetail.getAssortId();
         String itemId = tbOrderDetail.getItemId();
         String domesticStorageId = tbOrderDetail.getStorageId(); // 주문자 현지(국내?) 창고 id (국내창고)
-        String overseaStorageId = itasrt.getStorageId(); // 물건의 산지(?) 창고 id (해외창고)
 
         List<TbOrderDetail> tbOrderDetailsC04 = jpaTbOrderDetailRepository.findAll().stream()
                 .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList()); // 주문코드가 CO4(국내입고완료)인 애들의 list
@@ -94,10 +91,6 @@ public class JpaOrderService {
         List<Ititmc> domItitmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGrade(assortId, itemId, domesticStorageId, StringFactory.getStrEleven());
         // 국내창고 ititmt 불러오기
         List<Ititmt> domItitmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGrade(assortId, itemId, domesticStorageId, StringFactory.getStrEleven());
-        // 해외창고 ititmc 불러오기
-        List<Ititmc> ovrsItitmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGrade(assortId, itemId, overseaStorageId, StringFactory.getStrEleven());
-        // 해외창고 ititmt 불러오기
-        List<Ititmt> ovrsItitmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGrade(assortId, itemId, overseaStorageId, StringFactory.getStrEleven());
 
         long sumOfDomQty = domItitmc.stream().map(x->{if(x.getQty() == null){return 0l;}else{return x.getQty();}}).reduce((a,b)->a+b).orElseGet(() -> 0l);
         long sumOfDomShipIndQty = domItitmc.stream().map(x->{if(x.getShipIndicateQty() == null){return 0l;}else{return x.getShipIndicateQty();}}).reduce((a,b)->a+b).orElseGet(() -> 0l);
