@@ -19,6 +19,7 @@ import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.purchase.entity.Lspchm;
+import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.internal.util.StringUtils;
@@ -43,6 +44,7 @@ public class JpaDepositService {
     private final JpaItitmtRepository jpaItitmtRepository;
     private final JpaLspchmRepository jpaLspchmRepository;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
+    private final JpaPurchaseService jpaPurchaseService;
     private final EntityManager em;
 
     @Transactional
@@ -75,7 +77,8 @@ public class JpaDepositService {
         List<Lsdpsd> lsdpsdList = this.insertLsdpsd(depositListWithPurchaseInfoData, lsdpsm);
         // 4. lsdpds 저장 (입고 디테일 이력)
         this.insertLsdpds(lsdpsdList, depositListWithPurchaseInfoData);
-        // 5. lsdpsp의 입고예정과 실제 입고량을 비교해 부분입고인지 완전입고인지 여부로 purchaseStatus 변경
+        // 5. lsdpsp의 입고예정과 실제 입고량을 비교해 부분입고인지 완전입고인지 여부로 lspchm,b,s의 purchaseStatus 변경
+        jpaPurchaseService.changePurchaseStatus(lsdpspList);
         // 8. tbOrderdetail 주문상태 변경 (lspchm.dealtypeCd = 01(주문발주) 일 때)
 
         return lsdpsm.getDepositNo();

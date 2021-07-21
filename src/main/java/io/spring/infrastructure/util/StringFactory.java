@@ -26,6 +26,10 @@ public class StringFactory {
     @Getter
     private final static String gbThree = "03";
     @Getter
+    private final static String gbFour = "04";
+    @Getter
+    private final static String gbFive = "05";
+    @Getter
     private final static String splitGb = "\\^\\|\\^";
 
     // number

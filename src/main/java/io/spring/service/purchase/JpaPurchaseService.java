@@ -527,4 +527,45 @@ public class JpaPurchaseService {
         jpaLspchbRepository.save(newLspchb);
         jpaLspchdRepository.save(newLspchd);
     }
+
+    /**
+     *  depositService에서 이용하는 함수로, 입고 데이터 생성 후 부분입고/완전입고 여부를 따져 lsdchm,b,s의 purchaseStatus를 변경해줌.
+     *  (01 : 기본, 03 : 부분입고, 05 : 완전입고)
+     */
+    public void changePurchaseStatus(List<Lsdpsp> lsdpspList) {
+        List<Lspchb> lspchbList = new ArrayList<>();
+        for(Lsdpsp lsdpsp : lsdpspList){
+            Lspchd lspchd = lsdpsp.getLspchd();
+            long newQty = lspchd.getPurchaseQty() - lsdpsp.getPurchaseTakeQty();
+            lspchd.setPurchaseQty(lspchd.getPurchaseQty() - newQty);
+            Date doomDay = Utilities.getStringToDate(StringFactory.getDoomDay());
+            Lspchb lspchb = lspchd.getLspchb().stream().filter(x->x.getEffEndDt().equals(doomDay)).collect(Collectors.toList()).get(0);
+            if(lspchd.getPurchaseQty() > 0){ // 부분입고 : 03
+                lspchb.setPurchaseStatus(StringFactory.getGbThree()); // purchaseStatus : 03으로 설정
+            }
+            else { // 완전입고 : 05
+                lspchb.setPurchaseStatus(StringFactory.getGbFive()); // purchaseStatus : 05로 설정
+            }
+            lspchbList.add(lspchb);
+            jpaLspchbRepository.save(lspchb);
+            jpaLspchdRepository.save(lspchd);
+            jpaLsdpspRepository.save(lsdpsp);
+        }
+        Lspchm lspchm = lsdpspList.get(0).getLspchd().getLspchm();
+        this.changePurchaseStatusOfLspchm(lspchm, lspchbList);
+    }
+
+    /**
+     * lspchb 목록을 받아 해당하는 lspchm의 purchaseStatus를 변경해주는 함수
+     * 해당 purchaseNo의 b가 모두 완전입고면 m도 완전입고, 하나라도 부분입고면 m은 부분입고.
+     */
+    private void changePurchaseStatusOfLspchm(Lspchm lspchm, List<Lspchb> lspchbList) {
+        for(Lspchb lspchb : lspchbList){
+            if(lspchb.getPurchaseStatus().equals(StringFactory.getGbThree())){
+                lspchm.setPurchaseStatus(StringFactory.getGbThree());
+                jpaLspchmRepository.save(lspchm);
+                break;
+            }
+        }
+    }
 }
