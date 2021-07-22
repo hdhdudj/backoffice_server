@@ -1,21 +1,5 @@
 package io.spring.controller;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
@@ -28,22 +12,26 @@ import io.spring.service.order.JpaOrderService;
 import io.spring.service.purchase.JpaPurchaseService;
 import io.spring.service.purchase.MyBatisPurchaseService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/purchase")
 @RequiredArgsConstructor
+@Slf4j
 public class PurchaseController {
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
     private final JpaPurchaseService jpaPurchaseService;
     private final JpaCommonService jpaCommonService;
     
     private final JpaOrderService jpaOrderService;
     
     private final MyBatisPurchaseService myBatisPurchaseService;
-    
-    
-    
 
 //    public PurchaseController(JpaPurchaseService jpaPurchaseService, JpaCommonService jpaCommonService, MyBatisPurchaseService myBatisPurchaseService){
 //        this.jpaCommonService = jpaCommonService;
@@ -83,7 +71,7 @@ public class PurchaseController {
 
 	@GetMapping(path = "/{purchaseNo}")
 	public ResponseEntity getPurchase(@PathVariable("purchaseNo") String purchaseNo) {
-		logger.debug("get purchase detail page");
+		log.debug("get purchase detail page");
 
 		HashMap<String, Object> m = new HashMap<String, Object>();
 
@@ -106,7 +94,7 @@ public class PurchaseController {
 
     @GetMapping(path = "/getpurchasedetail")
     public ResponseEntity getPurchaseDetailJpa(@RequestParam(required = true) String purchaseNo){
-        logger.debug("get purchase detail page");
+        log.debug("get purchase detail page");
 
         PurchaseSelectDetailResponseData responseData = jpaPurchaseService.getPurchaseDetailPage(purchaseNo);
 
@@ -119,7 +107,7 @@ public class PurchaseController {
 
 	@PostMapping(path = "")
     public ResponseEntity savePurchaseJpa(@RequestBody PurchaseInsertRequestData purchaseInsertRequestData){
-        logger.debug("insert or update purchase by jpa");
+        log.debug("insert or update purchase by jpa");
 
 		System.out.println("insert or update purchase by jpa");
 
@@ -141,7 +129,7 @@ public class PurchaseController {
 	@PostMapping(path = "/{purchaseNo}")
 	public ResponseEntity updatePurchaseJpa(@PathVariable("purchaseNo") String purchaseNo,
 			@RequestBody PurchaseUpdateRequestData req) {
-		logger.debug("insert or update purchase by jpa");
+        log.debug("insert or update purchase by jpa");
 
 
 
@@ -162,7 +150,7 @@ public class PurchaseController {
     // 발주 detail page
     @GetMapping(path="/purchasedetailjpa")
     public ResponseEntity getPurchaseDetailPage(@RequestParam String purchaseNo) {
-        logger.debug("get purchase detail page");
+        log.debug("get purchase detail page");
 
         PurchaseSelectDetailResponseData purchaseSelectDetailResponseData = jpaPurchaseService.getPurchaseDetailPage(purchaseNo);
 
@@ -177,7 +165,7 @@ public class PurchaseController {
     // 발주 list get (jpa)
     @GetMapping(path="/purchaselistjpa")
     public ResponseEntity getPurchaseListJpa(@RequestParam String purchaseVendorId,@RequestParam String assortId,@RequestParam String purchaseStatus,@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDt,@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDt){
-        logger.debug("get purchase list - jpa");
+        log.debug("get purchase list - jpa");
 
         HashMap<String, Object> param = new HashMap<>();
 
@@ -203,7 +191,7 @@ public class PurchaseController {
 			@RequestParam(required = false) String purchaseStatus,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDt,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDt) {
-        logger.debug("get purchase list - mybatis");
+        log.debug("get purchase list - mybatis");
 
         HashMap<String, Object> param = new HashMap<>();
 
