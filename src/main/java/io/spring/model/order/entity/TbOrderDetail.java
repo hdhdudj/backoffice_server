@@ -103,10 +103,7 @@ public class TbOrderDetail extends CommonProps
     @NotFound(action = NotFoundAction.IGNORE)
     private TbOrderMaster tbOrderMaster; // tbOrderMaster 연관관계
 
-    @JoinColumns({
-        @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
-        @JoinColumn(name = "itemId", referencedColumnName = "itemId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
-    })
+    @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @NotFound(action = NotFoundAction.IGNORE)
