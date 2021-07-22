@@ -33,12 +33,6 @@ public class PurchaseController {
     
     private final MyBatisPurchaseService myBatisPurchaseService;
 
-//    public PurchaseController(JpaPurchaseService jpaPurchaseService, JpaCommonService jpaCommonService, MyBatisPurchaseService myBatisPurchaseService){
-//        this.jpaCommonService = jpaCommonService;
-//        this.jpaPurchaseService = jpaPurchaseService;
-//        this.myBatisPurchaseService = myBatisPurchaseService;
-//    }
-
 	@GetMapping(path = "/vendors")
 	public ResponseEntity getOrderListByPurchaseVendor() {
 

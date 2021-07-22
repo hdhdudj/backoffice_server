@@ -3,15 +3,15 @@ package io.spring.infrastructure.util;
 import lombok.Getter;
 
 public class StringFactory {
-    // GoodsController
-    @Getter
-    private final static String seqItasrtStr = "seq_ITASRT";
-
-    //jpaCommonService
+    // alphabet
     @Getter
     private final static String cUpperStr = "C";
+    @Getter
+    private final static String dUpperStr = "D";
+    @Getter
+    private final static String strR = "r";
 
-    // jpaGoodsService
+    // zero + number
     @Getter
     private final static String threeStartCd = "001";
     @Getter
@@ -29,8 +29,6 @@ public class StringFactory {
     private final static String gbFour = "04";
     @Getter
     private final static String gbFive = "05";
-    @Getter
-    private final static String splitGb = "\\^\\|\\^";
 
     // number
     @Getter
@@ -39,14 +37,6 @@ public class StringFactory {
     private final static String strTwo = "2";
     @Getter
     private final static String strEleven = "11";
-
-    // jpaPurchaseService
-    @Getter
-    private final static String purchaseSeqStr = "seq_LSPCHM";
-    @Getter
-    private final static String depositPlanId = "seq_LSDPSP";
-    @Getter
-    private final static String depositNo = "seq_LSDPSM";
     @Getter
     private final static String ninetyNine = "99";
     @Getter
@@ -55,17 +45,18 @@ public class StringFactory {
     private final static int intEight = 8;
     @Getter
     private final static String strZero = "0";
-    @Getter
-    private final static String strStartDt = "startDt";
-    @Getter
-    private final static String strEndDt = "endDt";
-    @Getter
-    private final static String strPurchaseVendorId = "purchaseVendorId";
-    @Getter
-    private final static String strAssortId = "assortId";
-    @Getter
-    private final static String strPurchaseStatus = "purchaseStatus";
 
+    // sequence table key
+    @Getter
+    private final static String purchaseSeqStr = "seq_LSPCHM";
+    @Getter
+    private final static String depositPlanId = "seq_LSDPSP";
+    @Getter
+    private final static String depositNo = "seq_LSDPSM";
+    @Getter
+    private final static String strDepositNo = "seq_LSDPSM";
+    @Getter
+    private final static String seqItasrtStr = "seq_ITASRT";
 
     // controller
     @Getter
@@ -73,28 +64,23 @@ public class StringFactory {
     @Getter
     private final static String strSuccess = "success";
 
+    // date format
     @Getter
     private final static String doomDay = "9999-12-31 23:59:59";
     @Getter
     private final static String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
-    // deposit controller
-    @Getter
-    private final static String strDepositNo = "seq_LSDPSM";
-    @Getter
-    private final static String dUpperStr = "D";
-
-    // itvari 관련
+    // 한글
     @Getter
     private final static String strSingleGoods = "단품";
 
     // code
-    @Getter
-    private final static String strR = "r";
 
     // 기호
     @Getter
     private final static String strAt = "@";
+    @Getter
+    private final static String splitGb = "\\^\\|\\^";
     
     // 주문 상태코드
     @Getter
@@ -127,4 +113,22 @@ public class StringFactory {
     private final static String strD06 = "D06"; // 배송완료
     @Getter
     private final static String strE01 = "E01"; // 구매확정
+
+    // request parameters map key
+    @Getter
+    private final static String strStartDt = "startDt";
+    @Getter
+    private final static String strEndDt = "endDt";
+    @Getter
+    private final static String strPurchaseVendorId = "purchaseVendorId";
+    @Getter
+    private final static String strAssortId = "assortId";
+    @Getter
+    private final static String strPurchaseStatus = "purchaseStatus";
+    @Getter
+    private final static String strStorageId = "storageId";
+    @Getter
+    private final static String strItemId = "itemId";
+    @Getter
+    private final static String strDeliMethod = "deliMethod";
 }

@@ -3,6 +3,7 @@ package io.spring.model.order.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
+import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.order.idclass.TbOrderDetailId;
 import lombok.*;
@@ -101,4 +102,13 @@ public class TbOrderDetail extends CommonProps
     @JsonIgnore
     @NotFound(action = NotFoundAction.IGNORE)
     private TbOrderMaster tbOrderMaster; // tbOrderMaster 연관관계
+
+    @JoinColumns({
+        @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
+        @JoinColumn(name = "itemId", referencedColumnName = "itemId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
+    })
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @NotFound(action = NotFoundAction.IGNORE)
+    private Itasrt itasrt; // tbOrderMaster 연관관계
 }

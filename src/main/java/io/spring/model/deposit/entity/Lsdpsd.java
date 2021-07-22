@@ -32,7 +32,7 @@ public class Lsdpsd extends CommonProps {
         this.itemGrade = item.getItemGrade();
         this.itemId = item.getItemId();
         this.extraClsCd = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
-        this.salePrice = (float) 0;
+        this.salePrice = 0f;
         this.depositQty = item.getDepositQty();
         this.extraUnitcost = item.getExtraUnitcost();
         this.deliPrice = this.depositQty * this.extraUnitcost;
@@ -124,13 +124,4 @@ public class Lsdpsd extends CommonProps {
             @JoinColumn(name = "itemId", referencedColumnName="itemId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
     })
     private Ititmm ititmm;
-
-
-//    // 연관 관계 ititmc
-//    @ManyToOne
-//    @JoinColumns({
-//            @JoinColumn(name = "inputNo", referencedColumnName="purchaseNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
-//            @JoinColumn(name = "inputSeq", referencedColumnName="purchaseSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
-//    })
-//    private Ititmc ititmc;
 }

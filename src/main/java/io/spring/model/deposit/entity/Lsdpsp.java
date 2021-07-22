@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
+import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import lombok.AccessLevel;
@@ -50,15 +51,14 @@ public class Lsdpsp extends CommonProps implements Serializable {
         this.assortId = items.getAssortId();
         this.itemId = items.getItemId();
         this.planStatus = purchaseInsertRequestData.getPlanStatus();
-//        this.orderId = purchaseInsertRequest.getOrderId();
-//        this.orderSeq = purchaseInsertRequest.getOrderSeq();
+        this.orderId = purchaseInsertRequestData.getOrderId();
+        this.orderSeq = purchaseInsertRequestData.getOrderSeq();
         this.purchaseNo = purchaseInsertRequestData.getPurchaseNo();
         this.purchaseSeq = items.getPurchaseSeq();
         this.claimItemYn = StringFactory.getGbTwo(); // 02
 		this.purchaseGb = purchaseInsertRequestData.getPurchaseGb();
 		this.dealtypeCd = purchaseInsertRequestData.getDealtypeCd();
 		this.planStatus = StringFactory.getGbOne();
-
     }
 
     public Lsdpsp(String depositPlanId, Lsdpsp lsdpsp) {
@@ -103,4 +103,12 @@ public class Lsdpsp extends CommonProps implements Serializable {
             @JoinColumn(name = "purchaseSeq", referencedColumnName = "purchaseSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
     })
     private Lspchd lspchd;
+
+    // 연관 관계 tbOrderDetail
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "orderId", referencedColumnName="orderId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+            @JoinColumn(name = "orderSeq", referencedColumnName="orderSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+    })
+    private TbOrderDetail tbOrderDetail;
 }
