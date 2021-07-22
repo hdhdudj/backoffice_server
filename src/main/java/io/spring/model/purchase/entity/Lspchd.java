@@ -16,7 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name="lspchd")
-@IdClass(LspchdId.class)
+@IdClass(value = LspchdId.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lspchd extends CommonProps {
     public Lspchd(Lspchd lspchd, String purchaseSeq){

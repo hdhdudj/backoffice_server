@@ -3,6 +3,7 @@ package io.spring.model.goods.entity;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.idclass.IfCategoryId;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +17,7 @@ import javax.persistence.Table;
 @Table(name = "if_category")
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @IdClass(value = IfCategoryId.class)
 public class IfCategory extends CommonProps {
     @Id

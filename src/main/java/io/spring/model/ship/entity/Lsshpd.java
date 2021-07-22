@@ -2,6 +2,7 @@ package io.spring.model.ship.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.spring.model.common.entity.CommonProps;
+import io.spring.model.ship.idclass.LsshpdId;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import java.util.Date;
 
@@ -17,6 +19,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name="lsshpd")
+@IdClass(value = LsshpdId.class)
 public class Lsshpd extends CommonProps {
     @Id
     private String shipId;
