@@ -1,4 +1,4 @@
-package io.spring.model.ship;
+package io.spring.model.ship.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.spring.model.common.entity.CommonProps;
