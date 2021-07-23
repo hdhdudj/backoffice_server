@@ -74,16 +74,8 @@ public class JpaMoveService {
                 "m.depositDt between ?1 and ?2" +
                 storageId + assortId + itemId + deliMethod
         );
-//                "m.storeCd=?1 and " +
-//                "d.assortId=?4 and " +
-//                "d.itemId=?5 and " +
-//                "t.deliMethod=?6");
         query.setParameter(1, startDt)
                 .setParameter(2, endDt);
-//                .setParameter(3, storageId)
-//                .setParameter(4,assortId)
-//                .setParameter(5,itemId)
-//                .setParameter(6,deliMethod);
         List<Lsdpsd> lsdpsdList = query.getResultList();
         return lsdpsdList;
     }
@@ -93,6 +85,7 @@ public class JpaMoveService {
      */
     @Transactional
     public String saveOrderMove(OrderMoveSaveData orderMoveSaveData) {
+
         return null;
     }
 

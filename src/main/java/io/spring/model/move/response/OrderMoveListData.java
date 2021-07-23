@@ -24,7 +24,8 @@ public class OrderMoveListData {
         this.depositDt = lsdpsd.getLsdpsm().getDepositDt();
 
         TbOrderDetail tbOrderDetail = lsdpsd.getLsdpsp().getTbOrderDetail();
-        this.channelOrderNo = tbOrderDetail.getChannelOrderNo();
+        this.orderId = tbOrderDetail.getOrderId();
+        this.orderSeq = tbOrderDetail.getOrderSeq();
         this.deliMethod = tbOrderDetail.getDeliMethod();
         this.qty = tbOrderDetail.getQty();
 
@@ -42,7 +43,8 @@ public class OrderMoveListData {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date depositDt;
     // tbOrderDetail
-    private String channelOrderNo;
+    private String orderId;
+    private String orderSeq;
     private String deliMethod;
     private Long qty;
     // itasrt
