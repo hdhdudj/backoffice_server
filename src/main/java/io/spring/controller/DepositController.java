@@ -28,7 +28,7 @@ public class DepositController {
 
     @PostMapping(path="/savebyjpa")
     public ResponseEntity saveDepositJpa(@RequestBody DepositInsertRequestData depositInsertRequestData){
-        String depositNo = jpaCommonService.getStrNumberId(StringFactory.getDUpperStr(), depositInsertRequestData.getDepositNo(), StringFactory.getStrDepositNo(), StringFactory.getIntEight());
+        String depositNo = jpaCommonService.getStrNumberId(StringFactory.getDUpperStr(), depositInsertRequestData.getDepositNo(), StringFactory.getStrSeqLsdpsm(), StringFactory.getIntEight());
         depositInsertRequestData.setDepositNo(depositNo); // deposit no 채번
         depositNo = jpaDepositService.sequenceInsertDeposit(depositInsertRequestData);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), depositNo);

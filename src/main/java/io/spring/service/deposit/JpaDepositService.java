@@ -119,7 +119,7 @@ public class JpaDepositService {
 
     private Lsdpsm insertLsdpsm(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
         // depositNo 채번
-        String no = jpaSequenceDataRepository.nextVal(StringFactory.getDepositNo());
+        String no = jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLsdpsm());
         String depositNo = Utilities.getStringNo('D', no,9);
         Lsdpsm lsdpsm = new Lsdpsm(depositNo, depositListWithPurchaseInfoData);
         jpaLsdpsmRepository.save(lsdpsm);
@@ -314,7 +314,7 @@ public class JpaDepositService {
      * Table 초기화 함수
      */
     public void init(){
-        Optional<SequenceData> op = jpaSequenceDataRepository.findById(StringFactory.getStrDepositNo());
+        Optional<SequenceData> op = jpaSequenceDataRepository.findById(StringFactory.getStrSeqLsdpsm());
         SequenceData seq = op.get();
         seq.setSequenceCurValue(StringFactory.getStrZero());
         jpaSequenceDataRepository.save(seq);

@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -27,12 +28,12 @@ public class MoveController {
      * 주문이동지시 화면에서 검색시 가져오는 주문 list를 return
      */
     @GetMapping(path="/list/order")
-    public ResponseEntity getOrderMoveList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDt,
-                                           @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")Date endDt,
-                                           @RequestParam String storageId,
-                                           @RequestParam String assortId,
-                                           @RequestParam String itemId,
-                                           @RequestParam String deliMethod){
+    public ResponseEntity getOrderMoveList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @Nullable Date startDt,
+                                           @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @Nullable Date endDt,
+                                           @RequestParam @Nullable String storageId,
+                                           @RequestParam @Nullable String assortId,
+                                           @RequestParam @Nullable String itemId,
+                                           @RequestParam @Nullable String deliMethod){
         Map<String, Object> map = new HashMap<>();
         map.put("startDt", startDt);
         map.put("endDt", endDt);
@@ -59,18 +60,18 @@ public class MoveController {
     /**
      * 주문이동지시 저장
      */
-    @PostMapping(path="/order/save")
-    public ResponseEntity saveOrderMove(@RequestBody OrderMoveSaveData orderMoveSaveData){
-        String depositNo = jpaMoveService.saveOrderMove(orderMoveSaveData);
+    @PostMapping(path="/save/order")
+    public ResponseEntity saveOrderMove(@RequestBody List<OrderMoveSaveData> orderMoveSaveDataList){
+        List<String> shipIdList = jpaMoveService.saveOrderMove(orderMoveSaveDataList);
 //        depositInsertRequestData.setDepositNo(depositNo); // deposit no 채번
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), depositNo);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipIdList);
         return ResponseEntity.ok(res);
     }
 
     /**
      * 상품이동지시 저장
      */
-//    @PostMapping(path="/goods/save")
+//    @PostMapping(path="/save/goods")
 //    public ResponseEntity saveGoodsMove(@RequestBody GoodsMoveSaveData goodsMoveSaveData){
 //        String depositNo = jpaMoveService.saveGoodsMove(goodsMoveSaveData);
 //        depositNo = jpaDepositService.sequenceInsertDeposit(depositInsertRequestData);

@@ -48,15 +48,15 @@ public class StringFactory {
 
     // sequence table key
     @Getter
-    private final static String purchaseSeqStr = "seq_LSPCHM";
+    private final static String strSeqLspchm = "seq_LSPCHM";
     @Getter
-    private final static String depositPlanId = "seq_LSDPSP";
+    private final static String strSeqLsdpsp = "seq_LSDPSP";
     @Getter
-    private final static String depositNo = "seq_LSDPSM";
+    private final static String strSeqLsdpsm = "seq_LSDPSM";
     @Getter
-    private final static String strDepositNo = "seq_LSDPSM";
+    private final static String strSeqItasrt = "seq_ITASRT";
     @Getter
-    private final static String seqItasrtStr = "seq_ITASRT";
+    private final static String strSeqLsshpm = "seq_LSSHPM";
 
     // controller
     @Getter

@@ -36,7 +36,7 @@ public class Utilities {
     }
     /**
      * 21-04-25 Pecan
-     * 유틸 함수 : "009"를 받아 정수화해서 1을 더한 후 "010"으로 return
+     * 유틸 함수 : char가 앞에 붙은 숫자 반환. (예 : C00000001 )
      * @param calcNeedStringNumber
      * @param length
      * @return String

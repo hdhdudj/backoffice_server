@@ -236,7 +236,7 @@ public class JpaPurchaseService {
         for(PurchaseInsertRequestData.Items items : purchaseInsertRequestData.getItems()){
             Lsdpsp lsdpsp = items.getPurchaseSeq() == null || items.getPurchaseSeq().equals("")? null : jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequestData.getPurchaseNo(), items.getPurchaseSeq());
             if(lsdpsp == null){ // insert
-                String depositPlanId = jpaCommonService.getNumberId(purchaseInsertRequestData.getDepositPlanId(), StringFactory.getDepositPlanId(), StringFactory.getIntNine());
+                String depositPlanId = jpaCommonService.getNumberId(purchaseInsertRequestData.getDepositPlanId(), StringFactory.getStrSeqLsdpsp(), StringFactory.getIntNine());
                 purchaseInsertRequestData.setDepositPlanId(depositPlanId); // depositPlanId 채번
                 String seq = jpaLsdpspRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequestData.getPurchaseNo());
                 if(seq == null){
@@ -406,11 +406,11 @@ public class JpaPurchaseService {
      * Table 초기화 함수
      */
     public void initTables(){
-        Optional<SequenceData> op = jpaSequenceDataRepository.findById(StringFactory.getPurchaseSeqStr());
+        Optional<SequenceData> op = jpaSequenceDataRepository.findById(StringFactory.getStrSeqLspchm());
         SequenceData seq = op.get();
         seq.setSequenceCurValue(StringFactory.getStrZero());
         jpaSequenceDataRepository.save(seq);
-        op = jpaSequenceDataRepository.findById(StringFactory.getDepositPlanId());
+        op = jpaSequenceDataRepository.findById(StringFactory.getStrSeqLsdpsp());
         seq = op.get();
         seq.setSequenceCurValue(StringFactory.getStrZero());
         jpaSequenceDataRepository.save(seq);

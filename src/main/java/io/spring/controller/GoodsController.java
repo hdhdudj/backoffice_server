@@ -74,7 +74,7 @@ public class GoodsController {
 		log.debug("save(insert or update) goods by jpa");
 		System.out.println(goodsInsertRequestData.toString());
 
-		goodsInsertRequestData.setAssortId(jpaCommonService.getNumberId(goodsInsertRequestData.getAssortId(), StringFactory.getSeqItasrtStr(), StringFactory.getIntNine())); // assort id 梨꾨쾲
+		goodsInsertRequestData.setAssortId(jpaCommonService.getNumberId(goodsInsertRequestData.getAssortId(), StringFactory.getStrSeqItasrt(), StringFactory.getIntNine())); // assort id 梨꾨쾲
 	
 		System.out.println(goodsInsertRequestData.toString());
 		GoodsInsertResponseData responseData = jpaGoodsService.sequenceInsertOrUpdateGoods(goodsInsertRequestData);

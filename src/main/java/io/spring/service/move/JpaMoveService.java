@@ -2,6 +2,7 @@ package io.spring.service.move;
 
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.deposit.JpaLsdpsdRepository;
 import io.spring.jparepos.deposit.JpaLsdpsmRepository;
 import io.spring.jparepos.deposit.JpaLsdpspRepository;
@@ -27,6 +28,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class JpaMoveService {
+    private final JpaSequenceDataRepository jpaSequenceDateRepository;
     private final JpaLsdpsmRepository jpaLsdpsmRepository;
     private final JpaLsdpsdRepository jpaLsdpsdRepository;
     private final JpaLsdpspRepository jpaLsdpspRepository;
@@ -84,9 +86,24 @@ public class JpaMoveService {
      * 주문 이동지시 저장 함수
      */
     @Transactional
-    public String saveOrderMove(OrderMoveSaveData orderMoveSaveData) {
+    public List<String> saveOrderMove(List<OrderMoveSaveData> orderMoveSaveDataList) {
+        List<String> shipIdList = new ArrayList<>();
+        for(OrderMoveSaveData orderMoveSaveData : orderMoveSaveDataList){
+            String shipId = this.saveOrderMoveSaveData(orderMoveSaveData);
+            shipIdList.add(shipId);
+        }
+        return shipIdList;
+    }
 
-        return null;
+    /**
+     * OrderMoveSaveData객체로 lsshpm,s,d 생성
+     * lsdpsm,d,s,b, lsdpsp, ititmt(발주데이터) 생성
+     * tbOrderDetail를 변경
+     */
+    private String saveOrderMoveSaveData(OrderMoveSaveData orderMoveSaveData) {
+        String shipId = jpaSequenceDateRepository.nextVal(StringFactory.getStrSeqLsshpm());
+
+        return shipId;
     }
 
     /**

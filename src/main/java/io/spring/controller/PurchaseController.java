@@ -108,7 +108,7 @@ public class PurchaseController {
 
 		purchaseInsertRequestData.setPurchaseNo(
 				jpaCommonService.getStrNumberId(StringFactory.getCUpperStr(), purchaseInsertRequestData.getPurchaseNo(),
-						StringFactory.getPurchaseSeqStr(), StringFactory.getIntEight())); // purchaseNo 채번
+						StringFactory.getStrSeqLspchm(), StringFactory.getIntEight())); // purchaseNo 채번
 		String purchaseNo = jpaPurchaseService.savePurchaseSquence(purchaseInsertRequestData);
 
 		// jpaOrderService.updateStatusCd("O2106100714498480", "0001", "B02");
