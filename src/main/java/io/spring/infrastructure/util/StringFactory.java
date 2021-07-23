@@ -66,6 +66,8 @@ public class StringFactory {
 
     // date format
     @Getter
+    private final static String startDay = "0000-01-01 00:00:00";
+    @Getter
     private final static String doomDay = "9999-12-31 23:59:59";
     @Getter
     private final static String dateFormat = "yyyy-MM-dd HH:mm:ss";

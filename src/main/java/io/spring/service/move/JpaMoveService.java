@@ -1,6 +1,7 @@
 package io.spring.service.move;
 
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.deposit.JpaLsdpsdRepository;
 import io.spring.jparepos.deposit.JpaLsdpsmRepository;
 import io.spring.jparepos.deposit.JpaLsdpspRepository;
@@ -58,20 +59,31 @@ public class JpaMoveService {
      */
     private List<Lsdpsd> getLsdpsd(Date startDt, Date endDt, String storageId, String assortId, String itemId, String deliMethod) {
         // lsdpsd, lsdpsm, tbOrderDetail, itasrt, itvari
+        startDt = startDt == null? Utilities.getStringToDate(StringFactory.getStartDay()) : startDt;
+        endDt = endDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()) : endDt;
+        storageId = storageId == null || storageId.equals("")? "" : " and m.storeCd='" + storageId + "'";
+        assortId = assortId == null || assortId.equals("")? "" : " and d.assortId='" + assortId + "'";
+        itemId = itemId == null || itemId.equals("")? "" : " and d.itemId='" + itemId + "'";
+        deliMethod = deliMethod == null || deliMethod.equals("")? "" : " and t.deliMethod='" + deliMethod + "'";
         Query query = em.createQuery("select d from Lsdpsd d " +
                 "join fetch d.lsdpsm m " +
                 "join fetch d.lsdpsp p " +
                 "join fetch p.tbOrderDetail t " +
                 "join fetch t.itasrt i " +
-                "where m.storeCd=?1 and " +
-                "m.depositDt between ?2 and ?3 and " +
-                "d.assortId=?4 and d.itemId=?5 and t.deliMethod=?6");
+                "where " +
+                "m.depositDt between ?1 and ?2" +
+                storageId + assortId + itemId + deliMethod
+        );
+//                "m.storeCd=?1 and " +
+//                "d.assortId=?4 and " +
+//                "d.itemId=?5 and " +
+//                "t.deliMethod=?6");
         query.setParameter(1, startDt)
-                .setParameter(2, endDt)
-                .setParameter(3, storageId)
-                .setParameter(4,assortId)
-                .setParameter(5,itemId)
-                .setParameter(6,deliMethod);
+                .setParameter(2, endDt);
+//                .setParameter(3, storageId)
+//                .setParameter(4,assortId)
+//                .setParameter(5,itemId)
+//                .setParameter(6,deliMethod);
         List<Lsdpsd> lsdpsdList = query.getResultList();
         return lsdpsdList;
     }
