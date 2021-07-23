@@ -47,7 +47,7 @@ public class Utilities {
         }
         String calcRes = "";
         try{
-            calcRes = StringUtils.leftPad(Long.toString((long)Double.parseDouble(calcNeedStringNumber) + 1), length - 1, '0');
+            calcRes = StringUtils.leftPad(Long.toString((long)Double.parseDouble(calcNeedStringNumber)), length - 1, '0');
         }
         catch(Exception e){
             log.debug(e.getMessage());

@@ -103,6 +103,7 @@ public class JpaMoveService {
     private String saveOrderMoveSaveData(OrderMoveSaveData orderMoveSaveData) {
         String shipId = jpaSequenceDateRepository.nextVal(StringFactory.getStrSeqLsshpm());
 
+        shipId = Utilities.getStringNo('L',shipId,9);
         return shipId;
     }
 
