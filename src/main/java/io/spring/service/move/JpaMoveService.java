@@ -22,6 +22,7 @@ import io.spring.model.ship.entity.Lsshps;
 import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -120,7 +121,6 @@ public class JpaMoveService {
         this.updateQty(orderMoveSaveData);
         // 3. 발주 data 생성
         jpaPurchaseService.makePurchaseDataFromMoveSave(orderMoveSaveData);
-//        shipId = Utilities.getStringNo('L',shipId,9);
         return shipId;
     }
 
@@ -160,22 +160,18 @@ public class JpaMoveService {
         jpaLsshpmRepository.save(lsshpm);
 
         // lsshpd 저장
-        String seq = jpaLsshpdRepository.findMaxSeq(shipId);
-        if(seq == null){
-            seq = StringFactory.getFourStartCd();
-        }
-        else{
-            seq = Utilities.plusOne(seq,4);
-        }
+        long qty = orderMoveSaveData.getQty();
         Lsdpsp lsdpsp = lsdpsd.getLsdpsp();
-        Lsshpd lsshpd = new Lsshpd(shipId, seq, lsdpsp, tbOrderDetail, ititmc, itasrt);
-        lsshpd.setShipIndicateQty(orderMoveSaveData.getQty());
-        jpaLsshpdRepository.save(lsshpd);
+        for (int i = 0; i < qty; i++) {
+            String shipSeq = StringUtils.leftPad(Integer.toString(i + 1), 4,'0');
+            Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, lsdpsp, tbOrderDetail, ititmc, itasrt);
+            lsshpd.setShipIndicateQty(1l);
+            jpaLsshpdRepository.save(lsshpd);
 
-        // lsshps 저장
-        Lsshps lsshps = new Lsshps(lsshpm, lsshpd);
-        jpaLsshpsRepository.save(lsshps);
-
+            // lsshps 저장
+            Lsshps lsshps = new Lsshps(lsshpm, lsshpd);
+            jpaLsshpsRepository.save(lsshps);
+        }
         return shipId;
     }
 
@@ -183,7 +179,7 @@ public class JpaMoveService {
      * 주문이동지시 저장 누른 후 발생하는 qty 변경 처리 함수
      */
     private void updateQty(OrderMoveSaveData orderMoveSaveData) {
-
+        //
     }
 
     /**
