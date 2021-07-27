@@ -18,6 +18,7 @@ import io.spring.model.move.response.OrderMoveListData;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
+import io.spring.model.ship.entity.Lsshps;
 import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -170,6 +171,10 @@ public class JpaMoveService {
         Lsshpd lsshpd = new Lsshpd(shipId, seq, lsdpsp, tbOrderDetail, ititmc, itasrt);
         lsshpd.setShipIndicateQty(orderMoveSaveData.getQty());
         jpaLsshpdRepository.save(lsshpd);
+
+        // lsshps 저장
+        Lsshps lsshps = new Lsshps(lsshpm, lsshpd);
+        jpaLsshpsRepository.save(lsshps);
 
         return shipId;
     }
