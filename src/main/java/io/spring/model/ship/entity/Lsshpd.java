@@ -1,12 +1,18 @@
 package io.spring.model.ship.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
+import io.spring.model.deposit.entity.Lsdpsp;
+import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.goods.entity.Ititmc;
+import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.ship.idclass.LsshpdId;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -21,6 +27,32 @@ import java.util.Date;
 @Table(name="lsshpd")
 @IdClass(value = LsshpdId.class)
 public class Lsshpd extends CommonProps {
+    // 주문 이동지시 저장시 작동하는 생성자
+    public Lsshpd(String shipId, String shipSeq, Lsdpsp lsdpsp, TbOrderDetail tbOrderDetail, Ititmc ititmc, Itasrt itasrt){
+        this.shipId = shipId;
+        this.shipSeq = shipSeq;
+        this.assortId = tbOrderDetail.getAssortId();
+        this.itemId = tbOrderDetail.getItemId();
+        this.shipVendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
+        this.shipQty = 0l;
+        this.vendorDealCd = lsdpsp.getDealtypeCd();
+        this.vatGb = StringFactory.getGbOne(); // 01 하드코딩
+        this.orderId = tbOrderDetail.getOrderId();
+        this.orderSeq = tbOrderDetail.getOrderSeq();
+        this.shipGb = StringFactory.getGbTwo(); // 01 출고 02 이동
+        this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
+        this.vendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
+        this.rackNumber = null;
+        this.customsTax = 0f;
+        this.excAppDt = ititmc.getEffEndDt();
+        this.orderDiscount = tbOrderDetail.getSalePrice();
+        this.saleCost = ititmc.getStockAmt();
+        this.localPrice = ititmc.getStockAmt();
+        this.localDeliFee = 0f;
+        this.localTax = 0f;
+        this.disPrice = 0f;
+        this.oStorageId = tbOrderDetail.getStorageId();
+    }
     @Id
     private String shipId;
     @Id

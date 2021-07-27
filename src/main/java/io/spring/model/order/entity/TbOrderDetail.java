@@ -108,6 +108,4 @@ public class TbOrderDetail extends CommonProps
     @JsonIgnore
     @NotFound(action = NotFoundAction.IGNORE)
     private Itasrt itasrt; // itasrt 연관관계
-
-
 }

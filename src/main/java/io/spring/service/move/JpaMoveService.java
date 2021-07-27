@@ -10,11 +10,13 @@ import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
 import io.spring.model.deposit.entity.Lsdpsd;
+import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.move.request.OrderMoveSaveData;
 import io.spring.model.move.response.OrderMoveListData;
 import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
@@ -127,12 +129,14 @@ public class JpaMoveService {
     private String makeShipDate(OrderMoveSaveData orderMoveSaveData) {
         String shipId = jpaSequenceDateRepository.nextVal(StringFactory.getStrSeqLsshpm());
         shipId = Utilities.getStringNo('L',shipId,9);
+
         TypedQuery<Lsdpsd> query = em.createQuery("select d from Lsdpsd d " +
-//                "join fetch d.lsdpsp p " +
-//                "join fetch d.lsdpsm m " +
-//                "join fetch d.ititmc c " +
-//                "join fetch p.tbOrderDetail t " +
-//                "join fetch t.itasrt i " +
+//                "join fetch d.lsdpsp lp " +
+//                "join fetch d.lsdpsm lm " +
+//                "join fetch d.ititmm tm " +
+//                "join fetch d.itasrt it " +
+//                "join fetch tm.ititmc ic " +
+//                "join fetch lp.tbOrderDetail t " +
                 "where " +
                 "d.depositNo=?1 and d.depositSeq=?2"
         , Lsdpsd.class);
@@ -149,8 +153,24 @@ public class JpaMoveService {
                 && x.getItemGrade().equals(itemGrade)).collect(Collectors.toList());
         Ititmc ititmc = ititmcList.get(0);
         TbOrderDetail tbOrderDetail = lsdpsd.getLsdpsp().getTbOrderDetail();
+
+        // lsshpm 저장
         Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail, ititmc);
         jpaLsshpmRepository.save(lsshpm);
+
+        // lsshpd 저장
+        String seq = jpaLsshpdRepository.findMaxSeq(shipId);
+        if(seq == null){
+            seq = StringFactory.getFourStartCd();
+        }
+        else{
+            seq = Utilities.plusOne(seq,4);
+        }
+        Lsdpsp lsdpsp = lsdpsd.getLsdpsp();
+        Lsshpd lsshpd = new Lsshpd(shipId, seq, lsdpsp, tbOrderDetail, ititmc, itasrt);
+        lsshpd.setShipIndicateQty(orderMoveSaveData.getQty());
+        jpaLsshpdRepository.save(lsshpd);
+
         return shipId;
     }
 
