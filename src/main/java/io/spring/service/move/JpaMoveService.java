@@ -6,6 +6,7 @@ import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.deposit.JpaLsdpsdRepository;
 import io.spring.jparepos.deposit.JpaLsdpsmRepository;
 import io.spring.jparepos.deposit.JpaLsdpspRepository;
+import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class JpaMoveService {
+    private final JpaItitmcRepository jpaItitmcRepository;
     private final JpaSequenceDataRepository jpaSequenceDateRepository;
     private final JpaLsdpsmRepository jpaLsdpsmRepository;
     private final JpaLsdpsdRepository jpaLsdpsdRepository;
@@ -153,6 +155,9 @@ public class JpaMoveService {
                 && x.getStorageId().equals(storageId)
                 && x.getItemGrade().equals(itemGrade)).collect(Collectors.toList());
         Ititmc ititmc = ititmcList.get(0);
+        // ititmc에서 shipIndicateQty 변경해주기
+        ititmc.setShipIndicateQty(ititmc.getShipIndicateQty() + orderMoveSaveData.getQty());
+        jpaItitmcRepository.save(ititmc);
         TbOrderDetail tbOrderDetail = lsdpsd.getLsdpsp().getTbOrderDetail();
 
         // lsshpm 저장
@@ -179,7 +184,7 @@ public class JpaMoveService {
      * 주문이동지시 저장 누른 후 발생하는 qty 변경 처리 함수
      */
     private void updateQty(OrderMoveSaveData orderMoveSaveData) {
-        //
+
     }
 
     /**
