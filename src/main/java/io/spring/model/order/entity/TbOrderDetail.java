@@ -107,5 +107,7 @@ public class TbOrderDetail extends CommonProps
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @NotFound(action = NotFoundAction.IGNORE)
-    private Itasrt itasrt; // tbOrderMaster 연관관계
+    private Itasrt itasrt; // itasrt 연관관계
+
+
 }

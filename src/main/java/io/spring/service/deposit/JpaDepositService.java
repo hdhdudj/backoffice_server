@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -300,7 +301,9 @@ public class JpaDepositService {
             item.setPurchaseNo(lsdpsd.getLsdpsp().getPurchaseNo());
             item.setPurchaseSeq(lsdpsd.getLsdpsp().getPurchaseSeq());
             item.setDepositQty(lsdpsd.getLsdpsp().getPurchasePlanQty());
-            item.setDepositStatus(lsdpsd.getLsdpds().getDepositStatus());
+            Date doomDay = Utilities.getStringToDate(StringFactory.getDoomDay());
+            Lsdpds lsdpds1 = lsdpsd.getLsdpds().stream().filter(x -> x.getEffEndDt().equals(doomDay)).collect(Collectors.toList()).get(0);
+            item.setDepositStatus(lsdpds1.getDepositStatus());
             itemList.add(item);
         }
         Lsdpsm lsdpsm = lsdpsdList.get(0).getLsdpsm();

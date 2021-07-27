@@ -16,6 +16,7 @@ import io.spring.model.common.entity.SequenceData;
 import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.idclass.ItitmtId;
+import io.spring.model.move.request.OrderMoveSaveData;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
 import io.spring.model.purchase.entity.Lspchb;
@@ -575,5 +576,11 @@ public class JpaPurchaseService {
                 break;
             }
         }
+    }
+
+    /**
+     * 주문이동 저장시 생성되는 발주 data를 만드는 함수 
+     */
+    public void makePurchaseDataFromMoveSave(OrderMoveSaveData orderMoveSaveData) {
     }
 }

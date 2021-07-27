@@ -11,6 +11,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "ititmm")
@@ -76,11 +77,11 @@ public class Ititmm extends CommonProps implements Serializable {
     })
     private Itvari itvari2;
 
-//    private String orderLmtYn;
-//    private String orderLmtCnt;
-//    private String minCnt;
-//    private String maxCnt;
-//    private String dayDeliCnt;
-//    private String totDeliCnt;
-//    private String setYn;
+    // ititmc 연관 관계 (일단 단방향) - 사이즈
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = Ititmc.class)
+    @JoinColumns({
+            @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+            @JoinColumn(name = "itemId", referencedColumnName="itemId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+    })
+    private List<Ititmc> ititmc;
 }

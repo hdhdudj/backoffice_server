@@ -14,9 +14,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.flywaydb.core.internal.util.StringUtils;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -24,7 +28,7 @@ import java.util.Date;
 @Table(name="lsdpsd")
 @IdClass(LsdpsdId.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Lsdpsd extends CommonProps {
+public class Lsdpsd extends CommonProps implements Serializable {
     public Lsdpsd(String depositNo, DepositInsertRequestData.Item item){
         this.depositNo = depositNo;
         this.depositSeq = item.getDepositSeq();
@@ -88,6 +92,7 @@ public class Lsdpsd extends CommonProps {
     private String minDepositSeq;
     private String inputNo;
     private String inputSeq;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date excAppDt;
 
 
@@ -105,14 +110,16 @@ public class Lsdpsd extends CommonProps {
     private Lsdpsp lsdpsp;
 
     // 연관 관계 lsdpds
-    @ManyToOne(fetch = FetchType.LAZY)
+    @NotFound(action = NotFoundAction.IGNORE)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumns({
             @JoinColumn(name = "depositNo", referencedColumnName="depositNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
             @JoinColumn(name = "depositSeq", referencedColumnName="depositSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
     })
-    private Lsdpds lsdpds;
+    private List<Lsdpds> lsdpds;
 
     // 연관 관계 itasrt
+    @NotFound(action = NotFoundAction.IGNORE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     private Itasrt itasrt;
@@ -123,5 +130,6 @@ public class Lsdpsd extends CommonProps {
             @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
             @JoinColumn(name = "itemId", referencedColumnName="itemId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
     })
+    @NotFound(action = NotFoundAction.IGNORE)
     private Ititmm ititmm;
 }

@@ -48,6 +48,7 @@ public class Lsdpsm extends CommonProps {
 
     @Id
     private String depositNo;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date depositDt;
     private String depositGb;
     private String siteGb;

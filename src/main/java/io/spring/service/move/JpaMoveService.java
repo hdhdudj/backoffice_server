@@ -10,19 +10,26 @@ import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
 import io.spring.model.deposit.entity.Lsdpsd;
+import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.move.request.OrderMoveSaveData;
 import io.spring.model.move.response.OrderMoveListData;
+import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.ship.entity.Lsshpm;
+import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +42,9 @@ public class JpaMoveService {
     private final JpaLsshpmRepository jpaLsshpmRepository;
     private final JpaLsshpdRepository jpaLsshpdRepository;
     private final JpaLsshpsRepository jpaLsshpsRepository;
+
+    private final JpaPurchaseService jpaPurchaseService;
+
     private final EntityManager em;
 
     /**
@@ -101,10 +111,54 @@ public class JpaMoveService {
      * tbOrderDetail를 변경
      */
     private String saveOrderMoveSaveData(OrderMoveSaveData orderMoveSaveData) {
-        String shipId = jpaSequenceDateRepository.nextVal(StringFactory.getStrSeqLsshpm());
-
-        shipId = Utilities.getStringNo('L',shipId,9);
+        // 1. 출고 data 생성
+        String shipId = this.makeShipDate(orderMoveSaveData);
+        // 2. 수량 수정
+        this.updateQty(orderMoveSaveData);
+        // 3. 발주 data 생성
+        jpaPurchaseService.makePurchaseDataFromMoveSave(orderMoveSaveData);
+//        shipId = Utilities.getStringNo('L',shipId,9);
         return shipId;
+    }
+
+    /**
+     * 이동 관련 data 생성 함수 (lsshpm,d,s)
+     */
+    private String makeShipDate(OrderMoveSaveData orderMoveSaveData) {
+        String shipId = jpaSequenceDateRepository.nextVal(StringFactory.getStrSeqLsshpm());
+        shipId = Utilities.getStringNo('L',shipId,9);
+        TypedQuery<Lsdpsd> query = em.createQuery("select d from Lsdpsd d " +
+//                "join fetch d.lsdpsp p " +
+//                "join fetch d.lsdpsm m " +
+//                "join fetch d.ititmc c " +
+//                "join fetch p.tbOrderDetail t " +
+//                "join fetch t.itasrt i " +
+                "where " +
+                "d.depositNo=?1 and d.depositSeq=?2"
+        , Lsdpsd.class);
+        query.setParameter(1, orderMoveSaveData.getDepositNo())
+                .setParameter(2, orderMoveSaveData.getDepositSeq());
+        Lsdpsd lsdpsd = query.getSingleResult();
+        Itasrt itasrt = lsdpsd.getItasrt();
+        List<Ititmc> ititmcList = lsdpsd.getItitmm().getItitmc();
+        Date depositDt = lsdpsd.getLsdpsm().getDepositDt();
+        String storageId = lsdpsd.getLsdpsm().getStoreCd();
+        String itemGrade = lsdpsd.getItemGrade();
+        ititmcList = ititmcList.stream().filter(x -> x.getEffEndDt().equals(depositDt)
+                && x.getStorageId().equals(storageId)
+                && x.getItemGrade().equals(itemGrade)).collect(Collectors.toList());
+        Ititmc ititmc = ititmcList.get(0);
+        TbOrderDetail tbOrderDetail = lsdpsd.getLsdpsp().getTbOrderDetail();
+        Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail, ititmc);
+        jpaLsshpmRepository.save(lsshpm);
+        return shipId;
+    }
+
+    /**
+     * 주문이동지시 저장 누른 후 발생하는 qty 변경 처리 함수
+     */
+    private void updateQty(OrderMoveSaveData orderMoveSaveData) {
+
     }
 
     /**
