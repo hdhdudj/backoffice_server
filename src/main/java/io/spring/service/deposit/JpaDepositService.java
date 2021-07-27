@@ -239,10 +239,12 @@ public class JpaDepositService {
         List<Ititmc> ititmcList = new ArrayList<>();
         for(DepositInsertRequestData.Item item : depositInsertRequestData.getItems()){
             Lsdpsp lsdpsp = jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(item.getPurchaseNo(), item.getPurchaseSeq());
+            Lspchd lsdpsd = lsdpsp.getLspchd();
             Ititmc ititmc = new Ititmc(depositInsertRequestData, item);
             long takeQty = lsdpsp.getPurchaseTakeQty() == null? 0l : lsdpsp.getPurchaseTakeQty();
             long qty = ititmc.getQty() == null? 0l : ititmc.getQty();
             ititmc.setQty(takeQty + qty);
+            ititmc.setStockAmt(lsdpsd.getPurchaseUnitAmt());
             jpaItitmcRepository.save(ititmc);
             ititmcList.add(ititmc);
         }

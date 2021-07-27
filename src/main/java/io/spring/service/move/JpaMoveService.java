@@ -156,7 +156,8 @@ public class JpaMoveService {
                 && x.getItemGrade().equals(itemGrade)).collect(Collectors.toList());
         Ititmc ititmc = ititmcList.get(0);
         // ititmc에서 shipIndicateQty 변경해주기
-        ititmc.setShipIndicateQty(ititmc.getShipIndicateQty() + orderMoveSaveData.getQty());
+        long qty = orderMoveSaveData.getQty();
+        ititmc.setShipIndicateQty(ititmc.getShipIndicateQty() + qty);
         jpaItitmcRepository.save(ititmc);
         TbOrderDetail tbOrderDetail = lsdpsd.getLsdpsp().getTbOrderDetail();
 
@@ -165,7 +166,6 @@ public class JpaMoveService {
         jpaLsshpmRepository.save(lsshpm);
 
         // lsshpd 저장
-        long qty = orderMoveSaveData.getQty();
         Lsdpsp lsdpsp = lsdpsd.getLsdpsp();
         for (int i = 0; i < qty; i++) {
             String shipSeq = StringUtils.leftPad(Integer.toString(i + 1), 4,'0');
