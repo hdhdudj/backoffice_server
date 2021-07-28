@@ -29,6 +29,7 @@ import java.util.List;
 @IdClass(LsdpsdId.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lsdpsd extends CommonProps implements Serializable {
+    // 발주 생성시 실행되는 생성자
     public Lsdpsd(String depositNo, DepositInsertRequestData.Item item){
         this.depositNo = depositNo;
         this.depositSeq = item.getDepositSeq();
@@ -49,6 +50,7 @@ public class Lsdpsd extends CommonProps implements Serializable {
         this.inputNo = item.getPurchaseNo();
         this.inputSeq = item.getPurchaseSeq();
     }
+    // 입고 체크 후 저장시 실행되는 생성자
     public Lsdpsd(Lsdpsm lsdpsm, String depositSeq, DepositListWithPurchaseInfoData.Deposit deposit) {
         this.depositNo = lsdpsm.getDepositNo();
         this.depositSeq = depositSeq;

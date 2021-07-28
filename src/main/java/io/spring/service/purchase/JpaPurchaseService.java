@@ -13,12 +13,15 @@ import io.spring.jparepos.purchase.JpaLspchdRepository;
 import io.spring.jparepos.purchase.JpaLspchmRepository;
 import io.spring.jparepos.purchase.JpaLspchsRepository;
 import io.spring.model.common.entity.SequenceData;
+import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.deposit.entity.Lsdpsp;
+import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.move.request.OrderMoveSaveData;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
+import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.purchase.entity.Lspchb;
 import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.entity.Lspchm;
@@ -290,7 +293,7 @@ public class JpaPurchaseService {
 //            else{ // update
             boolean x = purchaseInsertRequestData.getDealtypeCd().equals(StringFactory.getGbOne());
             boolean y = purchaseInsertRequestData.getDealtypeCd().equals(StringFactory.getGbThree());
-            if(x || y) { // 일반발주면서 주문발주거나 입고예정 주문발주일 때 (01: 주문발주 02:상품발주 03:입고예정 주문발주)
+            if(x || y) { // 일반발주면서 주문발주거나 입고예정 주문발주일 때 (01: 주문발주 02:상품발주 03:입고예정 주문발주)33
                 ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() + items.getPurchaseQty());
             }
 
@@ -581,6 +584,14 @@ public class JpaPurchaseService {
     /**
      * 주문이동 저장시 생성되는 발주 data를 만드는 함수 
      */
-    public void makePurchaseDataFromMoveSave(OrderMoveSaveData orderMoveSaveData) {
+    public void makePurchaseDataFromMoveSave(Lsdpsd lsdpsd, OrderMoveSaveData orderMoveSaveData) {
+        Itasrt itasrt = lsdpsd.getItasrt();
+        Lspchd lspchd = lsdpsd.getLsdpsp().getLspchd();
+        Lspchm lspchm = lspchd.getLspchm();
+        Lsdpsp lsdpsp = lsdpsd.getLsdpsp();
+        TbOrderMaster tbOrderMaster = lsdpsd.getLsdpsp().getTbOrderDetail().getTbOrderMaster();
+        String purchaseNo = jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLspchm());
+        Lspchm lspchm2 = new Lspchm(purchaseNo, itasrt, lspchm, lsdpsd, tbOrderMaster);
+        lspchm2.setDealtypeCd(lsdpsp.getDealtypeCd());
     }
 }

@@ -118,21 +118,18 @@ public class JpaMoveService {
      */
     private String saveOrderMoveSaveData(OrderMoveSaveData orderMoveSaveData) {
         // 1. 출고 data 생성
-        String shipId = this.makeShipDate(orderMoveSaveData);
-        // 2. 수량 수정
-        this.updateQty(orderMoveSaveData);
-        // 3. 발주 data 생성
-        jpaPurchaseService.makePurchaseDataFromMoveSave(orderMoveSaveData);
+        Lsdpsd lsdpsd = this.getLsdpsdByDepositNoAndDepositSeq(orderMoveSaveData);
+        String shipId = this.makeShipDate(lsdpsd, orderMoveSaveData);
+//        this.updateQty(orderMoveSaveData);
+        // 2. 발주 data 생성
+        jpaPurchaseService.makePurchaseDataFromMoveSave(lsdpsd, orderMoveSaveData);
         return shipId;
     }
 
     /**
-     * 이동 관련 data 생성 함수 (lsshpm,d,s)
+     * depositNo와 depositSeq로 Lsdpsd를 가져오는 함수
      */
-    private String makeShipDate(OrderMoveSaveData orderMoveSaveData) {
-        String shipId = jpaSequenceDateRepository.nextVal(StringFactory.getStrSeqLsshpm());
-        shipId = Utilities.getStringNo('L',shipId,9);
-
+    private Lsdpsd getLsdpsdByDepositNoAndDepositSeq(OrderMoveSaveData orderMoveSaveData) {
         TypedQuery<Lsdpsd> query = em.createQuery("select d from Lsdpsd d " +
 //                "join fetch d.lsdpsp lp " +
 //                "join fetch d.lsdpsm lm " +
@@ -140,12 +137,22 @@ public class JpaMoveService {
 //                "join fetch d.itasrt it " +
 //                "join fetch tm.ititmc ic " +
 //                "join fetch lp.tbOrderDetail t " +
-                "where " +
-                "d.depositNo=?1 and d.depositSeq=?2"
-        , Lsdpsd.class);
+                        "where " +
+                        "d.depositNo=?1 and d.depositSeq=?2"
+                , Lsdpsd.class);
         query.setParameter(1, orderMoveSaveData.getDepositNo())
                 .setParameter(2, orderMoveSaveData.getDepositSeq());
         Lsdpsd lsdpsd = query.getSingleResult();
+        return lsdpsd;
+    }
+
+    /**
+     * 이동 관련 data 생성 함수 (lsshpm,d,s)
+     */
+    private String makeShipDate(Lsdpsd lsdpsd, OrderMoveSaveData orderMoveSaveData) {
+        String shipId = jpaSequenceDateRepository.nextVal(StringFactory.getStrSeqLsshpm());
+        shipId = Utilities.getStringNo('L',shipId,9);
+
         Itasrt itasrt = lsdpsd.getItasrt();
         List<Ititmc> ititmcList = lsdpsd.getItitmm().getItitmc();
         Date depositDt = lsdpsd.getLsdpsm().getDepositDt();
@@ -180,12 +187,12 @@ public class JpaMoveService {
         return shipId;
     }
 
-    /**
-     * 주문이동지시 저장 누른 후 발생하는 qty 변경 처리 함수
-     */
-    private void updateQty(OrderMoveSaveData orderMoveSaveData) {
-
-    }
+//    /**
+//     * 주문이동지시 저장 누른 후 발생하는 qty 변경 처리 함수
+//     */
+//    private void updateQty(OrderMoveSaveData orderMoveSaveData) {
+//
+//    }
 
     /**
      * 상품 이동지시 대상 리스트 가져오는 함수

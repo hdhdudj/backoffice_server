@@ -158,6 +158,7 @@ public class JpaDepositService {
         int index = 1;
         for(DepositListWithPurchaseInfoData.Deposit deposit : depositListWithPurchaseInfoData.getDeposits()){
             if(deposit.getAvailableQty() < deposit.getDepositQty()){
+                log.debug("input deposit qty is bigger than deposit available qty.");
                 continue;
             }
             String depositSeq = StringUtils.leftPad(Integer.toString(index), 4, '0');
