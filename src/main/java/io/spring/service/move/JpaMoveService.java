@@ -104,10 +104,14 @@ public class JpaMoveService {
     @Transactional
     public List<String> saveOrderMove(List<OrderMoveSaveData> orderMoveSaveDataList) {
         List<String> shipIdList = new ArrayList<>();
+        List<Lsdpsd> lsdpsdList = new ArrayList<>();
+        // 1. 출고 data 생성
         for(OrderMoveSaveData orderMoveSaveData : orderMoveSaveDataList){
-            String shipId = this.saveOrderMoveSaveData(orderMoveSaveData);
+            String shipId = this.saveOrderMoveSaveData(lsdpsdList, orderMoveSaveData);
             shipIdList.add(shipId);
         }
+        // 2. 발주 data 생성
+        jpaPurchaseService.makePurchaseDataFromMoveSave(lsdpsdList, orderMoveSaveDataList);
         return shipIdList;
     }
 
@@ -116,13 +120,11 @@ public class JpaMoveService {
      * lsdpsm,d,s,b, lsdpsp, ititmt(발주데이터) 생성
      * tbOrderDetail를 변경
      */
-    private String saveOrderMoveSaveData(OrderMoveSaveData orderMoveSaveData) {
-        // 1. 출고 data 생성
+    private String saveOrderMoveSaveData(List<Lsdpsd> lsdpsdList, OrderMoveSaveData orderMoveSaveData) {
         Lsdpsd lsdpsd = this.getLsdpsdByDepositNoAndDepositSeq(orderMoveSaveData);
         String shipId = this.makeShipDate(lsdpsd, orderMoveSaveData);
+        lsdpsdList.add(lsdpsd);
 //        this.updateQty(orderMoveSaveData);
-        // 2. 발주 data 생성
-        jpaPurchaseService.makePurchaseDataFromMoveSave(lsdpsd, orderMoveSaveData);
         return shipId;
     }
 

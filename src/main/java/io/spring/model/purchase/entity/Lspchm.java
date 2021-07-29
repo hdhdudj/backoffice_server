@@ -5,9 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
-import io.spring.model.deposit.entity.Lsdpsd;
-import io.spring.model.goods.entity.Itasrt;
-import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -55,40 +52,38 @@ public class Lspchm extends CommonProps {
         this.carrier = purchaseInsertRequestData.getCarrier();
 
 		this.dealtypeCd = purchaseInsertRequestData.getDealtypeCd();
-
     }
 
     /**
      * 주문이동지시 저장시 실행되는 생성자
      */
-    public Lspchm(String purchaseNo, Itasrt itasrt, Lspchm lspchm, Lsdpsd lsdpsd, TbOrderMaster tbOrderMaster) {
+    public Lspchm(String purchaseNo) {
         this.purchaseNo = purchaseNo;
         this.purchaseDt = new Date();
-        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
-        this.purchaseStatus = StringFactory.getGbOne(); // 01 : 발주, 05 : 취소
-        this.purchaseRemark = Long.toString(lspchm.getRegId());
+        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
+        this.purchaseStatus = StringFactory.getGbOne(); // 01 : 발주, 05 : 취소 (01 하드코딩)
+//        this.purchaseRemark : 바깥 set
         this.siteGb = StringFactory.getGbOne(); // "01" 하드코딩
         this.vendorId = StringFactory.getFourStartCd(); // "0001" 하드코딩
-        this.siteOrderNo = null;
-        this.siteTrackNo = null;
-//        this.localPrice = lspchd의 같은 항목의 sum(item_amt)
-//        this.newLocalPrice = lspchd의 같은 항목의 sum(item_amt)
-        this.localDeliFee = null;
-        this.newLocalDeliFee = null;
-        this.localTax = null;
-        this.newLocalTax = null;
-        this.disPrice = null;
-        this.newDisPrice = null;
-        this.purchaseGb = StringFactory.getGbTwo(); // 02 하드코딩 : 이동지시
-        this.purchaseVendorId = itasrt.getVendorId();
-        this.storeCd = itasrt.getStorageId();
-        this.oStoreCd = null;
-        this.terms = lspchm.getTerms();
-        this.delivery = lspchm.getDelivery();
-        this.payment = lspchm.getPayment();
-        this.carrier = lspchm.getCarrier();
+//        this.siteOrderNo : 바깥 set
+//        this.siteTrackNo : 바깥 set (?)
+//        this.localPrice : ?
+        this.newLocalPrice = this.localPrice;
+//        this.localDeliFee : ?
+        this.newLocalDeliFee = this.localDeliFee;
+//        this.localTax : ?
+//        this.disPrice : ?
+        this.newDisPrice = this.disPrice;
+        this.purchaseGb = StringFactory.getGbTwo(); // 01 : 일반발주, 02 : 이동요청 (02 하드코딩)
+//        this.purchaseVendorId : ?
+//        this.storeCd : 바깥 set
+//        this.oStoreCd : 바깥 set (itasrt의 창고id)
+//        this.terms : ?
+//        this.delivery : ?
+//        this.payment : ?
+//        this.carrier : ?
 
-//        this.dealtypeCd = purchaseInsertRequestData.getDealtypeCd();
+        this.dealtypeCd = StringFactory.getGbOne(); // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정 주문발주 (01 하드코딩)
     }
 
     @Id

@@ -2,7 +2,9 @@ package io.spring.model.purchase.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.spring.model.common.entity.CommonProps;
+import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.goods.entity.Ititmm;
+import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.idclass.LspchdId;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -54,6 +56,24 @@ public class Lspchd extends CommonProps {
     public Lspchd(String purchaseNo, String purchaseSeq){
         this.purchaseNo = purchaseNo;
         this.purchaseSeq = purchaseSeq;
+    }
+
+    /**
+     * 주문이동지시 저장시 실행되는 생성자
+     */
+    public Lspchd(String purchaseNo, String purchaseSeq, Lsdpsd lsdpsd,
+                  TbOrderDetail tbOrderDetail){
+        this.purchaseNo = purchaseNo;
+        this.purchaseSeq = purchaseSeq;
+        this.assortId = lsdpsd.getAssortId();
+        this.itemId = lsdpsd.getItemId();
+        this.purchaseQty = tbOrderDetail.getQty();
+        this.purchaseUnitAmt = lsdpsd.getExtraUnitcost();
+        this.purchaseItemAmt = lsdpsd.getExtraCost();
+        this.itemGrade = lsdpsd.getItemGrade();
+        this.siteGb = lsdpsd.getSiteGb();
+        this.vendorId = lsdpsd.getVendorId();
+        this.siteOrderNo = tbOrderDetail.getChannelOrderNo();
     }
     @Id
     private String purchaseNo;

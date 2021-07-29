@@ -15,7 +15,6 @@ import io.spring.jparepos.purchase.JpaLspchsRepository;
 import io.spring.model.common.entity.SequenceData;
 import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.deposit.entity.Lsdpsp;
-import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.move.request.OrderMoveSaveData;
@@ -584,14 +583,33 @@ public class JpaPurchaseService {
     /**
      * 주문이동 저장시 생성되는 발주 data를 만드는 함수 
      */
-    public void makePurchaseDataFromMoveSave(Lsdpsd lsdpsd, OrderMoveSaveData orderMoveSaveData) {
-        Itasrt itasrt = lsdpsd.getItasrt();
-        Lspchd lspchd = lsdpsd.getLsdpsp().getLspchd();
-        Lspchm lspchm = lspchd.getLspchm();
-        Lsdpsp lsdpsp = lsdpsd.getLsdpsp();
-        TbOrderMaster tbOrderMaster = lsdpsd.getLsdpsp().getTbOrderDetail().getTbOrderMaster();
+    public void makePurchaseDataFromMoveSave(List<Lsdpsd> lsdpsdList, List<OrderMoveSaveData> orderMoveSaveData) {
         String purchaseNo = jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLspchm());
-        Lspchm lspchm2 = new Lspchm(purchaseNo, itasrt, lspchm, lsdpsd, tbOrderMaster);
-        lspchm2.setDealtypeCd(lsdpsp.getDealtypeCd());
+        Lspchm receiveLsdpsm = lsdpsdList.get(0).getLsdpsp().getLspchd().getLspchm();
+        TbOrderMaster tbOrderMaster = lsdpsdList.get(0).getLsdpsp().getTbOrderDetail().getTbOrderMaster();
+
+        // lspchm insert
+        Lspchm lspchm = new Lspchm(purchaseNo);
+        // lspchm의 purchaseRemark, siteOrderNo, storeCd, oStoreCd set 해주기
+        lspchm.setPurchaseRemark(Long.toString(receiveLsdpsm.getRegId()));
+        lspchm.setSiteOrderNo(tbOrderMaster.getChannelOrderNo());
+
+        Lspchs lspchs = new Lspchs(lspchm);
+        jpaLspchmRepository.save(lspchm);
+        jpaLspchsRepository.save(lspchs);
+
+        // lspchd insert
+        int length = lsdpsdList.size();
+        for (int i = 0; i < length ; i++) {
+            Lsdpsd itemLsdpsd = lsdpsdList.get(i);
+            TbOrderDetail tbOrderDetail = itemLsdpsd.getLsdpsp().getTbOrderDetail();
+
+            String purchaseSeq = StringUtils.leftPad(Integer.toString(i+1),4,'0');
+            Lspchd lspchd = new Lspchd(purchaseNo, purchaseSeq,
+                    itemLsdpsd, tbOrderDetail);
+            Lspchb lspchb = new Lspchb(lspchd);
+            jpaLspchdRepository.save(lspchd);
+            jpaLspchbRepository.save(lspchb);
+        }
     }
 }
