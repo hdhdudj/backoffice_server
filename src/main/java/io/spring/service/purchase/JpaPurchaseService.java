@@ -585,6 +585,7 @@ public class JpaPurchaseService {
      */
     public void makePurchaseDataFromMoveSave(List<Lsdpsd> lsdpsdList, List<OrderMoveSaveData> orderMoveSaveData) {
         String purchaseNo = jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLspchm());
+        purchaseNo = Utilities.getStringNo('C',purchaseNo,9);
         Lspchm receiveLsdpsm = lsdpsdList.get(0).getLsdpsp().getLspchd().getLspchm();
         TbOrderMaster tbOrderMaster = lsdpsdList.get(0).getLsdpsp().getTbOrderDetail().getTbOrderMaster();
 
