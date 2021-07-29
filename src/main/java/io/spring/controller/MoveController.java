@@ -3,6 +3,7 @@ package io.spring.controller;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.move.request.OrderMoveSaveData;
+import io.spring.model.move.response.GoodsMoveListData;
 import io.spring.model.move.response.OrderMoveListData;
 import io.spring.service.move.JpaMoveService;
 import lombok.RequiredArgsConstructor;
@@ -50,12 +51,14 @@ public class MoveController {
     /**
      * 상품이동지시 화면에서 검색시 가져오는 상품 list를 return
      */
-//    @GetMapping(path="/list/goods")
-//    public ResponseEntity getGoodsMoveList(@RequestBody DepositInsertRequestData depositInsertRequestData){
-//        String depositNo = jpaMoveService.getGoodsMoveList(StringFactory.getDUpperStr(), depositInsertRequestData.getDepositNo(), StringFactory.getStrDepositNo(), StringFactory.getIntEight());
-//        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), depositNo);
-//        return ResponseEntity.ok(res);
-//    }
+    @GetMapping(path="/list/goods")
+    public ResponseEntity getGoodsMoveList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date shipIndDt,
+                                           @RequestParam @Nullable String storageId,
+                                           @RequestParam @Nullable String deliMethod){
+        List<GoodsMoveListData> goodsMoveListDataList = jpaMoveService.getGoodsMoveList(shipIndDt, storageId, deliMethod);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), goodsMoveListDataList);
+        return ResponseEntity.ok(res);
+    }
 
     /**
      * 주문이동지시 저장

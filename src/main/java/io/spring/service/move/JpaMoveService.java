@@ -15,6 +15,7 @@ import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.move.request.OrderMoveSaveData;
+import io.spring.model.move.response.GoodsMoveListData;
 import io.spring.model.move.response.OrderMoveListData;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.ship.entity.Lsshpd;
@@ -189,18 +190,38 @@ public class JpaMoveService {
         return shipId;
     }
 
-//    /**
-//     * 주문이동지시 저장 누른 후 발생하는 qty 변경 처리 함수
-//     */
-//    private void updateQty(OrderMoveSaveData orderMoveSaveData) {
-//
-//    }
+
 
     /**
      * 상품 이동지시 대상 리스트 가져오는 함수
      */
-//    public String getGoodsMoveList(String dUpperStr, String depositNo, String strDepositNo, int intEight) {
-//    }
+    public List<GoodsMoveListData> getGoodsMoveList(Date shipIndDt, String storageId, String deliMethod) {
+        List<Ititmc> ititmcList = this.getItitmc(shipIndDt, storageId, deliMethod);
+        List<GoodsMoveListData> goodsMoveListDataList = new ArrayList<>();
+        for(Ititmc ititmc : ititmcList){
+            GoodsMoveListData goodsMoveListData = new GoodsMoveListData(ititmc);
+            goodsMoveListDataList.add(goodsMoveListData);
+        }
+        return goodsMoveListDataList;
+    }
+
+    /**
+     * 상품이동지시 화면에서 검색에 맞는 Ititmc들을 가져오는 함수
+     */
+    private List<Ititmc> getItitmc(Date shipIndDt, String storageId, String deliMethod) {
+        Date startDt = shipIndDt == null? Utilities.getStringToDate(StringFactory.getStartDay()) : shipIndDt;
+        Date endDt = shipIndDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()) : shipIndDt;
+        storageId = storageId == null || storageId.equals("")? "" : " and ic.storageId='" + storageId + "'";
+        deliMethod = deliMethod == null || deliMethod.equals("")? "" : " and ic.deliMethod='" + deliMethod + "'";
+        Query query = em.createQuery("select ic from Ititmc ic " +
+                "where " +
+                "ic.effEndDt between ?1 and ?2" +
+                storageId + deliMethod
+        );
+        query.setParameter(1,startDt).setParameter(2,endDt);
+        List<Ititmc> ititmcList = query.getResultList();
+        return ititmcList;
+    }
 
     /**
      * 상품 이동지시 저장 함수

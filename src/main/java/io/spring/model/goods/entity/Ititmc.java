@@ -10,10 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -58,5 +55,10 @@ public class Ititmc extends CommonProps {
     private String vendorId;
     private String siteGb;
 
-
+    // 연관관계 : itasrt
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Itasrt.class)
+    @JoinColumns({
+            @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+    })
+    private Itasrt itasrt;
 }
