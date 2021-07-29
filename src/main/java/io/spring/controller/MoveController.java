@@ -2,6 +2,7 @@ package io.spring.controller;
 
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
 import io.spring.model.move.response.GoodsMoveListData;
 import io.spring.model.move.response.OrderMoveListData;
@@ -74,11 +75,10 @@ public class MoveController {
     /**
      * 상품이동지시 저장
      */
-//    @PostMapping(path="/save/goods")
-//    public ResponseEntity saveGoodsMove(@RequestBody GoodsMoveSaveData goodsMoveSaveData){
-//        String depositNo = jpaMoveService.saveGoodsMove(goodsMoveSaveData);
-//        depositNo = jpaDepositService.sequenceInsertDeposit(depositInsertRequestData);
-//        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), depositNo);
-//        return ResponseEntity.ok(res);
-//    }
+    @PostMapping(path="/save/goods")
+    public ResponseEntity saveGoodsMove(@RequestBody GoodsMoveSaveData goodsMoveSaveData){
+        List<String> shipIdList = jpaMoveService.saveGoodsMove(goodsMoveSaveData);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipIdList);
+        return ResponseEntity.ok(res);
+    }
 }

@@ -14,6 +14,7 @@ import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
+import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
 import io.spring.model.move.response.GoodsMoveListData;
 import io.spring.model.move.response.OrderMoveListData;
@@ -190,8 +191,6 @@ public class JpaMoveService {
         return shipId;
     }
 
-
-
     /**
      * 상품 이동지시 대상 리스트 가져오는 함수
      */
@@ -223,10 +222,15 @@ public class JpaMoveService {
         return ititmcList;
     }
 
+
+
     /**
      * 상품 이동지시 저장 함수
      */
-//    @Transactional
-//    public String saveGoodsMove(GoodsMoveSaveData goodsMoveSaveData) {
-//    }
+    @Transactional
+    public List<String> saveGoodsMove(GoodsMoveSaveData goodsMoveSaveData) {
+        List<String> shipIdlist = new ArrayList<>();
+
+        return shipIdlist;
+    }
 }
