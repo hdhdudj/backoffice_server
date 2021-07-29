@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.internal.util.StringUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -94,5 +95,15 @@ public class Utilities {
                     return list.get(0);
                 }
         );
+    }
+
+    /**
+     * 시간 없는 날짜에 시간을 추가해주는 함수
+     */
+    public static Date addHoursToJavaUtilDate(Date date, int hours) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.HOUR_OF_DAY, hours);
+        return calendar.getTime();
     }
 }

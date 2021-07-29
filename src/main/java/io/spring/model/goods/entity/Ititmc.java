@@ -57,8 +57,6 @@ public class Ititmc extends CommonProps {
 
     // 연관관계 : itasrt
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Itasrt.class)
-    @JoinColumns({
-            @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
-    })
+    @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     private Itasrt itasrt;
 }

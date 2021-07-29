@@ -14,6 +14,7 @@ public class GoodsMoveListData {
         this.assortId = ititmc.getAssortId();
         this.itemId = ititmc.getItemId();
         this.assortNm = ititmc.getItasrt().getAssortNm();
+        this.optionNm = ititmc.getItasrt().getItvariList().size() > 0? ititmc.getItasrt().getItvariList().get(0).getOptionNm() : null;
         this.canShipQty = ititmc.getQty() - ititmc.getShipIndicateQty();
         this.shipQty = 0l;
     }

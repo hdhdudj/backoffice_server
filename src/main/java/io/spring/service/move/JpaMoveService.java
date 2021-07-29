@@ -78,8 +78,8 @@ public class JpaMoveService {
      */
     private List<Lsdpsd> getLsdpsd(Date startDt, Date endDt, String storageId, String assortId, String itemId, String deliMethod) {
         // lsdpsd, lsdpsm, tbOrderDetail, itasrt, itvari
-        startDt = startDt == null? Utilities.getStringToDate(StringFactory.getStartDay()) : startDt;
-        endDt = endDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()) : endDt;
+        startDt = startDt == null? Utilities.getStringToDate(StringFactory.getStartDay()) : Utilities.addHoursToJavaUtilDate(startDt,0);
+        endDt = endDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()) : Utilities.addHoursToJavaUtilDate(endDt,24);
         storageId = storageId == null || storageId.equals("")? "" : " and m.storeCd='" + storageId + "'";
         assortId = assortId == null || assortId.equals("")? "" : " and d.assortId='" + assortId + "'";
         itemId = itemId == null || itemId.equals("")? "" : " and d.itemId='" + itemId + "'";
@@ -209,8 +209,8 @@ public class JpaMoveService {
      * 상품이동지시 화면에서 검색에 맞는 Ititmc들을 가져오는 함수
      */
     private List<Ititmc> getItitmc(Date shipIndDt, String storageId, String deliMethod) {
-        Date startDt = shipIndDt == null? Utilities.getStringToDate(StringFactory.getStartDay()) : shipIndDt;
-        Date endDt = shipIndDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()) : shipIndDt;
+        Date startDt = shipIndDt == null? Utilities.getStringToDate(StringFactory.getStartDay()) : Utilities.addHoursToJavaUtilDate(shipIndDt, 0);
+        Date endDt = shipIndDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()) : Utilities.addHoursToJavaUtilDate(shipIndDt, 24);;
         storageId = storageId == null || storageId.equals("")? "" : " and ic.storageId='" + storageId + "'";
         deliMethod = deliMethod == null || deliMethod.equals("")? "" : " and ic.deliMethod='" + deliMethod + "'";
         Query query = em.createQuery("select ic from Ititmc ic " +
