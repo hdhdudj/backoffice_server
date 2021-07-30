@@ -35,7 +35,8 @@ public class Lsshpd extends CommonProps {
         this.assortId = tbOrderDetail.getAssortId();
         this.itemId = tbOrderDetail.getItemId();
         this.shipVendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
-        this.shipQty = 1l;
+        this.shipIndicateQty = 1l;
+        this.shipQty = 0l;
         this.vendorDealCd = lsdpsp.getDealtypeCd();
         this.vatGb = StringFactory.getGbOne(); // 01 하드코딩
         this.orderId = tbOrderDetail.getOrderId();
@@ -61,7 +62,8 @@ public class Lsshpd extends CommonProps {
         this.assortId = goods.getAssortId();
         this.itemId = goods.getItemId();
         this.shipVendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
-        this.shipQty = 1l;
+        this.shipIndicateQty = 1l;
+        this.shipQty = 0l;
         this.vendorDealCd = StringFactory.getGbTwo(); // 01 : 주문, 02 : 상품, 03 : 입고예정 (02 하드코딩)
         this.vatGb = StringFactory.getGbOne(); // 01 하드코딩
         this.shipGb = StringFactory.getGbTwo(); // 01 출고 02 이동
