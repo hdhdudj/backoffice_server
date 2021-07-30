@@ -46,9 +46,6 @@ public class JpaMoveService {
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
     private final JpaItitmcRepository jpaItitmcRepository;
     private final JpaSequenceDataRepository jpaSequenceDateRepository;
-    private final JpaLsdpsmRepository jpaLsdpsmRepository;
-    private final JpaLsdpsdRepository jpaLsdpsdRepository;
-    private final JpaLsdpspRepository jpaLsdpspRepository;
     private final JpaLsshpmRepository jpaLsshpmRepository;
     private final JpaLsshpdRepository jpaLsshpdRepository;
     private final JpaLsshpsRepository jpaLsshpsRepository;
