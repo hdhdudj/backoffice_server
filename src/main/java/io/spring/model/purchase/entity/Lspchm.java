@@ -55,7 +55,7 @@ public class Lspchm extends CommonProps {
     }
 
     /**
-     * 주문이동지시 저장시 실행되는 생성자
+     * 주문이동지시, 상품이동지시 저장시 실행되는 생성자
      */
     public Lspchm(String purchaseNo) {
         this.purchaseNo = purchaseNo;
@@ -83,7 +83,7 @@ public class Lspchm extends CommonProps {
 //        this.payment : ?
 //        this.carrier : ?
 
-        this.dealtypeCd = StringFactory.getGbOne(); // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정 주문발주 (01 하드코딩)
+//        this.dealtypeCd = StringFactory.getGbOne(); // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정 주문발주 (01 하드코딩) 바깥에서 set
     }
 
     @Id

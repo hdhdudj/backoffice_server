@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.goods.entity.Ititmm;
+import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.idclass.LspchdId;
 import lombok.AccessLevel;
@@ -74,6 +75,21 @@ public class Lspchd extends CommonProps {
         this.siteGb = lsdpsd.getSiteGb();
         this.vendorId = lsdpsd.getVendorId();
         this.siteOrderNo = tbOrderDetail.getChannelOrderNo();
+    }
+    /**
+     * 주문이동지시 저장시 실행되는 생성자
+     */
+    public Lspchd(String purchaseNo, String purchaseSeq, GoodsMoveSaveData.Goods goods){
+        this.purchaseNo = purchaseNo;
+        this.purchaseSeq = purchaseSeq;
+        this.assortId = goods.getAssortId();
+        this.itemId = goods.getItemId();
+        this.purchaseQty = goods.getShipQty();
+//        this.purchaseUnitAmt = lsdpsd.getExtraUnitcost();
+//        this.purchaseItemAmt = lsdpsd.getExtraCost();
+//        this.itemGrade = lsdpsd.getItemGrade();
+//        this.siteGb = lsdpsd.getSiteGb();
+//        this.vendorId = lsdpsd.getVendorId();
     }
     @Id
     private String purchaseNo;

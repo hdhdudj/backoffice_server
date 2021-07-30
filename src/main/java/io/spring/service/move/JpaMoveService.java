@@ -228,6 +228,7 @@ public class JpaMoveService {
     @Transactional
     public String saveGoodsMove(GoodsMoveSaveData goodsMoveSaveData) {
         List<GoodsMoveSaveData.Goods> goodsList = goodsMoveSaveData.getGoods();
+        List<GoodsMoveSaveData.Goods> newGoodsList = new ArrayList<>();
         // shipSeq 순서 저장용 list
         List<Integer> indexStore = new ArrayList<>();
         indexStore.add(1);
@@ -237,16 +238,20 @@ public class JpaMoveService {
         Lsshpm lsshpm = new Lsshpm(shipId);
         lsshpm.setStorageId(goodsMoveSaveData.getStoreCd());
         lsshpm.setDelMethod(goodsMoveSaveData.getDeliMethod());
-        jpaLsshpmRepository.save(lsshpm);
+        long lsshpdNum = 0l;
         for (int i = 0; i < goodsList.size() ; i++) {
-            this.saveGoodsMoveSaveData(shipId, goodsMoveSaveData, goodsList.get(i), indexStore);
+            lsshpdNum = this.saveGoodsMoveSaveData(shipId, goodsMoveSaveData, goodsList.get(i), indexStore, newGoodsList);
         }
         // 1-3. Lsshps 생성
         Lsshps lsshps = new Lsshps(lsshpm);
+        if(lsshpdNum <= 0){
+            return null;
+        }
+        jpaLsshpmRepository.save(lsshpm);
         jpaLsshpsRepository.save(lsshps);
 
         // 3. 발주 data 생성
-        jpaPurchaseService.makePurchaseDataFromGoodsMoveSave(goodsMoveSaveData);
+        jpaPurchaseService.makePurchaseDataFromGoodsMoveSave(lsshpm.getRegId(), goodsMoveSaveData, newGoodsList);
 
         return shipId;
     }
@@ -254,18 +259,19 @@ public class JpaMoveService {
     /**
      * 출고 data 생성 함수
      */
-    private void saveGoodsMoveSaveData(String shipId, GoodsMoveSaveData goodsMoveSaveData, GoodsMoveSaveData.Goods goods, List<Integer> indexStore) {
-        GoodsMoveSaveData.Goods rowGoods = this.getItitmcByCondition(goods);
-        this.makeGoodsShipData(shipId, rowGoods, goodsMoveSaveData, indexStore);
+    private long saveGoodsMoveSaveData(String shipId, GoodsMoveSaveData goodsMoveSaveData, GoodsMoveSaveData.Goods goods, List<Integer> indexStore, List<GoodsMoveSaveData.Goods> newGoodsList) {
+        GoodsMoveSaveData.Goods rowGoods = this.getItitmcByCondition(goods, newGoodsList);
+        long lsshpdNum = this.makeGoodsShipData(shipId, rowGoods, goodsMoveSaveData, indexStore);
 //        ititmcList.add(ititmc);
 //        this.updateQty(goods);
+        return lsshpdNum;
     }
 
     /**
      * 조건에 맞는 ititmc를 찾아서 반환.
      * 조건 : assortId, itemId
      */
-    private GoodsMoveSaveData.Goods getItitmcByCondition(GoodsMoveSaveData.Goods goods) {
+    private GoodsMoveSaveData.Goods getItitmcByCondition(GoodsMoveSaveData.Goods goods, List<GoodsMoveSaveData.Goods> newGoodsList) {
         TypedQuery<Ititmc> query = em.createQuery("select ic from Ititmc ic " +
 //                "join fetch d.lsdpsp lp " +
 //                "join fetch d.lsdpsm lm " +
@@ -281,7 +287,10 @@ public class JpaMoveService {
         List<Ititmc> ititmcList = query.getResultList();
 
         // 2. ititmc qty값 변경
-        this.calcItitmcQty(ititmcList, goods.getShipQty());
+        ititmcList = this.calcItitmcQty(ititmcList, goods.getShipQty());
+        if(ititmcList.size() > 0){
+            newGoodsList.add(goods);
+        }
 
         GoodsMoveSaveData.Goods rowGoods = this.makeItitmcsToOneRow(ititmcList, goods);
         return rowGoods;
@@ -290,8 +299,27 @@ public class JpaMoveService {
     /**
      * 상품이동지시 저장시 ititmc의 qty 값을 변경
      */
-    private void calcItitmcQty(List<Ititmc> ititmcList, long shipQty) {
+    private List<Ititmc> calcItitmcQty(List<Ititmc> ititmcList, long shipQty) {
+        List<Ititmc> newItitmcList = new ArrayList<>();
+        long ititmcShipindQty = ititmcList.stream().map(x-> {
+            if (x.getShipIndicateQty() == null) {
+                return 0l;
+            } else {
+                return x.getShipIndicateQty();
+            }
+        }).reduce((a,b)->a+b).get();
+        long ititmcQty = ititmcList.stream().map(x-> {
+            if (x.getQty() == null) {
+                return 0l;
+            } else {
+                return x.getQty();
+            }
+        }).reduce((a,b)->a+b).get();
+        if(ititmcQty - ititmcShipindQty < shipQty){
+            return newItitmcList;
+        }
         for(Ititmc ititmc : ititmcList){
+            newItitmcList.add(ititmc);
             long qty = ititmc.getQty() == null? 0l:ititmc.getQty();
             long shipIndQty = ititmc.getShipIndicateQty() == null? 0l:ititmc.getShipIndicateQty();
             long canShipQty = qty - shipIndQty;
@@ -309,12 +337,17 @@ public class JpaMoveService {
                 jpaItitmcRepository.save(ititmc);
             }
         }
+        return newItitmcList;
     }
 
     /**
      * ititmc 리스트를 받아 상품이동지시 화면의 한 줄에 해당하는 객체로 만드는 함수
      */
     private GoodsMoveSaveData.Goods makeItitmcsToOneRow(List<Ititmc> ititmcList, GoodsMoveSaveData.Goods goods) {
+        if(ititmcList.size() == 0){
+            log.debug("입력 이동지시수량이 유효값보다 큽니다.");
+            return null;
+        }
         Ititmc ititmc = ititmcList.get(0);
         GoodsMoveSaveData.Goods goosRow = new GoodsMoveSaveData.Goods(ititmc);
         long ititmcShipindQty = ititmcList.stream().map(x-> {
@@ -356,7 +389,11 @@ public class JpaMoveService {
     /**
      * goods 정보를 받아 입고 data (lsshpd) 생성하는 함수
      */
-    private void makeGoodsShipData(String shipId, GoodsMoveSaveData.Goods goods, GoodsMoveSaveData goodsMoveSaveData, List<Integer> indexStore) {
+    private long makeGoodsShipData(String shipId, GoodsMoveSaveData.Goods goods, GoodsMoveSaveData goodsMoveSaveData, List<Integer> indexStore) {
+        if(goods ==  null){
+            log.debug("this row don't save.");
+            return 0l;
+        }
         int index = indexStore.get(0);
         long shipQty = goods.getShipQty();
         for (long i = 0; i < shipQty ; i++) {
@@ -368,6 +405,7 @@ public class JpaMoveService {
             indexStore.remove(0);
             indexStore.add(index);
         }
+        return shipQty;
     }
 
     /**
