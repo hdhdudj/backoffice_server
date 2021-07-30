@@ -24,7 +24,7 @@ import java.util.Date;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "lsshpm")
 public class Lsshpm extends CommonProps {
-    // 이동지시 시 실행되는 생성자
+    // 주문이동지시 저장시 실행되는 생성자
     public Lsshpm(String shipId, Itasrt itasrt, TbOrderDetail tbOrderDetail, Ititmc ititmc){
         this.shipId = shipId;
         this.shipOrderGb = StringFactory.getGbOne(); // 01 하드코딩
@@ -38,13 +38,35 @@ public class Lsshpm extends CommonProps {
         this.applyDay = Utilities.getStringToDate(StringFactory.getDoomDay());
         this.masterShipGb = StringFactory.getGbOne(); // 01 하드코딩
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
-        this.vendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0');
+        this.vendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
         this.delMethod = tbOrderDetail.getDeliMethod();
         this.rematGb = StringFactory.getGbOne(); // 01 하드코딩
         this.shipGb = StringFactory.getGbTwo(); // 02 하드코딩 (01 : 출고, 02 : 이동)
         this.itemGrade = ititmc.getItemGrade();
         this.deliCompanyCd = null;
         this.orderId = tbOrderDetail.getOrderId();
+    }
+    
+    // 상품이동지시 저장시 실행되는 생성자
+    public Lsshpm(String shipId){
+        this.shipId = shipId;
+        this.shipOrderGb = StringFactory.getGbOne(); // 01 하드코딩
+        this.shipTimes = 1l;
+        this.shipStatus = StringFactory.getGbOne(); // 01 : 출고지시, 04 : 출고 (04 하드코딩)
+        this.deliId = null; // 이동지시 : null, 출고지시 : tbOrderDetail.deliId
+        this.shipItemCnt = null;
+        this.receiptDt = new Date();
+//        this.storageId : 바깥에서 set
+        this.instructDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
+        this.applyDay = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
+        this.masterShipGb = StringFactory.getGbOne(); // 01 하드코딩
+        this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
+        this.vendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
+//        this.delMethod : 바깥에서 set
+        this.rematGb = StringFactory.getGbOne(); // 01 하드코딩
+        this.shipGb = StringFactory.getGbTwo(); // 02 하드코딩 (01 : 출고, 02 : 이동)
+//        this.itemGrade : ??
+        this.deliCompanyCd = null;
     }
     @Id
     private String shipId;

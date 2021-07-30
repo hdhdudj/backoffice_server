@@ -18,10 +18,10 @@ import java.util.Date;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "lsshps")
 public class Lsshps extends CommonProps {
-    public Lsshps(Lsshpm lsshpm, Lsshpd lsshpd){
-        this.shipId = lsshpd.getShipId();
+    public Lsshps(Lsshpm lsshpm){
+        this.shipId = lsshpm.getShipId();
         this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
-        this.effStaDt = lsshpd.getExcAppDt();
+        this.effStaDt = new Date();//lsshpd.getExcAppDt();
         this.shipStatus = lsshpm.getShipStatus();
 //        this.shipIndicateUserid =
 //        this.shipUserid =

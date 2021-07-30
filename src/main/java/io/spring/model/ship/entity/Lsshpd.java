@@ -6,6 +6,7 @@ import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
+import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.ship.idclass.LsshpdId;
 import lombok.AccessLevel;
@@ -34,7 +35,7 @@ public class Lsshpd extends CommonProps {
         this.assortId = tbOrderDetail.getAssortId();
         this.itemId = tbOrderDetail.getItemId();
         this.shipVendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
-        this.shipQty = 0l;
+        this.shipQty = 1l;
         this.vendorDealCd = lsdpsp.getDealtypeCd();
         this.vatGb = StringFactory.getGbOne(); // 01 하드코딩
         this.orderId = tbOrderDetail.getOrderId();
@@ -52,6 +53,30 @@ public class Lsshpd extends CommonProps {
         this.localTax = 0f;
         this.disPrice = 0f;
         this.oStorageId = tbOrderDetail.getStorageId();
+    }
+    // 상품이동지시 저장시 작동하는 생성자
+    public Lsshpd(String shipId, String shipSeq, GoodsMoveSaveData goodsMoveSaveData, GoodsMoveSaveData.Goods goods) {
+        this.shipId = shipId;
+        this.shipSeq = shipSeq;
+        this.assortId = goods.getAssortId();
+        this.itemId = goods.getItemId();
+        this.shipVendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
+        this.shipQty = 1l;
+        this.vendorDealCd = StringFactory.getGbTwo(); // 01 : 주문, 02 : 상품, 03 : 입고예정 (02 하드코딩)
+        this.vatGb = StringFactory.getGbOne(); // 01 하드코딩
+        this.shipGb = StringFactory.getGbTwo(); // 01 출고 02 이동
+        this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
+        this.vendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
+        this.rackNumber = null;
+        this.customsTax = 0f;
+//        this.excAppDt = ititmc.getEffEndDt();
+//        this.orderDiscount = tbOrderDetail.getSalePrice();
+//        this.saleCost = ititmc.getStockAmt();
+//        this.localPrice = ititmc.getStockAmt();
+        this.localDeliFee = 0f;
+        this.localTax = 0f;
+        this.disPrice = 0f;
+//        this.oStorageId = tbOrderDetail.getStorageId();
     }
     @Id
     private String shipId;

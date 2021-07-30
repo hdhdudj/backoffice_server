@@ -133,4 +133,6 @@ public class StringFactory {
     private final static String strItemId = "itemId";
     @Getter
     private final static String strDeliMethod = "deliMethod";
+    @Getter
+    public final static String strShipSeqNum = "shipSeqNum";
 }

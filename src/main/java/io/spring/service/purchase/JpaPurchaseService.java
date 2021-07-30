@@ -17,6 +17,7 @@ import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.idclass.ItitmtId;
+import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
@@ -583,7 +584,7 @@ public class JpaPurchaseService {
     /**
      * 주문이동 저장시 생성되는 발주 data를 만드는 함수 
      */
-    public void makePurchaseDataFromMoveSave(List<Lsdpsd> lsdpsdList, List<OrderMoveSaveData> orderMoveSaveData) {
+    public void makePurchaseDataFromOrderMoveSave(List<Lsdpsd> lsdpsdList, List<OrderMoveSaveData> orderMoveSaveData) {
         String purchaseNo = jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLspchm());
         purchaseNo = Utilities.getStringNo('C',purchaseNo,9);
         Lspchm receiveLsdpsm = lsdpsdList.get(0).getLsdpsp().getLspchd().getLspchm();
@@ -612,5 +613,10 @@ public class JpaPurchaseService {
             jpaLspchdRepository.save(lspchd);
             jpaLspchbRepository.save(lspchb);
         }
+    }
+    /**
+     * 상품이동 저장시 생성되는 발주 data를 만드는 함수
+     */
+    public void makePurchaseDataFromGoodsMoveSave(GoodsMoveSaveData goodsMoveSaveData) {
     }
 }

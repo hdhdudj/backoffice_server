@@ -61,7 +61,7 @@ public class Lspchm extends CommonProps {
         this.purchaseNo = purchaseNo;
         this.purchaseDt = new Date();
         this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
-        this.purchaseStatus = StringFactory.getGbOne(); // 01 : 발주, 05 : 취소 (01 하드코딩)
+        this.purchaseStatus = StringFactory.getGbFour(); // 01 : 발주, 04 : 이동지시?, 05 : 취소 (04 하드코딩)
 //        this.purchaseRemark : 바깥 set
         this.siteGb = StringFactory.getGbOne(); // "01" 하드코딩
         this.vendorId = StringFactory.getFourStartCd(); // "0001" 하드코딩
