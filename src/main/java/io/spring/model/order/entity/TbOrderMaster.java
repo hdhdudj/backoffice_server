@@ -1,22 +1,16 @@
 package io.spring.model.order.entity;
 
-import java.util.Date;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.spring.model.common.entity.CommonProps;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 @Getter
@@ -44,4 +38,11 @@ public class TbOrderMaster extends CommonProps {
     private String channelOrderNo;
     private String custPcode;
     private String orderMemo;
+
+
+    @JoinColumn(name = "custId", referencedColumnName = "custId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @NotFound(action = NotFoundAction.IGNORE)
+    private TbMember tbMember; // tbMember 연관관계
 }

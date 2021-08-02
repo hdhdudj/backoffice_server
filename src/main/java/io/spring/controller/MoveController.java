@@ -30,7 +30,7 @@ public class MoveController {
     /**
      * 주문이동지시 화면에서 검색시 가져오는 주문 list를 return
      */
-    @GetMapping(path="/save/list/order")
+    @GetMapping(path="/save/get/list/order")
     public ResponseEntity getOrderMoveList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date startDt,
                                            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date endDt,
                                            @RequestParam @Nullable String storageId,
@@ -53,7 +53,7 @@ public class MoveController {
     /**
      * 상품이동지시 화면에서 검색시 가져오는 상품 list를 return
      */
-    @GetMapping(path="/save/list/goods")
+    @GetMapping(path="/save/get/list/goods")
     public ResponseEntity getGoodsMoveList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date shipIndDt,
                                            @RequestParam @Nullable String storageId,
                                            @RequestParam @Nullable String deliMethod){
