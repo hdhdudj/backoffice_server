@@ -30,7 +30,7 @@ public class MoveController {
     /**
      * 주문이동지시 화면에서 검색시 가져오는 주문 list를 return
      */
-    @GetMapping(path="/list/order")
+    @GetMapping(path="/save/list/order")
     public ResponseEntity getOrderMoveList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date startDt,
                                            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date endDt,
                                            @RequestParam @Nullable String storageId,
@@ -53,7 +53,7 @@ public class MoveController {
     /**
      * 상품이동지시 화면에서 검색시 가져오는 상품 list를 return
      */
-    @GetMapping(path="/list/goods")
+    @GetMapping(path="/save/list/goods")
     public ResponseEntity getGoodsMoveList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date shipIndDt,
                                            @RequestParam @Nullable String storageId,
                                            @RequestParam @Nullable String deliMethod){
@@ -65,7 +65,7 @@ public class MoveController {
     /**
      * 주문이동지시 저장
      */
-    @PostMapping(path="/save/order")
+    @PostMapping(path="/save/save/order")
     public ResponseEntity saveOrderMove(@RequestBody List<OrderMoveSaveData> orderMoveSaveDataList){
         List<String> shipIdList = jpaMoveService.saveOrderMove(orderMoveSaveDataList);
 //        depositInsertRequestData.setDepositNo(depositNo); // deposit no 채번
@@ -76,7 +76,7 @@ public class MoveController {
     /**
      * 상품이동지시 저장
      */
-    @PostMapping(path="/save/goods")
+    @PostMapping(path="/save/save/goods")
     public ResponseEntity saveGoodsMove(@RequestBody GoodsMoveSaveData goodsMoveSaveData){
         String shipId = jpaMoveService.saveGoodsMove(goodsMoveSaveData);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipId);

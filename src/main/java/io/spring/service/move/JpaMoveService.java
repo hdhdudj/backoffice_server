@@ -293,21 +293,9 @@ public class JpaMoveService {
      */
     private List<Ititmc> calcItitmcQty(List<Ititmc> ititmcList, long shipQty) {
         List<Ititmc> newItitmcList = new ArrayList<>();
-        long ititmcShipindQty = ititmcList.stream().map(x-> {
-            if (x.getShipIndicateQty() == null) {
-                return 0l;
-            } else {
-                return x.getShipIndicateQty();
-            }
-        }).reduce((a,b)->a+b).get();
-        long ititmcQty = ititmcList.stream().map(x-> {
-            if (x.getQty() == null) {
-                return 0l;
-            } else {
-                return x.getQty();
-            }
-        }).reduce((a,b)->a+b).get();
-        if(ititmcQty - ititmcShipindQty < shipQty){
+        long ititmcShipIndQty = this.getItitmcShipIndQtyByStream(ititmcList);
+        long ititmcQty = this.getItitmcQtyByStream(ititmcList);
+        if(ititmcQty - ititmcShipIndQty < shipQty){
             return newItitmcList;
         }
         for(Ititmc ititmc : ititmcList){
@@ -333,6 +321,29 @@ public class JpaMoveService {
     }
 
     /**
+     * ititmc list의 shipIndQty를 다 더해서 반환하는 함수
+     */
+    private long getItitmcShipIndQtyByStream(List<Ititmc> ititmcList){
+        return ititmcList.stream().map(x-> {
+                    if (x.getShipIndicateQty() == null) {
+                        return 0l;
+                    } else {
+                        return x.getShipIndicateQty();
+                    }}).reduce((a,b)->a+b).get();
+    }
+    /**
+     * ititmc list의 qty를 다 더해서 반환하는 함수
+     */
+    private long getItitmcQtyByStream(List<Ititmc> ititmcList){
+        return ititmcList.stream().map(x-> {
+            if (x.getQty() == null) {
+                return 0l;
+            } else {
+                return x.getQty();
+            }}).reduce((a,b)->a+b).get();
+    }
+
+    /**
      * ititmc 리스트를 받아 상품이동지시 화면의 한 줄에 해당하는 객체로 만드는 함수
      */
     private GoodsMoveSaveData.Goods makeItitmcsToOneRow(List<Ititmc> ititmcList, GoodsMoveSaveData.Goods goods) {
@@ -341,21 +352,9 @@ public class JpaMoveService {
             return null;
         }
         Ititmc ititmc = ititmcList.get(0);
-        GoodsMoveSaveData.Goods goosRow = new GoodsMoveSaveData.Goods(ititmc);
-        long ititmcShipindQty = ititmcList.stream().map(x-> {
-            if (x.getShipIndicateQty() == null) {
-                return 0l;
-            } else {
-                return x.getShipIndicateQty();
-            }
-        }).reduce((a,b)->a+b).get();
-        long ititmcQty = ititmcList.stream().map(x-> {
-            if (x.getQty() == null) {
-                return 0l;
-            } else {
-                return x.getQty();
-            }
-        }).reduce((a,b)->a+b).get();
+        GoodsMoveSaveData.Goods goodsRow = new GoodsMoveSaveData.Goods(ititmc);
+        long ititmcShipIndQty = this.getItitmcShipIndQtyByStream(ititmcList);
+        long ititmcQty = this.getItitmcQtyByStream(ititmcList);
         long orderQty = 0l;
         for(Ititmc item : ititmcList){
             List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository.findByAssortIdAndItemId(ititmc.getAssortId(), ititmc.getItemId());
@@ -368,14 +367,14 @@ public class JpaMoveService {
             }).reduce((a,b)->a+b).get();
 
             Itasrt itasrt = item.getItasrt();
-            goosRow.setAssortNm(itasrt.getAssortNm());
-            goosRow.setOptionNm(itasrt.getItvariList().get(0).getOptionNm());
+            goodsRow.setAssortNm(itasrt.getAssortNm());
+            goodsRow.setOptionNm(itasrt.getItvariList().get(0).getOptionNm());
         }
-        goosRow.setCanShipQty(ititmcQty - ititmcShipindQty);
-        goosRow.setOrderQty(orderQty);
-        goosRow.setShipQty(goods.getShipQty());
+        goodsRow.setCanShipQty(ititmcQty - ititmcShipIndQty);
+        goodsRow.setOrderQty(orderQty);
+        goodsRow.setShipQty(goods.getShipQty());
 
-        return goosRow;
+        return goodsRow;
     }
 
     /**

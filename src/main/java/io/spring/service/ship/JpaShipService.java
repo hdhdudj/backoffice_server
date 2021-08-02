@@ -14,4 +14,6 @@ public class JpaShipService {
     private final JpaLsshpdRepository jpaLsshpdRepository;
     private final JpaLsshpmRepository jpaLsshpmRepository;
     private final JpaLsshpsRepository jpaLsshpsRepository;
+
+
 }
