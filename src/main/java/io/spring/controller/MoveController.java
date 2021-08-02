@@ -4,6 +4,7 @@ import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
+import io.spring.model.move.request.ShipIdAndSeq;
 import io.spring.model.move.response.GoodsMoveListData;
 import io.spring.model.move.response.OrderMoveListData;
 import io.spring.service.move.JpaMoveService;
@@ -79,6 +80,16 @@ public class MoveController {
     public ResponseEntity saveGoodsMove(@RequestBody GoodsMoveSaveData goodsMoveSaveData){
         String shipId = jpaMoveService.saveGoodsMove(goodsMoveSaveData);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipId);
+        return ResponseEntity.ok(res);
+    }
+
+    /**
+     * 이동처리
+     */
+    @PostMapping(path = "/change/status")
+    public ResponseEntity changeShipStatus(@RequestBody List<ShipIdAndSeq> shipIdAndSeqList){
+        List<String> shipIdList = jpaMoveService.changeShipStatus(shipIdAndSeqList);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipIdList);
         return ResponseEntity.ok(res);
     }
 }

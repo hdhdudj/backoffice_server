@@ -3,9 +3,6 @@ package io.spring.service.move;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
-import io.spring.jparepos.deposit.JpaLsdpsdRepository;
-import io.spring.jparepos.deposit.JpaLsdpsmRepository;
-import io.spring.jparepos.deposit.JpaLsdpspRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.ship.JpaLsshpdRepository;
@@ -17,6 +14,7 @@ import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
+import io.spring.model.move.request.ShipIdAndSeq;
 import io.spring.model.move.response.GoodsMoveListData;
 import io.spring.model.move.response.OrderMoveListData;
 import io.spring.model.order.entity.TbOrderDetail;
@@ -33,10 +31,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -406,6 +401,31 @@ public class JpaMoveService {
     }
 
     /**
+     * 이동처리(lsshpm.shipStats를 01에서 04로 변경)
+     */
+    public List<String> changeShipStatus(List<ShipIdAndSeq> shipIdAndSeqList) {
+        List<String> newShipIdList = new ArrayList<>();
+        List<String> shipIdList = new ArrayList<>();
+        shipIdAndSeqList.stream().forEach(x->shipIdList.add(x.getShipId()));
+        Set<String> shipNoSet = new HashSet(shipIdList);
+
+        for(String shipId : shipNoSet){
+            Lsshpm lsshpm = jpaLsshpmRepository.findByShipId(shipId);
+            if(lsshpm == null){
+                log.debug("there's no data(lsshpm) of shipId - " + shipId);
+                continue;
+            }
+            else{
+                lsshpm.setShipStatus(StringFactory.getGbFour()); // 04 하드코딩
+
+                newShipIdList.add(lsshpm.getShipId());
+                jpaLsshpmRepository.save(lsshpm);
+            }
+        }
+        return newShipIdList;
+    }
+
+    /**
      * shipId 채번 함수
      */
     private String getShipId(){
@@ -413,4 +433,5 @@ public class JpaMoveService {
         shipId = Utilities.getStringNo('L',shipId,9);
         return shipId;
     }
+
 }
