@@ -115,8 +115,8 @@ public class Lsdpsp extends CommonProps implements Serializable {
     // 연관 관계 : lsdpsd
     @ManyToOne
     @JoinColumns({
-            @JoinColumn(name = "orderId", referencedColumnName="inputNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
-            @JoinColumn(name = "orderSeq", referencedColumnName="inputSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+            @JoinColumn(name = "purchaseNo", referencedColumnName="inputNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+            @JoinColumn(name = "purchaseSeq", referencedColumnName="inputSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
     })
     private Lsdpsd lsdpsd;
 }

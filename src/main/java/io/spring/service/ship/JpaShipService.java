@@ -86,6 +86,7 @@ public class JpaShipService {
             String shipId = this.saveShipIndicateSaveData(lsdpsdList, shipIndicateSaveData);
             shipIdList.add(shipId);
         }
+        // 2. tbOrderDetail
         return shipIdList;
     }
 
@@ -95,7 +96,7 @@ public class JpaShipService {
      */
     private String saveShipIndicateSaveData(List<Lsdpsd> lsdpsdList, ShipIndicateSaveData shipIndicateSaveData) {
         Lsdpsd lsdpsd = this.getLsdpsdByOrderIdAndOrderSeq(shipIndicateSaveData);
-        String shipId = jpaMoveService.makeOrderShipData(lsdpsd, shipIndicateSaveData.getQty());
+        String shipId = jpaMoveService.makeOrderShipData(lsdpsd, shipIndicateSaveData.getQty(), StringFactory.getGbFour());
         lsdpsdList.add(lsdpsd);
         return shipId;
     }

@@ -28,7 +28,7 @@ public class Lsshpm extends CommonProps {
         this.shipId = shipId;
         this.shipOrderGb = StringFactory.getGbOne(); // 01 하드코딩
         this.shipTimes = 1l;
-        this.shipStatus = StringFactory.getGbOne(); // 01 출고지시, 04 출고.. 이동지시시 실행되는 생성자이므로 01 하드코딩
+//        this.shipStatus = StringFactory.getGbOne(); // 01 출고지시, 04 출고.. 이동지시시 실행되는 생성자이므로 01 하드코딩
         this.deliId = null; // 이동지시 null, 출고지시 tb_order_master.deli_id
         this.shipItemCnt = null;
         this.receiptDt = new Date();

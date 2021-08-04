@@ -122,7 +122,7 @@ public class JpaMoveService {
      */
     private String saveOrderMoveSaveData(List<Lsdpsd> lsdpsdList, OrderMoveSaveData orderMoveSaveData) {
         Lsdpsd lsdpsd = this.getLsdpsdByDepositNoAndDepositSeq(orderMoveSaveData);
-        String shipId = this.makeOrderShipData(lsdpsd, orderMoveSaveData.getQty());
+        String shipId = this.makeOrderShipData(lsdpsd, orderMoveSaveData.getQty(), StringFactory.getGbOne());
         lsdpsdList.add(lsdpsd);
 //        this.updateQty(orderMoveSaveData);
         return shipId;
@@ -149,9 +149,9 @@ public class JpaMoveService {
     }
 
     /**
-     * 주문이동 관련 data 생성 함수 (lsshpm,d,s)
+     * 주문이동 저장, 출고 관련 data 생성 함수 (lsshpm,d,s)
      */
-    public String makeOrderShipData(Lsdpsd lsdpsd, long qty) {
+    public String makeOrderShipData(Lsdpsd lsdpsd, long qty, String shipStatus) {
         String shipId = getShipId();
 
         Itasrt itasrt = lsdpsd.getItasrt();
@@ -171,7 +171,12 @@ public class JpaMoveService {
 
         // lsshpm 저장
         Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail);
+        lsshpm.setShipStatus(shipStatus); // 01 : 이동지시, 04 : 출고
         jpaLsshpmRepository.save(lsshpm);
+
+        // lsshps 저장
+        Lsshps lsshps = new Lsshps(lsshpm);
+        jpaLsshpsRepository.save(lsshps);
 
         // lsshpd 저장
         Lsdpsp lsdpsp = lsdpsd.getLsdpsp();
@@ -180,10 +185,6 @@ public class JpaMoveService {
             Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, lsdpsp, tbOrderDetail, ititmc, itasrt);
 //            lsshpd.setShipIndicateQty(1l);
             jpaLsshpdRepository.save(lsshpd);
-
-            // lsshps 저장
-            Lsshps lsshps = new Lsshps(lsshpm);
-            jpaLsshpsRepository.save(lsshps);
         }
         return shipId;
     }
