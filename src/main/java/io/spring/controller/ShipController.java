@@ -1,17 +1,16 @@
 package io.spring.controller;
 
 import io.spring.infrastructure.util.ApiResponseMessage;
+import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.ship.request.ShipIndicateListData;
+import io.spring.model.ship.request.ShipIndicateSaveData;
 import io.spring.service.ship.JpaShipService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
@@ -30,7 +29,14 @@ public class ShipController {
                                            @RequestParam @Nullable String assortNm,
                                            @RequestParam @Nullable String vendorId){
         List<ShipIndicateListData> shipIndicateListDataList = jpaShipService.getOrderSaveList(startDt, endDt, assortId, assortNm, vendorId);
-        ApiResponseMessage res = new ApiResponseMessage("ok", "success", shipIndicateListDataList);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListDataList);
+        return ResponseEntity.ok(res);
+    }
+
+    @PostMapping(path = "/save/save")
+    public ResponseEntity saveShipIndicate(@RequestBody List<ShipIndicateSaveData> shipIndicateSaveDataList){
+        List<String> shipIdList = jpaShipService.saveShipIndicate(shipIndicateSaveDataList);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIdList);
         return ResponseEntity.ok(res);
     }
 }

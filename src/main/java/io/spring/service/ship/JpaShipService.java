@@ -2,15 +2,17 @@ package io.spring.service.ship;
 
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
-import io.spring.jparepos.ship.JpaLsshpdRepository;
-import io.spring.jparepos.ship.JpaLsshpmRepository;
-import io.spring.jparepos.ship.JpaLsshpsRepository;
+import io.spring.model.deposit.entity.Lsdpsd;
+import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.goods.entity.Itvari;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.ship.request.ShipIndicateListData;
+import io.spring.model.ship.request.ShipIndicateSaveData;
+import io.spring.service.move.JpaMoveService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -22,9 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class JpaShipService {
-    private final JpaLsshpdRepository jpaLsshpdRepository;
-    private final JpaLsshpmRepository jpaLsshpmRepository;
-    private final JpaLsshpsRepository jpaLsshpsRepository;
+    private final JpaMoveService jpaMoveService;
 
     private final EntityManager em;
 
@@ -68,5 +68,56 @@ public class JpaShipService {
         List<TbOrderDetail> tbOrderDetailList = query.getResultList();
 
         return tbOrderDetailList;
+    }
+
+    /**
+     * 출고지시 저장 함수
+     */
+    @Transactional
+    public List<String> saveShipIndicate(List<ShipIndicateSaveData> shipIndicateSaveDataList) {
+        if(shipIndicateSaveDataList.size() == 0){
+            log.debug("input data is empty.");
+            return null;
+        }
+        List<String> shipIdList = new ArrayList<>();
+        List<Lsdpsd> lsdpsdList = new ArrayList<>();
+        // 1. 출고 data 생성
+        for(ShipIndicateSaveData shipIndicateSaveData : shipIndicateSaveDataList){
+            String shipId = this.saveShipIndicateSaveData(lsdpsdList, shipIndicateSaveData);
+            shipIdList.add(shipId);
+        }
+        return shipIdList;
+    }
+
+    /**
+     * ShipIndicateSaveData 객체로 lsshpm,s,d 생성
+     * tbOrderDetail를 변경
+     */
+    private String saveShipIndicateSaveData(List<Lsdpsd> lsdpsdList, ShipIndicateSaveData shipIndicateSaveData) {
+        Lsdpsd lsdpsd = this.getLsdpsdByOrderIdAndOrderSeq(shipIndicateSaveData);
+        String shipId = jpaMoveService.makeOrderShipData(lsdpsd, shipIndicateSaveData.getQty());
+        lsdpsdList.add(lsdpsd);
+        return shipId;
+    }
+
+    /**
+     * orderId와 orderSeq로 를 가져오는 함수
+     */
+    private Lsdpsd getLsdpsdByOrderIdAndOrderSeq(ShipIndicateSaveData shipIndicateSaveData) {
+        TypedQuery<Lsdpsp> query = em.createQuery("select p from Lsdpsp p " +
+//                "join fetch d.lsdpsp lp " +
+//                "join fetch d.lsdpsm lm " +
+//                "join fetch d.ititmm tm " +
+//                "join fetch d.itasrt it " +
+//                "join fetch tm.ititmc ic " +
+//                "join fetch lp.tbOrderDetail t " +
+                        "where " +
+                        "p.orderId=?1 and p.orderSeq=?2"
+                , Lsdpsp.class);
+        query.setParameter(1, shipIndicateSaveData.getOrderId())
+        .setParameter(2,shipIndicateSaveData.getOrderSeq());
+        Lsdpsp lsdpsp = query.getSingleResult();
+
+        return lsdpsp.getLsdpsd();
     }
 }

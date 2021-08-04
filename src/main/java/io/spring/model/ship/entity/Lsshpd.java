@@ -71,7 +71,7 @@ public class Lsshpd extends CommonProps {
         this.vendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
         this.rackNumber = null;
         this.customsTax = 0f;
-//        this.excAppDt = ititmc.getEffEndDt();
+//        this.excAppDt = ititmc.getEffStaDt();
 //        this.orderDiscount = tbOrderDetail.getSalePrice();
 //        this.saleCost = ititmc.getStockAmt();
 //        this.localPrice = ititmc.getStockAmt();

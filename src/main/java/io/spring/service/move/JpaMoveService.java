@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 public class JpaMoveService {
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
     private final JpaItitmcRepository jpaItitmcRepository;
-    private final JpaSequenceDataRepository jpaSequenceDateRepository;
+    private final JpaSequenceDataRepository jpaSequenceDataRepository;
     private final JpaLsshpmRepository jpaLsshpmRepository;
     private final JpaLsshpdRepository jpaLsshpdRepository;
     private final JpaLsshpsRepository jpaLsshpsRepository;
@@ -99,6 +99,10 @@ public class JpaMoveService {
      */
     @Transactional
     public List<String> saveOrderMove(List<OrderMoveSaveData> orderMoveSaveDataList) {
+        if(orderMoveSaveDataList.size() == 0){
+            log.debug("input data is empty.");
+            return null;
+        }
         List<String> shipIdList = new ArrayList<>();
         List<Lsdpsd> lsdpsdList = new ArrayList<>();
         // 1. 출고 data 생성
@@ -118,7 +122,7 @@ public class JpaMoveService {
      */
     private String saveOrderMoveSaveData(List<Lsdpsd> lsdpsdList, OrderMoveSaveData orderMoveSaveData) {
         Lsdpsd lsdpsd = this.getLsdpsdByDepositNoAndDepositSeq(orderMoveSaveData);
-        String shipId = this.makeOrderShipData(lsdpsd, orderMoveSaveData);
+        String shipId = this.makeOrderShipData(lsdpsd, orderMoveSaveData.getQty());
         lsdpsdList.add(lsdpsd);
 //        this.updateQty(orderMoveSaveData);
         return shipId;
@@ -147,7 +151,7 @@ public class JpaMoveService {
     /**
      * 주문이동 관련 data 생성 함수 (lsshpm,d,s)
      */
-    private String makeOrderShipData(Lsdpsd lsdpsd, OrderMoveSaveData orderMoveSaveData) {
+    public String makeOrderShipData(Lsdpsd lsdpsd, long qty) {
         String shipId = getShipId();
 
         Itasrt itasrt = lsdpsd.getItasrt();
@@ -160,13 +164,13 @@ public class JpaMoveService {
                 && x.getItemGrade().equals(itemGrade)).collect(Collectors.toList());
         Ititmc ititmc = ititmcList.get(0);
         // ititmc에서 shipIndicateQty 변경해주기
-        long qty = orderMoveSaveData.getQty();
+
         ititmc.setShipIndicateQty(ititmc.getShipIndicateQty() + qty);
         jpaItitmcRepository.save(ititmc);
         TbOrderDetail tbOrderDetail = lsdpsd.getLsdpsp().getTbOrderDetail();
 
         // lsshpm 저장
-        Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail, ititmc);
+        Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail);
         jpaLsshpmRepository.save(lsshpm);
 
         // lsshpd 저장
@@ -427,10 +431,9 @@ public class JpaMoveService {
     /**
      * shipId 채번 함수
      */
-    private String getShipId(){
-        String shipId = jpaSequenceDateRepository.nextVal(StringFactory.getStrSeqLsshpm());
+    public String getShipId(){
+        String shipId = jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLsshpm());
         shipId = Utilities.getStringNo('L',shipId,9);
         return shipId;
     }
-
 }

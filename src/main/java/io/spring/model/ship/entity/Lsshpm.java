@@ -5,7 +5,6 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.entity.Itasrt;
-import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.order.entity.TbOrderDetail;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,8 +23,8 @@ import java.util.Date;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "lsshpm")
 public class Lsshpm extends CommonProps {
-    // 주문이동지시 저장시 실행되는 생성자
-    public Lsshpm(String shipId, Itasrt itasrt, TbOrderDetail tbOrderDetail, Ititmc ititmc){
+    // 주문이동지시 저장, 출고 시 실행되는 생성자
+    public Lsshpm(String shipId, Itasrt itasrt, TbOrderDetail tbOrderDetail){
         this.shipId = shipId;
         this.shipOrderGb = StringFactory.getGbOne(); // 01 하드코딩
         this.shipTimes = 1l;
@@ -42,7 +41,7 @@ public class Lsshpm extends CommonProps {
         this.delMethod = tbOrderDetail.getDeliMethod();
         this.rematGb = StringFactory.getGbOne(); // 01 하드코딩
         this.shipGb = StringFactory.getGbTwo(); // 02 하드코딩 (01 : 출고, 02 : 이동)
-        this.itemGrade = ititmc.getItemGrade();
+//        this.itemGrade = ititmc.getItemGrade(); : 11로 고정. 이동지시와 출고에서는 11(정상품)만 다룸.
         this.deliCompanyCd = null;
         this.orderId = tbOrderDetail.getOrderId();
     }
@@ -65,7 +64,7 @@ public class Lsshpm extends CommonProps {
 //        this.delMethod : 바깥에서 set
         this.rematGb = StringFactory.getGbOne(); // 01 하드코딩
         this.shipGb = StringFactory.getGbTwo(); // 02 하드코딩 (01 : 출고, 02 : 이동)
-//        this.itemGrade : ??
+//        this.itemGrade : 11로 고정. 해당 객체에서는 정상품만 다룸.
         this.deliCompanyCd = null;
     }
     @Id
@@ -89,7 +88,7 @@ public class Lsshpm extends CommonProps {
     private String delMethod;
     private String rematGb;
     private String shipGb;
-    private String itemGrade;
+    private String itemGrade = StringFactory.getStrEleven(); // 11 하드코딩
     private String deliCompanyCd;
     private String orderId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
