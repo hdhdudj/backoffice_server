@@ -228,11 +228,17 @@ public class JpaPurchaseService {
             jpaLspchbRepository.save(lspchb);
             lspchbList.add(lspchb);
 
-			String purchaseGb = purchaseInsertRequestData.getPurchaseGb();
+			String purchaseGb = purchaseInsertRequestData.getPurchaseGb();  //purchaseGb 는 발주와 이동지시로 나뉘고 상품발주와 주문발주는 dealTypeCd로 나뉨 
+
+			String dealTypeCd = purchaseInsertRequestData.getDealtypeCd();
+			
+			System.out.println("dealTypeCd - : " + dealTypeCd);
+
 			String purchaseStatus = purchaseInsertRequestData.getPurchaseStatus();
 
 			if (purchaseGb.equals("01")) {
-				if (purchaseStatus.equals("01")) {
+
+				if (dealTypeCd.equals("01") && purchaseStatus.equals("01")) { // 주문발주면서 발주상태라면
 					updateOrderStatusCd(items.getOrderId(), items.getOrderSeq(), StringFactory.getStrB01());
 				}
 			}
