@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -158,7 +159,13 @@ public class PurchaseController {
 
     // 발주 list get (jpa)
     @GetMapping(path="/purchaselistjpa")
-    public ResponseEntity getPurchaseListJpa(@RequestParam String purchaseVendorId,@RequestParam String assortId,@RequestParam String purchaseStatus,@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDt,@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDt){
+    public ResponseEntity getPurchaseListJpa(@RequestParam @Nullable String purchaseVendorId,
+                                             @RequestParam @Nullable String assortId,
+                                             @RequestParam @Nullable String purchaseStatus,
+                                             @RequestParam @Nullable @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDt,
+                                             @RequestParam @Nullable @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDt,
+                                             @RequestParam @Nullable String purchaseGb,
+                                             @RequestParam @Nullable String depositNo){
         log.debug("get purchase list - jpa");
 
         HashMap<String, Object> param = new HashMap<>();
@@ -168,6 +175,8 @@ public class PurchaseController {
         param.put("purchaseStatus", purchaseStatus);
         param.put("startDt", startDt);
         param.put("endDt", endDt);
+        param.put("purchaseGb", purchaseGb);
+        param.put("depositNo", depositNo);
 
         PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getPurchaseList(param);
 

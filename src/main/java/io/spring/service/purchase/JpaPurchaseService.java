@@ -347,8 +347,25 @@ public class JpaPurchaseService {
         }
         return itemsList;
     }
+
     // 발주 list 가져오는 함수
     public PurchaseSelectListResponseData getPurchaseList(HashMap<String, Object> param) {
+        String purchaseVendorId = (String)param.get(StringFactory.getStrPurchaseVendorId());
+        String assortId = (String)param.get(StringFactory.getStrAssortId());
+        String purchaseStatus = (String)param.get(StringFactory.getStrPurchaseStatus());
+        String purchaseGb = (String)param.get(StringFactory.getStrPurchaseGb());
+        String depositNo = (String)param.get(StringFactory.getStrDepositNo());
+        Date startDt = (Date)param.get(StringFactory.getStrStartDt());
+        Date endDt = (Date)param.get(StringFactory.getStrEndDt());
+
+        purchaseVendorId = purchaseVendorId == null || purchaseVendorId.equals("")? "":" and m.purchaseVendorId='"+purchaseVendorId+"'";
+        assortId = assortId == null || assortId.equals("")? "":" and d.assortId='"+assortId+"'";
+        purchaseStatus = purchaseStatus == null || purchaseStatus.equals("")? "":" and m.purchaseStatus='"+purchaseStatus+"'";
+        purchaseGb = purchaseGb == null || purchaseGb.equals("")? "":" and m.purchaseGb='"+purchaseGb+"'";
+        depositNo = depositNo == null || depositNo.equals("")? "":" and d.depositNo='"+depositNo+"'";
+        startDt = startDt == null? Utilities.getStringToDate(StringFactory.getStartDay()):startDt;
+        endDt = endDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()):endDt;
+
         List<PurchaseSelectListResponseData.Purchase> purchaseList = new ArrayList<>();
         TypedQuery<Lspchd> query =
                 em.createQuery("select d from Lspchd d " +
@@ -359,29 +376,37 @@ public class JpaPurchaseService {
                     "left join fetch it.itvari2 " +
                     "where m.purchaseDt " +
                     "between ?1 " +
-                    "and ?2 " +
-                    "and m.purchaseVendorId = ?3 " +
-                    "and m.purchaseStatus = ?4 " +
-                    "and d.assortId = ?5"
+                    "and ?2" + purchaseVendorId
+                        + assortId + purchaseStatus + purchaseGb
+                        + depositNo
+//                    "and m.purchaseVendorId = ?3 " +
+//                    "and m.purchaseStatus = ?4 " +
+//                    "and d.assortId = ?5"
                         , Lspchd.class);
         query.setParameter(1, Utilities.getStringToDate(param.get(StringFactory.getStrStartDt()).toString()))
-                .setParameter(2, Utilities.getStringToDate(param.get(StringFactory.getStrEndDt()).toString()))
-                .setParameter(3, param.get(StringFactory.getStrPurchaseVendorId()))
-                .setParameter(4, param.get(StringFactory.getStrPurchaseStatus()))
-                .setParameter(5, param.get(StringFactory.getStrAssortId()));
+                .setParameter(2, Utilities.getStringToDate(param.get(StringFactory.getStrEndDt()).toString()));
+//                .setParameter(3, param.get(StringFactory.getStrPurchaseVendorId()))
+//                .setParameter(4, param.get(StringFactory.getStrPurchaseStatus()))
+//                .setParameter(5, param.get(StringFactory.getStrAssortId()));
         List<Lspchd> lspchdList = query.getResultList();
-        for(Lspchd lspchd : lspchdList){
-            PurchaseSelectListResponseData.Purchase purchase = new PurchaseSelectListResponseData.Purchase(lspchd.getLspchm());
-            purchase.setPurchaseSeq(lspchd.getPurchaseSeq());
-            purchase.setPurchaseQty(lspchd.getPurchaseQty());
-            purchase.setPurchaseUnitAmt(lspchd.getPurchaseUnitAmt());
-            purchase.setAssortId(lspchd.getAssortId());
-            purchase.setItemId(lspchd.getItemId());
-            purchase.setSiteOrderNo(lspchd.getSiteOrderNo());
-            purchase.setAssortNm(lspchd.getItitmm().getItasrt().getAssortNm());
-            purchase.setOptionNm1(lspchd.getItitmm().getItvari1().getOptionNm());
-            purchase.setOptionNm2(lspchd.getItitmm().getItvari2().getOptionNm());
-            purchaseList.add(purchase);
+        if(depositNo == null){ // 발주리스트화면
+
+            PurchaseSelectListResponseData purchaseSelectListResponseData = new PurchaseSelectListResponseData(purchaseList);
+        }
+        else{ // 입고처리화면
+            for(Lspchd lspchd : lspchdList){
+                PurchaseSelectListResponseData.Purchase purchase = new PurchaseSelectListResponseData.Purchase(lspchd.getLspchm());
+                purchase.setPurchaseSeq(lspchd.getPurchaseSeq());
+                purchase.setPurchaseQty(lspchd.getPurchaseQty());
+                purchase.setPurchaseUnitAmt(lspchd.getPurchaseUnitAmt());
+                purchase.setAssortId(lspchd.getAssortId());
+                purchase.setItemId(lspchd.getItemId());
+                purchase.setSiteOrderNo(lspchd.getSiteOrderNo());
+                purchase.setAssortNm(lspchd.getItitmm().getItasrt().getAssortNm());
+                purchase.setOptionNm1(lspchd.getItitmm().getItvari1().getOptionNm());
+                purchase.setOptionNm2(lspchd.getItitmm().getItvari2().getOptionNm());
+                purchaseList.add(purchase);
+            }
         }
         PurchaseSelectListResponseData purchaseSelectListResponseData = new PurchaseSelectListResponseData(purchaseList);
         return purchaseSelectListResponseData;
@@ -557,8 +582,8 @@ public class JpaPurchaseService {
             if(lspchd.getPurchaseQty() > 0){ // 부분입고 : 03
                 lspchb.setPurchaseStatus(StringFactory.getGbThree()); // purchaseStatus : 03으로 설정
             }
-            else if(lspchd.getPurchaseQty() == 0){ // 완전입고 : 05
-                lspchb.setPurchaseStatus(StringFactory.getGbFive()); // purchaseStatus : 05로 설정
+            else if(lspchd.getPurchaseQty() == 0){ // 완전입고 : 04
+                lspchb.setPurchaseStatus(StringFactory.getGbFour()); // purchaseStatus : 04로 설정
             }
             else if(lspchd.getPurchaseQty() < 0){
 			//	throw new Exception("");

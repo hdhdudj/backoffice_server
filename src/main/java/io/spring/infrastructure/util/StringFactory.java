@@ -118,6 +118,8 @@ public class StringFactory {
 
     // request parameters map key
     @Getter
+    private final static String strDepositNo = "depositNo";
+    @Getter
     private final static String strStartDt = "startDt";
     @Getter
     private final static String strEndDt = "endDt";
@@ -127,6 +129,8 @@ public class StringFactory {
     private final static String strAssortId = "assortId";
     @Getter
     private final static String strPurchaseStatus = "purchaseStatus";
+    @Getter
+    private final static String strPurchaseGb = "purchaseGb";
     @Getter
     private final static String strStorageId = "storageId";
     @Getter
