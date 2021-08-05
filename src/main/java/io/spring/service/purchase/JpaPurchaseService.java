@@ -290,19 +290,20 @@ public class JpaPurchaseService {
 //            }
 //
 //            }
-//            else{ // update
-            boolean x = purchaseInsertRequestData.getDealtypeCd().equals(StringFactory.getGbOne());
-            boolean y = purchaseInsertRequestData.getDealtypeCd().equals(StringFactory.getGbThree());
-            if(x || y) { // 일반발주면서 주문발주거나 입고예정 주문발주일 때 (01: 주문발주 02:상품발주 03:입고예정 주문발주)33
-                ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() + items.getPurchaseQty());
-            }
+            else { // update
+                boolean x = purchaseInsertRequestData.getDealtypeCd().equals(StringFactory.getGbOne()); // 주문발주인가?
+                boolean y = purchaseInsertRequestData.getDealtypeCd().equals(StringFactory.getGbThree()); // 입고예정 주문발주인가?
+                if (x || y) { // 일반발주면서 주문발주거나 입고예정 주문발주일 때 (01: 주문발주 02:상품발주 03:입고예정 주문발주)
+                    ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() + items.getPurchaseQty());
+                }
 
-            ititmt.setTempQty(ititmt.getTempQty() + items.getPurchaseQty());
+                ititmt.setTempQty(ititmt.getTempQty() + items.getPurchaseQty());
 //            }
-            ititmt.setStockGb(purchaseInsertRequestData.getStockGb());
-            ititmt.setStockAmt(purchaseInsertRequestData.getStockAmt());
-            ititmt.setVendorId(purchaseInsertRequestData.getVendorId());
-            ititmt.setSiteGb(purchaseInsertRequestData.getSiteGb());
+                ititmt.setStockGb(purchaseInsertRequestData.getStockGb());
+                ititmt.setStockAmt(purchaseInsertRequestData.getStockAmt());
+                ititmt.setVendorId(purchaseInsertRequestData.getVendorId());
+                ititmt.setSiteGb(purchaseInsertRequestData.getSiteGb());
+            }
             jpaItitmtRepository.save(ititmt);
             ititmtList.add(ititmt);
         }
