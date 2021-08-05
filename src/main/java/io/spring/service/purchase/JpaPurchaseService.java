@@ -1,5 +1,20 @@
 package io.spring.service.purchase;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
@@ -30,17 +45,8 @@ import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import io.spring.model.purchase.response.PurchaseSelectDetailResponseData;
 import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
-import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -222,11 +228,17 @@ public class JpaPurchaseService {
             jpaLspchbRepository.save(lspchb);
             lspchbList.add(lspchb);
 
-			String purchaseGb = purchaseInsertRequestData.getPurchaseGb();
+			String purchaseGb = purchaseInsertRequestData.getPurchaseGb();  //purchaseGb 는 발주와 이동지시로 나뉘고 상품발주와 주문발주는 dealTypeCd로 나뉨 
+
+			String dealTypeCd = purchaseInsertRequestData.getDealtypeCd();
+			
+			System.out.println("dealTypeCd - : " + dealTypeCd);
+
 			String purchaseStatus = purchaseInsertRequestData.getPurchaseStatus();
 
 			if (purchaseGb.equals("01")) {
-				if (purchaseStatus.equals("01")) {
+
+				if (dealTypeCd.equals("01") && purchaseStatus.equals("01")) { // 주문발주면서 발주상태라면
 					updateOrderStatusCd(items.getOrderId(), items.getOrderSeq(), StringFactory.getStrB01());
 				}
 			}
@@ -538,7 +550,7 @@ public class JpaPurchaseService {
      *  depositService에서 이용하는 함수로, 입고 데이터 생성 후 부분입고/완전입고 여부를 따져 lsdchm,b,s의 purchaseStatus를 변경해줌.
      *  (01 : 기본, 03 : 부분입고, 05 : 완전입고)
      */
-    public Lspchm changePurchaseStatus(List<Lsdpsp> lsdpspList) {
+	public Lspchm changePurchaseStatus(List<Lsdpsp> lsdpspList) {
         List<Lspchb> lspchbList = new ArrayList<>();
         for(Lsdpsp lsdpsp : lsdpspList){
             Lspchd lspchd = lsdpsp.getLspchd();
@@ -555,7 +567,8 @@ public class JpaPurchaseService {
                 lspchb.setPurchaseStatus(StringFactory.getGbFive()); // purchaseStatus : 05로 설정
             }
             else if(lspchd.getPurchaseQty() < 0){
-                throw new ValueException("purchaseQty must bigger than 0..");
+			//	throw new Exception("");
+			throw new IllegalArgumentException("purchaseQty must bigger than 0..");
             }
             lspchbList.add(lspchb);
             jpaLspchbRepository.save(lspchb);
