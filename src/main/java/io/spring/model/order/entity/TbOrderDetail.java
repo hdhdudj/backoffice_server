@@ -91,7 +91,11 @@ public class TbOrderDetail extends CommonProps
     private String lastCategoryId;
     private String storageId;
 
-    @JoinColumn(name="goodsNm", referencedColumnName = "itemNm", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
+    @JoinColumns(
+    {
+        @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
+        @JoinColumn(name = "itemId", referencedColumnName = "itemId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
+    })
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @NotFound(action = NotFoundAction.IGNORE)
