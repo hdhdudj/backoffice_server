@@ -157,15 +157,16 @@ public class PurchaseController {
         return ResponseEntity.ok(res);
     }
 
-    // 발주 list get (jpa)
-    @GetMapping(path="/purchaselistjpa")
+    /**
+     * 발주 list get (발주리스트 화면)
+     */
+    @GetMapping(path="/items")
     public ResponseEntity getPurchaseListJpa(@RequestParam @Nullable String purchaseVendorId,
                                              @RequestParam @Nullable String assortId,
                                              @RequestParam @Nullable String purchaseStatus,
-                                             @RequestParam @Nullable @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDt,
-                                             @RequestParam @Nullable @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDt,
-                                             @RequestParam @Nullable String purchaseGb,
-                                             @RequestParam @Nullable String depositNo){
+                                             @RequestParam @Nullable @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDt,
+                                             @RequestParam @Nullable @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDt,
+                                             @RequestParam @Nullable String purchaseGb){
         log.debug("get purchase list - jpa");
 
         HashMap<String, Object> param = new HashMap<>();
@@ -176,7 +177,27 @@ public class PurchaseController {
         param.put("startDt", startDt);
         param.put("endDt", endDt);
         param.put("purchaseGb", purchaseGb);
-        param.put("depositNo", depositNo);
+        param.put("purchaseNo", null);
+
+        PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getPurchaseList(param);
+
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectListResponseData.getPurchaseList());
+        if(res == null){
+            return null;
+        }
+        return ResponseEntity.ok(res);
+    }
+
+    /**
+     * 발주 list get (입고처리 화면)
+     */
+    @GetMapping(path="/items/{purchaseNo}")
+    public ResponseEntity getPurchaseListJpa(@PathVariable String purchaseNo){
+        log.debug("get purchase list - jpa");
+
+        HashMap<String, Object> param = new HashMap<>();
+
+        param.put("depositNo", null);
 
         PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getPurchaseList(param);
 
