@@ -197,7 +197,7 @@ public class PurchaseController {
 
         PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getDepositPlanList(purchaseNo);
 
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectListResponseData.getPurchaseList());
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectListResponseData);
         if(res == null){
             return null;
         }

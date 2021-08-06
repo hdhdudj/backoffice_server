@@ -38,7 +38,9 @@ public class PurchaseSelectListResponseData {
 
     // 입고처리 화면
     private String purchaseNo;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private Date purchaseDt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private Date DepositDt;
     private String depositStoreId;
 
@@ -65,6 +67,7 @@ public class PurchaseSelectListResponseData {
         private String optionNm2; // 사이즈
 
         // 발주리스트 화면 요소
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
         private Date purchaseDt; // 발주일자
         private String purchaseGb; // 발주구분
         private String purchaseStatus; // 발주상태
