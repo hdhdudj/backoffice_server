@@ -23,6 +23,9 @@ public class PurchaseSelectListResponseData {
         this.purchasStatus = (String) param.get(StringFactory.getStrPurchaseStatus());
         this.purchaseGb = (String)param.get(StringFactory.getStrPurchaseGb());
     }
+    public PurchaseSelectListResponseData(String purchaseNo){
+        this.purchaseNo = purchaseNo;
+    }
     // 발주리스트 화면
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private Date startDt;
@@ -74,7 +77,8 @@ public class PurchaseSelectListResponseData {
         private String siteOrderNo; // 해외주문번호
 
         // 입고처리 화면 요소
-        private String depositPlanId;
+        private String depositPlanId; // 입고예정번호
+        private Long availableQty; // 가능수량
         private Long depositQty; // 입고수량
         private Float purchaseCost; // 발주금액
     }

@@ -193,13 +193,9 @@ public class PurchaseController {
      */
     @GetMapping(path="/items/{purchaseNo}")
     public ResponseEntity getPurchaseListJpa(@PathVariable String purchaseNo){
-        log.debug("get purchase list - jpa");
+        log.debug("get deposit plan purchase list");
 
-        HashMap<String, Object> param = new HashMap<>();
-
-        param.put("depositNo", null);
-
-        PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getPurchaseList(param);
+        PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getDepositPlanList(purchaseNo);
 
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectListResponseData.getPurchaseList());
         if(res == null){
