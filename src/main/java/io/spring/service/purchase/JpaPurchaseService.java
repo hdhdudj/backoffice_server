@@ -71,6 +71,8 @@ public class JpaPurchaseService {
      */
     @Transactional
     public String createPurchaseSquence(PurchaseInsertRequestData purchaseInsertRequestData) {
+        String purchaseNo = this.getPurchaseNo();
+        purchaseInsertRequestData.setPurchaseNo(purchaseNo);
         // lspchd (발주 디테일)
         List<Lspchd> lspchdList = this.saveLspchd(purchaseInsertRequestData);
         // lspchm (발주마스터)
