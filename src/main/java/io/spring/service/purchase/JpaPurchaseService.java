@@ -360,12 +360,24 @@ public class JpaPurchaseService {
      * 입고 - 발주선택창에서 조건을 넣고 조회했을 때 동작하는 함수 (Lspchm 기준의 list를 가져옴)
      */
     public PurchaseListInDepositModalData getPurchaseMasterList(Date startDt, Date endDt, String purchaseVendorId) {
+        startDt = startDt == null? Utilities.getStringToDate(StringFactory.getStartDay()) : startDt;
+        endDt = endDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()) : endDt;
+        purchaseVendorId = purchaseVendorId == null || purchaseVendorId.equals("")? "":" and m.purchaseVendorId='" + purchaseVendorId + "'";
         TypedQuery<Lspchm> query = em.createQuery("select m from Lspchm m" +
-                "",Lspchm.class);
+                " where m.purchaseDt between ?1 and ?2" +
+                purchaseVendorId,Lspchm.class);
+        query.setParameter(1,startDt).setParameter(2,endDt);
         List<Lspchm> lspchmList = query.getResultList();
+        List<PurchaseListInDepositModalData.Purchase> purchaseList = new ArrayList<>();
+        PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData(startDt, endDt, purchaseVendorId);
+        for(Lspchm lspchm : lspchmList){
+           PurchaseListInDepositModalData.Purchase purchase = new PurchaseListInDepositModalData.Purchase(lspchm);
+           purchaseList.add(purchase);
+        }
+        purchaseListInDepositModalData.setPurchases(purchaseList);
 //        PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData();
 //        return purchaseListInDepositModalData;
-        return null;
+        return purchaseListInDepositModalData;
     }
 
     /**
