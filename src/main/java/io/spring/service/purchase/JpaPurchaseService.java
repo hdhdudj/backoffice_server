@@ -483,7 +483,7 @@ public class JpaPurchaseService {
             long planQty = lsdpsp.getPurchasePlanQty() == null? 0l:lsdpsp.getPurchasePlanQty();
             long takeQty = lsdpsp.getPurchaseTakeQty() == null? 0l:lsdpsp.getPurchaseTakeQty();
             purchase.setAvailableQty(planQty - takeQty);
-            purchase.setDepositQty(lsdpsp.getLsdpsd().getDepositQty());
+            purchase.setDepositQty(0l);
 
             purchaseList.add(purchase);
         }

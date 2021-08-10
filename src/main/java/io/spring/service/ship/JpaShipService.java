@@ -3,7 +3,6 @@ package io.spring.service.ship;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.deposit.entity.Lsdpsd;
-import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.goods.entity.Itvari;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.ship.request.ShipIndicateListData;
@@ -95,30 +94,30 @@ public class JpaShipService {
      * tbOrderDetail를 변경
      */
     private String saveShipIndicateSaveData(List<Lsdpsd> lsdpsdList, ShipIndicateSaveData shipIndicateSaveData) {
-        Lsdpsd lsdpsd = this.getLsdpsdByOrderIdAndOrderSeq(shipIndicateSaveData);
-        String shipId = jpaMoveService.makeOrderShipData(lsdpsd, shipIndicateSaveData.getQty(), StringFactory.getGbFour());
-        lsdpsdList.add(lsdpsd);
-        return shipId;
+//        Lsdpsd lsdpsd = this.getLsdpsdByOrderIdAndOrderSeq(shipIndicateSaveData);
+//        String shipId = jpaMoveService.makeOrderShipData(lsdpsd, shipIndicateSaveData.getQty(), StringFactory.getGbFour());
+//        lsdpsdList.add(lsdpsd);
+        return null;
     }
 
-    /**
-     * orderId와 orderSeq로 를 가져오는 함수
-     */
-    private Lsdpsd getLsdpsdByOrderIdAndOrderSeq(ShipIndicateSaveData shipIndicateSaveData) {
-        TypedQuery<Lsdpsp> query = em.createQuery("select p from Lsdpsp p " +
-//                "join fetch d.lsdpsp lp " +
-//                "join fetch d.lsdpsm lm " +
-//                "join fetch d.ititmm tm " +
-//                "join fetch d.itasrt it " +
-//                "join fetch tm.ititmc ic " +
-//                "join fetch lp.tbOrderDetail t " +
-                        "where " +
-                        "p.orderId=?1 and p.orderSeq=?2"
-                , Lsdpsp.class);
-        query.setParameter(1, shipIndicateSaveData.getOrderId())
-        .setParameter(2,shipIndicateSaveData.getOrderSeq());
-        Lsdpsp lsdpsp = query.getSingleResult();
-
-        return lsdpsp.getLsdpsd();
-    }
+//    /**
+//     * orderId와 orderSeq로 를 가져오는 함수
+//     */
+//    private Lsdpsd getLsdpsdByOrderIdAndOrderSeq(ShipIndicateSaveData shipIndicateSaveData) {
+//        TypedQuery<Lsdpsp> query = em.createQuery("select p from Lsdpsp p " +
+////                "join fetch d.lsdpsp lp " +
+////                "join fetch d.lsdpsm lm " +
+////                "join fetch d.ititmm tm " +
+////                "join fetch d.itasrt it " +
+////                "join fetch tm.ititmc ic " +
+////                "join fetch lp.tbOrderDetail t " +
+//                        "where " +
+//                        "p.orderId=?1 and p.orderSeq=?2"
+//                , Lsdpsp.class);
+//        query.setParameter(1, shipIndicateSaveData.getOrderId())
+//        .setParameter(2,shipIndicateSaveData.getOrderSeq());
+//        Lsdpsp lsdpsp = query.getSingleResult();
+//
+//        return lsdpsp.getLsdpsd();
+//    }
 }

@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 @Slf4j
 @Entity
@@ -113,11 +112,11 @@ public class Lsdpsp extends CommonProps implements Serializable {
     })
     private TbOrderDetail tbOrderDetail;
 
-    // 연관 관계 : lsdpsd
-    @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "purchaseNo", referencedColumnName="inputNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
-            @JoinColumn(name = "purchaseSeq", referencedColumnName="inputSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
-    })
-    private Lsdpsd lsdpsd;
+//    // 연관 관계 : lsdpsd
+//    @OneToMany
+//    @JoinColumns({
+//            @JoinColumn(name = "purchaseNo", referencedColumnName="inputNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+//            @JoinColumn(name = "purchaseSeq", referencedColumnName="inputSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+//    })
+//    private List<Lsdpsd> lsdpsd;
 }
