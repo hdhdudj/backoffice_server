@@ -427,7 +427,6 @@ public class JpaDepositService {
             if(notGoodsPurchaseAndAvailableQty || orderPurchaseAndCompleteDeposit){ // '주문발주가 아니고 부분입고or완전입고' or '주문발주이고 완전입고'
                 lsdpsp.setPurchaseTakeQty(lsdpsp.getPurchaseTakeQty() + deposit.getDepositQty());
                 jpaLsdpspRepository.save(lsdpsp);
-                lsdpspList.add(lsdpsp);
             }
             else if(availableQty != deposit.getDepositQty() && dealtypeCd.equals(StringFactory.getGbOne())){ // 주문발주인데 부분입고
                 log.debug("This purchase.dealtypeCd is 01, but this isn't complete deposit.");
@@ -439,7 +438,8 @@ public class JpaDepositService {
             }
             Lspchm lspchm = lsdpsp.getLspchd().getLspchm();
             Date purchaseDt = lspchm.getPurchaseDt();
-            this.changeLsdpspStatus(lsdpsp, isCompleteDeposit);
+            lsdpsp = this.changeLsdpspStatus(lsdpsp, isCompleteDeposit);
+            lsdpspList.add(lsdpsp);
             this.saveItitmt(purchaseDt, storageId, deposit, dealtypeCd);
             this.saveItitmc(depositListWithPurchaseInfoData.getDepositDt(), storageId, deposit);
         }
@@ -449,7 +449,7 @@ public class JpaDepositService {
     /**
      * 부분입고인 경우 lsdpsp의 내역이 입고만큼만 처리되고 나머지 수량은 신규로 생성시켜주는 함수
      */
-    private void changeLsdpspStatus(Lsdpsp lsdpsp, boolean isCompleteDeposit) {
+    private Lsdpsp changeLsdpspStatus(Lsdpsp lsdpsp, boolean isCompleteDeposit) {
         if(isCompleteDeposit){ // 완전 입고인 경우
             lsdpsp.setPlanStatus(StringFactory.getGbFour()); // 04 하드코딩
         }
@@ -464,8 +464,10 @@ public class JpaDepositService {
             newLsdpsp.setPurchaseTakeQty(0l);
             lsdpsp.setPlanStatus(StringFactory.getGbFour());
             jpaLsdpspRepository.save(newLsdpsp);
+            return newLsdpsp;
         }
         jpaLsdpspRepository.save(lsdpsp);
+        return lsdpsp;
     }
 
     private Ititmc saveItitmc(Date depositDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit) {

@@ -76,6 +76,7 @@ public class Lsdpsp extends CommonProps implements Serializable {
         this.purchaseGb = lsdpsp.getPurchaseGb();
         this.dealtypeCd = lsdpsp.getDealtypeCd();
 		this.planStatus = StringFactory.getGbOne();
+		this.lspchd = lsdpsp.getLspchd();
     }
     @Id
     private String depositPlanId;

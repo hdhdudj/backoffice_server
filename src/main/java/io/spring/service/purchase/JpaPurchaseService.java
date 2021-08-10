@@ -671,6 +671,8 @@ public class JpaPurchaseService {
 	public Lspchm changePurchaseStatus(List<Lsdpsp> lsdpspList) {
         List<Lspchb> lspchbList = new ArrayList<>();
         for(Lsdpsp lsdpsp : lsdpspList){
+            long planQty = lsdpsp.getPurchasePlanQty();
+            long takeQty = lsdpsp.getPurchaseTakeQty();
             Lspchd lspchd = lsdpsp.getLspchd();
 //            long newQty = lspchd.getPurchaseQty() - lsdpsp.getPurchaseTakeQty();
 //            lspchd.setPurchaseQty(lspchd.getPurchaseQty() - newQty);
@@ -678,14 +680,14 @@ public class JpaPurchaseService {
             List<Lspchb> lspchbList1 = lspchd.getLspchb();
             lspchbList1 = lspchbList1.stream().filter(x->x.getEffEndDt().compareTo(doomDay)==0).collect(Collectors.toList());
             Lspchb lspchb = lspchbList1.get(0);
-            if(lspchd.getPurchaseQty() > 0){ // 부분입고 : 03
+            if(planQty - takeQty > 0){ // 부분입고 : 03
 //                lsdpsp.setPlanStatus(StringFactory.getGbThree()); // planStatus : 03으로 설정
                 lspchb = this.updateLspchbdStatus(lspchb,StringFactory.getGbThree()); // planStatus : 03으로 설정
 //                lspchb.setEffEndDt(new Date());
 //                newLspchb.setPurchaseStatus(StringFactory.getGbThree()); // purchaseStatus : 03으로 설정
 //                jpaLspchbRepository.save(newLspchb);
             }
-            else if(lspchd.getPurchaseQty() == 0){ // 완전입고 : 04
+            else if(planQty - takeQty == 0){ // 완전입고 : 04
                 lsdpsp.setPlanStatus(StringFactory.getGbFour()); // planStatus : 04로 설정
                 lspchb = this.updateLspchbdStatus(lspchb,StringFactory.getGbFour()); // planStatus : 04로 설정
 //                lspchb.setEffEndDt(new Date());
