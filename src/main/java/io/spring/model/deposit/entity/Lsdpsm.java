@@ -36,7 +36,7 @@ public class Lsdpsm extends CommonProps {
 
     public Lsdpsm(String depositNo, DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
         this.depositNo = depositNo;
-        this.depositDt = new Date();
+        this.depositDt = depositListWithPurchaseInfoData.getDepositDt();//new Date();
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
         this.depositGb = StringFactory.getGbOne(); // 01 하드코딩
         this.vendorId = depositListWithPurchaseInfoData.getPurchaseVendorId();
