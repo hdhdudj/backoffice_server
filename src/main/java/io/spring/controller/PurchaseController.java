@@ -100,19 +100,28 @@ public class PurchaseController {
         return ResponseEntity.ok(res);
     }
 
-	@PostMapping(path = "")
+	@PostMapping(path = "") // create
     public ResponseEntity savePurchaseJpa(@RequestBody PurchaseInsertRequestData purchaseInsertRequestData){
-        log.debug("insert or update purchase by jpa");
+        log.debug("insert purchase by jpa");
 
-		System.out.println("insert or update purchase by jpa");
-
-
-		purchaseInsertRequestData.setPurchaseNo(
-				jpaCommonService.getStrNumberId(StringFactory.getCUpperStr(), purchaseInsertRequestData.getPurchaseNo(),
-						StringFactory.getStrSeqLspchm(), StringFactory.getIntEight())); // purchaseNo 채번
-		String purchaseNo = jpaPurchaseService.savePurchaseSquence(purchaseInsertRequestData);
+		String purchaseNo = jpaPurchaseService.createPurchaseSquence(purchaseInsertRequestData);
 
 		// jpaOrderService.updateStatusCd("O2106100714498480", "0001", "B02");
+
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), purchaseNo);
+        if(res == null){
+            return null;
+        }
+        return ResponseEntity.ok(res);
+    }
+
+    @PostMapping(path = "/{purchaseNo}/update") // update
+    public ResponseEntity savePurchaseJpa(@PathVariable String purchaseNo, @RequestBody PurchaseInsertRequestData purchaseInsertRequestData){
+        log.debug("update purchase by jpa");
+
+        jpaPurchaseService.updatePurchaseSquence(purchaseNo, purchaseInsertRequestData);
+
+        // jpaOrderService.updateStatusCd("O2106100714498480", "0001", "B02");
 
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), purchaseNo);
         if(res == null){
@@ -142,9 +151,11 @@ public class PurchaseController {
 		return ResponseEntity.ok(res);
 	}
 
-    // 발주 detail page
-    @GetMapping(path="/purchasedetailjpa")
-    public ResponseEntity getPurchaseDetailPage(@RequestParam String purchaseNo) {
+    /**
+     * 발주 detail get
+     */
+    @GetMapping(path="/item/{purchaseNo}")
+    public ResponseEntity getPurchaseDetailPage(@PathVariable String purchaseNo) {
         log.debug("get purchase detail page");
 
         PurchaseSelectDetailResponseData purchaseSelectDetailResponseData = jpaPurchaseService.getPurchaseDetailPage(purchaseNo);

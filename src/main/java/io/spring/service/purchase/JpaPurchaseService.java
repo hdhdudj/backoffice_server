@@ -65,13 +65,12 @@ public class JpaPurchaseService {
 
     /**
      * 21-05-03 Pecan
-     * 발주 insert/update 시퀀스 함수
+     * 발주 insert 시퀀스 함수
      * @param purchaseInsertRequestData
      * @return String
      */
-
     @Transactional
-    public String savePurchaseSquence(PurchaseInsertRequestData purchaseInsertRequestData) {
+    public String createPurchaseSquence(PurchaseInsertRequestData purchaseInsertRequestData) {
         // lspchd (발주 디테일)
         List<Lspchd> lspchdList = this.saveLspchd(purchaseInsertRequestData);
         // lspchm (발주마스터)
@@ -87,11 +86,15 @@ public class JpaPurchaseService {
         return lspchm.getPurchaseNo();
     }
 
+    public void updatePurchaseSquence(String purchaseNo, PurchaseInsertRequestData purchaseInsertRequestData) {
+
+    }
+
     private Lspchm saveLspchm(PurchaseInsertRequestData purchaseInsertRequestData, List<Lspchd> lspchdList) {
         Lspchm lspchm = jpaLspchmRepository.findByPurchaseNo(purchaseInsertRequestData.getPurchaseNo()).orElseGet(() -> null);
         if(lspchm == null){ // insert
             lspchm = new Lspchm(purchaseInsertRequestData);
-            
+
 			lspchm.setPurchaseStatus(StringFactory.getGbOne()); // 01 하드코딩
 
         }
@@ -113,9 +116,9 @@ public class JpaPurchaseService {
             lspchm.setDelivery(purchaseInsertRequestData.getDelivery());
             lspchm.setPayment(purchaseInsertRequestData.getPayment());
             lspchm.setCarrier(purchaseInsertRequestData.getCarrier());
-            
+
             lspchm.setDealtypeCd(purchaseInsertRequestData.getDealtypeCd());
-            
+
         }
         float localPriceSum = lspchdList.stream().map(x-> {
             {
@@ -224,10 +227,10 @@ public class JpaPurchaseService {
             jpaLspchbRepository.save(lspchb);
             lspchbList.add(lspchb);
 
-			String purchaseGb = purchaseInsertRequestData.getPurchaseGb();  //purchaseGb 는 발주와 이동지시로 나뉘고 상품발주와 주문발주는 dealTypeCd로 나뉨 
+			String purchaseGb = purchaseInsertRequestData.getPurchaseGb();  //purchaseGb 는 발주와 이동지시로 나뉘고 상품발주와 주문발주는 dealTypeCd로 나뉨
 
 			String dealTypeCd = purchaseInsertRequestData.getDealtypeCd();
-			
+
 			System.out.println("dealTypeCd - : " + dealTypeCd);
 
 			String purchaseStatus = purchaseInsertRequestData.getPurchaseStatus();
@@ -446,11 +449,16 @@ public class JpaPurchaseService {
                         , Lsdpsp.class);
         query.setParameter(1, purchaseNo);
         List<Lsdpsp> lsdpspList = query.getResultList();
+        if(lsdpspList.size() == 0){ // 해당 purchaseNo에 해당하는 data가 없을 때
+            log.debug("there's no purchase exist.");
+            return null;
+        }
         Lspchm lspchm = lsdpspList.get(0).getLspchd().getLspchm();
 
         purchaseSelectListResponseData.setPurchaseNo(lspchm.getPurchaseNo());
         purchaseSelectListResponseData.setPurchaseDt(lspchm.getPurchaseDt());
         purchaseSelectListResponseData.setDepositStoreId(lspchm.getStoreCd());
+        purchaseSelectListResponseData.setPurchaseVendorId(lspchm.getPurchaseVendorId());
 
         for(Lsdpsp lsdpsp : lsdpspList){
             PurchaseSelectListResponseData.Purchase purchase = new PurchaseSelectListResponseData.Purchase(lspchm);
@@ -482,7 +490,7 @@ public class JpaPurchaseService {
         purchaseSelectListResponseData.setPurchaseList(purchaseList);
         return purchaseSelectListResponseData;
     }
-    
+
 	private void updateOrderStatusCd(String orderId, String orderSeq, String statusCd) {
 
 		TbOrderDetail tod = tbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
@@ -638,7 +646,7 @@ public class JpaPurchaseService {
 
     /**
      *  depositService에서 이용하는 함수로, 입고 데이터 생성 후 부분입고/완전입고 여부를 따져 lsdchm,b,s의 purchaseStatus를 변경해줌.
-     *  (01 : 기본, 03 : 부분입고, 05 : 완전입고)
+     *  (01 : 기본, 03 : 부분입고, 04 : 완전입고)
      */
 	public Lspchm changePurchaseStatus(List<Lsdpsp> lsdpspList) {
         List<Lspchb> lspchbList = new ArrayList<>();
@@ -651,14 +659,16 @@ public class JpaPurchaseService {
             lspchbList1 = lspchbList1.stream().filter(x->x.getEffEndDt().compareTo(doomDay)==0).collect(Collectors.toList());
             Lspchb lspchb = lspchbList1.get(0);
             if(lspchd.getPurchaseQty() > 0){ // 부분입고 : 03
+                lsdpsp.setPlanStatus(StringFactory.getGbThree()); // planStatus : 03으로 설정
                 lspchb.setPurchaseStatus(StringFactory.getGbThree()); // purchaseStatus : 03으로 설정
             }
             else if(lspchd.getPurchaseQty() == 0){ // 완전입고 : 04
+                lsdpsp.setPlanStatus(StringFactory.getGbFour()); // planStatus : 04로 설정
                 lspchb.setPurchaseStatus(StringFactory.getGbFour()); // purchaseStatus : 04로 설정
             }
             else if(lspchd.getPurchaseQty() < 0){
 			//	throw new Exception("");
-			throw new IllegalArgumentException("purchaseQty must bigger than 0..");
+			    throw new IllegalArgumentException("purchaseQty must bigger than 0..");
             }
             lspchbList.add(lspchb);
             jpaLspchbRepository.save(lspchb);
@@ -686,7 +696,7 @@ public class JpaPurchaseService {
     }
 
     /**
-     * 주문이동 저장시 생성되는 발주 data를 만드는 함수 
+     * 주문이동 저장시 생성되는 발주 data를 만드는 함수
      */
     public void makePurchaseDataFromOrderMoveSave(List<Lsdpsd> lsdpsdList, List<OrderMoveSaveData> orderMoveSaveData) {
         String purchaseNo = this.getPurchaseNo();

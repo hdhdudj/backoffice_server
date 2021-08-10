@@ -59,7 +59,7 @@ public class Lsdpsd extends CommonProps implements Serializable {
         this.itemGrade = StringFactory.getStrEleven(); // 11 하드코딩
         this.extraClsCd = StringFactory.getGbOne(); // 01 하드코딩
         this.depositQty = deposit.getDepositQty();
-        this.extraUnitcost = deposit.getExtraUnitcost();
+        this.extraUnitcost = deposit.getPurchaseCost();
         this.deliPrice = extraUnitcost * depositQty; // 단가 * 개수
         this.extraCost = extraUnitcost * depositQty; // 단가 * 개수
         this.extraQty = deposit.getDepositQty();

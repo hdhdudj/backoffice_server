@@ -25,7 +25,7 @@ public class DepositListWithPurchaseInfoData {
     }
     private String purchaseNo;
     private String purchaseVendorId;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private Date purchaseDt;
     private String storageId;
     private List<Deposit> deposits;
@@ -45,7 +45,7 @@ public class DepositListWithPurchaseInfoData {
             this.optionNm2 = itasrt.getItvariList().size() <= 1? null:itasrt.getItvariList().get(1).getOptionNm();
             this.availableQty = lsdpsp.getPurchasePlanQty() - lsdpsp.getPurchaseTakeQty();
             this.depositQty = 0l;
-            this.extraUnitcost = lsdpsp.getLspchd().getPurchaseUnitAmt(); // 확인 필요
+            this.purchaseCost = lsdpsp.getLspchd().getPurchaseUnitAmt(); // 확인 필요
         }
 
         private String depositPlanId;
@@ -58,6 +58,6 @@ public class DepositListWithPurchaseInfoData {
         private String optionNm2;
         private Long availableQty; // Lsdpsp.purchasePlanQty - Lsdpsp.purchaseTakeQty
         private Long depositQty;
-        private Float extraUnitcost;
+        private Float purchaseCost;
     }
 }

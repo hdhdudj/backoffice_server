@@ -68,10 +68,10 @@ public class JpaDepositService {
     }
 
     /**
-     * 발주조회 후 입고 데이터 저장
+     * 입고처리 화면에서 발주조회 후 입고 데이터 저장
      */
     @Transactional
-	public String sequenceInsertDeposit2(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
+	public String sequenceCreateDeposit(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
         // 0. lsdpsp, ititmc, ititmt의 수량 관련값 변경
         List<Lsdpsp> lsdpspList = this.updateDepositQty(depositListWithPurchaseInfoData);
         if(lsdpspList.size() == 0){
@@ -91,6 +91,13 @@ public class JpaDepositService {
         this.changeStatusCdOfTbOrderDetail(lsdpspList);
 
         return lsdpsm.getDepositNo();
+    }
+
+    /**
+     * 입고처리 화면에서 발주조회 후 입고 데이터 수정
+     */
+    @Transactional
+    public void sequenceUpdateDeposit(DepositInsertRequestData depositInsertRequestData) {
     }
 
     private void changeStatusCdOfTbOrderDetail(List<Lsdpsp> lsdpspList) {
@@ -459,4 +466,5 @@ public class JpaDepositService {
         jpaItitmtRepository.save(ititmt);
         return ititmt;
     }
+
 }

@@ -1,5 +1,6 @@
 package io.spring.model.purchase.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.spring.model.purchase.entity.Lspchm;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,6 +26,7 @@ public class PurchaseSelectDetailResponseData {
         this.siteOrderNo = lspchm.getSiteOrderNo();
         this.purchaseStatus = lspchm.getPurchaseStatus();
     }
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private Date purchaseDt;
     private String purchaseVendorId;
     private String purchaseRemark;
