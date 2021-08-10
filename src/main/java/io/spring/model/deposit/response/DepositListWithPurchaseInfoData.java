@@ -19,14 +19,14 @@ public class DepositListWithPurchaseInfoData {
     public DepositListWithPurchaseInfoData(Lspchm lspchm, List<DepositListWithPurchaseInfoData.Deposit> deposits){
         this.purchaseNo = lspchm.getPurchaseNo();
         this.purchaseVendorId = lspchm.getVendorId();
-        this.purchaseDt = lspchm.getPurchaseDt();
+        this.depositDt = lspchm.getPurchaseDt();
         this.storageId = lspchm.getStoreCd();
         this.deposits = deposits;
     }
     private String purchaseNo;
     private String purchaseVendorId;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private Date purchaseDt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private Date depositDt;
     private String storageId;
     private List<Deposit> deposits;
 

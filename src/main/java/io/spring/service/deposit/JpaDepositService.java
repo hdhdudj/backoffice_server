@@ -413,7 +413,6 @@ public class JpaDepositService {
      * 입고 처리가능수량을 변경했을 때 수정하는 함수
      */
     private List<Lsdpsp> updateDepositQty(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
-        Date purchaseDt = depositListWithPurchaseInfoData.getPurchaseDt();
         String storageId = depositListWithPurchaseInfoData.getStorageId();
         List<Lsdpsp> lsdpspList = new ArrayList<>();
         for(DepositListWithPurchaseInfoData.Deposit deposit : depositListWithPurchaseInfoData.getDeposits()){
@@ -440,6 +439,8 @@ public class JpaDepositService {
                 log.debug("input qty is bigger than available qty.");
                 continue;
             }
+            Lspchm lspchm = lsdpsp.getLspchd().getLspchm();
+            Date purchaseDt = lspchm.getPurchaseDt();
             this.whenPartDeposit(lsdpsp, isCompleteDeposit);
             this.saveItitmt(purchaseDt, storageId, deposit, dealtypeCd);
             this.saveItitmc(purchaseDt, storageId, deposit);
