@@ -17,6 +17,7 @@ import io.spring.model.deposit.response.DepositSelectListResponseData;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
+import io.spring.model.goods.entity.Itvari;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.entity.Lspchd;
@@ -312,10 +313,9 @@ public class JpaDepositService {
      * @return
      */
     public DepositSelectDetailResponseData getDetail(String depositNo){
-        TypedQuery<Lsdpsd> query = em.createQuery("select d from Lsdpsd d join fetch d.lsdpsp p join fetch d.lsdpsm m join fetch d.lsdpds s " +
-                "where d.depositNo=?1 and s.effEndDt=?2", Lsdpsd.class);
+        TypedQuery<Lsdpsd> query = em.createQuery("select d from Lsdpsd d left join fetch d.lsdpsp p left join fetch d.lsdpsm m left join fetch d.lsdpds s " +
+                "where d.depositNo=?1", Lsdpsd.class);
         query.setParameter(1, depositNo);
-        query.setParameter(2, Utilities.getStringToDate(StringFactory.getDoomDay()));
         List<Lsdpsd> lsdpsdList = query.getResultList();
         if(lsdpsdList.size() == 0){
             log.debug("lsdpsdList is empty.");
@@ -324,12 +324,23 @@ public class JpaDepositService {
         List<DepositSelectDetailResponseData.Item> itemList = new ArrayList<>();
         for(Lsdpsd lsdpsd : lsdpsdList){
             DepositSelectDetailResponseData.Item item = new DepositSelectDetailResponseData.Item(lsdpsd);
-            item.setPurchaseNo(lsdpsd.getLsdpsp().getPurchaseNo());
-            item.setPurchaseSeq(lsdpsd.getLsdpsp().getPurchaseSeq());
-            item.setDepositQty(lsdpsd.getLsdpsp().getPurchasePlanQty());
+            Itasrt itasrt = lsdpsd.getItasrt();
+            item.setItemNm(itasrt.getAssortNm());
+            List<Itvari> itvariList = itasrt.getItvariList();
+            if(itvariList.size() > 0){
+                Itvari itvari1 = itvariList.get(0);
+                item.setOptionNm1(itvari1.getOptionNm());
+            }
+            if(itvariList.size() > 1){
+                Itvari itvari2 = itvariList.get(1);
+                item.setOptionNm2(itvari2.getOptionNm());
+            }
+//            item.setPurchaseNo(lsdpsd.getLsdpsp().getPurchaseNo());
+//            item.setPurchaseSeq(lsdpsd.getLsdpsp().getPurchaseSeq());
+//            item.setDepositQty(lsdpsd.getLsdpsp().getPurchasePlanQty());
             Date doomDay = Utilities.getStringToDate(StringFactory.getDoomDay());
-            Lsdpds lsdpds1 = lsdpsd.getLsdpds().stream().filter(x -> x.getEffEndDt().equals(doomDay)).collect(Collectors.toList()).get(0);
-            item.setDepositStatus(lsdpds1.getDepositStatus());
+//            Lsdpds lsdpds1 = lsdpsd.getLsdpds().stream().filter(x -> x.getEffEndDt().equals(doomDay)).collect(Collectors.toList()).get(0);
+//            item.setDepositStatus(lsdpds1.getDepositStatus());
             itemList.add(item);
         }
         Lsdpsm lsdpsm = lsdpsdList.get(0).getLsdpsm();

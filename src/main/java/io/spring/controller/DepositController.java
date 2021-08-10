@@ -86,8 +86,8 @@ public class DepositController {
 //        return ResponseEntity.ok(res);
 //    }
 
-    @GetMapping(path="/depositdetailjpa")
-    public ResponseEntity getDepositDetailPage(@RequestParam String depositNo){
+    @GetMapping(path="/item/{depositNo}")
+    public ResponseEntity getDepositDetailPage(@PathVariable String depositNo){
         DepositSelectDetailResponseData depositSelectDetailResponseData = jpaDepositService.getDetail(depositNo);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositSelectDetailResponseData);
         return ResponseEntity.ok(res);
