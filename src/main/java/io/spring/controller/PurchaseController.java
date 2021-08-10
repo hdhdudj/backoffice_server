@@ -201,7 +201,7 @@ public class PurchaseController {
     }
 
     /**
-     * 발주 list get (입고처리 화면)
+     * 입고 가능한 발주 list get (입고처리 화면에서 발주 번호를 넣고 검색했을 때 나오는 리스트)
      */
     @GetMapping(path="/items/{purchaseNo}")
     public ResponseEntity getPurchaseListJpa(@PathVariable String purchaseNo){

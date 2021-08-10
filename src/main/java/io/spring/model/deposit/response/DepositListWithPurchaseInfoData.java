@@ -12,6 +12,9 @@ import lombok.Setter;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 입고처리 화면에서 쓰는 DTO
+ */
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

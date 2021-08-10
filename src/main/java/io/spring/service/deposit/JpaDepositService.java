@@ -9,7 +9,6 @@ import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.purchase.JpaLspchmRepository;
-import io.spring.model.common.entity.SequenceData;
 import io.spring.model.deposit.entity.*;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
@@ -32,7 +31,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -338,24 +340,6 @@ public class JpaDepositService {
     }
 
     /**
-     * Table 초기화 함수
-     */
-    public void init(){
-        Optional<SequenceData> op = jpaSequenceDataRepository.findById(StringFactory.getStrSeqLsdpsm());
-        SequenceData seq = op.get();
-        seq.setSequenceCurValue(StringFactory.getStrZero());
-        jpaSequenceDataRepository.save(seq);
-        jpaItitmcRepository.deleteAll();
-        jpaItitmtRepository.deleteAll();
-        jpaLsdpspRepository.deleteAll();
-        jpaLsdpdsRepository.deleteAll();
-        jpaLsdpssRepository.deleteAll();
-        jpaLsdpsmRepository.deleteAll();
-        jpaLsdpsdRepository.deleteAll();
-
-    }
-
-    /**
      * 입고 리스트를 가져오는 함수 
      * @return
      */
@@ -457,7 +441,7 @@ public class JpaDepositService {
             Date purchaseDt = lspchm.getPurchaseDt();
             this.changeLsdpspStatus(lsdpsp, isCompleteDeposit);
             this.saveItitmt(purchaseDt, storageId, deposit, dealtypeCd);
-            this.saveItitmc(purchaseDt, storageId, deposit);
+            this.saveItitmc(depositListWithPurchaseInfoData.getDepositDt(), storageId, deposit);
         }
         return lsdpspList;
     }
@@ -484,8 +468,8 @@ public class JpaDepositService {
         jpaLsdpspRepository.save(lsdpsp);
     }
 
-    private Ititmc saveItitmc(Date purchaseDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit) {
-        Ititmc ititmc = new Ititmc(storageId, purchaseDt, deposit);
+    private Ititmc saveItitmc(Date depositDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit) {
+        Ititmc ititmc = new Ititmc(storageId, depositDt, deposit);
 //        ititmc.setShipIndicateQty(deposit.getDepositQty());
         ititmc.setQty(deposit.getDepositQty());
         jpaItitmcRepository.save(ititmc);

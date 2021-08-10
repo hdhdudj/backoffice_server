@@ -30,6 +30,7 @@ import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.entity.Lspchm;
 import io.spring.model.purchase.entity.Lspchs;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
+import io.spring.model.purchase.response.PurchaseListInDepositModalData;
 import io.spring.model.purchase.response.PurchaseSelectDetailResponseData;
 import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
@@ -356,7 +357,19 @@ public class JpaPurchaseService {
     }
 
     /**
-     * 발주리스트 화면 기준 리스트 가져오는 함수
+     * 입고 - 발주선택창에서 조건을 넣고 조회했을 때 동작하는 함수 (Lspchm 기준의 list를 가져옴)
+     */
+    public PurchaseListInDepositModalData getPurchaseMasterList(Date startDt, Date endDt, String purchaseVendorId) {
+        TypedQuery<Lspchm> query = em.createQuery("select m from Lspchm m" +
+                "",Lspchm.class);
+        List<Lspchm> lspchmList = query.getResultList();
+//        PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData();
+//        return purchaseListInDepositModalData;
+        return null;
+    }
+
+    /**
+     * 발주리스트 화면 기준 리스트 가져오는 함수 (Lspchd 기준의 list를 가져옴)
      */
     public PurchaseSelectListResponseData getPurchaseList(HashMap<String, Object> param) {
         PurchaseSelectListResponseData purchaseSelectListResponseData = new PurchaseSelectListResponseData(param);
@@ -437,7 +450,7 @@ public class JpaPurchaseService {
     }
 
     /**
-     * 입고처리 화면 기준 리스트 가져오는 함수
+     * 입고처리 화면에서 발주번호로 검색 시 결과 리스트 가져오는 함수
      */
     public PurchaseSelectListResponseData getDepositPlanList(String purchaseNo) {
         PurchaseSelectListResponseData purchaseSelectListResponseData = new PurchaseSelectListResponseData(purchaseNo);
@@ -808,4 +821,6 @@ public class JpaPurchaseService {
         purchaseNo = Utilities.getStringNo('C',purchaseNo,9);
         return purchaseNo;
     }
+
+
 }

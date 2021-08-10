@@ -8,8 +8,10 @@ import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.deposit.response.DepositSelectDetailResponseData;
 import io.spring.model.deposit.response.DepositSelectListResponseData;
+import io.spring.model.purchase.response.PurchaseListInDepositModalData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.deposit.JpaDepositService;
+import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -28,6 +30,7 @@ import java.util.List;
 public class DepositController {
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
     private final JpaDepositService jpaDepositService;
+    private final JpaPurchaseService jpaPurchaseService;
     private final JpaCommonService jpaCommonService;
 
 
@@ -48,8 +51,9 @@ public class DepositController {
     public ResponseEntity getChoosePurchaseModalList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date startDt,
                                                      @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date endDt,
                                                      @RequestParam @Nullable String purchaseVendorId){
-
-        return null;
+        PurchaseListInDepositModalData purchaseListInDepositModalData = jpaPurchaseService.getPurchaseMasterList(startDt, endDt, purchaseVendorId);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),purchaseListInDepositModalData);
+        return ResponseEntity.ok(res);
     }
 
     /**
@@ -114,11 +118,6 @@ public class DepositController {
         List<DepositSelectListResponseData> depositSelectListResponseDataList = jpaDepositService.getList(param);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositSelectListResponseDataList);
         return ResponseEntity.ok(res);
-    }
-
-    @GetMapping(path="/init")
-    public void initTabled(){
-        jpaDepositService.init();
     }
 
     /**

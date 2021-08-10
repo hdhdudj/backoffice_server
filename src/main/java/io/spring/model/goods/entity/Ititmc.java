@@ -28,11 +28,11 @@ public class Ititmc extends CommonProps {
         this.effStaDt = this.effEndDt;
         this.stockGb = StringFactory.getGbOne(); // 01 하드코딩
     }
-    public Ititmc(String storageId, Date purchaseDt, DepositListWithPurchaseInfoData.Deposit deposit) {
+    public Ititmc(String storageId, Date depositDt, DepositListWithPurchaseInfoData.Deposit deposit) {
         this.storageId = storageId;
         this.assortId = deposit.getAssortId();
         this.itemId = deposit.getItemId();
-        this.effEndDt = purchaseDt;
+        this.effEndDt = depositDt;
         this.effStaDt = this.effEndDt;
         this.stockGb = StringFactory.getGbOne(); // 01 하드코딩
     }
