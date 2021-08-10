@@ -458,10 +458,10 @@ public class JpaDepositService {
         // 부분입고인 경우 : lsdpsp는 입고량 만큼 처리, 나머지 수량은 신규생성
         long remainQty = lsdpsp.getPurchasePlanQty() - lsdpsp.getPurchaseTakeQty();
         lsdpsp.setPurchasePlanQty(lsdpsp.getPurchaseTakeQty());
-        lsdpsp.setPlanStatus(StringFactory.getGbFour());
         Lsdpsp newLsdpsp = new Lsdpsp(this.getDepositPlanId(), lsdpsp);
         newLsdpsp.setPurchasePlanQty(remainQty);
         newLsdpsp.setPurchaseTakeQty(0l);
+        lsdpsp.setPlanStatus(StringFactory.getGbFour());
         jpaLsdpspRepository.save(lsdpsp);
         jpaLsdpspRepository.save(newLsdpsp);
     }
@@ -483,10 +483,10 @@ public class JpaDepositService {
             return null;
         }
         else {
-            ititmt.setTempQty(ititmt.getTempQty() + deposit.getDepositQty());
+            ititmt.setTempQty(ititmt.getTempQty() - deposit.getDepositQty());
         }
         if(dealTypeCd.equals(StringFactory.getGbOne())){ // 주문발주일 때
-            ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() + deposit.getDepositQty());
+            ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() - deposit.getDepositQty());
         }
         jpaItitmtRepository.save(ititmt);
         return ititmt;

@@ -64,7 +64,8 @@ public class PurchaseController {
 
 	}
 
-	@GetMapping(path = "/{purchaseNo}")
+
+    @GetMapping(path = "/{purchaseNo}")
 	public ResponseEntity getPurchase(@PathVariable("purchaseNo") String purchaseNo) {
 		log.debug("get purchase detail page");
 
