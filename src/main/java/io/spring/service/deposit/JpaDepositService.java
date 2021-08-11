@@ -357,33 +357,44 @@ public class JpaDepositService {
     public List<DepositSelectListResponseData> getList(String purchaseVendorId, String assortId, String assortNm, Date depositDt) {
         List<DepositSelectListResponseData> depositSelectListResponseDataList = new ArrayList<>();
         TypedQuery<Lsdpsd> query = em.createQuery("select ld from Lsdpsd ld " +
-                        "join fetch ld.lsdpsm lm " +
-                        "join fetch ld.lsdpsp lp " +
-                        "join fetch ld.lsdpds ls " +
-                        "join fetch ld.itasrt it " +
-                        "join fetch lm.cmvdmr cm " +
+                        "left join fetch ld.lsdpsm lm " +
+                        "left join fetch ld.lsdpsp lp " +
+                        "left join fetch ld.lsdpds ls " +
+                        "left join fetch ld.itasrt it " +
+                        "left join fetch lm.cmvdmr cm " +
                         "left join fetch ld.ititmm im " +
                         "left join fetch im.itvari1 iv1 " +
                         "left join fetch im.itvari2 iv2 " +
                         "where lm.depositDt between ?1 and ?2 " +
-                        "and lm.depositVendorId like CONCAT('%',?3,'%') " +
-                        "and ld.assortId like concat('%', ?4, '%')",
+                        "and (?3 is null or trim(?3)='' or it.assortId=?3) " +
+                        "and (?4 is null or trim(?4)='' or it.assortNm like concat('%', ?4, '%')) " +
+                        "and (?5 is null or trim(?5)='' or lm.vendorId=?5)",
                 Lsdpsd.class);
-//        query.setParameter(1, param.get("startDt"));
-//        query.setParameter(2, param.get("endDt"));
-//        query.setParameter(1, param.get("startDt"));
-//        query.setParameter(2, param.get("endDt"));
-//        query.setParameter(3, param.get("depositVendorId"));
+        Date startDt = depositDt == null? Utilities.getStringToDate(StringFactory.getStartDay()):Utilities.addHoursToJavaUtilDate(depositDt,0);
+        Date endDt = depositDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()):Utilities.addHoursToJavaUtilDate(depositDt,24);
+        query.setParameter(1, startDt).setParameter(2, endDt).setParameter(3, assortId)
+        .setParameter(4, assortNm).setParameter(5, purchaseVendorId);
 //        query.setParameter(4, param.get("assortId"));
         List<Lsdpsd> resultList = query.getResultList();
         for(Lsdpsd lsdpsd : resultList){
             DepositSelectListResponseData depositSelectListResponseData = new DepositSelectListResponseData(lsdpsd);
             depositSelectListResponseData.setDepositVendorId(lsdpsd.getLsdpsm().getDepositVendorId());
             depositSelectListResponseData.setVdNm(lsdpsd.getLsdpsm().getCmvdmr().getVdNm());
-            depositSelectListResponseData.setAssortNm(lsdpsd.getItasrt().getAssortNm());
-            // 2 depth 주의...
-            depositSelectListResponseData.setOptionNm2(lsdpsd.getItitmm().getItvari2().getOptionNm());
-            depositSelectListResponseData.setDepositQty(lsdpsd.getLsdpsp().getPurchaseTakeQty());
+            Itasrt itasrt = lsdpsd.getItasrt();
+            List<Itvari> itvariList = itasrt.getItvariList();
+            depositSelectListResponseData.setAssortNm(itasrt.getAssortNm());
+            if(itvariList.size() > 0){
+                Itvari itvari1 = itvariList.get(0);
+                depositSelectListResponseData.setOptionNm1(itvari1.getOptionNm());
+            }
+            if(itvariList.size() > 1){
+                // 2 depth 주의...
+                Itvari itvari2 = itvariList.get(1);
+                depositSelectListResponseData.setOptionNm2(itvari2.getOptionNm());
+            }
+            List<Lsdpsp> lsdpspList = lsdpsd.getLsdpsp();
+            lsdpspList.stream().filter(x->x.getPlanStatus().equals(StringFactory.getGbOne())).reduce((a,b)->a+b).get();
+            depositSelectListResponseData.setDepositQty();
             //
             depositSelectListResponseDataList.add(depositSelectListResponseData);
         }

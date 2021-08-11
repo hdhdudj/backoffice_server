@@ -35,6 +35,7 @@ public class Lsdpsm extends CommonProps {
     }
 
     public Lsdpsm(String depositNo, DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
+        this.vendorId = depositListWithPurchaseInfoData.getPurchaseVendorId();
         this.depositNo = depositNo;
         this.depositDt = depositListWithPurchaseInfoData.getDepositDt();//new Date();
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
@@ -62,7 +63,7 @@ public class Lsdpsm extends CommonProps {
 
     // 연관 관계
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "depositVendorId", referencedColumnName="vendorId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+    @JoinColumn(name = "vendorId", referencedColumnName="vendorId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     private Cmvdmr cmvdmr;
 
 }

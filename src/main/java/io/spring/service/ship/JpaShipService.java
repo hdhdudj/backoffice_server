@@ -5,8 +5,9 @@ import io.spring.infrastructure.util.Utilities;
 import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.goods.entity.Itvari;
 import io.spring.model.order.entity.TbOrderDetail;
-import io.spring.model.ship.request.ShipIndicateListData;
-import io.spring.model.ship.request.ShipIndicateSaveData;
+import io.spring.model.ship.request.ShipIndicateSaveListData;
+import io.spring.model.ship.response.ShipIndicateListData;
+import io.spring.model.ship.response.ShipIndicateSaveListResponseData;
 import io.spring.service.move.JpaMoveService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,23 +31,25 @@ public class JpaShipService {
     /**
      * 출고지시 화면에서 조건검색하면 리스트를 반환해주는 함수
      */
-    public List<ShipIndicateListData> getOrderSaveList(Date startDt, Date endDt, String assortId, String assortNm, String vendorId) {
-        List<ShipIndicateListData> shipIndicateListDataList = new ArrayList<>();
-        List<TbOrderDetail> tbOrderDetailList = this.getOrdersByCondition(startDt, endDt, assortId, assortNm, vendorId);
+    public ShipIndicateSaveListResponseData getOrderSaveList(Date startDt, Date endDt, String assortId, String assortNm, String purchaseVendorId) {
+        List<ShipIndicateSaveListResponseData.Ship> shipList = new ArrayList<>();
+        List<TbOrderDetail> tbOrderDetailList = this.getOrdersByCondition(startDt, endDt, assortId, assortNm, purchaseVendorId);
         for(TbOrderDetail tbOrderDetail : tbOrderDetailList){
-            ShipIndicateListData shipIndicateListData = new ShipIndicateListData(tbOrderDetail);
-            shipIndicateListDataList.add(shipIndicateListData);
+            ShipIndicateSaveListResponseData.Ship ship = new ShipIndicateSaveListResponseData.Ship(tbOrderDetail);
+            shipList.add(ship);
             List<Itvari> itvariList = tbOrderDetail.getItasrt().getItvariList();
             if(itvariList.size() == 1){
                 Itvari itvari1 = itvariList.get(0);
-                shipIndicateListData.setOptionNm1(itvari1.getOptionNm());
+                ship.setOptionNm1(itvari1.getOptionNm());
             }
             else if(itvariList.size() == 2){
                 Itvari itvari2 = itvariList.get(1);
-                shipIndicateListData.setOptionNm2(itvari2.getOptionNm());
+                ship.setOptionNm2(itvari2.getOptionNm());
             }
         }
-        return shipIndicateListDataList;
+        ShipIndicateSaveListResponseData shipIndicateSaveListResponseData = new ShipIndicateSaveListResponseData(startDt, endDt, assortId, assortNm, purchaseVendorId);
+        shipIndicateSaveListResponseData.setShips(shipList);
+        return shipIndicateSaveListResponseData;
     }
 
     /**
@@ -55,15 +58,17 @@ public class JpaShipService {
     private List<TbOrderDetail> getOrdersByCondition(Date startDt, Date endDt, String assortId, String assortNm, String vendorId) {
         startDt = startDt == null? Utilities.getStringToDate(StringFactory.getStartDay()) : startDt;
         endDt = endDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()) : endDt;
-        assortId = assortId == null || assortId.trim().equals("")? "":" and td.assortId='"+assortId+"'";
-        vendorId = vendorId == null || vendorId.trim().equals("")? "":" and it.vendorId='"+vendorId+"'";
         TypedQuery<TbOrderDetail> query = em.createQuery("select td from TbOrderDetail td " +
                 "join fetch td.tbOrderMaster to " +
                 "join fetch td.itasrt it " +
-                "where to.orderDate between ?1 and ?2" +
-                assortId + vendorId
+                "where to.orderDate between ?1 and ?2 " +
+                "and (?3 is null or trim(?3)='' or td.assortId=?3) "+
+                "and (?4 is null or trim(?4)='' or it.vendorId=?4) "+
+                "and (?5 is null or trim(?5)='' or it.assortNm like ?5)"
                 , TbOrderDetail.class);
-        query.setParameter(1,startDt).setParameter(2,endDt);
+        query.setParameter(1,startDt).setParameter(2,endDt)
+        .setParameter(3,assortId).setParameter(4,vendorId)
+        .setParameter(5,assortNm);
         List<TbOrderDetail> tbOrderDetailList = query.getResultList();
 
         return tbOrderDetailList;
@@ -73,16 +78,16 @@ public class JpaShipService {
      * 출고지시 저장 함수
      */
     @Transactional
-    public List<String> saveShipIndicate(List<ShipIndicateSaveData> shipIndicateSaveDataList) {
-        if(shipIndicateSaveDataList.size() == 0){
+    public List<String> saveShipIndicate(ShipIndicateSaveListData shipIndicateSaveDataList) {
+        if(shipIndicateSaveDataList.getShips().size() == 0){
             log.debug("input data is empty.");
             return null;
         }
         List<String> shipIdList = new ArrayList<>();
         List<Lsdpsd> lsdpsdList = new ArrayList<>();
         // 1. 출고 data 생성
-        for(ShipIndicateSaveData shipIndicateSaveData : shipIndicateSaveDataList){
-            String shipId = this.saveShipIndicateSaveData(lsdpsdList, shipIndicateSaveData);
+        for(ShipIndicateSaveListData.Ship ship : shipIndicateSaveDataList.getShips()){
+            String shipId = this.saveShipIndicateSaveData(lsdpsdList, ship);
             shipIdList.add(shipId);
         }
         // 2. tbOrderDetail
@@ -93,10 +98,17 @@ public class JpaShipService {
      * ShipIndicateSaveData 객체로 lsshpm,s,d 생성
      * tbOrderDetail를 변경
      */
-    private String saveShipIndicateSaveData(List<Lsdpsd> lsdpsdList, ShipIndicateSaveData shipIndicateSaveData) {
+    private String saveShipIndicateSaveData(List<Lsdpsd> lsdpsdList, ShipIndicateSaveListData.Ship ship) {
 //        Lsdpsd lsdpsd = this.getLsdpsdByOrderIdAndOrderSeq(shipIndicateSaveData);
 //        String shipId = jpaMoveService.makeOrderShipData(lsdpsd, shipIndicateSaveData.getQty(), StringFactory.getGbFour());
 //        lsdpsdList.add(lsdpsd);
+        return null;
+    }
+
+    /**
+     * 출고지시리스트 화면에서 list를 불러오는 함수
+     */
+    public ShipIndicateListData getShipList(Date startDt, Date endDt, String shipId, String assortId, String assortNm, String vendorId) {
         return null;
     }
 

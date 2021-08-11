@@ -56,7 +56,7 @@ public class DepositController {
     }
 
     /**
-     * 입고처리 화면에서 입고수량 입력 후 저장을 눌렀을 때 타는 api (create)
+     * 입고처리 : 화면에서 입고수량 입력 후 저장을 눌렀을 때 타는 api (create)
      */
     @PostMapping(path="")
     public ResponseEntity createDepositListJpa(@RequestBody DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
@@ -66,7 +66,7 @@ public class DepositController {
     }
 
     /**
-     * 입고처리 화면에서 입고수량 수정 후 저장을 눌렀을 때 타는 api (update)
+     * 입고처리 : 화면에서 입고수량 수정 후 저장을 눌렀을 때 타는 api (update)
      */
     @PostMapping(path="/{depositNo}/update") // update
     public ResponseEntity updateDepositJpa(@PathVariable String depositNo, @RequestBody DepositInsertRequestData depositInsertRequestData){
