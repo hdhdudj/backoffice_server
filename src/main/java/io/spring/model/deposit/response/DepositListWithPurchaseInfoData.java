@@ -31,6 +31,7 @@ public class DepositListWithPurchaseInfoData {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private Date depositDt;
     private String storageId;
+    private String regId;
     private List<Deposit> deposits;
 
     @Getter

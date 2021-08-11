@@ -43,6 +43,7 @@ public class Lsdpsm extends CommonProps {
         this.finishYymm = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
         this.depositType = StringFactory.getGbOne(); // 01 하드코딩
         this.storeCd = depositListWithPurchaseInfoData.getStorageId();
+        this.setRegId(depositListWithPurchaseInfoData.getRegId());
 //        this.depositVendorId = deposit.
     }
 

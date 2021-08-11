@@ -25,7 +25,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping(value="/deposit")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequiredArgsConstructor
 public class DepositController {
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
@@ -55,18 +54,6 @@ public class DepositController {
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),purchaseListInDepositModalData);
         return ResponseEntity.ok(res);
     }
-
-//    /**
-//     * 입고 - 발주선택창 : 발주일과 구매처를 보내고 조회를 누르면 그에 맞는 발주 data를 보내줌.
-//     */
-//    @GetMapping(path = "/items/{depositNo}")
-//    public ResponseEntity getChoosePurchaseModalList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date startDt,
-//                                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date endDt,
-//                                                     @RequestParam @Nullable String purchaseVendorId){
-//        PurchaseListInDepositModalData purchaseListInDepositModalData = jpaPurchaseService.getPurchaseMasterList(startDt, endDt, purchaseVendorId);
-//        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),purchaseListInDepositModalData);
-//        return ResponseEntity.ok(res);
-//    }
 
     /**
      * 입고처리 화면에서 입고수량 입력 후 저장을 눌렀을 때 타는 api (create)
@@ -98,10 +85,27 @@ public class DepositController {
 //        return ResponseEntity.ok(res);
 //    }
 
+    /**
+     *  입고 - 입고내역 : depositNo로 검색하면 입고내역 리스트를 검색하는 api
+     */
     @GetMapping(path="/items/{depositNo}")
     public ResponseEntity getDepositDetailPage(@PathVariable String depositNo){
         DepositSelectDetailResponseData depositSelectDetailResponseData = jpaDepositService.getDetail(depositNo);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositSelectDetailResponseData);
+        return ResponseEntity.ok(res);
+    }
+
+    /**
+     * 입고 - 입고리스트 : 입고일자와 상품코드(빈칸이면 없이 검색)or상품명(like 검색)과 구매처 아이디를 받아 입고 리스트를 검색하는 api
+     */
+    @GetMapping(path = "/items")
+    public ResponseEntity getDepositList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date depositDt,
+                                         @RequestParam @Nullable String assortId,
+                                         @RequestParam @Nullable String assortNm,
+                                         @RequestParam @Nullable String purchaseVendorId){
+
+        List<DepositSelectListResponseData> depositSelectListResponseDataList = jpaDepositService.getList(purchaseVendorId, assortId, assortNm, depositDt);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositSelectListResponseDataList);
         return ResponseEntity.ok(res);
     }
 
@@ -120,20 +124,20 @@ public class DepositController {
 //    }
 
 
-    @PostMapping(path="/depositlistjpa")
-    public ResponseEntity getDepositListJpa(@RequestParam String depositVendorId,
-                                            @RequestParam String assortId,
-                                            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date depositDt){
-//                                            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDt){
-//        HashMap<String, Object> param = new HashMap<>();
-//        param.put("depositVendorId", depositVendorId);
-//        param.put("assortId", assortId);
-//        param.put("startDt", startDt);
-//        param.put("endDt", endDt);
-        List<DepositSelectListResponseData> depositSelectListResponseDataList = jpaDepositService.getList(depositVendorId, assortId, depositDt);
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositSelectListResponseDataList);
-        return ResponseEntity.ok(res);
-    }
+//    @PostMapping(path="/depositlistjpa")
+//    public ResponseEntity getDepositListJpa(@RequestParam String depositVendorId,
+//                                            @RequestParam String assortId,
+//                                            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date depositDt){
+////                                            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDt){
+////        HashMap<String, Object> param = new HashMap<>();
+////        param.put("depositVendorId", depositVendorId);
+////        param.put("assortId", assortId);
+////        param.put("startDt", startDt);
+////        param.put("endDt", endDt);
+//        List<DepositSelectListResponseData> depositSelectListResponseDataList = jpaDepositService.getList(depositVendorId, assortId, depositDt);
+//        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositSelectListResponseDataList);
+//        return ResponseEntity.ok(res);
+//    }
 
     /**
      * depositNo 채번 함수

@@ -350,10 +350,11 @@ public class JpaDepositService {
     }
 
     /**
-     * 입고 리스트를 가져오는 함수 
-     * @return
+     * 입고 리스트를 가져오는 함수 (입고 - 입고리스트)
+     * assortId가 null이거나 ""면 검색 조건에 미포함
+     * assortNm은 like 검색
      */
-    public List<DepositSelectListResponseData> getList(String depositVendorId, String assortId, Date depositDt) {
+    public List<DepositSelectListResponseData> getList(String purchaseVendorId, String assortId, String assortNm, Date depositDt) {
         List<DepositSelectListResponseData> depositSelectListResponseDataList = new ArrayList<>();
         TypedQuery<Lsdpsd> query = em.createQuery("select ld from Lsdpsd ld " +
                         "join fetch ld.lsdpsm lm " +

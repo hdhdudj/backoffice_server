@@ -357,19 +357,18 @@ public class JpaPurchaseService {
     }
 
     /**
-     * 입고 - 발주선택창에서 조건을 넣고 조회했을 때 동작하는 함수 (Lspchm 기준의 list를 가져옴)
+     * 입고 - 발주선택창 : 조건을 넣고 조회했을 때 동작하는 함수 (Lspchm 기준의 list를 가져옴)
      */
     public PurchaseListInDepositModalData getPurchaseMasterList(Date startDt, Date endDt, String purchaseVendorId) {
+        PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData(startDt, endDt, purchaseVendorId);
         startDt = startDt == null? Utilities.getStringToDate(StringFactory.getStartDay()) : startDt;
         endDt = endDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()) : endDt;
-        purchaseVendorId = purchaseVendorId == null || purchaseVendorId.equals("")? "":" and m.purchaseVendorId='" + purchaseVendorId + "'";
         TypedQuery<Lspchm> query = em.createQuery("select m from Lspchm m" +
                 " where m.purchaseDt between ?1 and ?2" +
-                purchaseVendorId,Lspchm.class);
-        query.setParameter(1,startDt).setParameter(2,endDt);
+                " and (?3 is null or trim(?3)='' or m.purchaseVendorId=?3)",Lspchm.class);
+        query.setParameter(1,startDt).setParameter(2,endDt).setParameter(3,purchaseVendorId);
         List<Lspchm> lspchmList = query.getResultList();
         List<PurchaseListInDepositModalData.Purchase> purchaseList = new ArrayList<>();
-        PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData(startDt, endDt, purchaseVendorId);
         for(Lspchm lspchm : lspchmList){
            PurchaseListInDepositModalData.Purchase purchase = new PurchaseListInDepositModalData.Purchase(lspchm);
            purchaseList.add(purchase);
@@ -394,10 +393,10 @@ public class JpaPurchaseService {
         Date endDt = (Date)param.get(StringFactory.getStrEndDt());
 //        String purchaseNo = (String)param.get(StringFactory.getStrPurchaseNo());
 
-        purchaseVendorId = purchaseVendorId == null || purchaseVendorId.equals("")? "":" and m.purchaseVendorId='"+purchaseVendorId+"'";
-        assortId = assortId == null || assortId.equals("")? "":" and d.assortId='"+assortId+"'";
-        purchaseStatus = purchaseStatus == null || purchaseStatus.equals("")? "":" and m.purchaseStatus='"+purchaseStatus+"'";
-        purchaseGb = purchaseGb == null || purchaseGb.equals("")? "":" and m.purchaseGb='"+purchaseGb+"'";
+//        purchaseVendorId = purchaseVendorId == null || purchaseVendorId.equals("")? "":" and m.purchaseVendorId='"+purchaseVendorId+"'";
+//        assortId = assortId == null || assortId.equals("")? "":" and d.assortId='"+assortId+"'";
+//        purchaseStatus = purchaseStatus == null || purchaseStatus.equals("")? "":" and m.purchaseStatus='"+purchaseStatus+"'";
+//        purchaseGb = purchaseGb == null || purchaseGb.equals("")? "":" and m.purchaseGb='"+purchaseGb+"'";
         startDt = startDt == null? Utilities.getStringToDate(StringFactory.getStartDay()):startDt;
         endDt = endDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()):endDt;
 //        purchaseNo = purchaseNo == null || purchaseNo.equals("")? "":" and d.depositNo='"+purchaseNo+"'";
@@ -412,16 +411,15 @@ public class JpaPurchaseService {
                     "left join fetch it.itvari2 " +
                     "where m.purchaseDt " +
                     "between ?1 " +
-                    "and ?2" + purchaseVendorId
-                        + assortId + purchaseStatus + purchaseGb
-//                    "and m.purchaseVendorId = ?3 " +
-//                    "and m.purchaseStatus = ?4 " +
-//                    "and d.assortId = ?5"
+                    "and ?2 " +
+                    "and (?3 is null or trim(?3)='' or m.purchaseVendorId=?3) "+
+                    "and (?4 is null or trim(?4)='' or d.assortId=?4) "+
+                    "and (?5 is null or trim(?5)='' or m.purchaseStatus=?5) "+
+                    "and (?6 is null or trim(?6)='' or m.purchaseGb=?6) "
                         , Lspchd.class);
-        query.setParameter(1, startDt).setParameter(2, endDt);
-//                .setParameter(3, param.get(StringFactory.getStrPurchaseVendorId()))
-//                .setParameter(4, param.get(StringFactory.getStrPurchaseStatus()))
-//                .setParameter(5, param.get(StringFactory.getStrAssortId()));
+        query.setParameter(1, startDt).setParameter(2, endDt)
+                .setParameter(3,purchaseVendorId).setParameter(4,assortId)
+                .setParameter(5,purchaseStatus).setParameter(6,purchaseGb);
         List<Lspchd> lspchdList = query.getResultList();
         Lspchm lspchm = null;
         if(lspchdList.size() > 0){
@@ -782,7 +780,7 @@ public class JpaPurchaseService {
         Lspchm lspchm = new Lspchm(purchaseNo);
         lspchm.setDealtypeCd(StringFactory.getGbOne()); // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정 주문발주 (01 하드코딩)
         // lspchm의 purchaseRemark, siteOrderNo, storeCd, oStoreCd set 해주기
-        lspchm.setPurchaseRemark(Long.toString(receiveLsdpsm.getRegId()));
+        lspchm.setPurchaseRemark(receiveLsdpsm.getRegId());
         lspchm.setSiteOrderNo(tbOrderMaster.getChannelOrderNo());
 
         Lspchs lspchs = new Lspchs(lspchm);
@@ -807,7 +805,7 @@ public class JpaPurchaseService {
     /**
      * 상품이동 저장시 생성되는 발주 data를 만드는 함수
      */
-    public void makePurchaseDataFromGoodsMoveSave(long regId, GoodsMoveSaveData goodsMoveSaveData, List<GoodsMoveSaveData.Goods> newGoodsList) {
+    public void makePurchaseDataFromGoodsMoveSave(String regId, GoodsMoveSaveData goodsMoveSaveData, List<GoodsMoveSaveData.Goods> newGoodsList) {
         String purchaseNo = this.getPurchaseNo();
         List<GoodsMoveSaveData.Goods> goodsList = goodsMoveSaveData.getGoods();
 
@@ -815,7 +813,7 @@ public class JpaPurchaseService {
         Lspchm lspchm = new Lspchm(purchaseNo);
         lspchm.setDealtypeCd(StringFactory.getGbTwo()); // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정 주문발주 (02 하드코딩)
         // lspchm의 purchaseRemark, siteOrderNo, storeCd, oStoreCd set 해주기
-        lspchm.setPurchaseRemark(Long.toString(regId));
+        lspchm.setPurchaseRemark(regId);
 
         Lspchs lspchs = new Lspchs(lspchm);
         jpaLspchmRepository.save(lspchm);
