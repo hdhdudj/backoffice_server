@@ -449,6 +449,7 @@ public class JpaPurchaseService {
 
             purchase.setPurchaseDt(lspchm.getPurchaseDt());
             purchase.setPurchaseGb(lspchm.getPurchaseGb());
+            purchase.setPurchaseCost(lspchd.getPurchaseUnitAmt());
             purchase.setPurchaseStatus(lspchm.getPurchaseStatus());
             purchase.setOrderId(lspchd.getOrderId());
             purchase.setOrderSeq(lspchd.getOrderSeq());
@@ -487,13 +488,16 @@ public class JpaPurchaseService {
         purchaseSelectListResponseData.setPurchaseVendorId(lspchm.getPurchaseVendorId());
 
         for(Lsdpsp lsdpsp : lsdpspList){
+            if(lsdpsp.getPurchasePlanQty() == lsdpsp.getPurchaseTakeQty()){
+                continue;
+            }
             PurchaseSelectListResponseData.Purchase purchase = new PurchaseSelectListResponseData.Purchase(lspchm);
             purchase.setPurchaseNo(lsdpsp.getPurchaseNo());
             purchase.setPurchaseSeq(lsdpsp.getPurchaseSeq());
             purchase.setAssortId(lsdpsp.getAssortId());
             purchase.setItemId(lsdpsp.getItemId());
 
-            Itasrt itasrt = lsdpsp.getTbOrderDetail().getItasrt();//.getLsdpsd().getItasrt();
+            Itasrt itasrt = lsdpsp.getItasrt();//lsdpsp.getTbOrderDetail().getItasrt();//.getLsdpsd().getItasrt();
             purchase.setItemNm(itasrt.getAssortNm());
             int optionSize = itasrt.getItvariList().size();
             if(optionSize > 0){
@@ -510,6 +514,7 @@ public class JpaPurchaseService {
             long takeQty = lsdpsp.getPurchaseTakeQty() == null? 0l:lsdpsp.getPurchaseTakeQty();
             purchase.setAvailableQty(planQty - takeQty);
             purchase.setDepositQty(0l);
+            purchase.setPurchaseCost(lsdpsp.getLspchd().getPurchaseUnitAmt());
 
             purchaseList.add(purchase);
         }

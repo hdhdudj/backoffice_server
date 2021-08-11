@@ -34,7 +34,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -354,7 +353,7 @@ public class JpaDepositService {
      * 입고 리스트를 가져오는 함수 
      * @return
      */
-    public List<DepositSelectListResponseData> getList(HashMap<String, Object> param) {
+    public List<DepositSelectListResponseData> getList(String depositVendorId, String assortId, Date depositDt) {
         List<DepositSelectListResponseData> depositSelectListResponseDataList = new ArrayList<>();
         TypedQuery<Lsdpsd> query = em.createQuery("select ld from Lsdpsd ld " +
                         "join fetch ld.lsdpsm lm " +
@@ -369,10 +368,12 @@ public class JpaDepositService {
                         "and lm.depositVendorId like CONCAT('%',?3,'%') " +
                         "and ld.assortId like concat('%', ?4, '%')",
                 Lsdpsd.class);
-        query.setParameter(1, param.get("startDt"));
-        query.setParameter(2, param.get("endDt"));
-        query.setParameter(3, param.get("depositVendorId"));
-        query.setParameter(4, param.get("assortId"));
+//        query.setParameter(1, param.get("startDt"));
+//        query.setParameter(2, param.get("endDt"));
+//        query.setParameter(1, param.get("startDt"));
+//        query.setParameter(2, param.get("endDt"));
+//        query.setParameter(3, param.get("depositVendorId"));
+//        query.setParameter(4, param.get("assortId"));
         List<Lsdpsd> resultList = query.getResultList();
         for(Lsdpsd lsdpsd : resultList){
             DepositSelectListResponseData depositSelectListResponseData = new DepositSelectListResponseData(lsdpsd);

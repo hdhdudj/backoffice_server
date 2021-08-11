@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
+import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
@@ -112,6 +113,11 @@ public class Lsdpsp extends CommonProps implements Serializable {
             @JoinColumn(name = "orderSeq", referencedColumnName="orderSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
     })
     private TbOrderDetail tbOrderDetail;
+
+    // 연관 관계 itasrt
+    @ManyToOne
+    @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+    private Itasrt itasrt;
 
 //    // 연관 관계 : lsdpsd
 //    @OneToMany
