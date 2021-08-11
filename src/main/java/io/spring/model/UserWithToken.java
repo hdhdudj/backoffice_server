@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class UserWithToken {
+	private String id;
     private String email;
     private String username;
     private String bio;
@@ -12,6 +13,7 @@ public class UserWithToken {
 	private String refreshToken;
 
 	public UserWithToken(UserData userData, String token, String refreshToken) {
+		this.id = userData.getId();
         this.email = userData.getEmail();
         this.username = userData.getUsername();
         this.bio = userData.getBio();
