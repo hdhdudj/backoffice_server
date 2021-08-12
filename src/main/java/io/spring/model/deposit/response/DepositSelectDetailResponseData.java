@@ -18,7 +18,7 @@ public class DepositSelectDetailResponseData {
         this.depositNo = lsdpsm.getDepositNo();
         this.depositDt = lsdpsm.getDepositDt();
 //        this.storeCd = lsdpsm.getStoreCd();
-//        this.depositVendorId = lsdpsm.getDepositVendorId();
+        this.purchaseVendorId = lsdpsm.getVendorId();
     }
     private String depositNo;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")

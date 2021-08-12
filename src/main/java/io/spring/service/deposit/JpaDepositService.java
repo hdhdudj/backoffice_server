@@ -312,7 +312,10 @@ public class JpaDepositService {
      * @return
      */
     public DepositSelectDetailResponseData getDetail(String depositNo){
-        TypedQuery<Lsdpsd> query = em.createQuery("select d from Lsdpsd d left join fetch d.lsdpsp p left join fetch d.lsdpsm m left join fetch d.lsdpds s " +
+        TypedQuery<Lsdpsd> query = em.createQuery("select d from Lsdpsd d " +
+                "left join fetch d.lsdpsp p " +
+//                "left join fetch d.lsdpsm m " +
+//                "left join fetch d.lsdpds s " +
                 "where d.depositNo=?1", Lsdpsd.class);
         query.setParameter(1, depositNo);
         List<Lsdpsd> lsdpsdList = query.getResultList();
