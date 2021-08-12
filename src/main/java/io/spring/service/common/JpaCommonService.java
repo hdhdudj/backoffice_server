@@ -4,6 +4,7 @@ import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.common.JpaTestenum2Repository;
 import io.spring.model.common.entity.Testenum2;
+import io.spring.model.goods.entity.Ititmc;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 
 @Slf4j
@@ -64,5 +66,4 @@ public class JpaCommonService {
 
 		return r.longValue();
 	}
-
 }

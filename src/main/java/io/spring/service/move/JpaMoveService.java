@@ -22,6 +22,7 @@ import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import io.spring.model.ship.entity.Lsshps;
+import io.spring.service.common.JpaCommonService;
 import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class JpaMoveService {
+//    private final JpaCommonService jpaCommonService;
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
     private final JpaItitmcRepository jpaItitmcRepository;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
@@ -296,9 +298,9 @@ public class JpaMoveService {
     }
 
     /**
-     * 상품이동지시 저장시 ititmc의 qty 값을 변경
+     * 상품이동지시 저장시 ititmc의 qty 값을 변경 (출고에서도 사용)
      */
-    private List<Ititmc> calcItitmcQty(List<Ititmc> ititmcList, long shipQty) {
+    public List<Ititmc> calcItitmcQty(List<Ititmc> ititmcList, long shipQty) {
         List<Ititmc> newItitmcList = new ArrayList<>();
         long ititmcShipIndQty = this.getItitmcShipIndQtyByStream(ititmcList);
         long ititmcQty = this.getItitmcQtyByStream(ititmcList);
@@ -307,48 +309,24 @@ public class JpaMoveService {
         }
         for(Ititmc ititmc : ititmcList){
             newItitmcList.add(ititmc);
-            long qty = ititmc.getQty() == null? 0l:ititmc.getQty();
-            long shipIndQty = ititmc.getShipIndicateQty() == null? 0l:ititmc.getShipIndicateQty();
-            long canShipQty = qty - shipIndQty;
-            if(canShipQty <= 0){
+            long qty = ititmc.getQty() == null? 0l:ititmc.getQty(); // 재고량
+            long shipIndQty = ititmc.getShipIndicateQty() == null? 0l:ititmc.getShipIndicateQty(); // 출고예정량
+            long canShipQty = qty - shipIndQty; // 출고가능량
+            if(canShipQty <= 0){ // 출고 불가
                 continue;
             }
-            if(shipQty <= canShipQty){
+            if(shipQty <= canShipQty){ // 이 차례에서 출고 완료 가능
                 ititmc.setShipIndicateQty(shipIndQty + shipQty);
                 jpaItitmcRepository.save(ititmc);
                 break;
             }
-            else{
+            else{ // 이 차례에선 출고 풀로 했는데 아직도 출고해야 할 양이 남음
                 shipQty -= canShipQty;
                 ititmc.setShipIndicateQty(qty);
                 jpaItitmcRepository.save(ititmc);
             }
         }
         return newItitmcList;
-    }
-
-    /**
-     * ititmc list의 shipIndQty를 다 더해서 반환하는 함수
-     */
-    private long getItitmcShipIndQtyByStream(List<Ititmc> ititmcList){
-        return ititmcList.stream().map(x-> {
-                    if (x.getShipIndicateQty() == null) {
-                        return 0l;
-                    } else {
-                        return x.getShipIndicateQty();
-                    }}).reduce((a,b)->a+b).get();
-    }
-
-    /**
-     * ititmc list의 qty를 다 더해서 반환하는 함수
-     */
-    private long getItitmcQtyByStream(List<Ititmc> ititmcList){
-        return ititmcList.stream().map(x-> {
-            if (x.getQty() == null) {
-                return 0l;
-            } else {
-                return x.getQty();
-            }}).reduce((a,b)->a+b).get();
     }
 
     /**
@@ -385,6 +363,29 @@ public class JpaMoveService {
         return goodsRow;
     }
 
+    /**
+     * ititmc list의 shipIndQty를 다 더해서 반환하는 함수 (move와 ship에서 사용)
+     */
+    public long getItitmcShipIndQtyByStream(List<Ititmc> ititmcList){
+        return ititmcList.stream().map(x-> {
+            if (x.getShipIndicateQty() == null) {
+                return 0l;
+            } else {
+                return x.getShipIndicateQty();
+            }}).reduce((a,b)->a+b).get();
+    }
+
+    /**
+     * ititmc list의 qty를 다 더해서 반환하는 함수 (move와 ship에서 사용)
+     */
+    public long getItitmcQtyByStream(List<Ititmc> ititmcList){
+        return ititmcList.stream().map(x-> {
+            if (x.getQty() == null) {
+                return 0l;
+            } else {
+                return x.getQty();
+            }}).reduce((a,b)->a+b).get();
+    }
     /**
      * goods 정보를 받아 입고 data (lsshpd) 생성하는 함수
      */

@@ -20,6 +20,7 @@ import io.spring.model.ship.entity.Lsshps;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
 import io.spring.model.ship.response.ShipIndicateListData;
 import io.spring.model.ship.response.ShipIndicateSaveListResponseData;
+import io.spring.service.common.JpaCommonService;
 import io.spring.service.move.JpaMoveService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class JpaShipService {
+    private final JpaCommonService jpaCommonService;
     private final JpaMoveService jpaMoveService;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
@@ -110,16 +112,20 @@ public class JpaShipService {
 //        String assortNm = shipIndicateSaveDataList.getAssortNm();
         List<TbOrderDetail> tbOrderDetailList = this.makeTbOrderDetailByShipIndicateSaveListData(shipIndicateSaveListData);
         List<String> shipIdList = new ArrayList<>();
-        List<Lsdpsd> lsdpsdList = new ArrayList<>();
+//        List<Lsdpsd> lsdpsdList = new ArrayList<>();
         for (int i = 0; i < tbOrderDetailList.size(); i++) {
-            Lsdpsd lsdpsd = tbOrderDetailList.get(i).getLspchd().get(0).getLsdpsd();
-            lsdpsdList.add(lsdpsd);
+//            Lsdpsd lsdpsd = tbOrderDetailList.get(i).getLspchd().get(0).getLsdpsd();
+//            lsdpsdList.add(lsdpsd);
+            TbOrderDetail tbOrderDetail = tbOrderDetailList.get(i);
             ShipIndicateSaveListData.Ship ship = shipIndicateSaveListData.getShips().get(i);
             if(ship.getQty() > tbOrderDetailList.get(i).getQty()){
                 log.debug("주문량보다 더 많이 출고할 수 없습니다.");
                 continue;
             }
-            String shipId = this.makeShipData(lsdpsd, ship, StringFactory.getGbFour()); // 01 : 이동지시, 04 : 출고
+
+            List<Ititmc> ititmcList = jpaItitmcRepository.findByOrderIdAndOrderSeqOrderByEffEndDtAsc(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
+            ititmcList = this.calcItitmcQties(ititmcList, ship.getQty()); // 주문량만큼 출고차감
+            String shipId = this.makeShipData(null, ship, StringFactory.getGbFour()); // 01 : 이동지시, 04 : 출고
             if(shipId != null){shipIdList.add(shipId);}
         }
         // 1. 입고 data 수량계산
@@ -127,6 +133,21 @@ public class JpaShipService {
         // 2. 출고 data 생성
         // 2. tbOrderDetail
         return shipIdList;
+    }
+
+    /**
+     * ititmc의 qty 들에서 주문량만큼을 차감해주는 함수 
+     */
+    private List<Ititmc> calcItitmcQties(List<Ititmc> ititmcList, long shipIndQty) {
+        long ititmcQty = jpaMoveService.getItitmcQtyByStream(ititmcList); // 해당 ititmc 리스트의 총 재고수량
+        long ititmcShipIndQty = jpaMoveService.getItitmcShipIndQtyByStream(ititmcList); // 해당 ititmc 리스트의 총 출고예정수량
+        long shipAvailQty = ititmcQty - ititmcShipIndQty;
+        if(shipAvailQty < shipIndQty){ // ititmc에 있는 해당 상품 총량보다 주문량이 많은 경우
+            log.debug("주문량이 출고가능 재고량보다 많습니다. 출고가능 재고량 : " + shipAvailQty + ", 주문량 : " + shipIndQty);
+            return ititmcList;
+        }
+        ititmcList = jpaMoveService.calcItitmcQty(ititmcList, shipIndQty);
+        return ititmcList;
     }
 
     /**
