@@ -59,15 +59,15 @@ public class JpaShipService {
      * 출고지시 화면에서 검색 조건에 따른 tbOrderDetail 객체를 가져오는 쿼리를 실행해 결과를 반환하는 함수
      */
     private List<TbOrderDetail> getOrdersByCondition(Date startDt, Date endDt, String assortId, String assortNm, String vendorId) {
-        startDt = startDt == null? Utilities.getStringToDate(StringFactory.getStartDay()) : startDt;
-        endDt = endDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()) : endDt;
+        startDt = startDt == null? Utilities.getStringToDate(StringFactory.getStartDay()) : Utilities.addHoursToJavaUtilDate(startDt,0);
+        endDt = endDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()) : Utilities.addHoursToJavaUtilDate(startDt,24);
         TypedQuery<TbOrderDetail> query = em.createQuery("select td from TbOrderDetail td " +
                 "join fetch td.tbOrderMaster to " +
                 "join fetch td.itasrt it " +
                 "where to.orderDate between ?1 and ?2 " +
                 "and (?3 is null or trim(?3)='' or td.assortId=?3) "+
                 "and (?4 is null or trim(?4)='' or it.vendorId=?4) "+
-                "and (?5 is null or trim(?5)='' or it.assortNm like ?5)"
+                "and (?5 is null or trim(?5)='' or it.assortNm like concat('%', ?5, '%'))"
                 , TbOrderDetail.class);
         query.setParameter(1,startDt).setParameter(2,endDt)
         .setParameter(3,assortId).setParameter(4,vendorId)
@@ -120,7 +120,22 @@ public class JpaShipService {
      * 출고지시리스트 화면에서 list를 불러오는 함수
      */
     public ShipIndicateListData getShipList(Date startDt, Date endDt, String shipId, String assortId, String assortNm, String vendorId) {
-        return null;
+        ShipIndicateListData shipIndicateListData = new ShipIndicateListData(startDt,endDt,shipId,assortId,assortNm,vendorId);
+        TypedQuery<TbOrderDetail> query = em.createQuery("select td from TbOrderDetail td " +
+                        "join fetch td.tbOrderMaster tm " +
+                        "join fetch tm.itasrt it "+
+                        "where tm.orderDate between ?1 and ?2 " +
+                        "and (?3 is null or trim(?3)='' or td.assortId=?3) " +
+                        "and (?4 is null or trim(?4)='' or it.assortNm is like concat('%', ?4, '%')))"
+                ,TbOrderDetail.class);
+        List<TbOrderDetail> tbOrderDetailList = query.getResultList();
+        List<ShipIndicateListData.Ship> shipList = new ArrayList<>();
+        for(TbOrderDetail tbOrderDetail:tbOrderDetailList){
+            ShipIndicateListData.Ship ship = new ShipIndicateListData.Ship(tbOrderDetail);
+            shipList.add(ship);
+        }
+        shipIndicateListData.setShips(shipList);
+        return shipIndicateListData;
     }
 
     /**

@@ -1,6 +1,7 @@
 package io.spring.model.ship.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.spring.model.order.entity.TbOrderDetail;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,14 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShipIndicateListData {
+    public ShipIndicateListData(Date startDt, Date endDt, String shipId, String assortId, String assortNm, String vendorId){
+        this.startDt = startDt;
+        this.endDt = endDt;
+        this.shipId = shipId;
+        this.assortId = assortId;
+        this.assortNm = assortNm;
+        this.vendorId = vendorId;
+    }
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private Date startDt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
@@ -23,13 +32,16 @@ public class ShipIndicateListData {
     private String shipId;
     private String assortId;
     private String assortNm;
-    private String purchaseVendorId;
+    private String vendorId;
     private List<Ship> ships;
 
     @Getter
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Ship{
+        public Ship(TbOrderDetail tbOrderDetail){
+
+        }
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
         private Date shipDt;
         private String shipId;
