@@ -6,6 +6,7 @@ import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.ship.request.ShipIndicateSaveListData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +24,9 @@ import java.util.Date;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "lsshpm")
 public class Lsshpm extends CommonProps {
-    // 주문이동지시 저장, 출고 시 실행되는 생성자
+    /**
+     * 주문이동지시 저장, 출고 시 실행되는 생성자
+     */
     public Lsshpm(String shipId, Itasrt itasrt, TbOrderDetail tbOrderDetail){
         this.shipId = shipId;
         this.shipOrderGb = StringFactory.getGbOne(); // 01 하드코딩
@@ -45,8 +48,10 @@ public class Lsshpm extends CommonProps {
         this.deliCompanyCd = null;
         this.orderId = tbOrderDetail.getOrderId();
     }
-    
-    // 상품이동지시 저장시 실행되는 생성자
+
+    /**
+     * 상품이동지시 저장시 실행되는 생성자
+     */
     public Lsshpm(String shipId){
         this.shipId = shipId;
         this.shipOrderGb = StringFactory.getGbOne(); // 01 하드코딩
@@ -67,6 +72,15 @@ public class Lsshpm extends CommonProps {
 //        this.itemGrade : 11로 고정. 해당 객체에서는 정상품만 다룸.
         this.deliCompanyCd = null;
     }
+
+    /**
+     * 출고 - 출고지시 : 출고지시 저장시 실행되는 생성자
+     */
+    public Lsshpm(String shipId, ShipIndicateSaveListData shipIndicateSaveDataList) {
+        this.shipId = shipId;
+//        this.shipOrderGb = shipIndicateSaveDataList.
+    }
+
     @Id
     private String shipId;
     private String shipOrderGb;

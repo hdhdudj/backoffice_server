@@ -11,6 +11,9 @@ import lombok.Setter;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 입고 - 입고내역 : 입고 내역 DTO
+ */
 @Getter
 @Setter
 public class DepositSelectDetailResponseData {
@@ -42,6 +45,7 @@ public class DepositSelectDetailResponseData {
 //            this.itemGrade = lsdpsd.getItemGrade();
             this.itemId = lsdpsd.getItemId();
             this.extraUnitcost = lsdpsd.getExtraUnitcost();
+            this.purchaseGb = lsdpsd.getLspchd().getLspchm().getPurchaseGb();
         }
         private String depositNo;
         private String depositSeq;
@@ -51,6 +55,7 @@ public class DepositSelectDetailResponseData {
         private String purchaseSeq;
         private String assortId;
         private String itemId;
+        private String purchaseGb;
         private String itemNm;
         private String optionNm1;
         private String optionNm2;

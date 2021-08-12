@@ -83,6 +83,8 @@ public class StringFactory {
     private final static String strAt = "@";
     @Getter
     private final static String splitGb = "\\^\\|\\^";
+    @Getter
+    private final static String strDash = "-";
     
     // 주문 상태코드
     @Getter

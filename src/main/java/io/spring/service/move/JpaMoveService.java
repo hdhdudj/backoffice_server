@@ -168,11 +168,11 @@ public class JpaMoveService {
 
         ititmc.setShipIndicateQty(ititmc.getShipIndicateQty() + qty);
         jpaItitmcRepository.save(ititmc);
-        TbOrderMaster tbOrderMaster = lsdpsd.getLsdpsp().get(0).getTbOrderDetail().getTbOrderMaster();
+        TbOrderMaster tbOrderMaster = lsdpsd.getLspchd().getLsdpsp().get(0).getTbOrderDetail().getTbOrderMaster();
 
 
         for (int i = 0; i < qty; i++) {
-            TbOrderDetail tbOrderDetail = lsdpsd.getLsdpsp().get(i).getTbOrderDetail();
+            TbOrderDetail tbOrderDetail = lsdpsd.getLspchd().getLsdpsp().get(i).getTbOrderDetail();
             // lsshpm 저장
             Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail);
             lsshpm.setShipStatus(shipStatus); // 01 : 이동지시, 04 : 출고
@@ -181,7 +181,7 @@ public class JpaMoveService {
             // lsshps 저장
             Lsshps lsshps = new Lsshps(lsshpm);
             jpaLsshpsRepository.save(lsshps);
-            Lsdpsp lsdpsp = lsdpsd.getLsdpsp().get(i);
+            Lsdpsp lsdpsp = lsdpsd.getLspchd().getLsdpsp().get(i);
             // lsshpd 저장
             String shipSeq = StringUtils.leftPad(Integer.toString(i + 1), 4,'0');
             Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, lsdpsp, tbOrderDetail, ititmc, itasrt);

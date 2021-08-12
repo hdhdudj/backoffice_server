@@ -313,7 +313,8 @@ public class JpaDepositService {
      */
     public DepositSelectDetailResponseData getDetail(String depositNo){
         TypedQuery<Lsdpsd> query = em.createQuery("select d from Lsdpsd d " +
-                "left join fetch d.lsdpsp p " +
+                "left join fetch d.lspchd lspchd " +
+                "left join fetch lspchd.lsdpsp lsdpsp " +
 //                "left join fetch d.lsdpsm m " +
 //                "left join fetch d.lsdpds s " +
                 "where d.depositNo=?1", Lsdpsd.class);
@@ -340,7 +341,7 @@ public class JpaDepositService {
 //            item.setPurchaseNo(lsdpsd.getLsdpsp().getPurchaseNo());
 //            item.setPurchaseSeq(lsdpsd.getLsdpsp().getPurchaseSeq());
 //            item.setDepositQty(lsdpsd.getLsdpsp().getPurchasePlanQty());
-            Date doomDay = Utilities.getStringToDate(StringFactory.getDoomDay());
+//            Date doomDay = Utilities.getStringToDate(StringFactory.getDoomDay());
 //            Lsdpds lsdpds1 = lsdpsd.getLsdpds().stream().filter(x -> x.getEffEndDt().equals(doomDay)).collect(Collectors.toList()).get(0);
 //            item.setDepositStatus(lsdpds1.getDepositStatus());
             itemList.add(item);
@@ -395,7 +396,7 @@ public class JpaDepositService {
                 Itvari itvari2 = itvariList.get(1);
                 deposit.setOptionNm2(itvari2.getOptionNm());
             }
-            List<Lsdpsp> lsdpspList = lsdpsd.getLsdpsp();
+            List<Lsdpsp> lsdpspList = lsdpsd.getLspchd().getLsdpsp();
 //            lsdpspList.stream().filter(x->x.getPlanStatus().equals(StringFactory.getGbOne())).map(x->x.getq).reduce((a,b)->a+b).get();
             deposit.setDepositQty(lsdpsd.getDepositQty());
             //

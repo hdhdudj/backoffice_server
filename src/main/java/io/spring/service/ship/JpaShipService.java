@@ -2,9 +2,11 @@ package io.spring.service.ship;
 
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.goods.entity.Itvari;
 import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.ship.entity.Lsshpm;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
 import io.spring.model.ship.response.ShipIndicateListData;
 import io.spring.model.ship.response.ShipIndicateSaveListResponseData;
@@ -25,6 +27,7 @@ import java.util.List;
 @Slf4j
 public class JpaShipService {
     private final JpaMoveService jpaMoveService;
+    private final JpaSequenceDataRepository jpaSequenceDataRepository;
 
     private final EntityManager em;
 
@@ -85,13 +88,21 @@ public class JpaShipService {
         }
         List<String> shipIdList = new ArrayList<>();
         List<Lsdpsd> lsdpsdList = new ArrayList<>();
-        // 1. 출고 data 생성
-        for(ShipIndicateSaveListData.Ship ship : shipIndicateSaveDataList.getShips()){
-            String shipId = this.saveShipIndicateSaveData(lsdpsdList, ship);
-            shipIdList.add(shipId);
-        }
+        // 1. 입고 data 수량계산
+//        this.updateShipQty(shipIndicateSaveDataList);
+        // 2. 출고 data 생성
         // 2. tbOrderDetail
         return shipIdList;
+    }
+
+    /**
+     * Lsshpm, s 저장 함수
+     */
+    private Lsshpm insertShipData(ShipIndicateSaveListData shipIndicateSaveDataList) {
+        String shipId = this.getShipId();
+        Lsshpm lsshpm = new Lsshpm(shipId, shipIndicateSaveDataList);
+
+        return lsshpm;
     }
 
     /**
@@ -112,6 +123,12 @@ public class JpaShipService {
         return null;
     }
 
+    /**
+     * shipId 채번 함수
+     */
+    public String getShipId(){
+        return jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLsshpm());
+    }
 //    /**
 //     * orderId와 orderSeq로 를 가져오는 함수
 //     */

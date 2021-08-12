@@ -1,6 +1,7 @@
 package io.spring.model.deposit.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.spring.infrastructure.util.Utilities;
 import io.spring.model.deposit.entity.Lsdpsd;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -10,6 +11,9 @@ import lombok.Setter;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 입고 - 입고리스트 : 입고 리스트 DTO
+ */
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,10 +38,10 @@ public class DepositSelectListResponseData {
         public Deposit(Lsdpsd lsdpsd) {
             this.depositNo = lsdpsd.getDepositNo();
             this.depositSeq = lsdpsd.getDepositSeq();
-            this.depositKey = depositNo + "-" + depositSeq;
+            this.depositKey = Utilities.addDashInMiddle(this.depositNo, this.depositSeq);
             this.assortId = lsdpsd.getAssortId();
             this.itemId = lsdpsd.getItemId();
-            this.goodsKey = assortId + "-" + itemId;
+            this.goodsKey = Utilities.addDashInMiddle(this.assortId, this.itemId);
             this.extraUnitcost = lsdpsd.getExtraUnitcost();
             this.depositDt = lsdpsd.getLsdpsm().getDepositDt();
         }
