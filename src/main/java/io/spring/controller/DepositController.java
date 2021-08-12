@@ -104,8 +104,8 @@ public class DepositController {
                                          @RequestParam @Nullable String assortNm,
                                          @RequestParam @Nullable String purchaseVendorId){
 
-        List<DepositSelectListResponseData> depositSelectListResponseDataList = jpaDepositService.getList(purchaseVendorId, assortId, assortNm, depositDt);
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositSelectListResponseDataList);
+        DepositSelectListResponseData depositSelectListResponseData = jpaDepositService.getList(purchaseVendorId, assortId, assortNm, depositDt);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositSelectListResponseData);
         return ResponseEntity.ok(res);
     }
 

@@ -773,8 +773,8 @@ public class JpaPurchaseService {
      */
     public void makePurchaseDataFromOrderMoveSave(List<Lsdpsd> lsdpsdList, List<OrderMoveSaveData> orderMoveSaveData) {
         String purchaseNo = this.getPurchaseNo();
-        Lspchm receiveLsdpsm = lsdpsdList.get(0).getLsdpsp().getLspchd().getLspchm();
-        TbOrderMaster tbOrderMaster = lsdpsdList.get(0).getLsdpsp().getTbOrderDetail().getTbOrderMaster();
+        Lspchm receiveLsdpsm = lsdpsdList.get(0).getLsdpsp().get(0).getLspchd().getLspchm();
+        TbOrderMaster tbOrderMaster = lsdpsdList.get(0).getLsdpsp().get(0).getTbOrderDetail().getTbOrderMaster();
 
         // lspchm insert
         Lspchm lspchm = new Lspchm(purchaseNo);
@@ -791,7 +791,7 @@ public class JpaPurchaseService {
         int length = lsdpsdList.size();
         for (int i = 0; i < length ; i++) {
             Lsdpsd itemLsdpsd = lsdpsdList.get(i);
-            TbOrderDetail tbOrderDetail = itemLsdpsd.getLsdpsp().getTbOrderDetail();
+            TbOrderDetail tbOrderDetail = itemLsdpsd.getLsdpsp().get(i).getTbOrderDetail();
 
             String purchaseSeq = StringUtils.leftPad(Integer.toString(i+1),4,'0');
             Lspchd lspchd = new Lspchd(purchaseNo, purchaseSeq,

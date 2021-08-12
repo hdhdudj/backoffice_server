@@ -18,6 +18,7 @@ import io.spring.model.move.request.ShipIdAndSeq;
 import io.spring.model.move.response.GoodsMoveListData;
 import io.spring.model.move.response.OrderMoveListData;
 import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import io.spring.model.ship.entity.Lsshps;
@@ -167,20 +168,21 @@ public class JpaMoveService {
 
         ititmc.setShipIndicateQty(ititmc.getShipIndicateQty() + qty);
         jpaItitmcRepository.save(ititmc);
-        TbOrderDetail tbOrderDetail = lsdpsd.getLsdpsp().getTbOrderDetail();
+        TbOrderMaster tbOrderMaster = lsdpsd.getLsdpsp().get(0).getTbOrderDetail().getTbOrderMaster();
 
-        // lsshpm 저장
-        Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail);
-        lsshpm.setShipStatus(shipStatus); // 01 : 이동지시, 04 : 출고
-        jpaLsshpmRepository.save(lsshpm);
 
-        // lsshps 저장
-        Lsshps lsshps = new Lsshps(lsshpm);
-        jpaLsshpsRepository.save(lsshps);
-
-        // lsshpd 저장
-        Lsdpsp lsdpsp = lsdpsd.getLsdpsp();
         for (int i = 0; i < qty; i++) {
+            TbOrderDetail tbOrderDetail = lsdpsd.getLsdpsp().get(i).getTbOrderDetail();
+            // lsshpm 저장
+            Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail);
+            lsshpm.setShipStatus(shipStatus); // 01 : 이동지시, 04 : 출고
+            jpaLsshpmRepository.save(lsshpm);
+
+            // lsshps 저장
+            Lsshps lsshps = new Lsshps(lsshpm);
+            jpaLsshpsRepository.save(lsshps);
+            Lsdpsp lsdpsp = lsdpsd.getLsdpsp().get(i);
+            // lsshpd 저장
             String shipSeq = StringUtils.leftPad(Integer.toString(i + 1), 4,'0');
             Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, lsdpsp, tbOrderDetail, ititmc, itasrt);
 //            lsshpd.setShipIndicateQty(1l);
@@ -336,6 +338,7 @@ public class JpaMoveService {
                         return x.getShipIndicateQty();
                     }}).reduce((a,b)->a+b).get();
     }
+
     /**
      * ititmc list의 qty를 다 더해서 반환하는 함수
      */

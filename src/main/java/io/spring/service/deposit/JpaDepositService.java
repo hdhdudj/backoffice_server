@@ -354,17 +354,17 @@ public class JpaDepositService {
      * assortId가 null이거나 ""면 검색 조건에 미포함
      * assortNm은 like 검색
      */
-    public List<DepositSelectListResponseData> getList(String purchaseVendorId, String assortId, String assortNm, Date depositDt) {
-        List<DepositSelectListResponseData> depositSelectListResponseDataList = new ArrayList<>();
+    public DepositSelectListResponseData getList(String purchaseVendorId, String assortId, String assortNm, Date depositDt) {
+        List<DepositSelectListResponseData.Deposit> depositList = new ArrayList<>();
         TypedQuery<Lsdpsd> query = em.createQuery("select ld from Lsdpsd ld " +
                         "left join fetch ld.lsdpsm lm " +
-                        "left join fetch ld.lsdpsp lp " +
-                        "left join fetch ld.lsdpds ls " +
+//                        "left join fetch ld.lsdpsp lp " +
+//                        "left join fetch ld.lsdpds ls " +
                         "left join fetch ld.itasrt it " +
                         "left join fetch lm.cmvdmr cm " +
                         "left join fetch ld.ititmm im " +
-                        "left join fetch im.itvari1 iv1 " +
-                        "left join fetch im.itvari2 iv2 " +
+//                        "left join fetch im.itvari1 iv1 " +
+//                        "left join fetch im.itvari2 iv2 " +
                         "where lm.depositDt between ?1 and ?2 " +
                         "and (?3 is null or trim(?3)='' or it.assortId=?3) " +
                         "and (?4 is null or trim(?4)='' or it.assortNm like concat('%', ?4, '%')) " +
@@ -377,28 +377,30 @@ public class JpaDepositService {
 //        query.setParameter(4, param.get("assortId"));
         List<Lsdpsd> resultList = query.getResultList();
         for(Lsdpsd lsdpsd : resultList){
-            DepositSelectListResponseData depositSelectListResponseData = new DepositSelectListResponseData(lsdpsd);
-            depositSelectListResponseData.setDepositVendorId(lsdpsd.getLsdpsm().getDepositVendorId());
-            depositSelectListResponseData.setVdNm(lsdpsd.getLsdpsm().getCmvdmr().getVdNm());
+            DepositSelectListResponseData.Deposit deposit = new DepositSelectListResponseData.Deposit(lsdpsd);
+            deposit.setPurchaseVendorId(lsdpsd.getLsdpsm().getVendorId());
+            deposit.setVdNm(lsdpsd.getLsdpsm().getCmvdmr().getVdNm());
             Itasrt itasrt = lsdpsd.getItasrt();
             List<Itvari> itvariList = itasrt.getItvariList();
-            depositSelectListResponseData.setAssortNm(itasrt.getAssortNm());
+            deposit.setAssortNm(itasrt.getAssortNm());
             if(itvariList.size() > 0){
                 Itvari itvari1 = itvariList.get(0);
-                depositSelectListResponseData.setOptionNm1(itvari1.getOptionNm());
+                deposit.setOptionNm1(itvari1.getOptionNm());
             }
             if(itvariList.size() > 1){
                 // 2 depth 주의...
                 Itvari itvari2 = itvariList.get(1);
-                depositSelectListResponseData.setOptionNm2(itvari2.getOptionNm());
+                deposit.setOptionNm2(itvari2.getOptionNm());
             }
             List<Lsdpsp> lsdpspList = lsdpsd.getLsdpsp();
-            lsdpspList.stream().filter(x->x.getPlanStatus().equals(StringFactory.getGbOne())).reduce((a,b)->a+b).get();
-            depositSelectListResponseData.setDepositQty();
+//            lsdpspList.stream().filter(x->x.getPlanStatus().equals(StringFactory.getGbOne())).map(x->x.getq).reduce((a,b)->a+b).get();
+            deposit.setDepositQty(lsdpsd.getDepositQty());
             //
-            depositSelectListResponseDataList.add(depositSelectListResponseData);
+            depositList.add(deposit);
         }
-        return depositSelectListResponseDataList;
+        DepositSelectListResponseData depositSelectListResponseData = new DepositSelectListResponseData(depositDt, assortId, assortNm, purchaseVendorId);
+        depositSelectListResponseData.setDepositList(depositList);
+        return depositSelectListResponseData;
     }
 
     /**

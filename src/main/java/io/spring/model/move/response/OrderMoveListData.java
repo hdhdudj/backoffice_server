@@ -2,8 +2,6 @@ package io.spring.model.move.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.spring.model.deposit.entity.Lsdpsd;
-import io.spring.model.goods.entity.Itasrt;
-import io.spring.model.order.entity.TbOrderDetail;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,15 +21,15 @@ public class OrderMoveListData {
 
         this.depositDt = lsdpsd.getLsdpsm().getDepositDt();
 
-        TbOrderDetail tbOrderDetail = lsdpsd.getLsdpsp().getTbOrderDetail();
-        this.orderId = tbOrderDetail.getOrderId();
-        this.orderSeq = tbOrderDetail.getOrderSeq();
-        this.deliMethod = tbOrderDetail.getDeliMethod();
-        this.qty = tbOrderDetail.getQty();
+//        TbOrderDetail tbOrderDetail = lsdpsd.getLsdpsp().getTbOrderDetail();
+//        this.orderId = tbOrderDetail.getOrderId();
+//        this.orderSeq = tbOrderDetail.getOrderSeq();
+//        this.deliMethod = tbOrderDetail.getDeliMethod();
+//        this.qty = tbOrderDetail.getQty();
 
-        Itasrt itasrt = tbOrderDetail.getItasrt();
-        this.assortNm = itasrt.getAssortNm();
-        this.optionNm = itasrt.getItvariList().get(0).getOptionNm();
+//        Itasrt itasrt = tbOrderDetail.getItasrt();
+//        this.assortNm = itasrt.getAssortNm();
+//        this.optionNm = itasrt.getItvariList().get(0).getOptionNm();
     }
 
     // lsdpsd
