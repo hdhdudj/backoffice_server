@@ -11,7 +11,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.flywaydb.core.internal.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+//import org.flywaydb.core.internal.util.StringUtils;
 
 import javax.persistence.*;
 import java.util.Date;

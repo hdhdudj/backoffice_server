@@ -26,7 +26,8 @@ import io.spring.service.order.JpaOrderService;
 import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.flywaydb.core.internal.util.StringUtils;
+//import org.flywaydb.core.internal.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

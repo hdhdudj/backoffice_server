@@ -1,7 +1,8 @@
 package io.spring.infrastructure.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.flywaydb.core.internal.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+//import org.flywaydb.core.internal.util.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
