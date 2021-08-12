@@ -34,16 +34,25 @@ public class DepositSelectListResponseData {
         public Deposit(Lsdpsd lsdpsd) {
             this.depositNo = lsdpsd.getDepositNo();
             this.depositSeq = lsdpsd.getDepositSeq();
+            this.depositKey = depositNo + "-" + depositSeq;
             this.assortId = lsdpsd.getAssortId();
             this.itemId = lsdpsd.getItemId();
+            this.goodsKey = assortId + "-" + itemId;
             this.extraUnitcost = lsdpsd.getExtraUnitcost();
+            this.depositDt = lsdpsd.getLsdpsm().getDepositDt();
         }
+        private String depositKey;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        private Date depositDt;
+        public String purchaseNo;
+        private String purchaseSeq;
+        private String assortId;
+        private String itemId;
+        private String goodsKey;
         private String depositNo;
         private String depositSeq;
         private String purchaseVendorId;
         private String vdNm;
-        private String assortId;
-        private String itemId;
         private String assortNm;
         private String optionNm1;
         private String optionNm2;

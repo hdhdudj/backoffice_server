@@ -21,7 +21,7 @@ public class DepositSelectDetailResponseData {
         this.purchaseVendorId = lsdpsm.getVendorId();
     }
     private String depositNo;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private Date depositDt;
     private String purchaseVendorId;
 //    private String storeCd;
@@ -37,6 +37,7 @@ public class DepositSelectDetailResponseData {
             // lsdpsd
             this.depositNo = lsdpsd.getDepositNo();
             this.depositSeq = lsdpsd.getDepositSeq();
+            this.depositDt = lsdpsd.getLsdpsm().getDepositDt();
             this.assortId = lsdpsd.getAssortId();
 //            this.itemGrade = lsdpsd.getItemGrade();
             this.itemId = lsdpsd.getItemId();
@@ -44,6 +45,8 @@ public class DepositSelectDetailResponseData {
         }
         private String depositNo;
         private String depositSeq;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        private Date depositDt;
         public String purchaseNo;
         private String purchaseSeq;
         private String assortId;
