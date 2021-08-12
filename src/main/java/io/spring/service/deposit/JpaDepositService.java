@@ -9,7 +9,6 @@ import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.purchase.JpaLspchmRepository;
-import io.spring.model.common.entity.SequenceData;
 import io.spring.model.deposit.entity.*;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
@@ -18,6 +17,7 @@ import io.spring.model.deposit.response.DepositSelectListResponseData;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
+import io.spring.model.goods.entity.Itvari;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.entity.Lspchd;
@@ -33,7 +33,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -56,23 +58,23 @@ public class JpaDepositService {
     private final JpaOrderService jpaOrderService;
     private final EntityManager em;
 
-    @Transactional
-    public String sequenceInsertDeposit(DepositInsertRequestData depositInsertRequestData){
-        Lsdpsm lsdpsm = this.saveLsdpsm(depositInsertRequestData);// lsdpsm (입고 마스터)
-        List<Lsdpsd> lsdpsdList = this.saveLsdpsd(depositInsertRequestData);// lsdpsd (입고 디테일)
-        this.saveLsdpss(depositInsertRequestData);// lsdpss (입고 마스터 이력)
-        this.saveLsdpds(depositInsertRequestData);// lsdpds (입고 디테일 이력)
-        List<Lsdpsp> lsdpspList = this.saveLsdpsp(depositInsertRequestData);// lsdpsp (입고 예정)
-        List<Ititmc> ititmcList = this.saveItitmc(depositInsertRequestData);// ititmc (상품 재고)
-        List<Ititmt> ititmtList = this.saveItitmt(depositInsertRequestData);// ititmt (입고예정재고)
-        return depositInsertRequestData.getDepositNo();
-    }
+//    @Transactional
+//    public String sequenceInsertDeposit(DepositInsertRequestData depositInsertRequestData){
+//        Lsdpsm lsdpsm = this.saveLsdpsm(depositInsertRequestData);// lsdpsm (입고 마스터)
+//        List<Lsdpsd> lsdpsdList = this.saveLsdpsd(depositInsertRequestData);// lsdpsd (입고 디테일)
+//        this.insertLsdpss(depositInsertRequestData);// lsdpss (입고 마스터 이력)
+//        this.ssaveLsdpds(depositInsertRequestData);// lsdpds (입고 디테일 이력)
+//        List<Lsdpsp> lsdpspList = this.saveLsdpsp(depositInsertRequestData);// lsdpsp (입고 예정)
+//        List<Ititmc> ititmcList = this.saveItitmc(depositInsertRequestData);// ititmc (상품 재고)
+//        List<Ititmt> ititmtList = this.saveItitmt(depositInsertRequestData);// ititmt (입고예정재고)
+//        return depositInsertRequestData.getDepositNo();
+//    }
 
     /**
-     * 발주조회 후 입고 데이터 저장
+     * 입고처리 화면에서 발주조회 후 입고 데이터 저장
      */
     @Transactional
-	public String sequenceInsertDeposit2(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
+	public String sequenceCreateDeposit(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
         // 0. lsdpsp, ititmc, ititmt의 수량 관련값 변경
         List<Lsdpsp> lsdpspList = this.updateDepositQty(depositListWithPurchaseInfoData);
         if(lsdpspList.size() == 0){
@@ -81,17 +83,24 @@ public class JpaDepositService {
         // 1. lsdpsm 저장
         Lsdpsm lsdpsm = this.insertLsdpsm(depositListWithPurchaseInfoData);
         // 2. lsdpss 저장 (입고 마스터 이력)
-        this.insertLsdpss(lsdpsm, depositListWithPurchaseInfoData);
+        this.saveLsdpss(lsdpsm, depositListWithPurchaseInfoData);
         // 3. lsdpsd 저장 (입고 디테일)
         List<Lsdpsd> lsdpsdList = this.insertLsdpsd(depositListWithPurchaseInfoData, lsdpsm);
         // 4. lsdpds 저장 (입고 디테일 이력)
-        this.insertLsdpds(lsdpsdList, depositListWithPurchaseInfoData);
+        this.saveLsdpds(lsdpsdList, depositListWithPurchaseInfoData);
         // 5. lsdpsp의 입고예정과 실제 입고량을 비교해 부분입고인지 완전입고인지 여부로 lspchm,b,s의 purchaseStatus 변경
         jpaPurchaseService.changePurchaseStatus(lsdpspList);
         // 8. tbOrderdetail 주문상태 변경 (lspchm.dealtypeCd = 01(주문발주) 일 때)
         this.changeStatusCdOfTbOrderDetail(lsdpspList);
 
         return lsdpsm.getDepositNo();
+    }
+
+    /**
+     * 입고처리 화면에서 발주조회 후 입고 데이터 수정
+     */
+    @Transactional
+    public void sequenceUpdateDeposit(DepositInsertRequestData depositInsertRequestData) {
     }
 
     private void changeStatusCdOfTbOrderDetail(List<Lsdpsp> lsdpspList) {
@@ -171,45 +180,59 @@ public class JpaDepositService {
         return lsdpsdList;
     }
 
-    private void saveLsdpss(DepositInsertRequestData depositInsertRequestData){
+    private void insertLsdpss(DepositInsertRequestData depositInsertRequestData){
         Lsdpss lsdpss = new Lsdpss(depositInsertRequestData);
         jpaLsdpssRepository.save(lsdpss);
     }
 
-    private Lsdpss insertLsdpss(Lsdpsm lsdpsm, DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
-        Lsdpss lsdpss = new Lsdpss(lsdpsm);
+    private Lsdpss saveLsdpss(Lsdpsm lsdpsm, DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
+        Lsdpss lsdpss = jpaLsdpssRepository.findByDepositNoAndEffEndDt(lsdpsm.getDepositNo(), Utilities.getStringToDate(StringFactory.getDoomDay()));
+        if(lsdpss == null){
+            lsdpss = new Lsdpss(lsdpsm);
+        }
+        else{
+            Lsdpss newLsdpss = new Lsdpss(lsdpsm);
+            jpaLsdpssRepository.save(newLsdpss);
+        }
         jpaLsdpssRepository.save(lsdpss);
         return lsdpss;
     }
 
-    private void saveLsdpds(DepositInsertRequestData depositInsertRequestData) {
-        for(DepositInsertRequestData.Item item : depositInsertRequestData.getItems()){
-            String depositSeq = jpaLsdpdsRepository.findMaxDepositSeqByDepositNo(depositInsertRequestData.getDepositNo());
-            if(depositSeq == null){
-                depositSeq = StringUtils.leftPad("1",4,'0');
-            }
-            else{
-                depositSeq = Utilities.plusOne(depositSeq, 4);
-            }
-            item.setDepositSeq(depositSeq);
-            Lsdpds lsdpds = new Lsdpds(depositInsertRequestData.getDepositNo(), item);
-            jpaLsdpdsRepository.save(lsdpds);
-        }
-    }
+//    private void ssaveLsdpds(DepositInsertRequestData depositInsertRequestData) {
+//        for(DepositInsertRequestData.Item item : depositInsertRequestData.getItems()){
+//            String depositSeq = jpaLsdpdsRepository.findMaxDepositSeqByDepositNo(depositInsertRequestData.getDepositNo());
+//            if(depositSeq == null){
+//                depositSeq = StringUtils.leftPad("1",4,'0');
+//            }
+//            else{
+//                depositSeq = Utilities.plusOne(depositSeq, 4);
+//            }
+//            item.setDepositSeq(depositSeq);
+//            Lsdpds lsdpds = new Lsdpds(depositInsertRequestData.getDepositNo(), item);
+//            jpaLsdpdsRepository.save(lsdpds);
+//        }
+//    }
 
-    private List<Lsdpds> insertLsdpds(List<Lsdpsd> lsdpsdList, DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
+    private void saveLsdpds(List<Lsdpsd> lsdpsdList, DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
         int ind = lsdpsdList.size();
         List<DepositListWithPurchaseInfoData.Deposit> depositList = depositListWithPurchaseInfoData.getDeposits();
         List<Lsdpds> lsdpdsList = new ArrayList<>();
         for (int i = 0; i < ind ; i++) {
-            if(depositList.get(i).getAvailableQty() < depositList.get(i).getDepositQty()){
+            Lsdpsd lsdpsd = lsdpsdList.get(i);
+            DepositListWithPurchaseInfoData.Deposit deposit = depositList.get(i);
+            if(deposit.getAvailableQty() < deposit.getDepositQty()){
                 continue;
             }
-            Lsdpds lsdpds = new Lsdpds(lsdpsdList.get(i), depositList.get(i));
-            lsdpdsList.add(lsdpds);
+            Lsdpds lsdpds = jpaLsdpdsRepository.findByDepositNoAndDepositSeqAndEffEndDt(lsdpsd.getDepositNo(), lsdpsd.getDepositSeq(), Utilities.getStringToDate(StringFactory.getDoomDay()));
+            if(lsdpds == null){
+                lsdpds = new Lsdpds(lsdpsd, deposit);
+            }
+            else {
+                Lsdpds newLsdpds = new Lsdpds(lsdpsd, deposit);
+                jpaLsdpdsRepository.save(newLsdpds);
+            }
             jpaLsdpdsRepository.save(lsdpds);
         }
-        return lsdpdsList;
     }
 
     private List<Lsdpsp> saveLsdpsp(DepositInsertRequestData depositInsertRequestData) {
@@ -290,10 +313,13 @@ public class JpaDepositService {
      * @return
      */
     public DepositSelectDetailResponseData getDetail(String depositNo){
-        TypedQuery<Lsdpsd> query = em.createQuery("select d from Lsdpsd d join fetch d.lsdpsp p join fetch d.lsdpsm m join fetch d.lsdpds s " +
-                "where d.depositNo=?1 and s.effEndDt=?2", Lsdpsd.class);
+        TypedQuery<Lsdpsd> query = em.createQuery("select d from Lsdpsd d " +
+                "left join fetch d.lspchd lspchd " +
+                "left join fetch lspchd.lsdpsp lsdpsp " +
+//                "left join fetch d.lsdpsm m " +
+//                "left join fetch d.lsdpds s " +
+                "where d.depositNo=?1", Lsdpsd.class);
         query.setParameter(1, depositNo);
-        query.setParameter(2, Utilities.getStringToDate(StringFactory.getDoomDay()));
         List<Lsdpsd> lsdpsdList = query.getResultList();
         if(lsdpsdList.size() == 0){
             log.debug("lsdpsdList is empty.");
@@ -302,12 +328,23 @@ public class JpaDepositService {
         List<DepositSelectDetailResponseData.Item> itemList = new ArrayList<>();
         for(Lsdpsd lsdpsd : lsdpsdList){
             DepositSelectDetailResponseData.Item item = new DepositSelectDetailResponseData.Item(lsdpsd);
-            item.setPurchaseNo(lsdpsd.getLsdpsp().getPurchaseNo());
-            item.setPurchaseSeq(lsdpsd.getLsdpsp().getPurchaseSeq());
-            item.setDepositQty(lsdpsd.getLsdpsp().getPurchasePlanQty());
-            Date doomDay = Utilities.getStringToDate(StringFactory.getDoomDay());
-            Lsdpds lsdpds1 = lsdpsd.getLsdpds().stream().filter(x -> x.getEffEndDt().equals(doomDay)).collect(Collectors.toList()).get(0);
-            item.setDepositStatus(lsdpds1.getDepositStatus());
+            Itasrt itasrt = lsdpsd.getItasrt();
+            item.setItemNm(itasrt.getAssortNm());
+            List<Itvari> itvariList = itasrt.getItvariList();
+            if(itvariList.size() > 0){
+                Itvari itvari1 = itvariList.get(0);
+                item.setOptionNm1(itvari1.getOptionNm());
+            }
+            if(itvariList.size() > 1){
+                Itvari itvari2 = itvariList.get(1);
+                item.setOptionNm2(itvari2.getOptionNm());
+            }
+//            item.setPurchaseNo(lsdpsd.getLsdpsp().getPurchaseNo());
+//            item.setPurchaseSeq(lsdpsd.getLsdpsp().getPurchaseSeq());
+//            item.setDepositQty(lsdpsd.getLsdpsp().getPurchasePlanQty());
+//            Date doomDay = Utilities.getStringToDate(StringFactory.getDoomDay());
+//            Lsdpds lsdpds1 = lsdpsd.getLsdpds().stream().filter(x -> x.getEffEndDt().equals(doomDay)).collect(Collectors.toList()).get(0);
+//            item.setDepositStatus(lsdpds1.getDepositStatus());
             itemList.add(item);
         }
         Lsdpsm lsdpsm = lsdpsdList.get(0).getLsdpsm();
@@ -318,59 +355,57 @@ public class JpaDepositService {
     }
 
     /**
-     * Table 초기화 함수
+     * 입고 리스트를 가져오는 함수 (입고 - 입고리스트)
+     * assortId가 null이거나 ""면 검색 조건에 미포함
+     * assortNm은 like 검색
      */
-    public void init(){
-        Optional<SequenceData> op = jpaSequenceDataRepository.findById(StringFactory.getStrSeqLsdpsm());
-        SequenceData seq = op.get();
-        seq.setSequenceCurValue(StringFactory.getStrZero());
-        jpaSequenceDataRepository.save(seq);
-        jpaItitmcRepository.deleteAll();
-        jpaItitmtRepository.deleteAll();
-        jpaLsdpspRepository.deleteAll();
-        jpaLsdpdsRepository.deleteAll();
-        jpaLsdpssRepository.deleteAll();
-        jpaLsdpsmRepository.deleteAll();
-        jpaLsdpsdRepository.deleteAll();
-
-    }
-
-    /**
-     * 입고 리스트를 가져오는 함수 
-     * @return
-     */
-    public List<DepositSelectListResponseData> getList(HashMap<String, Object> param) {
-        List<DepositSelectListResponseData> depositSelectListResponseDataList = new ArrayList<>();
+    public DepositSelectListResponseData getList(String purchaseVendorId, String assortId, String assortNm, Date depositDt) {
+        List<DepositSelectListResponseData.Deposit> depositList = new ArrayList<>();
         TypedQuery<Lsdpsd> query = em.createQuery("select ld from Lsdpsd ld " +
-                        "join fetch ld.lsdpsm lm " +
-                        "join fetch ld.lsdpsp lp " +
-                        "join fetch ld.lsdpds ls " +
-                        "join fetch ld.itasrt it " +
-                        "join fetch lm.cmvdmr cm " +
+                        "left join fetch ld.lsdpsm lm " +
+//                        "left join fetch ld.lsdpsp lp " +
+//                        "left join fetch ld.lsdpds ls " +
+                        "left join fetch ld.itasrt it " +
+                        "left join fetch lm.cmvdmr cm " +
                         "left join fetch ld.ititmm im " +
-                        "left join fetch im.itvari1 iv1 " +
-                        "left join fetch im.itvari2 iv2 " +
+//                        "left join fetch im.itvari1 iv1 " +
+//                        "left join fetch im.itvari2 iv2 " +
                         "where lm.depositDt between ?1 and ?2 " +
-                        "and lm.depositVendorId like CONCAT('%',?3,'%') " +
-                        "and ld.assortId like concat('%', ?4, '%')",
+                        "and (?3 is null or trim(?3)='' or it.assortId=?3) " +
+                        "and (?4 is null or trim(?4)='' or it.assortNm like concat('%', ?4, '%')) " +
+                        "and (?5 is null or trim(?5)='' or lm.vendorId=?5)",
                 Lsdpsd.class);
-        query.setParameter(1, param.get("startDt"));
-        query.setParameter(2, param.get("endDt"));
-        query.setParameter(3, param.get("depositVendorId"));
-        query.setParameter(4, param.get("assortId"));
+        Date startDt = depositDt == null? Utilities.getStringToDate(StringFactory.getStartDay()):Utilities.addHoursToJavaUtilDate(depositDt,0);
+        Date endDt = depositDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()):Utilities.addHoursToJavaUtilDate(depositDt,24);
+        query.setParameter(1, startDt).setParameter(2, endDt).setParameter(3, assortId)
+        .setParameter(4, assortNm).setParameter(5, purchaseVendorId);
+//        query.setParameter(4, param.get("assortId"));
         List<Lsdpsd> resultList = query.getResultList();
         for(Lsdpsd lsdpsd : resultList){
-            DepositSelectListResponseData depositSelectListResponseData = new DepositSelectListResponseData(lsdpsd);
-            depositSelectListResponseData.setDepositVendorId(lsdpsd.getLsdpsm().getDepositVendorId());
-            depositSelectListResponseData.setVdNm(lsdpsd.getLsdpsm().getCmvdmr().getVdNm());
-            depositSelectListResponseData.setAssortNm(lsdpsd.getItasrt().getAssortNm());
-            // 2 depth 주의...
-            depositSelectListResponseData.setOptionNm2(lsdpsd.getItitmm().getItvari2().getOptionNm());
-            depositSelectListResponseData.setDepositQty(lsdpsd.getLsdpsp().getPurchaseTakeQty());
+            DepositSelectListResponseData.Deposit deposit = new DepositSelectListResponseData.Deposit(lsdpsd);
+            deposit.setPurchaseVendorId(lsdpsd.getLsdpsm().getVendorId());
+            deposit.setVdNm(lsdpsd.getLsdpsm().getCmvdmr().getVdNm());
+            Itasrt itasrt = lsdpsd.getItasrt();
+            List<Itvari> itvariList = itasrt.getItvariList();
+            deposit.setAssortNm(itasrt.getAssortNm());
+            if(itvariList.size() > 0){
+                Itvari itvari1 = itvariList.get(0);
+                deposit.setOptionNm1(itvari1.getOptionNm());
+            }
+            if(itvariList.size() > 1){
+                // 2 depth 주의...
+                Itvari itvari2 = itvariList.get(1);
+                deposit.setOptionNm2(itvari2.getOptionNm());
+            }
+            List<Lsdpsp> lsdpspList = lsdpsd.getLspchd().getLsdpsp();
+//            lsdpspList.stream().filter(x->x.getPlanStatus().equals(StringFactory.getGbOne())).map(x->x.getq).reduce((a,b)->a+b).get();
+            deposit.setDepositQty(lsdpsd.getDepositQty());
             //
-            depositSelectListResponseDataList.add(depositSelectListResponseData);
+            depositList.add(deposit);
         }
-        return depositSelectListResponseDataList;
+        DepositSelectListResponseData depositSelectListResponseData = new DepositSelectListResponseData(depositDt, assortId, assortNm, purchaseVendorId);
+        depositSelectListResponseData.setDepositList(depositList);
+        return depositSelectListResponseData;
     }
 
     /**
@@ -378,6 +413,7 @@ public class JpaDepositService {
      */
     public DepositListWithPurchaseInfoData getDepositListByPurchaseNo(String purchaseNo) {
         List<Lsdpsp> lsdpspList = jpaLsdpspRepository.findByPurchaseNo(purchaseNo);
+        lsdpspList = lsdpspList.stream().filter(x->x.getPlanStatus().equals(StringFactory.getGbOne())).collect(Collectors.toList());
         List<DepositListWithPurchaseInfoData.Deposit> depositList = new ArrayList<>();
         Lspchm lspchm = null;
         int i = 0;
@@ -406,7 +442,6 @@ public class JpaDepositService {
      * 입고 처리가능수량을 변경했을 때 수정하는 함수
      */
     private List<Lsdpsp> updateDepositQty(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
-        Date purchaseDt = depositListWithPurchaseInfoData.getPurchaseDt();
         String storageId = depositListWithPurchaseInfoData.getStorageId();
         List<Lsdpsp> lsdpspList = new ArrayList<>();
         for(DepositListWithPurchaseInfoData.Deposit deposit : depositListWithPurchaseInfoData.getDeposits()){
@@ -415,14 +450,16 @@ public class JpaDepositService {
             Long purchaseTakeQty = lsdpsp.getPurchaseTakeQty() == null? 0l : lsdpsp.getPurchaseTakeQty();;
             Long availableQty = purchasePlanQty - purchaseTakeQty;
             String dealtypeCd = lsdpsp.getDealtypeCd();
+//            boolean isOrderPurchase = dealtypeCd.equals(StringFactory.getGbOne()); // 주문발주
+//            boolean isPartDeposit = availableQty >= deposit.getDepositQty(); // 부분입고
+            boolean isCompleteDeposit = availableQty == deposit.getDepositQty(); // 완전입고
             boolean notGoodsPurchaseAndAvailableQty = availableQty >= deposit.getDepositQty() && !dealtypeCd.equals(StringFactory.getGbOne()); // 입고가능수량 >= 입력값 && 주문발주 아님
-            boolean orderPurchaseAndCompleteDeposit = availableQty == deposit.getDepositQty() && dealtypeCd.equals(StringFactory.getGbOne()); // 주문발주 && 완전입고
+            boolean orderPurchaseAndCompleteDeposit = isCompleteDeposit && dealtypeCd.equals(StringFactory.getGbOne());
             if(notGoodsPurchaseAndAvailableQty || orderPurchaseAndCompleteDeposit){ // '주문발주가 아니고 부분입고or완전입고' or '주문발주이고 완전입고'
                 lsdpsp.setPurchaseTakeQty(lsdpsp.getPurchaseTakeQty() + deposit.getDepositQty());
                 jpaLsdpspRepository.save(lsdpsp);
-                lsdpspList.add(lsdpsp);
             }
-            else if(availableQty != deposit.getDepositQty() && dealtypeCd.equals(StringFactory.getGbOne())){ // 주문발주인데 완전입고가 아닐 때
+            else if(availableQty != deposit.getDepositQty() && dealtypeCd.equals(StringFactory.getGbOne())){ // 주문발주인데 부분입고
                 log.debug("This purchase.dealtypeCd is 01, but this isn't complete deposit.");
                 continue;
             }
@@ -430,23 +467,49 @@ public class JpaDepositService {
                 log.debug("input qty is bigger than available qty.");
                 continue;
             }
-            if(dealtypeCd.equals(StringFactory.getGbOne())){ // 주문발주일 때만 찾아서 indQty 변경
-                this.saveItitmt(purchaseDt, storageId, deposit);
-            }
-            this.saveItitmc(purchaseDt, storageId, deposit);
+            Lspchm lspchm = lsdpsp.getLspchd().getLspchm();
+            Date purchaseDt = lspchm.getPurchaseDt();
+            lsdpsp = this.changeLsdpspStatus(lsdpsp, isCompleteDeposit);
+            lsdpspList.add(lsdpsp);
+            this.saveItitmt(purchaseDt, storageId, deposit, dealtypeCd);
+            this.saveItitmc(depositListWithPurchaseInfoData.getDepositDt(), storageId, deposit);
         }
         return lsdpspList;
     }
 
-    private Ititmc saveItitmc(Date purchaseDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit) {
-        Ititmc ititmc = new Ititmc(storageId, purchaseDt, deposit);
-        ititmc.setShipIndicateQty(deposit.getDepositQty());
+    /**
+     * 부분입고인 경우 lsdpsp의 내역이 입고만큼만 처리되고 나머지 수량은 신규로 생성시켜주는 함수
+     */
+    private Lsdpsp changeLsdpspStatus(Lsdpsp lsdpsp, boolean isCompleteDeposit) {
+        if(isCompleteDeposit){ // 완전 입고인 경우
+            lsdpsp.setPlanStatus(StringFactory.getGbFour()); // 04 하드코딩
+        }
+        else{
+            // 부분입고인 경우 : lsdpsp는 입고량 만큼 처리, 나머지 수량은 신규생성
+            long remainQty = lsdpsp.getPurchasePlanQty() - lsdpsp.getPurchaseTakeQty();
+            lsdpsp.setPurchasePlanQty(lsdpsp.getPurchaseTakeQty());
+            Lsdpsp newLsdpsp = new Lsdpsp(this.getDepositPlanId(), lsdpsp);
+            String newDepositPlanId = StringUtils.leftPad(jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLsdpsp()),9,'0');
+            newLsdpsp.setDepositPlanId(newDepositPlanId);
+            newLsdpsp.setPurchasePlanQty(remainQty);
+            newLsdpsp.setPurchaseTakeQty(0l);
+            lsdpsp.setPlanStatus(StringFactory.getGbFour());
+            jpaLsdpspRepository.save(newLsdpsp);
+            return newLsdpsp;
+        }
+        jpaLsdpspRepository.save(lsdpsp);
+        return lsdpsp;
+    }
+
+    private Ititmc saveItitmc(Date depositDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit) {
+        Ititmc ititmc = new Ititmc(storageId, depositDt, deposit);
+//        ititmc.setShipIndicateQty(deposit.getDepositQty());
         ititmc.setQty(deposit.getDepositQty());
         jpaItitmcRepository.save(ititmc);
         return ititmc;
     }
 
-    private Ititmt saveItitmt(Date purchaseDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit){
+    private Ititmt saveItitmt(Date purchaseDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit, String dealTypeCd){
         Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt
                         (deposit.getAssortId(), deposit.getItemId(), storageId, StringFactory.getStrEleven(), purchaseDt); // dealtypeCd = '01'인 애들(주문)
         if(ititmt == null){
@@ -455,9 +518,20 @@ public class JpaDepositService {
             return null;
         }
         else {
-            ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() + deposit.getDepositQty());
+            ititmt.setTempQty(ititmt.getTempQty() - deposit.getDepositQty());
+        }
+        if(dealTypeCd.equals(StringFactory.getGbOne())){ // 주문발주일 때
+            ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() - deposit.getDepositQty());
         }
         jpaItitmtRepository.save(ititmt);
         return ititmt;
+    }
+    /**
+     * depositPlanId 채번 함수
+     */
+    private String getDepositPlanId(){
+        String depositPlanId = jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLsdpsp());
+        depositPlanId = StringUtils.leftPad(depositPlanId,9,'0');
+        return depositPlanId;
     }
 }

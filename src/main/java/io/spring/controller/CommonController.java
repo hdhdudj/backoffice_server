@@ -98,9 +98,20 @@ public class CommonController {
 		HashMap<String, Object> p1 = new HashMap<String, Object>();
 		HashMap<String, Object> p2 = new HashMap<String, Object>();
 
+		HashMap<String, Object> c1 = new HashMap<String, Object>();
+		HashMap<String, Object> c2 = new HashMap<String, Object>();
+
 		List<HashMap<String, Object>> r = myBatisCommonService.getCommonPurchaseVendor(p1);
 
 		List<HashMap<String, Object>> l = myBatisCommonService.getCommonStorage(p2);
+
+		for (HashMap<String, Object> o1 : r) {
+			c1.put(o1.get("value").toString(), o1.get("label").toString());
+		}
+
+		for (HashMap<String, Object> o2 : l) {
+			c2.put(o2.get("value").toString(), o2.get("label").toString());
+		}
 
 		HashMap<String, Object> m = new HashMap<String, Object>();
 
@@ -111,6 +122,9 @@ public class CommonController {
 		if (l.size() > 0) {
 			m.put("Storages", l);
 		}
+
+		m.put("purchaseVendorsGridKey", c1);
+		m.put("storagesGridKey", c2);
 
 		ApiResponseMessage res = null;
 

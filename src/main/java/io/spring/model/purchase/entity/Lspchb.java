@@ -9,7 +9,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -33,6 +32,7 @@ public class Lspchb extends CommonProps {
         this.purchaseNo = lspchb.getPurchaseNo();
         this.purchaseSeq = lspchb.getPurchaseSeq();
         this.purchaseStatus = lspchb.getPurchaseStatus();
+        this.purchaseQty = lspchb.getPurchaseQty();
         this.cancelGb = StringFactory.getNinetyNine(); // 99 하드코딩
     }
     public Lspchb(Lspchd lspchd){
@@ -54,6 +54,6 @@ public class Lspchb extends CommonProps {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date effStaDt;
     private String purchaseStatus;
-    private String cancelGb;
+    private String cancelGb = StringFactory.getStrEleven(); // 11 하드코딩
     private Long purchaseQty;
 }

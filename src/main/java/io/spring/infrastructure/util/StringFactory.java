@@ -83,6 +83,8 @@ public class StringFactory {
     private final static String strAt = "@";
     @Getter
     private final static String splitGb = "\\^\\|\\^";
+    @Getter
+    private final static String strDash = "-";
     
     // 주문 상태코드
     @Getter
@@ -118,6 +120,8 @@ public class StringFactory {
 
     // request parameters map key
     @Getter
+    private final static String strDepositNo = "depositNo";
+    @Getter
     private final static String strStartDt = "startDt";
     @Getter
     private final static String strEndDt = "endDt";
@@ -126,7 +130,11 @@ public class StringFactory {
     @Getter
     private final static String strAssortId = "assortId";
     @Getter
+    private final static String strPurchaseNo = "purchaseNo";
+    @Getter
     private final static String strPurchaseStatus = "purchaseStatus";
+    @Getter
+    private final static String strPurchaseGb = "purchaseGb";
     @Getter
     private final static String strStorageId = "storageId";
     @Getter

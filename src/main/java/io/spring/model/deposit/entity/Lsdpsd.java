@@ -9,6 +9,7 @@ import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmm;
+import io.spring.model.purchase.entity.Lspchd;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -60,7 +61,7 @@ public class Lsdpsd extends CommonProps implements Serializable {
         this.itemGrade = StringFactory.getStrEleven(); // 11 하드코딩
         this.extraClsCd = StringFactory.getGbOne(); // 01 하드코딩
         this.depositQty = deposit.getDepositQty();
-        this.extraUnitcost = deposit.getExtraUnitcost();
+        this.extraUnitcost = deposit.getPurchaseCost();
         this.deliPrice = extraUnitcost * depositQty; // 단가 * 개수
         this.extraCost = extraUnitcost * depositQty; // 단가 * 개수
         this.extraQty = deposit.getDepositQty();
@@ -104,13 +105,21 @@ public class Lsdpsd extends CommonProps implements Serializable {
     @JoinColumn(name = "depositNo", referencedColumnName="depositNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     private Lsdpsm lsdpsm;
 
-    // 연관 관계 lsdpsp
-    @ManyToOne(fetch = FetchType.LAZY)
+//    // 연관 관계 lsdpsp
+//    @OneToMany(fetch = FetchType.LAZY)
+//    @JoinColumns({
+//            @JoinColumn(name = "inputNo", referencedColumnName="purchaseNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+//            @JoinColumn(name = "inputSeq", referencedColumnName="purchaseSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+//    })
+//    private List<Lsdpsp> lsdpsp;
+
+    // 연관 관계 lspchd
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumns({
             @JoinColumn(name = "inputNo", referencedColumnName="purchaseNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
             @JoinColumn(name = "inputSeq", referencedColumnName="purchaseSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
     })
-    private Lsdpsp lsdpsp;
+    private Lspchd lspchd;
 
     // 연관 관계 lsdpds
     @NotFound(action = NotFoundAction.IGNORE)

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
+import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
@@ -76,6 +77,7 @@ public class Lsdpsp extends CommonProps implements Serializable {
         this.purchaseGb = lsdpsp.getPurchaseGb();
         this.dealtypeCd = lsdpsp.getDealtypeCd();
 		this.planStatus = StringFactory.getGbOne();
+		this.lspchd = lsdpsp.getLspchd();
     }
     @Id
     private String depositPlanId;
@@ -112,11 +114,16 @@ public class Lsdpsp extends CommonProps implements Serializable {
     })
     private TbOrderDetail tbOrderDetail;
 
-    // 연관 관계 : lsdpsd
+    // 연관 관계 itasrt
     @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "purchaseNo", referencedColumnName="inputNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
-            @JoinColumn(name = "purchaseSeq", referencedColumnName="inputSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
-    })
-    private Lsdpsd lsdpsd;
+    @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+    private Itasrt itasrt;
+
+//    // 연관 관계 : lsdpsd
+//    @OneToMany
+//    @JoinColumns({
+//            @JoinColumn(name = "purchaseNo", referencedColumnName="inputNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+//            @JoinColumn(name = "purchaseSeq", referencedColumnName="inputSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+//    })
+//    private List<Lsdpsd> lsdpsd;
 }

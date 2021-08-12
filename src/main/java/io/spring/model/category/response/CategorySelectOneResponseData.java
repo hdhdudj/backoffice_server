@@ -1,6 +1,7 @@
 package io.spring.model.category.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.entity.Itcatg;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import java.util.Date;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CategorySelectOneResponseData {
+public class CategorySelectOneResponseData extends CommonProps {
     public CategorySelectOneResponseData(Itcatg itcatg){
         if(itcatg == null){
             return;
@@ -39,10 +40,10 @@ public class CategorySelectOneResponseData {
         this.dispGb = itcatg.getDispGb();
         this.templateId = itcatg.getTemplateId();
         this.userId = itcatg.getUserId();
-        this.regId = itcatg.getRegId();
-        this.regDt = itcatg.getRegDt();
-        this.updDt = itcatg.getUpdDt();
-        this.updId = itcatg.getUpdId();
+        this.setRegId(itcatg.getRegId());
+        this.setRegDt(itcatg.getRegDt());
+        this.setUpdDt(itcatg.getUpdDt());
+        this.setUpdId(itcatg.getUpdId());
         this.rootCategoryId = itcatg.getRootCategoryId();
         this.linkUrl = itcatg.getLinkUrl();
     }
@@ -72,12 +73,6 @@ public class CategorySelectOneResponseData {
     private String dispGb;
     private String templateId;
     private Long userId;
-    private Long regId;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date regDt;
-    private Long updId;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date updDt;
     private String rootCategoryId;
     private String linkUrl;
 }

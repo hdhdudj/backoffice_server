@@ -23,6 +23,36 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lspchm extends CommonProps {
+    public Lspchm(Lspchm purchaseInsertRequestData){
+        this.purchaseNo = purchaseInsertRequestData.getPurchaseNo();
+        this.purchaseDt = purchaseInsertRequestData.getPurchaseDt();
+        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
+//        this.purchaseStatus = purchaseInsertRequestData.getPurchaseStatus(); // 01 : 발주, 03 : 부분입고, 04 : 완전입고, 05 : 취소
+        this.purchaseRemark = purchaseInsertRequestData.getPurchaseRemark();
+        this.siteGb = StringFactory.getGbOne(); // "01" 하드코딩
+        this.vendorId = StringFactory.getFourStartCd(); // "0001" 하드코딩
+        this.siteOrderNo = purchaseInsertRequestData.getSiteOrderNo();
+        this.siteTrackNo = purchaseInsertRequestData.getSiteTrackNo();
+        this.localPrice = purchaseInsertRequestData.getLocalPrice();
+        this.newLocalPrice = this.localPrice;
+        this.localDeliFee = purchaseInsertRequestData.getLocalDeliFee();
+        this.newLocalDeliFee = this.localDeliFee;
+        this.localTax = purchaseInsertRequestData.getLocalTax();
+        this.newLocalTax = this.localTax;
+        this.disPrice = purchaseInsertRequestData.getDisPrice();
+        this.newDisPrice = this.disPrice;
+        // this.purchaseGb = StringFactory.getGbOne(); // "01" : 일반발주
+        this.purchaseGb = purchaseInsertRequestData.getPurchaseGb();
+        this.purchaseVendorId = purchaseInsertRequestData.getPurchaseVendorId();
+        this.storeCd = purchaseInsertRequestData.getStoreCd(); // "00001"
+        this.oStoreCd = purchaseInsertRequestData.getOStoreCd();
+        this.terms = purchaseInsertRequestData.getTerms();
+        this.delivery = purchaseInsertRequestData.getDelivery();
+        this.payment = purchaseInsertRequestData.getPayment();
+        this.carrier = purchaseInsertRequestData.getCarrier();
+
+        this.dealtypeCd = purchaseInsertRequestData.getDealtypeCd();
+    }
     public Lspchm(PurchaseInsertRequestData purchaseInsertRequestData){
         this.purchaseNo = purchaseInsertRequestData.getPurchaseNo();
         this.purchaseDt = purchaseInsertRequestData.getPurchaseDt();

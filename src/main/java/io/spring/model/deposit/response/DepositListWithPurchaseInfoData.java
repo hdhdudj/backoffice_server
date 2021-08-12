@@ -12,6 +12,9 @@ import lombok.Setter;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 입고처리 화면에서 쓰는 DTO
+ */
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,15 +22,16 @@ public class DepositListWithPurchaseInfoData {
     public DepositListWithPurchaseInfoData(Lspchm lspchm, List<DepositListWithPurchaseInfoData.Deposit> deposits){
         this.purchaseNo = lspchm.getPurchaseNo();
         this.purchaseVendorId = lspchm.getVendorId();
-        this.purchaseDt = lspchm.getPurchaseDt();
+        this.depositDt = lspchm.getPurchaseDt();
         this.storageId = lspchm.getStoreCd();
         this.deposits = deposits;
     }
     private String purchaseNo;
     private String purchaseVendorId;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date purchaseDt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private Date depositDt;
     private String storageId;
+    private String regId;
     private List<Deposit> deposits;
 
     @Getter
@@ -45,7 +49,7 @@ public class DepositListWithPurchaseInfoData {
             this.optionNm2 = itasrt.getItvariList().size() <= 1? null:itasrt.getItvariList().get(1).getOptionNm();
             this.availableQty = lsdpsp.getPurchasePlanQty() - lsdpsp.getPurchaseTakeQty();
             this.depositQty = 0l;
-            this.extraUnitcost = lsdpsp.getLspchd().getPurchaseUnitAmt(); // 확인 필요
+            this.purchaseCost = lsdpsp.getLspchd().getPurchaseUnitAmt(); // 확인 필요
         }
 
         private String depositPlanId;
@@ -58,6 +62,6 @@ public class DepositListWithPurchaseInfoData {
         private String optionNm2;
         private Long availableQty; // Lsdpsp.purchasePlanQty - Lsdpsp.purchaseTakeQty
         private Long depositQty;
-        private Float extraUnitcost;
+        private Float purchaseCost;
     }
 }

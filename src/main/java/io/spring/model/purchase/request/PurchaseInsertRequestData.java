@@ -1,10 +1,6 @@
 package io.spring.model.purchase.request;
 
-import java.util.Date;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.entity.Itasrt;
@@ -12,11 +8,10 @@ import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderMaster;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+
+import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -45,6 +40,7 @@ public class PurchaseInsertRequestData {
     /**
      * 21-05-03 Pecan
      * 발주 insert request dto
+     * (무슨 화면인지 애매함.. 확인 필요)
       */
     // 여러 테이블에서 쓰는 변수
     private String purchaseNo; // lspchm, lspchs

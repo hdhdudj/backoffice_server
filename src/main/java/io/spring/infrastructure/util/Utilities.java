@@ -107,4 +107,11 @@ public class Utilities {
         calendar.add(Calendar.HOUR_OF_DAY, hours);
         return calendar.getTime();
     }
+
+    /**
+     * 두 String 사이에 -를 넣어서 붙여서 반환하는 함수 (a,b) -> "a-b"
+     */
+    public static String addDashInMiddle(String a, String b){
+        return a + StringFactory.getStrDash() + b;
+    }
 }

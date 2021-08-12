@@ -3,6 +3,7 @@ package io.spring.model.purchase.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.entity.Lsdpsd;
+import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.order.entity.TbOrderDetail;
@@ -11,6 +12,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.util.List;
@@ -145,4 +148,21 @@ public class Lspchd extends CommonProps {
             @JoinColumn(name = "itemId", referencedColumnName = "itemId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
     })
     private Ititmm ititmm;
+
+    // 연관 관계 lsdpsp
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumns({
+            @JoinColumn(name = "purchaseNo", referencedColumnName="purchaseNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+            @JoinColumn(name = "purchaseSeq", referencedColumnName="purchaseSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+    })
+    private List<Lsdpsp> lsdpsp;
+
+    @JoinColumns({
+            @JoinColumn(name = "depositNo", referencedColumnName = "depositNo", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
+            @JoinColumn(name = "depositSeq", referencedColumnName = "depositSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
+    })
+    @OneToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @NotFound(action = NotFoundAction.IGNORE)
+    private Lsdpsd lsdpsd; // lsdpsd 연관관계
 }

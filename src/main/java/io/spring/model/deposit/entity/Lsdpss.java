@@ -30,6 +30,8 @@ public class Lsdpss extends CommonProps {
         this.depositNo = lsdpsm.getDepositNo();
         this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
         this.depositStatus = StringFactory.getGbOne(); // 01 하드코딩
+        this.setRegId(lsdpsm.getRegId());
+        this.setUpdId(lsdpsm.getUpdId());
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
