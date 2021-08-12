@@ -12,6 +12,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.util.List;
@@ -154,4 +156,13 @@ public class Lspchd extends CommonProps {
             @JoinColumn(name = "purchaseSeq", referencedColumnName="purchaseSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
     })
     private List<Lsdpsp> lsdpsp;
+
+    @JoinColumns({
+            @JoinColumn(name = "depositNo", referencedColumnName = "depositNo", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
+            @JoinColumn(name = "depositSeq", referencedColumnName = "depositSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
+    })
+    @OneToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @NotFound(action = NotFoundAction.IGNORE)
+    private Lsdpsd lsdpsd; // lsdpsd 연관관계
 }

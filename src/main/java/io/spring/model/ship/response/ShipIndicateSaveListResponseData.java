@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 출고지시 : 출고지시를 저장용 DTO
+ * 출고 - 출고지시 : list response
  */
 @Getter
 @Setter
@@ -25,7 +25,7 @@ public class ShipIndicateSaveListResponseData {
         this.endDt = endDt;
         this.assortId = assortId;
         this.assortNm = assortNm;
-        this.purchaseVendorId = vendorId;
+        this.vendorId = vendorId;
     }
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private Date startDt;
@@ -33,7 +33,7 @@ public class ShipIndicateSaveListResponseData {
     private Date endDt;
     private String assortId;
     private String assortNm;
-    private String purchaseVendorId;
+    private String vendorId;
     private List<Ship> ships;
 
     @Getter

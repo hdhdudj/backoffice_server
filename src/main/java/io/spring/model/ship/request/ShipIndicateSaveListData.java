@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 출고 - 출고지시 : 출고지시 리스트(주문번호 기준) DTO
+ * 출고 - 출고지시 : 출고지시 리스트(주문번호 기준) request DTO (출고지시 저장할 때 이용)
  */
 @Getter
 @Setter
@@ -36,7 +36,9 @@ public class ShipIndicateSaveListData {
     private String assortNm;
     private String vendorId;
     private List<Ship> ships;
-
+    @Getter
+    @Setter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Ship{
         public Ship(TbOrderDetail tbOrderDetail) {
             TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
@@ -56,7 +58,7 @@ public class ShipIndicateSaveListData {
             this.qty = 0l;
             // optionNm1, optionNm2는 외부에서 set
         }
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
         private Date orderDt;
         private String orderId;
         private String orderSeq;
@@ -70,6 +72,6 @@ public class ShipIndicateSaveListData {
         private String assortNm;
         private String optionNm1;
         private String optionNm2;
-        private long qty;
+        private Long qty;
     }
 }

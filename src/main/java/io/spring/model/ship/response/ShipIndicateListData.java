@@ -40,7 +40,9 @@ public class ShipIndicateListData {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Ship{
         public Ship(TbOrderDetail tbOrderDetail){
-
+//            Lspchd lspchd = tbOrderDetail.getLspchd();
+//            Lsdpsd lsdpsd = tbOrderDetail.getLspchd().getLsdpsd();
+//            this.shipDt = lsdpsd.getExcAppDt();
         }
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
         private Date shipDt;
