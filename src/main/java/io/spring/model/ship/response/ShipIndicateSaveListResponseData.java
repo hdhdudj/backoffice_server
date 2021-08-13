@@ -53,6 +53,7 @@ public class ShipIndicateSaveListResponseData {
         this.itemId = tbOrderDetail.getItemId();
         this.custNm = tbMember.getCustNm();
         this.assortNm = itasrt.getAssortNm();
+//        this.availableQty =
         this.qty = 0l;
         // optionNm1, optionNm2는 외부에서 set
         }
@@ -68,6 +69,7 @@ public class ShipIndicateSaveListResponseData {
         private String assortNm;
         private String optionNm1;
         private String optionNm2;
-        private long qty;
+//        private Long availableQty;
+        private Long qty;
     }
 }

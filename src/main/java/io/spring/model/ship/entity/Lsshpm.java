@@ -13,10 +13,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -34,10 +33,10 @@ public class Lsshpm extends CommonProps {
 //        this.shipStatus = StringFactory.getGbOne(); // 01 출고지시, 04 출고.. 이동지시시 실행되는 생성자이므로 01 하드코딩
         this.deliId = null; // 이동지시 null, 출고지시 tb_order_master.deli_id
         this.shipItemCnt = null;
-        this.receiptDt = new Date();
+        this.receiptDt = new Date(); // 출고지시 일자
         this.storageId = itasrt.getStorageId();
-        this.instructDt = Utilities.getStringToDate(StringFactory.getDoomDay());
-        this.applyDay = Utilities.getStringToDate(StringFactory.getDoomDay());
+        this.instructDt = new Date(); // 패킹일자 //Utilities.getStringToDate(StringFactory.getDoomDay());
+        this.applyDay = Utilities.getStringToDate(StringFactory.getDoomDay()); // 출고처리 일자
         this.masterShipGb = StringFactory.getGbOne(); // 01 하드코딩
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
         this.vendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
@@ -108,4 +107,11 @@ public class Lsshpm extends CommonProps {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date uploadDt;
     private String blNo;
+
+    // 연관관계 : Lsshpd
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = Lsshpd.class)
+    @JoinColumns({
+            @JoinColumn(name = "shipId", referencedColumnName = "shipId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+    })
+    private List<Lsshpd> lsshpdList;
 }

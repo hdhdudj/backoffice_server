@@ -63,11 +63,11 @@ public class JpaShipService {
             ShipIndicateSaveListResponseData.Ship ship = new ShipIndicateSaveListResponseData.Ship(tbOrderDetail);
             shipList.add(ship);
             List<Itvari> itvariList = tbOrderDetail.getItasrt().getItvariList();
-            if(itvariList.size() == 1){
+            if(itvariList.size() > 0){
                 Itvari itvari1 = itvariList.get(0);
                 ship.setOptionNm1(itvari1.getOptionNm());
             }
-            else if(itvariList.size() == 2){
+            if(itvariList.size() > 1){
                 Itvari itvari2 = itvariList.get(1);
                 ship.setOptionNm2(itvari2.getOptionNm());
             }
@@ -206,20 +206,41 @@ public class JpaShipService {
      */
     public ShipIndicateListData getShipList(Date startDt, Date endDt, String shipId, String assortId, String assortNm, String vendorId) {
         ShipIndicateListData shipIndicateListData = new ShipIndicateListData(startDt,endDt,shipId,assortId,assortNm,vendorId);
-//        TypedQuery<TbOrderDetail> query = em.createQuery("select lsd from Lsshpd lsd " +
-//                        "join fetch td.tbOrderMaster tm " +
-//                        "join fetch tm.itasrt it "+
-//                        "where tm.orderDate between ?1 and ?2 " +
-//                        "and (?3 is null or trim(?3)='' or td.assortId=?3) " +
-//                        "and (?4 is null or trim(?4)='' or it.assortNm is like concat('%', ?4, '%')))"
-//                ,TbOrderDetail.class);
-//        List<TbOrderDetail> tbOrderDetailList = query.getResultList();
-//        List<ShipIndicateListData.Ship> shipList = new ArrayList<>();
-//        for(TbOrderDetail tbOrderDetail:tbOrderDetailList){
-//            ShipIndicateListData.Ship ship = new ShipIndicateListData.Ship(tbOrderDetail);
-//            shipList.add(ship);
-//        }
-//        shipIndicateListData.setShips(shipList);
+        startDt = startDt == null? Utilities.getStringToDate(StringFactory.getStartDay()) : Utilities.addHoursToJavaUtilDate(startDt,0);
+        endDt = endDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()) : Utilities.addHoursToJavaUtilDate(endDt,24);
+        TypedQuery<Lsshpd> query = em.createQuery("select lsd from Lsshpd lsd " +
+                        "join fetch lsd.lsshpm lsm " +
+                        "join fetch lsd.tbOrderDetail td " +
+                        "join fetch td.itasrt it "+
+                        "where lsm.receiptDt between ?1 and ?2 " +
+                        "and (?3 is null or trim(?3)='' or td.assortId=?3) " +
+                        "and (?4 is null or trim(?4)='' or lsd.shipId=?4) " +
+                        "and (?5 is null or trim(?5)='' or it.assortNm like concat('%', ?5, '%')) " +
+                        "and (?6 is null or trim(?6)='' or lsd.vendorId=?6)"
+                ,Lsshpd.class);
+        query.setParameter(1, startDt).setParameter(2,endDt).setParameter(3,assortId).setParameter(4,shipId)
+                .setParameter(5,assortNm).setParameter(6,vendorId);
+        List<Lsshpd> lsshpdList = query.getResultList();
+        // statusCd = D01인 애들만 남기기
+        lsshpdList = lsshpdList.stream().filter(x->x.getTbOrderDetail().getStatusCd().equals(StringFactory.getStrD01())).collect(Collectors.toList());
+        List<ShipIndicateListData.Ship> shipList = new ArrayList<>();
+        for(Lsshpd lsshpd : lsshpdList){
+            ShipIndicateListData.Ship ship = new ShipIndicateListData.Ship(lsshpd.getTbOrderDetail(), lsshpd.getLsshpm(), lsshpd);
+            // option set
+            List<Itvari> itvariList = lsshpd.getTbOrderDetail().getItasrt().getItvariList();
+            if(itvariList.size() > 0){
+                Itvari itvari1 = itvariList.get(0);
+                ship.setOptionNm1(itvari1.getOptionNm());
+            }
+            if(itvariList.size() > 1){
+                Itvari itvari2 = itvariList.get(1);
+                ship.setOptionNm2(itvari2.getOptionNm());
+            }
+            // 출고지시 qty 설정 == 1l
+            ship.setQty(1l);
+            shipList.add(ship);
+        }
+        shipIndicateListData.setShips(shipList);
         return shipIndicateListData;
     }
 

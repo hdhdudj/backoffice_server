@@ -14,10 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -106,4 +103,17 @@ public class Lsshpd extends CommonProps {
     private Float localTax;
     private Float disPrice;
     private String oStorageId;
+
+    // 연관관계 : lsshpm
+    @OneToOne(fetch = FetchType.LAZY, targetEntity = Lsshpm.class)
+    @JoinColumn(name = "shipId", referencedColumnName="shipId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+    private Lsshpm lsshpm;
+
+    // 연관관계 : tbOrderDetail
+    @OneToOne(fetch = FetchType.LAZY, targetEntity = TbOrderDetail.class)
+    @JoinColumns({
+        @JoinColumn(name = "orderId", referencedColumnName = "orderId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+        @JoinColumn(name = "orderSeq", referencedColumnName = "orderSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+    })
+    private TbOrderDetail tbOrderDetail;
 }

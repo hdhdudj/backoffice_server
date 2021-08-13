@@ -2,6 +2,8 @@ package io.spring.model.ship.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.ship.entity.Lsshpd;
+import io.spring.model.ship.entity.Lsshpm;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 출고지시리스트 : 출고지시일자, 출고지시번호, 상품코드or상품명, 구매처 조건에 맞는 출고지시 리스트 DTO
+ * 출고 - 출고지시리스트 : 출고지시일자, 출고지시번호, 상품코드or상품명, 구매처 조건에 맞는 출고지시 리스트 DTO
  */
 @Getter
 @Setter
@@ -39,13 +41,21 @@ public class ShipIndicateListData {
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Ship{
-        public Ship(TbOrderDetail tbOrderDetail){
-//            Lspchd lspchd = tbOrderDetail.getLspchd();
-//            Lsdpsd lsdpsd = tbOrderDetail.getLspchd().getLsdpsd();
-//            this.shipDt = lsdpsd.getExcAppDt();
+        public Ship(TbOrderDetail tbOrderDetail, Lsshpm lsshpm, Lsshpd lsshpd){
+            this.shipIndDt = lsshpm.getReceiptDt();
+            this.shipId = lsshpd.getShipId();
+            this.shipSeq = lsshpd.getShipSeq();
+            this.assortGb = tbOrderDetail.getAssortGb();
+            this.deliMethod = tbOrderDetail.getDeliMethod();
+            this.assortId = tbOrderDetail.getAssortId();
+            this.itemId = tbOrderDetail.getItemId();
+            this.custNm = tbOrderDetail.getTbOrderMaster().getTbMember().getCustNm();
+            this.assortNm = tbOrderDetail.getGoodsNm();
+            // 옵션은 외부 set
+            // qty는 외부 set
         }
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-        private Date shipDt;
+        private Date shipIndDt;
         private String shipId;
         private String shipSeq;
         private String assortGb;
