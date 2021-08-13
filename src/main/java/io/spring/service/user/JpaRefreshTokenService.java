@@ -43,10 +43,20 @@ public class JpaRefreshTokenService {
 	}
 
 	public RefreshToken verifyExpiration(RefreshToken token) {
+		long minusMs = 1800000;
+
+		System.out.println("verifyExpiration");
+		System.out.println(token.getExpiryDate().minusMillis(minusMs));
+
 		if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
+			System.out.println("verifyExpiration11");
 			refreshTokenRepository.delete(token);
 			throw new TokenRefreshException(token.getToken(),
 					"Refresh token was expired. Please make a new signin request");
+		} else if (token.getExpiryDate().minusMillis(minusMs).compareTo(Instant.now()) < 0) {
+			System.out.println("verifyExpiration22");
+			token.setExpiryDate(Instant.now().plusMillis(minusMs));
+			token = refreshTokenRepository.save(token);
 		}
 
 		return token;
