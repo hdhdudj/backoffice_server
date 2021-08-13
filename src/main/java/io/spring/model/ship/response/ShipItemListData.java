@@ -51,7 +51,7 @@ public class ShipItemListData {
             this.goodsKey = Utilities.addDashInMiddle(assortId, itemId);
             // 옵션은 밖에서
             this.qty = lsshpd.getShipIndicateQty();
-//            this.cost = lsshpd.getTbOrderDetail().
+            this.cost = lsshpd.getLocalPrice();
         }
         private String shipId;
         private String shipSeq;

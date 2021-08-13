@@ -16,6 +16,7 @@ import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Itvari;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderMaster;
+import io.spring.model.purchase.entity.Lspchm;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import io.spring.model.ship.entity.Lsshps;
@@ -261,9 +262,6 @@ public class JpaShipService {
         List<ShipItemListData.Ship> shipList = new ArrayList<>();
         for(Lsshpd lsshpd:lsshpdList){
             ShipItemListData.Ship ship = new ShipItemListData.Ship(lsshpd);
-            Ititmc ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(lsshpd.getAssortId(),
-                    lsshpd.getItemId(),lsshpd.getOStorageId(),StringFactory.getStrEleven(),lsshpd.getExcAppDt());
-            ship.setCost(ititmc.getStockAmt());
             // option
             List<Itvari> itvariList = lsshpd.getTbOrderDetail().getItasrt().getItvariList();
             if(itvariList.size() > 0){

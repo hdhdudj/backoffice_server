@@ -1,6 +1,7 @@
 package io.spring.model.ship.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.spring.infrastructure.util.Utilities;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
@@ -45,12 +46,14 @@ public class ShipIndicateListData {
             this.shipIndDt = lsshpm.getReceiptDt();
             this.shipId = lsshpd.getShipId();
             this.shipSeq = lsshpd.getShipSeq();
+            this.shipKey = Utilities.addDashInMiddle(shipId,shipSeq);
             this.assortGb = tbOrderDetail.getAssortGb();
             this.deliMethod = tbOrderDetail.getDeliMethod();
             this.assortId = tbOrderDetail.getAssortId();
             this.itemId = tbOrderDetail.getItemId();
             this.custNm = tbOrderDetail.getTbOrderMaster().getTbMember().getCustNm();
             this.assortNm = tbOrderDetail.getGoodsNm();
+            this.blNo = lsshpm.getBlNo(); // 트래킹 번호
             // 옵션은 외부 set
             // qty는 외부 set
         }
@@ -58,6 +61,8 @@ public class ShipIndicateListData {
         private Date shipIndDt;
         private String shipId;
         private String shipSeq;
+        private String shipKey;
+        private String blNo;
         private String assortGb;
         private String deliMethod;
         private String assortId;

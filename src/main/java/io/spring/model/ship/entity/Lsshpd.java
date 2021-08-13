@@ -116,4 +116,12 @@ public class Lsshpd extends CommonProps {
         @JoinColumn(name = "orderSeq", referencedColumnName = "orderSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     })
     private TbOrderDetail tbOrderDetail;
+//
+//    // 연관관계 : Lspchd
+//    @OneToMany(fetch = FetchType.LAZY, targetEntity = Lspchd.class)
+//    @JoinColumns({
+//            @JoinColumn(name = "depositId", referencedColumnName = "depositId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+//            @JoinColumn(name = "depositSeq", referencedColumnName = "depositSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+//    })
+//    private List<Lspchd> lspchdList;
 }
