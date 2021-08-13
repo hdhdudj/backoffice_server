@@ -6,6 +6,7 @@ import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.deposit.JpaLsdpspRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
+import io.spring.jparepos.purchase.JpaLspchdRepository;
 import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
@@ -14,12 +15,14 @@ import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Itvari;
 import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import io.spring.model.ship.entity.Lsshps;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
 import io.spring.model.ship.response.ShipIndicateListData;
 import io.spring.model.ship.response.ShipIndicateSaveListResponseData;
+import io.spring.model.ship.response.ShipItemListData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.move.JpaMoveService;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +45,7 @@ public class JpaShipService {
     private final JpaCommonService jpaCommonService;
     private final JpaLsdpspRepository jpaLsdpspRepository;
     private final JpaMoveService jpaMoveService;
+    private final JpaLspchdRepository jpaLspchdRepository;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
     private final JpaLsshpmRepository jpaLsshpmRepository;
@@ -182,6 +186,7 @@ public class JpaShipService {
             // lsshpd 저장
             String shipSeq = StringUtils.leftPad(Integer.toString(i + 1), 4,'0');
             Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc, itasrt);
+//            lsshpd.setLocalPrice(tbOrderDetail.getLspchd());
             lsshpd.setVendorDealCd(StringFactory.getGbOne()); // 01 : 주문, 02 : 상품, 03 : 입고예정
             lsshpd.setShipIndicateQty(1l);
             jpaLsshpdRepository.save(lsshpd);
@@ -245,11 +250,43 @@ public class JpaShipService {
     }
 
     /**
+     * 출고 - 출고지시내역 : shipId를 받아 출고마스터와 출고디테일 내역을 반환
+     */
+    public ShipItemListData getShipDetailList(String shipId) {
+        Lsshpm lsshpm = jpaLsshpmRepository.findByShipId(shipId);
+        ShipItemListData shipItemListData = new ShipItemListData(lsshpm);
+        TbOrderMaster tbOrderMaster = lsshpm.getTbOrderMaster();
+        shipItemListData.setOrderDt(tbOrderMaster.getOrderDate());
+        List<Lsshpd> lsshpdList = lsshpm.getLsshpdList();
+        List<ShipItemListData.Ship> shipList = new ArrayList<>();
+        for(Lsshpd lsshpd:lsshpdList){
+            ShipItemListData.Ship ship = new ShipItemListData.Ship(lsshpd);
+            Ititmc ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(lsshpd.getAssortId(),
+                    lsshpd.getItemId(),lsshpd.getOStorageId(),StringFactory.getStrEleven(),lsshpd.getExcAppDt());
+            ship.setCost(ititmc.getStockAmt());
+            // option
+            List<Itvari> itvariList = lsshpd.getTbOrderDetail().getItasrt().getItvariList();
+            if(itvariList.size() > 0){
+                Itvari itvari1 = itvariList.get(0);
+                ship.setOptionNm1(itvari1.getOptionNm());
+            }
+            if(itvariList.size() > 1){
+                Itvari itvari2 = itvariList.get(1);
+                ship.setOptionNm2(itvari2.getOptionNm());
+            }
+            shipList.add(ship);
+        }
+        shipItemListData.setShips(shipList);
+        return shipItemListData;
+    }
+
+    /**
      * shipId 채번 함수
      */
     public String getShipId(){
         return Utilities.getStringNo('L',jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLsshpm()),9);
     }
+
 //    /**
 //     * orderId와 orderSeq로 를 가져오는 함수
 //     */

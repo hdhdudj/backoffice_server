@@ -57,7 +57,7 @@ public class ShipIndicateSaveListResponseData {
         this.qty = 0l;
         // optionNm1, optionNm2는 외부에서 set
         }
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
         private Date orderDt;
         private String orderId;
         private String orderSeq;

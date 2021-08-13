@@ -5,6 +5,7 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
 import io.spring.model.ship.response.ShipIndicateListData;
 import io.spring.model.ship.response.ShipIndicateSaveListResponseData;
+import io.spring.model.ship.response.ShipItemListData;
 import io.spring.service.ship.JpaShipService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,6 +60,16 @@ public class ShipController {
                                            @RequestParam @Nullable String vendorId){
         ShipIndicateListData shipIndicateListData = jpaShipService.getShipList(startDt, endDt, shipId, assortId, assortNm, vendorId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
+        return ResponseEntity.ok(res);
+    }
+
+    /**
+     * 출고지시내역 화면 : 출고지시번호를 받아 해당 출고지시번호의 내역 마스터(Lsshpm)와 목록(Lsshpd)을 보여줌
+     */
+    @GetMapping(path = "/item/{shipId}")
+    public ResponseEntity getShipDetailList(@PathVariable String shipId){
+        ShipItemListData shipItemListData = jpaShipService.getShipDetailList(shipId);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipItemListData);
         return ResponseEntity.ok(res);
     }
 }

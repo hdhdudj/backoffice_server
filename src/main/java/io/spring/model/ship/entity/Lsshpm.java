@@ -6,6 +6,7 @@ import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -110,8 +111,11 @@ public class Lsshpm extends CommonProps {
 
     // 연관관계 : Lsshpd
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Lsshpd.class)
-    @JoinColumns({
-            @JoinColumn(name = "shipId", referencedColumnName = "shipId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
-    })
+    @JoinColumn(name = "shipId", referencedColumnName = "shipId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     private List<Lsshpd> lsshpdList;
+
+    // 연관관계 : TbOrderMaster
+    @OneToOne(fetch = FetchType.LAZY, targetEntity = TbOrderMaster.class)
+    @JoinColumn(name = "orderId", referencedColumnName = "orderId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+    private TbOrderMaster tbOrderMaster;
 }

@@ -1,5 +1,6 @@
 package io.spring.model.goods.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.request.DepositInsertRequestData;
@@ -35,6 +36,7 @@ public class Ititmc extends CommonProps {
         this.effEndDt = depositDt;
         this.effStaDt = this.effEndDt;
         this.stockGb = StringFactory.getGbOne(); // 01 하드코딩
+        this.stockAmt = deposit.getPurchaseCost();
     }
     @Id
     private String storageId;
@@ -45,8 +47,10 @@ public class Ititmc extends CommonProps {
     @Id
     private String itemGrade = StringFactory.getStrEleven(); // 11 하드코딩
     @Id
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date effEndDt;
     @Id
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date effStaDt;
     private String stockGb;
     private Long shipIndicateQty;

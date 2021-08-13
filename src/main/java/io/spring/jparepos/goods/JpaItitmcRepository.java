@@ -12,7 +12,7 @@ public interface JpaItitmcRepository extends JpaRepository<Ititmc, ItitmcId> {
     @Query("select c from Ititmc c where c.assortId=?1 and c.itemId=?2 and c.storageId=?3 and c.itemGrade=?4 order by c.effEndDt desc")
     List<Ititmc> findByAssortIdAndItemIdAndStorageIdAndItemGrade(String assortId, String itemId, String storageId, String itemGrade);
 
-    Ititmc findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(String assortId, String itemId, String storageId, String strEleven, Date purchaseDt);
+    Ititmc findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(String assortId, String itemId, String storageId, String itemGrade, Date effEndDt);
 
 
     @Query("select i from Ititmc i where i.assortId=?1 and i.itemId=?2 order by i.effEndDt asc")
