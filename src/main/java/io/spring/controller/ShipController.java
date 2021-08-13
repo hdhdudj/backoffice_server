@@ -87,4 +87,19 @@ public class ShipController {
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
         return ResponseEntity.ok(res);
     }
+
+    /**
+     * 출고처리 화면 : 출고 수량을 입력하면 관련된 값을 변경함.
+     */
+    @GetMapping(path = "")
+    public ResponseEntity getShipIndSaveList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDt,
+                                             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDt,
+                                             @RequestParam @Nullable String shipId,
+                                             @RequestParam @Nullable String assortId,
+                                             @RequestParam @Nullable String assortNm,
+                                             @RequestParam @Nullable String vendorId){
+        ShipIndicateListData shipIndicateListData = jpaShipService.getShipList(startDt, endDt, shipId, assortId, assortNm, vendorId);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
+        return ResponseEntity.ok(res);
+    }
 }
