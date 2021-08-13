@@ -3,6 +3,7 @@ package io.spring.controller;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
+import io.spring.model.ship.request.ShipSaveListData;
 import io.spring.model.ship.response.ShipIndicateListData;
 import io.spring.model.ship.response.ShipIndicateSaveListResponseData;
 import io.spring.model.ship.response.ShipItemListData;
@@ -91,15 +92,10 @@ public class ShipController {
     /**
      * 출고처리 화면 : 출고 수량을 입력하면 관련된 값을 변경함.
      */
-    @GetMapping(path = "")
-    public ResponseEntity getShipIndSaveList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDt,
-                                             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDt,
-                                             @RequestParam @Nullable String shipId,
-                                             @RequestParam @Nullable String assortId,
-                                             @RequestParam @Nullable String assortNm,
-                                             @RequestParam @Nullable String vendorId){
-        ShipIndicateListData shipIndicateListData = jpaShipService.getShipList(startDt, endDt, shipId, assortId, assortNm, vendorId);
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
+    @PostMapping(path = "")
+    public ResponseEntity shipIndToShip(@RequestBody ShipSaveListData shipSaveListData){
+        List<String> shipIdList = jpaShipService.shipIndToShip(shipSaveListData);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIdList);
         return ResponseEntity.ok(res);
     }
 }

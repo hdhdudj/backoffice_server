@@ -21,6 +21,7 @@ import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import io.spring.model.ship.entity.Lsshps;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
+import io.spring.model.ship.request.ShipSaveListData;
 import io.spring.model.ship.response.ShipIndicateListData;
 import io.spring.model.ship.response.ShipIndicateSaveListResponseData;
 import io.spring.model.ship.response.ShipItemListData;
@@ -279,11 +280,21 @@ public class JpaShipService {
     }
 
     /**
+     * 출고처리 - 변한 값을 저장하는 함수
+     */
+    @Transactional
+    public List<String> shipIndToShip(ShipSaveListData shipSaveListData) {
+        List<String> shipIdList = new ArrayList<>();
+        return shipIdList;
+    }
+
+    /**
      * shipId 채번 함수
      */
     public String getShipId(){
         return Utilities.getStringNo('L',jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLsshpm()),9);
     }
+
 
 //    /**
 //     * orderId와 orderSeq로 를 가져오는 함수
