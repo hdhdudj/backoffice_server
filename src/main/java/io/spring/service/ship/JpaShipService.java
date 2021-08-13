@@ -3,13 +3,13 @@ package io.spring.service.ship;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
+import io.spring.jparepos.deposit.JpaLsdpspRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
 import io.spring.model.deposit.entity.Lsdpsd;
-import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Itvari;
@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class JpaShipService {
     private final JpaCommonService jpaCommonService;
+    private final JpaLsdpspRepository jpaLsdpspRepository;
     private final JpaMoveService jpaMoveService;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
@@ -56,6 +57,8 @@ public class JpaShipService {
     public ShipIndicateSaveListResponseData getOrderSaveList(Date startDt, Date endDt, String assortId, String assortNm, String purchaseVendorId) {
         List<ShipIndicateSaveListResponseData.Ship> shipList = new ArrayList<>();
         List<TbOrderDetail> tbOrderDetailList = this.getOrdersByCondition(startDt, endDt, assortId, assortNm, purchaseVendorId);
+        // tbOrderDetailList 중 statusCd가 C04인 애들만 남겨두기
+        tbOrderDetailList = tbOrderDetailList.stream().filter(x->x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList());
         for(TbOrderDetail tbOrderDetail : tbOrderDetailList){
             ShipIndicateSaveListResponseData.Ship ship = new ShipIndicateSaveListResponseData.Ship(tbOrderDetail);
             shipList.add(ship);
@@ -105,17 +108,9 @@ public class JpaShipService {
             log.debug("input data is empty.");
             return null;
         }
-//        Date startDt = shipIndicateSaveDataList.getStartDt();
-//        Date endDt = shipIndicateSaveDataList.getEndDt();
-//        String assortId = shipIndicateSaveDataList.getAssortId();
-//        String vendorId = shipIndicateSaveDataList.getVendorId();
-//        String assortNm = shipIndicateSaveDataList.getAssortNm();
         List<TbOrderDetail> tbOrderDetailList = this.makeTbOrderDetailByShipIndicateSaveListData(shipIndicateSaveListData);
         List<String> shipIdList = new ArrayList<>();
-//        List<Lsdpsd> lsdpsdList = new ArrayList<>();
         for (int i = 0; i < tbOrderDetailList.size(); i++) {
-//            Lsdpsd lsdpsd = tbOrderDetailList.get(i).getLspchd().get(0).getLsdpsd();
-//            lsdpsdList.add(lsdpsd);
             TbOrderDetail tbOrderDetail = tbOrderDetailList.get(i);
             ShipIndicateSaveListData.Ship ship = shipIndicateSaveListData.getShips().get(i);
             if(ship.getQty() > tbOrderDetailList.get(i).getQty()){
@@ -124,14 +119,18 @@ public class JpaShipService {
             }
 
             List<Ititmc> ititmcList = jpaItitmcRepository.findByOrderIdAndOrderSeqOrderByEffEndDtAsc(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
-            ititmcList = this.calcItitmcQties(ititmcList, ship.getQty()); // 주문량만큼 출고차감
-            String shipId = this.makeShipData(null, ship, StringFactory.getGbFour()); // 01 : 이동지시, 04 : 출고
+            // 1. 재고에서 출고 차감 계산
+            ititmcList = this.calcItitmcQties(ititmcList, ship.getQty()); // 주문량만큼 출고차감 (하나의 ititmc에서 모두 차감하므로 ititmcList에 값이 있다면 한 개만 들어있어야 함)
+            if(ititmcList.size()==0){
+                log.debug("출고지시량 이상의 출고가능량을 가진 재고 세트가 없습니다.");
+                continue;
+            }
+            // 2. 출고 data 생성
+            String shipId = this.makeShipData(ititmcList.get(0), ship, tbOrderDetail, StringFactory.getGbFour()); // 01 : 이동지시, 04 : 출고
             if(shipId != null){shipIdList.add(shipId);}
+            // 3. 주문 상태 변경 (C04 -> D01)
+            tbOrderDetail.setStatusCd(StringFactory.getStrD01()); // D01 하드코딩
         }
-        // 1. 입고 data 수량계산
-//        this.updateShipQty(shipIndicateSaveDataList);
-        // 2. 출고 data 생성
-        // 2. tbOrderDetail
         return shipIdList;
     }
 
@@ -166,31 +165,11 @@ public class JpaShipService {
      * 출고 관련 값 update, 출고 관련 data 생성 함수 (lsshpm,d,s)
      * ShipIndicateSaveData 객체로 lsshpm,s,d 생성
      */
-    private String makeShipData(Lsdpsd lsdpsd, ShipIndicateSaveListData.Ship ship, String shipStatus) {
+    private String makeShipData(Ititmc ititmc, ShipIndicateSaveListData.Ship ship, TbOrderDetail tbOrderDetail, String shipStatus) {
         String shipId = getShipId();
 
-        Itasrt itasrt = lsdpsd.getItasrt();
-        List<Ititmc> ititmcList = lsdpsd.getItitmm().getItitmc();
-        Date depositDt = lsdpsd.getLsdpsm().getDepositDt();
-        String storageId = lsdpsd.getLsdpsm().getStoreCd();
-        String itemGrade = lsdpsd.getItemGrade();
-        ititmcList = ititmcList.stream().filter(x -> x.getEffEndDt().equals(depositDt)
-                && x.getStorageId().equals(storageId)
-                && x.getItemGrade().equals(itemGrade)).collect(Collectors.toList());
-        if(ititmcList.size() == 0){
-            return null;
-        }
-        Ititmc ititmc = ititmcList.get(0);
-        // ititmc에서 shipIndicateQty 변경해주기
-
-        ititmc.setShipIndicateQty(ititmc.getShipIndicateQty() - ship.getQty());
-        ititmc.setQty(ititmc.getQty() - ship.getQty());
-        jpaItitmcRepository.save(ititmc);
-//        TbOrderMaster tbOrderMaster = lsdpsd.getLspchd().getLsdpsp().get(0).getTbOrderDetail().getTbOrderMaster();
-
         for (int i = 0; i < ship.getQty(); i++) {
-            TbOrderDetail tbOrderDetail = lsdpsd.getLspchd().getLsdpsp().get(i).getTbOrderDetail();
-            Lsdpsp lsdpsp = lsdpsd.getLspchd().getLsdpsp().get(i);
+            Itasrt itasrt = tbOrderDetail.getItasrt();
             if(i==0){
                 // lsshpm 저장
                 Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail);
@@ -202,8 +181,9 @@ public class JpaShipService {
             }
             // lsshpd 저장
             String shipSeq = StringUtils.leftPad(Integer.toString(i + 1), 4,'0');
-            Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, lsdpsp, tbOrderDetail, ititmc, itasrt);
-//            lsshpd.setShipIndicateQty(1l);
+            Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc, itasrt);
+            lsshpd.setVendorDealCd(StringFactory.getGbOne()); // 01 : 주문, 02 : 상품, 03 : 입고예정
+            lsshpd.setShipIndicateQty(1l);
             jpaLsshpdRepository.save(lsshpd);
         }
         return shipId;

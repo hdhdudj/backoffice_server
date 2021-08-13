@@ -22,7 +22,6 @@ import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import io.spring.model.ship.entity.Lsshps;
-import io.spring.service.common.JpaCommonService;
 import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -175,19 +174,20 @@ public class JpaMoveService {
 
         for (int i = 0; i < qty; i++) {
             TbOrderDetail tbOrderDetail = lsdpsd.getLspchd().getLsdpsp().get(i).getTbOrderDetail();
-            // lsshpm 저장
-            Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail);
-            lsshpm.setShipStatus(shipStatus); // 01 : 이동지시, 04 : 출고
-            jpaLsshpmRepository.save(lsshpm);
-
-            // lsshps 저장
-            Lsshps lsshps = new Lsshps(lsshpm);
-            jpaLsshpsRepository.save(lsshps);
             Lsdpsp lsdpsp = lsdpsd.getLspchd().getLsdpsp().get(i);
+            if(i==0){
+                // lsshpm 저장
+                Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail);
+                lsshpm.setShipStatus(shipStatus); // 01 : 이동지시, 04 : 출고
+                // lsshps 저장
+                Lsshps lsshps = new Lsshps(lsshpm);
+                jpaLsshpsRepository.save(lsshps);
+                jpaLsshpmRepository.save(lsshpm);
+            }
             // lsshpd 저장
             String shipSeq = StringUtils.leftPad(Integer.toString(i + 1), 4,'0');
-            Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, lsdpsp, tbOrderDetail, ititmc, itasrt);
-//            lsshpd.setShipIndicateQty(1l);
+            Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc, itasrt);
+            lsshpd.setShipIndicateQty(1l);
             jpaLsshpdRepository.save(lsshpd);
         }
         return shipId;
@@ -308,9 +308,8 @@ public class JpaMoveService {
             return newItitmcList;
         }
         for(Ititmc ititmc : ititmcList){
-            newItitmcList.add(ititmc);
-            long qty = ititmc.getQty() == null? 0l:ititmc.getQty(); // 재고량
-            long shipIndQty = ititmc.getShipIndicateQty() == null? 0l:ititmc.getShipIndicateQty(); // 출고예정량
+            long qty = ititmc.getQty() == null? 0l:ititmc.getQty(); // ititmc 재고량
+            long shipIndQty = ititmc.getShipIndicateQty() == null? 0l:ititmc.getShipIndicateQty(); // ititmc 출고예정량
             long canShipQty = qty - shipIndQty; // 출고가능량
             if(canShipQty <= 0){ // 출고 불가
                 continue;
@@ -318,13 +317,14 @@ public class JpaMoveService {
             if(shipQty <= canShipQty){ // 이 차례에서 출고 완료 가능
                 ititmc.setShipIndicateQty(shipIndQty + shipQty);
                 jpaItitmcRepository.save(ititmc);
+                newItitmcList.add(ititmc);
                 break;
             }
-            else{ // 이 차례에선 출고 풀로 했는데 아직도 출고해야 할 양이 남음
-                shipQty -= canShipQty;
-                ititmc.setShipIndicateQty(qty);
-                jpaItitmcRepository.save(ititmc);
-            }
+//            else{ // 이 차례에선 출고 풀로 했는데 아직도 출고해야 할 양이 남음
+//                shipQty -= canShipQty;
+//                ititmc.setShipIndicateQty(qty);
+//                jpaItitmcRepository.save(ititmc);
+//            }
         }
         return newItitmcList;
     }

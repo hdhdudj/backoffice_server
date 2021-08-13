@@ -3,7 +3,6 @@ package io.spring.model.ship.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
-import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.move.request.GoodsMoveSaveData;
@@ -29,7 +28,7 @@ import java.util.Date;
 @IdClass(value = LsshpdId.class)
 public class Lsshpd extends CommonProps {
     // 주문 이동지시 저장시 작동하는 생성자
-    public Lsshpd(String shipId, String shipSeq, Lsdpsp lsdpsp, TbOrderDetail tbOrderDetail, Ititmc ititmc, Itasrt itasrt){
+    public Lsshpd(String shipId, String shipSeq, TbOrderDetail tbOrderDetail, Ititmc ititmc, Itasrt itasrt){
         this.shipId = shipId;
         this.shipSeq = shipSeq;
         this.assortId = tbOrderDetail.getAssortId();
@@ -37,7 +36,7 @@ public class Lsshpd extends CommonProps {
         this.shipVendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
         this.shipIndicateQty = 1l;
         this.shipQty = 0l;
-        this.vendorDealCd = lsdpsp.getDealtypeCd();
+//        this.vendorDealCd = lsdpsp.getDealtypeCd(); 바깥에서 set
         this.vatGb = StringFactory.getGbOne(); // 01 하드코딩
         this.orderId = tbOrderDetail.getOrderId();
         this.orderSeq = tbOrderDetail.getOrderSeq();
