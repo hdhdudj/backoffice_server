@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -53,13 +55,15 @@ public class ShipController {
      * 출고지시리스트 화면 : 출고지시리스트 화면에서 조건 검색으로 출고지시 리스트를 불러오는 api
      */
     @GetMapping(path = "/indicate/items")
-    public ResponseEntity getShipList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date startDt,
-                                           @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date endDt,
-                                           @RequestParam @Nullable String shipId,
-                                           @RequestParam @Nullable String assortId,
-                                           @RequestParam @Nullable String assortNm,
-                                           @RequestParam @Nullable String vendorId){
-        ShipIndicateListData shipIndicateListData = jpaShipService.getShipList(startDt, endDt, shipId, assortId, assortNm, vendorId);
+    public ResponseEntity getShipList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+                                      @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+                                      @RequestParam @Nullable String shipId,
+                                       @RequestParam @Nullable String assortId,
+                                       @RequestParam @Nullable String assortNm,
+                                       @RequestParam @Nullable String vendorId){
+//        Date start = java.sql.Timestamp.valueOf(startDt.atStartOfDay());
+//        Date end = java.sql.Timestamp.valueOf(endDt.atTime(23,59,59));
+        ShipIndicateListData shipIndicateListData = jpaShipService.getShipList(startDt, endDt, shipId, assortId, assortNm, vendorId, StringFactory.getStrC04());
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
         return ResponseEntity.ok(res);
     }
@@ -78,13 +82,13 @@ public class ShipController {
      * 출고처리 화면 : 출고지시일자, 출고지시번호, 상품코드, 구매처를 받아서 조회하면 출고지시 목록을 보여줌
      */
     @GetMapping(path = "/items")
-    public ResponseEntity getShipIndSaveList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDt,
-                                             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDt,
+    public ResponseEntity getShipIndSaveList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+                                             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
                                              @RequestParam @Nullable String shipId,
                                              @RequestParam @Nullable String assortId,
                                              @RequestParam @Nullable String assortNm,
                                              @RequestParam @Nullable String vendorId){
-        ShipIndicateListData shipIndicateListData = jpaShipService.getShipList(startDt, endDt, shipId, assortId, assortNm, vendorId);
+        ShipIndicateListData shipIndicateListData = jpaShipService.getShipList(startDt, endDt, shipId, assortId, assortNm, vendorId, StringFactory.getStrD01());
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
         return ResponseEntity.ok(res);
     }

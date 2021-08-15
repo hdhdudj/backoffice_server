@@ -24,7 +24,7 @@ public class ShipItemListData {
         this.storageId = lsshpm.getStorageId();
         this.vendorId = lsshpm.getVendorId();
 //        this.orderDt = lsshpm.get 밖에서 set
-        this.shipIndicateDt = lsshpm.getReceiptDt();
+        this.shipIndicateDt =java.sql.Timestamp.valueOf(lsshpm.getReceiptDt());
     }
     private String shipId;
     private String storageId;

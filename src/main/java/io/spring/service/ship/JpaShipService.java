@@ -30,11 +30,15 @@ import io.spring.service.move.JpaMoveService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -211,10 +215,15 @@ public class JpaShipService {
     /**
      * 출고지시리스트 화면에서 list를 불러오는 함수
      */
-    public ShipIndicateListData getShipList(Date startDt, Date endDt, String shipId, String assortId, String assortNm, String vendorId) {
-        ShipIndicateListData shipIndicateListData = new ShipIndicateListData(startDt,endDt,shipId,assortId,assortNm,vendorId);
-        startDt = startDt == null? Utilities.getStringToDate(StringFactory.getStartDay()) : Utilities.addHoursToJavaUtilDate(startDt,0);
-        endDt = endDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()) : Utilities.addHoursToJavaUtilDate(endDt,24);
+    public ShipIndicateListData getShipList(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+                                            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+                                            String shipId, String assortId, String assortNm,
+                                            String vendorId, String statusCd) {
+        LocalDateTime start = startDt.atStartOfDay();
+        LocalDateTime end = endDt.atTime(23,59,59);
+        ShipIndicateListData shipIndicateListData = new ShipIndicateListData(start,end,shipId,assortId,assortNm,vendorId);
+//        start = startDt == null? Utilities.strToLocalDate(StringFactory.getStartDay()) : startDt;
+//        end = endDt == null? Utilities.strToLocalDate(StringFactory.getStartDay()) : endDt.plusDays(1);
         TypedQuery<Lsshpd> query = em.createQuery("select lsd from Lsshpd lsd " +
                         "join fetch lsd.lsshpm lsm " +
                         "join fetch lsd.tbOrderDetail td " +
@@ -225,11 +234,12 @@ public class JpaShipService {
                         "and (?5 is null or trim(?5)='' or it.assortNm like concat('%', ?5, '%')) " +
                         "and (?6 is null or trim(?6)='' or lsd.vendorId=?6)"
                 ,Lsshpd.class);
-        query.setParameter(1, startDt).setParameter(2,endDt).setParameter(3,assortId).setParameter(4,shipId)
+        query.setParameter(1, start).setParameter(2, end)
+                .setParameter(3,assortId).setParameter(4,shipId)
                 .setParameter(5,assortNm).setParameter(6,vendorId);
         List<Lsshpd> lsshpdList = query.getResultList();
-        // statusCd = D01인 애들만 남기기
-        lsshpdList = lsshpdList.stream().filter(x->x.getTbOrderDetail().getStatusCd().equals(StringFactory.getStrD01())).collect(Collectors.toList());
+        // 출고지시리스트 : C04, 출고처리리스트 : statusCd = D01인 애들만 남기기
+        lsshpdList = lsshpdList.stream().filter(x->x.getTbOrderDetail().getStatusCd().equals(statusCd)).collect(Collectors.toList());
         List<ShipIndicateListData.Ship> shipList = new ArrayList<>();
         for(Lsshpd lsshpd : lsshpdList){
             ShipIndicateListData.Ship ship = new ShipIndicateListData.Ship(lsshpd.getTbOrderDetail(), lsshpd.getLsshpm(), lsshpd);
