@@ -38,3 +38,6 @@ application.properties
 
 ### logs ###
 *.log
+
+### DS_Store ###
+.DS_Store

@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -20,7 +22,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShipIndicateListData {
-    public ShipIndicateListData(Date startDt, Date endDt, String shipId, String assortId, String assortNm, String vendorId){
+    public ShipIndicateListData(LocalDateTime startDt, LocalDateTime endDt, String shipId, String assortId, String assortNm, String vendorId){
         this.startDt = startDt;
         this.endDt = endDt;
         this.shipId = shipId;
@@ -29,9 +31,9 @@ public class ShipIndicateListData {
         this.vendorId = vendorId;
     }
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private Date startDt;
+    private LocalDateTime startDt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private Date endDt;
+    private LocalDateTime endDt;
     private String shipId;
     private String assortId;
     private String assortNm;
@@ -43,7 +45,7 @@ public class ShipIndicateListData {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Ship{
         public Ship(TbOrderDetail tbOrderDetail, Lsshpm lsshpm, Lsshpd lsshpd){
-            this.shipIndDt = lsshpm.getReceiptDt();
+            this.shipIndDt = java.sql.Timestamp.valueOf(lsshpm.getReceiptDt());
             this.shipId = lsshpd.getShipId();
             this.shipSeq = lsshpd.getShipSeq();
             this.shipKey = Utilities.addDashInMiddle(shipId,shipSeq);

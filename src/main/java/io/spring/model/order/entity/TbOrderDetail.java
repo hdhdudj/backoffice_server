@@ -98,19 +98,19 @@ public class TbOrderDetail extends CommonProps
         @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
         @JoinColumn(name = "itemId", referencedColumnName = "itemId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
     })
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @NotFound(action = NotFoundAction.IGNORE)
     private Ititmm ititmm; // ititmm 연관관계
 
     @JoinColumn(name="orderId", referencedColumnName = "orderId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @NotFound(action = NotFoundAction.IGNORE)
     private TbOrderMaster tbOrderMaster; // tbOrderMaster 연관관계
 
     @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @NotFound(action = NotFoundAction.IGNORE)
     private Itasrt itasrt; // itasrt 연관관계

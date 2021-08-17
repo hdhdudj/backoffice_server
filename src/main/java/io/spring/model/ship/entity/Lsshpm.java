@@ -15,6 +15,9 @@ import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -34,7 +37,9 @@ public class Lsshpm extends CommonProps {
 //        this.shipStatus = StringFactory.getGbOne(); // 01 출고지시, 04 출고.. 이동지시시 실행되는 생성자이므로 01 하드코딩
         this.deliId = null; // 이동지시 null, 출고지시 tb_order_master.deli_id
         this.shipItemCnt = null;
-        this.receiptDt = new Date(); // 출고지시 일자
+        this.receiptDt = new Date().toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime(); // 출고지시 일자
         this.storageId = itasrt.getStorageId();
         this.instructDt = new Date(); // 패킹일자 //Utilities.getStringToDate(StringFactory.getDoomDay());
         this.applyDay = Utilities.getStringToDate(StringFactory.getDoomDay()); // 출고처리 일자
@@ -59,7 +64,9 @@ public class Lsshpm extends CommonProps {
         this.shipStatus = StringFactory.getGbOne(); // 01 : 출고지시, 04 : 출고 (04 하드코딩)
         this.deliId = null; // 이동지시 : null, 출고지시 : tbOrderDetail.deliId
         this.shipItemCnt = null;
-        this.receiptDt = new Date();
+        this.receiptDt = new Date().toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
 //        this.storageId : 바깥에서 set
         this.instructDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
         this.applyDay = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
@@ -89,7 +96,7 @@ public class Lsshpm extends CommonProps {
     private Long deliId;
     private Long shipItemCnt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date receiptDt;
+    private LocalDateTime receiptDt;
     private String storageId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date instructDt;
