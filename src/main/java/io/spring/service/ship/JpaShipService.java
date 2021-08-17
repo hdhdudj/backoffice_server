@@ -260,7 +260,7 @@ public class JpaShipService {
                 .setParameter(3,assortId).setParameter(4,shipId)
                 .setParameter(5,assortNm).setParameter(6,vendorId);
         List<Lsshpd> lsshpdList = query.getResultList();
-        // 출고지시리스트 : C04, 출고처리리스트 : D01, 출고리스트 statusCd = D01인 애들만 남기기
+        // 출고지시리스트 : C04, 출고처리리스트 : D01, 출고리스트 statusCd = D02인 애들만 남기기
         lsshpdList = lsshpdList.stream().filter(x->x.getTbOrderDetail().getStatusCd().equals(statusCd)).collect(Collectors.toList());
         List<ShipIndicateListData.Ship> shipList = new ArrayList<>();
         for(Lsshpd lsshpd : lsshpdList){
