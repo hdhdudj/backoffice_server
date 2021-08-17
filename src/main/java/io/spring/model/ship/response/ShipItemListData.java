@@ -14,6 +14,7 @@ import java.util.List;
 
 /**
  *  출고 - 출고지시내역 : 출고지시번호를 받아 출고마스터와 출고디테일을 보여줄 때 쓰는 DTO
+ *  출고 - 출고내역 : response DTO
  */
 @Getter
 @Setter
@@ -25,6 +26,7 @@ public class ShipItemListData {
         this.vendorId = lsshpm.getVendorId();
 //        this.orderDt = lsshpm.get 밖에서 set
         this.shipIndicateDt =java.sql.Timestamp.valueOf(lsshpm.getReceiptDt());
+        this.shipDt = lsshpm.getApplyDay();
     }
     private String shipId;
     private String storageId;
@@ -34,6 +36,10 @@ public class ShipItemListData {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date shipIndicateDt;
     private List<Ship> ships;
+    // 출고내역에만 있는 요소
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+    private Date shipDt;
+
     @Getter
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)

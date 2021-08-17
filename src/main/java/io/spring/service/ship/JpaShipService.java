@@ -282,6 +282,7 @@ public class JpaShipService {
 
     /**
      * 출고 - 출고지시내역 : shipId를 받아 출고마스터와 출고디테일 내역을 반환
+     * 출고 - 출고내역 : shipId를 받아 출고내역을 반환
      */
     public ShipItemListData getShipIndicateDetailList(String shipId) {
         Lsshpm lsshpm = jpaLsshpmRepository.findByShipId(shipId);
@@ -402,18 +403,9 @@ public class JpaShipService {
     }
 
     /**
-     * 출고 - 출고리스트 : 출고리스트 반환하는 함수
-     */
-    public ShipIndicateSaveListResponseData getShipDetailList(String shipId) {
-        ShipIndicateSaveListResponseData shipIndicateSaveListResponseData = new ShipIndicateSaveListResponseData();
-
-        return shipIndicateSaveListResponseData;
-    }
-
-    /**
      * shipId 채번 함수
      */
-    public String getShipId(){
+    private String getShipId(){
         return Utilities.getStringNo('L',jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLsshpm()),9);
     }
 }

@@ -15,7 +15,6 @@ import java.util.List;
 
 /**
  * 출고 - 출고지시 : list response
- * 출고 - 출고내역 : response DTO
  */
 @Getter
 @Setter

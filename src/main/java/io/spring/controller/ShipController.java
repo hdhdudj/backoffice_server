@@ -122,8 +122,8 @@ public class ShipController {
      */
     @GetMapping(path = "/ship/{shipId}")
     public ResponseEntity getShipDetailList(@PathVariable String shipId){
-        ShipIndicateSaveListResponseData shipIndicateSaveListResponseData = jpaShipService.getShipDetailList(shipId);
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateSaveListResponseData);
+        ShipItemListData shipItemListData = jpaShipService.getShipIndicateDetailList(shipId);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipItemListData);
         return ResponseEntity.ok(res);
     }
 }
