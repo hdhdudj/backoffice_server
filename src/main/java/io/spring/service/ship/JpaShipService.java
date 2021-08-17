@@ -137,6 +137,10 @@ public class JpaShipService {
         List<String> shipIdList = new ArrayList<>();
         for (int i = 0; i < tbOrderDetailList.size(); i++) {
             TbOrderDetail tbOrderDetail = tbOrderDetailList.get(i);
+            if(!tbOrderDetail.getStatusCd().equals(StringFactory.getStrC04())){
+                log.debug("해당 주문건이 입고완료(C04) 상태가 아닙니다.");
+                continue;
+            }
             ShipIndicateSaveListData.Ship ship = shipIndicateSaveListData.getShips().get(i);
             if(ship.getQty() > tbOrderDetailList.get(i).getQty()){
                 log.debug("주문량보다 더 많이 출고할 수 없습니다.");
