@@ -9,6 +9,7 @@ import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.deposit.response.DepositSelectDetailResponseData;
 import io.spring.model.deposit.response.DepositSelectListResponseData;
 import io.spring.model.purchase.response.PurchaseListInDepositModalData;
+import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.deposit.JpaDepositService;
 import io.spring.service.purchase.JpaPurchaseService;
@@ -20,7 +21,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -52,6 +52,22 @@ public class DepositController {
                                                      @RequestParam @Nullable String purchaseVendorId){
         PurchaseListInDepositModalData purchaseListInDepositModalData = jpaPurchaseService.getPurchaseMasterList(startDt, endDt, purchaseVendorId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),purchaseListInDepositModalData);
+        return ResponseEntity.ok(res);
+    }
+
+    /**
+     * 입고처리 : 가능한 발주 list get (입고처리 화면에서 발주 번호를 넣고 검색했을 때 나오는 리스트)
+     */
+    @GetMapping(path="/indicate/{purchaseNo}")
+    public ResponseEntity getPurchaseListJpa(@PathVariable String purchaseNo){
+        log.debug("get deposit plan purchase list");
+
+        PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getDepositPlanList(purchaseNo);
+
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectListResponseData);
+        if(res == null){
+            return null;
+        }
         return ResponseEntity.ok(res);
     }
 

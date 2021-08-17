@@ -26,7 +26,6 @@ import io.spring.service.order.JpaOrderService;
 import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-//import org.flywaydb.core.internal.util.StringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +36,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+//import org.flywaydb.core.internal.util.StringUtils;
 
 @Slf4j
 @Service
@@ -92,7 +93,6 @@ public class JpaDepositService {
         jpaPurchaseService.changePurchaseStatus(lsdpspList);
         // 8. tbOrderdetail 주문상태 변경 (lspchm.dealtypeCd = 01(주문발주) 일 때)
         this.changeStatusCdOfTbOrderDetail(lsdpspList);
-
         return lsdpsm.getDepositNo();
     }
 

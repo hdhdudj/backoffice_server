@@ -196,8 +196,8 @@ public class JpaMoveService {
     /**
      * 상품 이동지시 대상 리스트 가져오는 함수
      */
-    public List<GoodsMoveListData> getGoodsMoveList(Date shipIndDt, String storageId, String deliMethod) {
-        List<Ititmc> ititmcList = this.getItitmc(shipIndDt, storageId, deliMethod);
+    public List<GoodsMoveListData> getGoodsMoveList(Date shipIndDt, String storeCd, String oStoreCd, String deliMethod) {
+        List<Ititmc> ititmcList = this.getItitmc(shipIndDt, storeCd, deliMethod);
         List<GoodsMoveListData> goodsMoveListDataList = new ArrayList<>();
         for(Ititmc ititmc : ititmcList){
             GoodsMoveListData goodsMoveListData = new GoodsMoveListData(ititmc);

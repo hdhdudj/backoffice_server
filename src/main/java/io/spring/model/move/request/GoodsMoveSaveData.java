@@ -17,7 +17,8 @@ public class GoodsMoveSaveData {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private Date shipIndDt;
-    private String storeCd;
+    private String oStoreCd; // 목적지(to) 코드 (출고) - 발주할 때 넣는 창고 
+    private String storeCd; // 나가는(from) 창고 - 출고할 때 넣는 창고
     private String deliMethod;
     private List<Goods> goods;
 

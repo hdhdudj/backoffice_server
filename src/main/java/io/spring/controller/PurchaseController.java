@@ -1,20 +1,5 @@
 package io.spring.controller;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
@@ -28,6 +13,14 @@ import io.spring.service.purchase.JpaPurchaseService;
 import io.spring.service.purchase.MyBatisPurchaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/purchase")
@@ -199,22 +192,6 @@ public class PurchaseController {
         param.put("purchaseNo", null);
 
         PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getPurchaseList(param);
-
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectListResponseData);
-        if(res == null){
-            return null;
-        }
-        return ResponseEntity.ok(res);
-    }
-
-    /**
-     * 입고 가능한 발주 list get (입고처리 화면에서 발주 번호를 넣고 검색했을 때 나오는 리스트)
-     */
-    @GetMapping(path="/items/{purchaseNo}")
-    public ResponseEntity getPurchaseListJpa(@PathVariable String purchaseNo){
-        log.debug("get deposit plan purchase list");
-
-        PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getDepositPlanList(purchaseNo);
 
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectListResponseData);
         if(res == null){
