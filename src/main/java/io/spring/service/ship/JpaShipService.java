@@ -16,7 +16,6 @@ import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Itvari;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderMaster;
-import io.spring.model.purchase.entity.Lspchm;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import io.spring.model.ship.entity.Lsshps;
