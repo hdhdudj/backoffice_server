@@ -15,20 +15,21 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
 /**
  * 출고 - 출고지시리스트 : 출고지시일자, 출고지시번호, 상품코드or상품명, 구매처 조건에 맞는 출고지시 리스트 DTO
+ * 출고 - 출고처리 : 출고처리 화면에서 조건 검색으로 리스트 가져올 때도 이용됨.
+ * 출고 - 출고리스트 : 출고리스트 화면에서 조건 검색으로 리스트 가져올 때도 이용됨.
  */
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShipIndicateListData {
-    public ShipIndicateListData(LocalDateTime startDt, LocalDateTime endDt, String shipId, String assortId, String assortNm, String vendorId){
-        this.startDt = startDt.toLocalDate();
-        this.endDt = endDt.toLocalDate();
+    public ShipIndicateListData(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String vendorId){
+        this.startDt = startDt;
+        this.endDt = endDt;
         this.shipId = shipId;
         this.assortId = assortId;
         this.assortNm = assortNm;
@@ -64,9 +65,16 @@ public class ShipIndicateListData {
             this.custNm = tbOrderDetail.getTbOrderMaster().getTbMember().getCustNm();
             this.assortNm = tbOrderDetail.getGoodsNm();
             this.blNo = lsshpm.getBlNo(); // 트래킹 번호
+            this.shipDt = lsshpm.getApplyDay();
             // 옵션은 외부 set
             // qty는 외부 set
         }
+
+        // 출고리스트에서만 쓰이는 요소
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        private Date shipDt;
+//        private String 송장번호
+
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
         private Date shipIndDt;
         private String shipId;

@@ -16,7 +16,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -55,7 +54,7 @@ public class ShipController {
      * 출고지시리스트 화면 : 출고지시리스트 화면에서 조건 검색으로 출고지시 리스트를 불러오는 api
      */
     @GetMapping(path = "/indicate/items")
-    public ResponseEntity getShipList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+    public ResponseEntity getShipIndicateList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
                                       @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
                                       @RequestParam @Nullable String shipId,
                                        @RequestParam @Nullable String assortId,
@@ -72,8 +71,8 @@ public class ShipController {
      * 출고지시내역 화면 : 출고지시번호를 받아 해당 출고지시번호의 내역 마스터(Lsshpm)와 목록(Lsshpd)을 보여줌
      */
     @GetMapping(path = "/indicate/{shipId}")
-    public ResponseEntity getShipDetailList(@PathVariable String shipId){
-        ShipItemListData shipItemListData = jpaShipService.getShipDetailList(shipId);
+    public ResponseEntity getShipIndicateDetailList(@PathVariable String shipId){
+        ShipItemListData shipItemListData = jpaShipService.getShipIndicateDetailList(shipId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipItemListData);
         return ResponseEntity.ok(res);
     }
@@ -100,6 +99,31 @@ public class ShipController {
     public ResponseEntity shipIndToShip(@RequestBody ShipSaveListData shipSaveListData){
         List<String> shipIdList = jpaShipService.shipIndToShip(shipSaveListData);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIdList);
+        return ResponseEntity.ok(res);
+    }
+
+    /**
+     * 출고리스트 화면 : 출고지시일자, 출고지시번호, 상품코드, 구매처를 받아서 조회하면 출고 목록을 보여줌
+     */
+    @GetMapping(path = "/ship/items")
+    public ResponseEntity getShipList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+                                             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+                                             @RequestParam @Nullable String shipId,
+                                             @RequestParam @Nullable String assortId,
+                                             @RequestParam @Nullable String assortNm,
+                                             @RequestParam @Nullable String vendorId){
+        ShipIndicateListData shipIndicateListData = jpaShipService.getShipList(startDt, endDt, shipId, assortId, assortNm, vendorId, StringFactory.getStrD02());
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
+        return ResponseEntity.ok(res);
+    }
+
+    /**
+     * 출고내역 화면 : shipId로 검색하면 출고 디테일 목록을 보여줌
+     */
+    @GetMapping(path = "/ship/{shipId}")
+    public ResponseEntity getShipDetailList(@PathVariable String shipId){
+        ShipIndicateSaveListResponseData shipIndicateSaveListResponseData = jpaShipService.getShipDetailList(shipId);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateSaveListResponseData);
         return ResponseEntity.ok(res);
     }
 }
