@@ -21,7 +21,7 @@ public class Lsshps extends CommonProps {
     public Lsshps(Lsshpm lsshpm){
         this.shipId = lsshpm.getShipId();
         this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
-        this.effStaDt = new Date();//lsshpd.getExcAppDt();
+        this.effStaDt = new Date();
         this.shipStatus = lsshpm.getShipStatus();
 //        this.shipIndicateUserid =
 //        this.shipUserid =

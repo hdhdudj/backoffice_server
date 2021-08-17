@@ -1,5 +1,6 @@
 package io.spring.model.ship.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,9 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShipSaveListData {
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date startDt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date endDt;
     private String shipId;
     private String assortId;
@@ -27,6 +30,7 @@ public class ShipSaveListData {
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Ship{
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         private Date shipIndDt;
         private String shipId;
         private String shipSeq;

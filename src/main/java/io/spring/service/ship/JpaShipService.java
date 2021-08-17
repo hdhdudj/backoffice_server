@@ -37,7 +37,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -135,7 +134,7 @@ public class JpaShipService {
                 continue;
             }
             // 2. 출고 data 생성
-            String shipId = this.makeShipData(ititmcList.get(0), ship, tbOrderDetail, StringFactory.getGbFour()); // 01 : 이동지시, 04 : 출고
+            String shipId = this.makeShipData(ititmcList.get(0), ship, tbOrderDetail, StringFactory.getGbOne()); // 01 : 이동지시or출고지시, 04 : 출고
             if(shipId != null){shipIdList.add(shipId);}
             // 3. 주문 상태 변경 (C04 -> D01)
             tbOrderDetail.setStatusCd(StringFactory.getStrD01()); // D01 하드코딩
@@ -182,7 +181,8 @@ public class JpaShipService {
             if(i==0){
                 // lsshpm 저장
                 Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail);
-                lsshpm.setShipStatus(shipStatus); // 01 : 이동지시, 04 : 출고
+                lsshpm.setShipStatus(shipStatus); // 01 : 이동지시or출고지시, 04 : 출고
+                lsshpm.setDeliId(tbOrderDetail.getTbOrderMaster().getDeliId());
                 // lsshps 저장
                 Lsshps lsshps = new Lsshps(lsshpm);
                 jpaLsshpsRepository.save(lsshps);
@@ -294,8 +294,91 @@ public class JpaShipService {
     @Transactional
     public List<String> shipIndToShip(ShipSaveListData shipSaveListData) {
         List<String> shipIdList = new ArrayList<>();
+        // 1. ititmc의 두 qty에서 처리된 양만큼 빼기
+        List<Lsshpd> lsshpdList = new ArrayList<>();
+        for(ShipSaveListData.Ship ship : shipSaveListData.getShips()){
+            Lsshpd lsshpd = jpaLsshpdRepository.findByShipIdAndShipSeq(ship.getShipId(), ship.getShipSeq());
+            if(lsshpd.getLsshpm().getShipStatus().equals(StringFactory.getGbFour())){ // shipStatus가 이미 04(출고)면 패스
+                log.debug("요청된 출고처리 " + Utilities.addDashInMiddle(lsshpd.getShipId(), lsshpd.getShipSeq()) + "는 이미 출고된 상태입니다.");
+                continue;
+            }
+            lsshpdList.add(lsshpd);
+            // 2. 해당 tbOrderDetail statusCd 변경
+            TbOrderDetail tbOrderDetail = lsshpd.getTbOrderDetail();
+            List<Ititmc> ititmcList = jpaItitmcRepository.findByOrderIdAndOrderSeqOrderByEffEndDtAsc(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
+            // 재고에서 출고 차감 계산
+            ititmcList = this.subItitmcQties(ititmcList, ship.getQty()); // 주문량만큼 출고차감 (하나의 ititmc에서 모두 차감하므로 ititmcList에 값이 있다면 한 개만 들어있어야 함)
+            if(ititmcList.size()==0){
+                log.debug("출고처리량 이상의 출고지시량을 가진 재고 세트가 없습니다.");
+                continue;
+            }
+            else {
+                tbOrderDetail.setStatusCd(StringFactory.getStrD02()); // D02 하드코딩
+                jpaTbOrderDetailRepository.save(tbOrderDetail);
+            }
+        }
+        // 3. lss- 시리즈 찾아서 수정하고 꺾기
+        for(Lsshpd lsshpd : lsshpdList){
+            shipIdList.add(this.updateLssSeries(lsshpd));
+        }
         return shipIdList;
     }
+
+    /**
+     * lsshpd 수량 수정, lsshpm shipStatus 01->04 수정, lsshps 꺾어주는 함수
+     */
+    private String updateLssSeries(Lsshpd lsshpd){
+        // 3-1. lsshpd 수량 수정
+        lsshpd.setShipQty(1l);
+        jpaLsshpdRepository.save(lsshpd);
+        // 3-2. lsshpm shipStatus 01 -> 04
+        Lsshpm lsshpm = lsshpd.getLsshpm();
+        lsshpm.setShipStatus(StringFactory.getGbFour()); // 01 : 출고지시or이동지시, 04 : 출고. 04 하드코딩
+        jpaLsshpmRepository.save(lsshpm);
+        // 2-3. lsshps 꺾어주기
+        Lsshps lsshps = new Lsshps(lsshpm);
+        this.updateLsshps(lsshps);
+        return lsshpd.getShipSeq();
+    }
+
+    /**
+     * Lsshps를 꺾어주는 함수
+     */
+    private void updateLsshps(Lsshps newLsshps) {
+        Lsshps lsshps = jpaLsshpsRepository.findByShipIdAndEffEndDt(newLsshps.getShipId(), Utilities.getStringToDate(StringFactory.getDoomDay()));
+        lsshps.setEffEndDt(new Date());
+        jpaLsshpsRepository.save(lsshps);
+        jpaLsshpsRepository.save(newLsshps);
+    }
+
+    /**
+     * 상품이동지시 저장시 ititmc의 qty 값을 차감해주는 함수
+     */
+    public List<Ititmc> subItitmcQties(List<Ititmc> ititmcList, long shipQty) {
+        List<Ititmc> newItitmcList = new ArrayList<>();
+        long ititmcShipIndQty = jpaMoveService.getItitmcShipIndQtyByStream(ititmcList);
+        long ititmcQty = jpaMoveService.getItitmcQtyByStream(ititmcList);
+        if(ititmcShipIndQty < shipQty){
+            return newItitmcList;
+        }
+        for(Ititmc ititmc : ititmcList){
+            long qty = ititmc.getQty() == null? 0l:ititmc.getQty(); // ititmc 재고량
+            long shipIndQty = ititmc.getShipIndicateQty() == null? 0l:ititmc.getShipIndicateQty(); // ititmc 출고예정량
+//            long canShipQty = qty - shipIndQty; // 출고가능량
+            if(shipIndQty < shipQty){ // 출고 불가
+                continue;
+            }
+            else { // 이 차례에서 출고 완료 가능
+                ititmc.setShipIndicateQty(shipIndQty - shipQty);
+                ititmc.setQty(qty - shipQty);
+                jpaItitmcRepository.save(ititmc);
+                newItitmcList.add(ititmc);
+                break;
+            }
+        }
+        return newItitmcList;
+    }
+
 
     /**
      * shipId 채번 함수

@@ -1,6 +1,10 @@
 package io.spring.model.ship.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.ship.entity.Lsshpd;
@@ -23,17 +27,21 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShipIndicateListData {
     public ShipIndicateListData(LocalDateTime startDt, LocalDateTime endDt, String shipId, String assortId, String assortNm, String vendorId){
-        this.startDt = startDt;
-        this.endDt = endDt;
+        this.startDt = startDt.toLocalDate();
+        this.endDt = endDt.toLocalDate();
         this.shipId = shipId;
         this.assortId = assortId;
         this.assortNm = assortNm;
         this.vendorId = vendorId;
     }
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private LocalDateTime startDt;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private LocalDateTime endDt;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate startDt;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate endDt;
     private String shipId;
     private String assortId;
     private String assortNm;
