@@ -83,9 +83,9 @@ public class JpaMoveService {
         deliMethod = deliMethod == null || deliMethod.equals("")? "" : " and t.deliMethod='" + deliMethod + "'";
         Query query = em.createQuery("select d from Lsdpsd d " +
                 "join fetch d.lsdpsm m " +
-                "join fetch d.lsdpsp p " +
-                "join fetch p.tbOrderDetail t " +
-                "join fetch t.itasrt i " +
+//                "join fetch d.lsdpsp p " +
+//                "join fetch p.tbOrderDetail t " +
+                "join fetch d.itasrt i " +
                 "where " +
                 "m.depositDt between ?1 and ?2" +
                 storageId + assortId + itemId + deliMethod
@@ -223,6 +223,7 @@ public class JpaMoveService {
         List<Ititmc> ititmcList = query.getResultList();
         return ititmcList;
     }
+
     /**
      * 상품 이동지시 저장 함수
      */
