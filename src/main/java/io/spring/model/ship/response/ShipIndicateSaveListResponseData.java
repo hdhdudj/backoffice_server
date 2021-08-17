@@ -69,7 +69,7 @@ public class ShipIndicateSaveListResponseData {
         private String assortNm;
         private String optionNm1;
         private String optionNm2;
-//        private Long availableQty;
+        private Long availableQty;
         private Long qty;
     }
 }

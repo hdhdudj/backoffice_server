@@ -68,7 +68,10 @@ public class JpaShipService {
         // tbOrderDetailList 중 statusCd가 C04인 애들만 남겨두기
         tbOrderDetailList = tbOrderDetailList.stream().filter(x->x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList());
         for(TbOrderDetail tbOrderDetail : tbOrderDetailList){
+            List<Ititmc> ititmcList = jpaItitmcRepository.findByOrderIdAndOrderSeqOrderByEffEndDtAsc(tbOrderDetail.getAssortId(),tbOrderDetail.getItemId());
+            long availableQty = this.calcMaxAvailableQty(ititmcList);
             ShipIndicateSaveListResponseData.Ship ship = new ShipIndicateSaveListResponseData.Ship(tbOrderDetail);
+            ship.setAvailableQty(availableQty);
             shipList.add(ship);
             List<Itvari> itvariList = tbOrderDetail.getItasrt().getItvariList();
             if(itvariList.size() > 0){
@@ -83,6 +86,20 @@ public class JpaShipService {
         ShipIndicateSaveListResponseData shipIndicateSaveListResponseData = new ShipIndicateSaveListResponseData(startDt, endDt, assortId, assortNm, purchaseVendorId);
         shipIndicateSaveListResponseData.setShips(shipList);
         return shipIndicateSaveListResponseData;
+    }
+
+    /**
+     * 해당 ititmcList 중 shipIndicateQty의 최댓값을 반환하는 함수
+     */
+    private long calcMaxAvailableQty(List<Ititmc> ititmcList) {
+        long maxShipIndicateQty = -1;
+        for(Ititmc ititmc : ititmcList){
+            long shipIndicateQty = ititmc.getShipIndicateQty() == null ? 0l : ititmc.getShipIndicateQty();
+            if(shipIndicateQty > maxShipIndicateQty){
+                maxShipIndicateQty = shipIndicateQty;
+            }
+        }
+        return maxShipIndicateQty;
     }
 
     /**
