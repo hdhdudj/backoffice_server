@@ -397,7 +397,7 @@ public class JpaDepositService {
                 Itvari itvari2 = itvariList.get(1);
                 deposit.setOptionNm2(itvari2.getOptionNm());
             }
-            List<Lsdpsp> lsdpspList = lsdpsd.getLspchd().getLsdpsp();
+//            List<Lsdpsp> lsdpspList = lsdpsd.getLspchd().getLsdpsp();
 //            lsdpspList.stream().filter(x->x.getPlanStatus().equals(StringFactory.getGbOne())).map(x->x.getq).reduce((a,b)->a+b).get();
             deposit.setDepositQty(lsdpsd.getDepositQty());
             //
