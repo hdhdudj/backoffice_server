@@ -34,8 +34,10 @@ public class NapiController {
 	public ResponseEntity getNaverAdKeyword(@RequestParam @Nullable String keyword) {
 		
 		String responseBody = "";
-		Map<String, Object> map = new HashMap<>();
+		Map<String, Object> ret = new HashMap<>();
 		List<KeywordTool> list = new ArrayList<KeywordTool>();
+
+		JSONObject rr = null;
 
 		try {
 			// Properties properties = PropertiesLoader.fromResource("sample.properties");
@@ -53,7 +55,7 @@ public class NapiController {
 
 			responseBody = r.getBody();
 
-			JSONObject rr = new JSONObject(responseBody);
+			rr = new JSONObject(responseBody);
 
 			String l = rr.get("keywordList").toString();
 
@@ -70,7 +72,7 @@ public class NapiController {
 			}.getType());
 
 
-			// map.put("msg", responseBody);
+			ret.put("keywordList", list);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -80,7 +82,7 @@ public class NapiController {
 
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
-				list);
+				ret);
 		return ResponseEntity.ok(res);
 	}
 
