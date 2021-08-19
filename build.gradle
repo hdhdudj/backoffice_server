@@ -44,6 +44,13 @@ dependencies {
     implementation 'junit:junit:4.13.1'
     implementation 'org.junit.jupiter:junit-jupiter:5.7.0'
 
+
+	// https://mvnrepository.com/artifact/com.mashape.unirest/unirest-java
+	implementation group: 'com.mashape.unirest', name: 'unirest-java', version: '1.4.8'
+	// https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on
+	implementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.54'
+
+
     // https://mvnrepository.com/artifact/commons-net/commons-net
     implementation group: 'commons-net', name: 'commons-net', version: '3.6'
 

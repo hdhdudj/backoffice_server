@@ -5,11 +5,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.firewall.DefaultHttpFirewall;
+import org.springframework.security.web.firewall.HttpFirewall;
 
 
 @EnableWebSecurity
@@ -27,6 +30,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 			// -- swagger ui
 			"/swagger-resources/**", "/swagger-ui.html", "/v2/api-docs", "/webjars/**" };
+
+	@Override
+	public void configure(WebSecurity web) throws Exception {
+		web.httpFirewall(defaultHttpFirewall());
+	}
+
+	@Bean
+	public HttpFirewall defaultHttpFirewall() {
+		return new DefaultHttpFirewall();
+	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -63,6 +76,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.GET, "/file/**").permitAll()
 				.antMatchers(HttpMethod.POST, "/file/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/xml/**").permitAll()
+				.antMatchers(HttpMethod.GET, "/napi/**").permitAll()
 
 			
 				//
