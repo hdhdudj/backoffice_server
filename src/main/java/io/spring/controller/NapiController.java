@@ -1,8 +1,11 @@
 package io.spring.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,12 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.request.HttpRequest;
 
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.naver.RestClient;
+import io.spring.model.napi.KeywordTool;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -29,6 +35,8 @@ public class NapiController {
 		
 		String responseBody = "";
 		Map<String, Object> map = new HashMap<>();
+		List<KeywordTool> list = new ArrayList<KeywordTool>();
+
 		try {
 			// Properties properties = PropertiesLoader.fromResource("sample.properties");
 			String baseUrl = "https://api.naver.com";
@@ -45,16 +53,34 @@ public class NapiController {
 
 			responseBody = r.getBody();
 
+			JSONObject rr = new JSONObject(responseBody);
+
+			String l = rr.get("keywordList").toString();
+
+			Gson gson = new Gson();
+
+			
+			// JSONObject jsonObject = new JSONObject(responseBody);
+			// KeywordTool[] arr = gson.fromJson(responseBody, KeywordTool[].class);
+
+			// KeywordTool[] array = gson.fromJson(responseBody, KeywordTool[].class);
+//			list = Arrays.asList(array);
+
+			list = gson.fromJson(l, new TypeToken<List<KeywordTool>>() {
+			}.getType());
+
 
 			// map.put("msg", responseBody);
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			ApiResponseMessage res = new ApiResponseMessage("ERROR", "ERROR", "");
+			return ResponseEntity.ok(res);
 		}
 
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
-				responseBody);
+				list);
 		return ResponseEntity.ok(res);
 	}
 
