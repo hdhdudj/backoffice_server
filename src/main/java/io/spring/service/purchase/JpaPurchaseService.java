@@ -486,6 +486,7 @@ public class JpaPurchaseService {
         purchaseSelectListResponseData.setPurchaseDt(Utilities.removeTAndTransToStr(lspchm.getPurchaseDt()));
         purchaseSelectListResponseData.setDepositStoreId(lspchm.getStoreCd());
         purchaseSelectListResponseData.setPurchaseVendorId(lspchm.getPurchaseVendorId());
+        purchaseSelectListResponseData.setPurchaseGb(lspchm.getPurchaseGb());
 
         for(Lsdpsp lsdpsp : lsdpspList){
             if(lsdpsp.getPurchasePlanQty() == lsdpsp.getPurchaseTakeQty()){

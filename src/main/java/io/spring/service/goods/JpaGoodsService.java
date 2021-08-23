@@ -38,6 +38,7 @@ public class JpaGoodsService {
     private final JpaItitmdRepository jpaItitmdRepository;
     private final JpaItaimgRepository jpaItaimgRepository;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
+    private final JpaIfBrandRepository jpaIfBrandRepository;
     private final JpaIfCategoryRepository jpaIfCategoryRepository;
 
     private final JpaTmmapiRepository jpaTmmapiRepository;
@@ -598,7 +599,8 @@ public class JpaGoodsService {
         GoodsSelectDetailResponseData goodsSelectDetailResponseData = new GoodsSelectDetailResponseData(itasrt);
 
 		// 카테고리벨류
-
+        IfBrand ifBrand = jpaIfBrandRepository.findByChannelGbAndChannelBrandId(StringFactory.getGbOne(),itasrt.getBrandId());
+        goodsSelectDetailResponseData.setBrandNm(ifBrand.getBrandNm());
         List<GoodsSelectDetailResponseData.Description> descriptions = makeDescriptions(itasrt.getItasrdList());
         List<GoodsSelectDetailResponseData.Attributes> attributesList = makeAttributesList(itasrt.getItvariList());
         List<GoodsSelectDetailResponseData.Items> itemsList = makeItemsList(itasrt.getItitmmList());
@@ -697,7 +699,6 @@ public class JpaGoodsService {
     public GoodsSelectListResponseData getGoodsList(String shortageYn, Date regDtBegin, Date regDtEnd) {
         TypedQuery<Itasrt> query =
                 em.createQuery("select t from Itasrt t " +
-                                "left join fetch t.itbrnd b " +
                                 "left join fetch t.itcatg c " +
                                 "where t.regDt " +
                                 "between ?1 " +
@@ -711,6 +712,8 @@ public class JpaGoodsService {
         List<GoodsSelectListResponseData.Goods> goodsList = new ArrayList<>();
         for(Itasrt itasrt : itasrtList){
             GoodsSelectListResponseData.Goods goods = new GoodsSelectListResponseData.Goods(itasrt);
+            IfBrand ifBrand = jpaIfBrandRepository.findByChannelGbAndChannelBrandId(StringFactory.getGbOne(),itasrt.getBrandId()); // 채널은 01 하드코딩
+            goods.setBrandNm(ifBrand.getBrandNm());
             goodsList.add(goods);
         }
         GoodsSelectListResponseData goodsSelectListResponseData = new GoodsSelectListResponseData(goodsList);

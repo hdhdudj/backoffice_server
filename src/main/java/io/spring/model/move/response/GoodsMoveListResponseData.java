@@ -9,8 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GoodsMoveListData {
-    public GoodsMoveListData(Ititmc ititmc){
+public class GoodsMoveListResponseData {
+    public GoodsMoveListResponseData(Ititmc ititmc){
         this.assortId = ititmc.getAssortId();
         this.itemId = ititmc.getItemId();
         this.assortNm = ititmc.getItasrt().getAssortNm();

@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class ShipIndicateSaveListData {
             TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
             Itasrt itasrt = tbOrderDetail.getItasrt();
             TbMember tbMember = tbOrderMaster.getTbMember();
-            this.orderDt = tbOrderDetail.getTbOrderMaster().getOrderDate();
+            this.orderDt = (tbOrderDetail.getTbOrderMaster().getOrderDate());
             this.orderId = tbOrderDetail.getOrderId();
             this.orderSeq = tbOrderDetail.getOrderSeq();
             this.orderKey = Utilities.addDashInMiddle(this.orderId, this.orderSeq);
@@ -59,7 +60,7 @@ public class ShipIndicateSaveListData {
             // optionNm1, optionNm2는 외부에서 set
         }
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-        private Date orderDt;
+        private LocalDateTime orderDt;
         private String orderId;
         private String orderSeq;
         private String orderKey;

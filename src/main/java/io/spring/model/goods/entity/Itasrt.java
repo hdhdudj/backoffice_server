@@ -233,11 +233,11 @@ public class Itasrt extends CommonProps {
 	@JsonIgnore
 	private List<Itasrd> itasrdList;
 
-	@JoinColumn(name="brandId", referencedColumnName = "brandId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JsonIgnore
-	@NotFound(action = NotFoundAction.IGNORE)
-	private Itbrnd itbrnd; // itbrnd 연관관계
+//	@JoinColumn(name="brandId", referencedColumnName = "channelBrandId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	@JsonIgnore
+//	@NotFound(action = NotFoundAction.IGNORE)
+//	private IfBrand ifBrand; // ifBrand 연관관계
 
 	@JoinColumn(name="dispCategoryId", referencedColumnName = "categoryId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@ManyToOne(fetch = FetchType.LAZY)

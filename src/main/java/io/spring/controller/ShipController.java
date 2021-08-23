@@ -16,7 +16,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -30,8 +29,8 @@ public class ShipController {
      * 출고지시 화면 : 출고지시 저장 화면에서 저장하기 위한 리스트를 조건 검색으로 불러오는 api (주문번호 기준으로 불러옴)
      */
     @GetMapping(path = "/deposit/items")
-    public ResponseEntity getOrderSaveList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date startDt,
-                                           @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date endDt,
+    public ResponseEntity getOrderSaveList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable LocalDate startDt,
+                                           @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable LocalDate endDt,
                                            @RequestParam @Nullable String assortId,
                                            @RequestParam @Nullable String assortNm,
                                            @RequestParam @Nullable String vendorId){

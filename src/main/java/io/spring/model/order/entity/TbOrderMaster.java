@@ -11,7 +11,7 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -26,7 +26,7 @@ public class TbOrderMaster extends CommonProps {
     private String orderId;
     private String firstOrderId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date orderDate;
+    private LocalDateTime orderDate;
     private String orderStatus;
     private String channelGb;
     private Long custId;

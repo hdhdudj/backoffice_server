@@ -27,7 +27,7 @@ public class GoodsSelectListResponseData {
             this.shortageYn = itasrt.getShortageYn();
             this.brandId = itasrt.getBrandId();
             this.dispCategoryId = itasrt.getDispCategoryId();
-            this.brandNm = itasrt.getItbrnd().getBrandNm();
+//            this.brandNm = itasrt.getIfBrand().getBrandNm(); 바깥에서 set
             this.categoryNm = itasrt.getItcatg().getCategoryNm();
         }
         private String assortNm;

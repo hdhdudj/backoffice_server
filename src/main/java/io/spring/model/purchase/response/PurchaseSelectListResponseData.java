@@ -68,6 +68,7 @@ public class PurchaseSelectListResponseData {
         public Purchase(Lspchm lspchm){
             this.purchaseNo = lspchm.getPurchaseNo();
             this.purchaseVendorId = lspchm.getPurchaseVendorId();
+            this.purchaseGb = lspchm.getPurchaseGb();
         }
         // 발주리스트, 입고처리 화면 공통 요소
         private String purchaseNo; // 발주번호

@@ -5,8 +5,8 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
 import io.spring.model.move.request.ShipIdAndSeq;
-import io.spring.model.move.response.GoodsMoveListData;
-import io.spring.model.move.response.OrderMoveListData;
+import io.spring.model.move.response.GoodsModalListResponseData;
+import io.spring.model.move.response.OrderMoveListResponseData;
 import io.spring.service.move.JpaMoveService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,8 +45,8 @@ public class MoveController {
         map.put("itemId", itemId);
         map.put("deliMethod", deliMethod);
 
-        List<OrderMoveListData> orderMoveListData = jpaMoveService.getOrderMoveList(map);
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), orderMoveListData);
+        List<OrderMoveListResponseData> orderMoveListResponseData = jpaMoveService.getOrderMoveList(map);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), orderMoveListResponseData);
         return ResponseEntity.ok(res);
     }
 
@@ -63,17 +62,31 @@ public class MoveController {
     }
 
     /**
-     * 상품이동지시 화면에서 검색시 가져오는 상품 list를 return
+     * 상품선택창 검색 결과 return 함수
+     * 상품이동지시 화면에서 storeCd, purchaseVendorId, assortId, assortNm로 상품(Ititmc 기준)을 가져와 목록을 return
      */
-    @GetMapping(path="/items/indicate/goods")
-    public ResponseEntity getGoodsMoveList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date shipIndDt,
-                                           @RequestParam @Nullable String storeCd,
-                                           @RequestParam @Nullable String oStoreCd,
-                                           @RequestParam @Nullable String deliMethod){
-        List<GoodsMoveListData> goodsMoveListDataList = jpaMoveService.getGoodsMoveList(shipIndDt, storeCd, oStoreCd, deliMethod);
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), goodsMoveListDataList);
+    @GetMapping(path="/items/goods")
+    public ResponseEntity getGoodsMoveList(@RequestParam @Nullable String storeCd,
+                                           @RequestParam @Nullable String vendorId,
+                                           @RequestParam @Nullable String assortId,
+                                           @RequestParam @Nullable String assortNm){
+        GoodsModalListResponseData goodsMoveListDataListResponse = jpaMoveService.getGoodsList(storeCd, vendorId, assortId, assortNm);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), goodsMoveListDataListResponse);
         return ResponseEntity.ok(res);
     }
+
+//    /**
+//     * 상품이동지시 화면에서 검색시 가져오는 상품 list를 return
+//     */
+//    @GetMapping(path="/items/indicate/goods")
+//    public ResponseEntity getGoodsMoveList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate shipIndDt,
+//                                           @RequestParam @Nullable String storeCd,
+//                                           @RequestParam @Nullable String oStoreCd,
+//                                           @RequestParam @Nullable String deliMethod){
+//        List<GoodsMoveListResponseData> goodsMoveListDataListResponse = jpaMoveService.getGoodsMoveList(shipIndDt, storeCd, oStoreCd, deliMethod);
+//        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), goodsMoveListDataListResponse);
+//        return ResponseEntity.ok(res);
+//    }
 
     /**
      * 상품이동지시 저장

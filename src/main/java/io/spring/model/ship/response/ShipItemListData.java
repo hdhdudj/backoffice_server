@@ -25,16 +25,16 @@ public class ShipItemListData {
         this.storageId = lsshpm.getStorageId();
         this.vendorId = lsshpm.getVendorId();
 //        this.orderDt = lsshpm.get 밖에서 set
-        this.shipIndicateDt =java.sql.Timestamp.valueOf(lsshpm.getReceiptDt());
+        this.shipIndicateDt = Utilities.removeTAndTransToStr(lsshpm.getReceiptDt());
         this.shipDt = lsshpm.getApplyDay();
     }
     private String shipId;
     private String storageId;
     private String vendorId;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date orderDt;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date shipIndicateDt;
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+    private String orderDt;
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+    private String shipIndicateDt;
     private List<Ship> ships;
     // 출고내역에만 있는 요소
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")

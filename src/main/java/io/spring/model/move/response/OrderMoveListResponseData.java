@@ -12,8 +12,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrderMoveListData {
-    public OrderMoveListData(Lsdpsd lsdpsd){
+public class OrderMoveListResponseData {
+    public OrderMoveListResponseData(Lsdpsd lsdpsd){
         this.depositNo = lsdpsd.getDepositNo();
         this.depositSeq = lsdpsd.getDepositSeq();
         this.assortId = lsdpsd.getAssortId();

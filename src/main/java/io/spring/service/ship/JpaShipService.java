@@ -62,7 +62,7 @@ public class JpaShipService {
     /**
      * 출고지시 화면에서 조건검색하면 리스트를 반환해주는 함수
      */
-    public ShipIndicateSaveListResponseData getOrderSaveList(Date startDt, Date endDt, String assortId, String assortNm, String purchaseVendorId) {
+    public ShipIndicateSaveListResponseData getOrderSaveList(LocalDate startDt, LocalDate endDt, String assortId, String assortNm, String purchaseVendorId) {
         List<ShipIndicateSaveListResponseData.Ship> shipList = new ArrayList<>();
         List<TbOrderDetail> tbOrderDetailList = this.getOrdersByCondition(startDt, endDt, assortId, assortNm, purchaseVendorId);
         // tbOrderDetailList 중 statusCd가 C04인 애들만 남겨두기
@@ -105,9 +105,9 @@ public class JpaShipService {
     /**
      * 출고지시 화면에서 검색 조건에 따른 tbOrderDetail 객체를 가져오는 쿼리를 실행해 결과를 반환하는 함수
      */
-    private List<TbOrderDetail> getOrdersByCondition(Date startDt, Date endDt, String assortId, String assortNm, String vendorId) {
-        startDt = startDt == null? Utilities.getStringToDate(StringFactory.getStartDay()) : Utilities.addHoursToJavaUtilDate(startDt,0);
-        endDt = endDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()) : Utilities.addHoursToJavaUtilDate(startDt,24);
+    private List<TbOrderDetail> getOrdersByCondition(LocalDate startDt, LocalDate endDt, String assortId, String assortNm, String vendorId) {
+        LocalDateTime start = startDt.atStartOfDay();
+        LocalDateTime end = endDt.atTime(23,59,59);
         TypedQuery<TbOrderDetail> query = em.createQuery("select td from TbOrderDetail td " +
                 "join fetch td.tbOrderMaster to " +
                 "join fetch td.itasrt it " +
@@ -116,7 +116,7 @@ public class JpaShipService {
                 "and (?4 is null or trim(?4)='' or it.vendorId=?4) "+
                 "and (?5 is null or trim(?5)='' or it.assortNm like concat('%', ?5, '%'))"
                 , TbOrderDetail.class);
-        query.setParameter(1,startDt).setParameter(2,endDt)
+        query.setParameter(1,start).setParameter(2,end)
         .setParameter(3,assortId).setParameter(4,vendorId)
         .setParameter(5,assortNm);
         List<TbOrderDetail> tbOrderDetailList = query.getResultList();
@@ -292,7 +292,7 @@ public class JpaShipService {
         Lsshpm lsshpm = jpaLsshpmRepository.findByShipId(shipId);
         ShipItemListData shipItemListData = new ShipItemListData(lsshpm);
         TbOrderMaster tbOrderMaster = lsshpm.getTbOrderMaster();
-        shipItemListData.setOrderDt(tbOrderMaster.getOrderDate());
+        shipItemListData.setOrderDt(Utilities.removeTAndTransToStr(tbOrderMaster.getOrderDate()));
         List<Lsshpd> lsshpdList = lsshpm.getLsshpdList();
         List<ShipItemListData.Ship> shipList = new ArrayList<>();
         for(Lsshpd lsshpd:lsshpdList){

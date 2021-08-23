@@ -3,19 +3,22 @@ package io.spring.service.move;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
+import io.spring.jparepos.goods.JpaIfBrandRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
 import io.spring.model.deposit.entity.Lsdpsd;
+import io.spring.model.goods.entity.IfBrand;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
+import io.spring.model.goods.entity.Itvari;
 import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
 import io.spring.model.move.request.ShipIdAndSeq;
-import io.spring.model.move.response.GoodsMoveListData;
-import io.spring.model.move.response.OrderMoveListData;
+import io.spring.model.move.response.GoodsModalListResponseData;
+import io.spring.model.move.response.OrderMoveListResponseData;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.ship.entity.Lsshpd;
@@ -41,6 +44,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class JpaMoveService {
 //    private final JpaCommonService jpaCommonService;
+    private final JpaIfBrandRepository jpaIfBrandRepository;
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
     private final JpaItitmcRepository jpaItitmcRepository;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
@@ -55,7 +59,7 @@ public class JpaMoveService {
     /**
      * 주문 이동지시 대상 리스트 가져오는 함수 
      */
-    public List<OrderMoveListData> getOrderMoveList(Map<String, Object> map) {
+    public List<OrderMoveListResponseData> getOrderMoveList(Map<String, Object> map) {
         LocalDate startDt = (LocalDate)map.get(StringFactory.getStrStartDt());
         LocalDate endDt = (LocalDate)map.get(StringFactory.getStrEndDt());
         String storageId = (String)map.get(StringFactory.getStrStorageId());
@@ -63,12 +67,12 @@ public class JpaMoveService {
         String itemId = (String)map.get(StringFactory.getStrItemId());
         String deliMethod = (String)map.get(StringFactory.getStrDeliMethod());
         List<Lsdpsd> lsdpsdList = this.getLsdpsd(startDt, endDt, storageId, assortId, itemId, deliMethod);
-        List<OrderMoveListData> orderMoveListDataList = new ArrayList<>();
+        List<OrderMoveListResponseData> orderMoveListDataListResponse = new ArrayList<>();
         for(Lsdpsd lsdpsd : lsdpsdList){
-            OrderMoveListData orderMoveListData = new OrderMoveListData(lsdpsd);
-            orderMoveListDataList.add(orderMoveListData);
+            OrderMoveListResponseData orderMoveListResponseData = new OrderMoveListResponseData(lsdpsd);
+            orderMoveListDataListResponse.add(orderMoveListResponseData);
         }
-        return orderMoveListDataList;
+        return orderMoveListDataListResponse;
     }
 
     /**
@@ -78,10 +82,6 @@ public class JpaMoveService {
         // lsdpsd, lsdpsm, tbOrderDetail, itasrt, itvari
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
-//        storageId = storageId == null || storageId.equals("")? "" : " and m.storeCd='" + storageId + "'";
-//        assortId = assortId == null || assortId.equals("")? "" : " and d.assortId='" + assortId + "'";
-//        itemId = itemId == null || itemId.equals("")? "" : " and d.itemId='" + itemId + "'";
-//        deliMethod = deliMethod == null || deliMethod.equals("")? "" : " and t.deliMethod='" + deliMethod + "'";
         Query query = em.createQuery("select d from Lsdpsd d " +
                 "join fetch d.lsdpsm m " +
                 "join fetch d.lspchd pd " +
@@ -198,32 +198,72 @@ public class JpaMoveService {
     }
 
     /**
-     * 상품 이동지시 대상 리스트 가져오는 함수
+     * 상품 선택창 : 물류센터, 구매처, 상품, 상품명을 입력한 후 검색 버튼을 눌렀을 때 상품 목록을 반환
      */
-    public List<GoodsMoveListData> getGoodsMoveList(Date shipIndDt, String storeCd, String oStoreCd, String deliMethod) {
-        List<Ititmc> ititmcList = this.getItitmc(shipIndDt, storeCd, deliMethod);
-        List<GoodsMoveListData> goodsMoveListDataList = new ArrayList<>();
+    public GoodsModalListResponseData getGoodsList(String storeCd, String purchaseVendorId, String assortId, String assortNm) {
+        List<Ititmc> ititmcList = this.getItitmc(storeCd, purchaseVendorId, assortId, assortNm);
+        List<GoodsModalListResponseData.Goods> goodsList = new ArrayList<>();
+        GoodsModalListResponseData goodsModalListResponseData = new GoodsModalListResponseData(storeCd, purchaseVendorId, assortId, assortNm);
         for(Ititmc ititmc : ititmcList){
-            GoodsMoveListData goodsMoveListData = new GoodsMoveListData(ititmc);
-            goodsMoveListDataList.add(goodsMoveListData);
+            Itasrt itasrt = ititmc.getItasrt();
+            GoodsModalListResponseData.Goods goods = new GoodsModalListResponseData.Goods(ititmc, itasrt);
+            IfBrand ifBrand = jpaIfBrandRepository.findByChannelGbAndChannelBrandId(StringFactory.getGbOne(), itasrt.getBrandId()); // 채널은 01 하드코딩
+            List<Itvari> itvariList = itasrt.getItvariList();
+            if(itvariList.size() > 0){
+                Itvari itvari1 = itvariList.get(0);
+                goods.setOptionNm1(itvari1.getOptionNm());
+            }
+            if(itvariList.size() > 1){
+                Itvari itvari2 = itvariList.get(1);
+                goods.setOptionNm2(itvari2.getOptionNm());
+            }
+            goods.setBrandNm(ifBrand.getBrandNm());
+            goodsList.add(goods);
         }
-        return goodsMoveListDataList;
+        goodsModalListResponseData.setGoods(goodsList);
+        return goodsModalListResponseData;
     }
+
+//    /**
+//     * 상품 이동지시 : 이동지시일자, 출고센터, 입고센터, 이동방법을 입력한 후 상품추가 버튼을 눌렀을 때 상품 목록을 반환
+//     */
+//    public List<Ititmc> getItitmcList(String storeCd, String purchaseVendorId, String assortId, String assortNm) {
+//        List<Ititmc> ititmcList = this.getItitmc(storeCd, purchaseVendorId, assortId, assortNm);
+//        List<GoodsMoveListResponseData> goodsMoveListDataListResponse = new ArrayList<>();
+//        for(Ititmc ititmc : ititmcList){
+//            GoodsMoveListResponseData goodsMoveListResponseData = new GoodsMoveListResponseData(ititmc);
+//            goodsMoveListDataListResponse.add(goodsMoveListResponseData);
+//        }
+//        return goodsMoveListDataListResponse;
+//    }
+
+//    /**
+//     * 상품 이동지시 : 이동지시일자, 출고센터, 입고센터, 이동방법을 입력한 후 상품추가 버튼을 눌렀을 때 상품 목록을 반환
+//     */
+//    public List<GoodsMoveListResponseData> getGoodsMoveList(LocalDate shipIndDt, String storeCd, String oStoreCd, String deliMethod) {
+//        List<Ititmc> ititmcList = this.getItitmc(shipIndDt, oStoreCd, deliMethod);
+//        List<GoodsMoveListResponseData> goodsMoveListDataListResponse = new ArrayList<>();
+//        for(Ititmc ititmc : ititmcList){
+//            GoodsMoveListResponseData goodsMoveListResponseData = new GoodsMoveListResponseData(ititmc);
+//            goodsMoveListDataListResponse.add(goodsMoveListResponseData);
+//        }
+//        return goodsMoveListDataListResponse;
+//    }
 
     /**
      * 상품이동지시 화면에서 검색에 맞는 Ititmc들을 가져오는 함수
      */
-    private List<Ititmc> getItitmc(Date shipIndDt, String storageId, String deliMethod) {
-        Date startDt = shipIndDt == null? Utilities.getStringToDate(StringFactory.getStartDay()) : Utilities.addHoursToJavaUtilDate(shipIndDt, 0);
-        Date endDt = shipIndDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()) : Utilities.addHoursToJavaUtilDate(shipIndDt, 24);;
-        storageId = storageId == null || storageId.equals("")? "" : " and ic.storageId='" + storageId + "'";
-        deliMethod = deliMethod == null || deliMethod.equals("")? "" : " and ic.deliMethod='" + deliMethod + "'";
+    private List<Ititmc> getItitmc(String storeCd, String purchaseVendorId, String assortId, String assortNm) {
         Query query = em.createQuery("select ic from Ititmc ic " +
+                "join fetch ic.itasrt it " +
                 "where " +
-                "ic.effEndDt between ?1 and ?2" +
-                storageId + deliMethod
+                "(?1 is null or trim(?1)='' or ic.storageId=?1) " +
+                "and (?2 is null or trim(?2)='' or ic.vendorId=?2) " +
+                "and (?3 is null or trim(?3)='' or ic.assortId=?3) " +
+                "and (?4 is null or trim(?4)='' or it.assortNm like concat('%',?4,'%'))"
         );
-        query.setParameter(1,startDt).setParameter(2,endDt);
+        query.setParameter(1,storeCd).setParameter(2,purchaseVendorId).setParameter(3,assortId)
+        .setParameter(4,assortNm);
         List<Ititmc> ititmcList = query.getResultList();
         return ititmcList;
     }
