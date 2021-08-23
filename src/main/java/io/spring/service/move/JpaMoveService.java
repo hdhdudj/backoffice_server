@@ -36,6 +36,7 @@ import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -64,9 +65,10 @@ public class JpaMoveService {
         LocalDate endDt = (LocalDate)map.get(StringFactory.getStrEndDt());
         String storageId = (String)map.get(StringFactory.getStrStorageId());
         String assortId = (String)map.get(StringFactory.getStrAssortId());
+        String assortNm = (String)map.get(StringFactory.getStrAssortNm());
         String itemId = (String)map.get(StringFactory.getStrItemId());
         String deliMethod = (String)map.get(StringFactory.getStrDeliMethod());
-        List<Lsdpsd> lsdpsdList = this.getLsdpsd(startDt, endDt, storageId, assortId, itemId, deliMethod);
+        List<Lsdpsd> lsdpsdList = this.getLsdpsd(startDt, endDt, storageId, assortId, assortNm, itemId, deliMethod);
         List<OrderMoveListResponseData> orderMoveListDataListResponse = new ArrayList<>();
         for(Lsdpsd lsdpsd : lsdpsdList){
             OrderMoveListResponseData orderMoveListResponseData = new OrderMoveListResponseData(lsdpsd);
@@ -87,7 +89,7 @@ public class JpaMoveService {
     /**
      * 주문 이동지시 화면에서 검색에 맞는 Lsdpsd들을 가져오는 함수
      */
-    private List<Lsdpsd> getLsdpsd(LocalDate startDt, LocalDate endDt, String storageId, String assortId, String itemId, String deliMethod) {
+    private List<Lsdpsd> getLsdpsd(LocalDate startDt, LocalDate endDt, String storageId, String assortId, String assortNm, String itemId, String deliMethod) {
         // lsdpsd, lsdpsm, tbOrderDetail, itasrt, itvari
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
@@ -101,10 +103,12 @@ public class JpaMoveService {
                 "and (?3 is null or trim(?3)='' or m.storeCd=?3) " +
                 "and (?4 is null or trim(?4)='' or d.assortId=?4) " +
                 "and (?5 is null or trim(?5)='' or d.itemId=?5) " +
-                "and (?6 is null or trim(?6)='' or t.deliMethod=?6)"
+                "and (?6 is null or trim(?6)='' or t.deliMethod=?6) " +
+                "and (?7 is null or trim(?7)='' or i.assortNm like concat('%',?7,'%'))"
         );
         query.setParameter(1, start).setParameter(2, end).setParameter(3,storageId)
-        .setParameter(4,assortId).setParameter(5,itemId).setParameter(6,deliMethod);
+        .setParameter(4,assortId).setParameter(5,itemId).setParameter(6,deliMethod)
+                .setParameter(7,assortNm);
         List<Lsdpsd> lsdpsdList = query.getResultList();
         return lsdpsdList;
     }
@@ -221,7 +225,7 @@ public class JpaMoveService {
             List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository.findByAssortIdAndItemId(ititmc.getAssortId(),ititmc.getItemId())
                     .stream().filter(x->x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList());
             long qtyOfC01 = tbOrderDetailList.size();
-            goods.setQtyOfC01(qtyOfC01);
+            goods.setOrderQty(qtyOfC01);
             goods.setAvailableQty(goods.getAvailableQty() - qtyOfC01);
             goods.setStoreCd(goodsModalListResponseData.getStoreCd());
             if(itvariList.size() > 0){
@@ -299,6 +303,7 @@ public class JpaMoveService {
         Lsshpm lsshpm = new Lsshpm(shipId);
         lsshpm.setStorageId(goodsMoveSaveData.getStoreCd());
         lsshpm.setDelMethod(goodsMoveSaveData.getDeliMethod());
+        lsshpm.setReceiptDt(goodsMoveSaveData.getShipIndDt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
         long lsshpdNum = 0l;
         for (int i = 0; i < goodsList.size() ; i++) {
             lsshpdNum = this.saveGoodsMoveSaveData(shipId, goodsMoveSaveData, goodsList.get(i), indexStore, newGoodsList);
@@ -416,7 +421,7 @@ public class JpaMoveService {
             goodsRow.setAssortNm(itasrt.getAssortNm());
             goodsRow.setOptionNm(itasrt.getItvariList().get(0).getOptionNm());
         }
-        goodsRow.setCanShipQty(ititmcQty - ititmcShipIndQty);
+        goodsRow.setAvailableQty(ititmcQty - ititmcShipIndQty);
         goodsRow.setOrderQty(orderQty);
         goodsRow.setShipQty(goods.getShipQty());
 

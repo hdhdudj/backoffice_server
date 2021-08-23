@@ -14,8 +14,9 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GoodsMoveSaveData {
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+//    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+//    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private Date shipIndDt;
     private String oStoreCd; // 목적지(to) 코드 (출고) - 발주할 때 넣는 창고 
     private String storeCd; // 나가는(from) 창고 - 출고할 때 넣는 창고
@@ -30,11 +31,13 @@ public class GoodsMoveSaveData {
             this.assortId = ititmc.getAssortId();
             this.itemId = ititmc.getItemId();
         }
+        private String storeCd;
         private String assortId;
         private String itemId;
+        private String goodsKey;
         private String assortNm;
         private String optionNm;
-        private Long canShipQty; // 이동가능수량
+        private Long availableQty; // 이동가능수량
         private Long orderQty; // 주문수량
         private Long shipQty; // 이동수량
     }

@@ -35,6 +35,7 @@ public class MoveController {
                                            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable LocalDate endDt,
                                            @RequestParam @Nullable String storageId,
                                            @RequestParam @Nullable String assortId,
+                                           @RequestParam @Nullable String assortNm,
                                            @RequestParam @Nullable String itemId,
                                            @RequestParam @Nullable String deliMethod){
         Map<String, Object> map = new HashMap<>();
@@ -42,6 +43,7 @@ public class MoveController {
         map.put("endDt", endDt);
         map.put("storageId", storageId);
         map.put("assortId", assortId);
+        map.put("assortNm", assortNm);
         map.put("itemId", itemId);
         map.put("deliMethod", deliMethod);
 

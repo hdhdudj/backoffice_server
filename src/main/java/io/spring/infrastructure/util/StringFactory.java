@@ -130,6 +130,8 @@ public class StringFactory {
     @Getter
     private final static String strAssortId = "assortId";
     @Getter
+    private final static String strAssortNm = "assortNm";
+    @Getter
     private final static String strPurchaseNo = "purchaseNo";
     @Getter
     private final static String strPurchaseStatus = "purchaseStatus";

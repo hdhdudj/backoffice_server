@@ -43,7 +43,7 @@ public class GoodsModalListResponseData {
             this.availableQty = ititmc.getShipIndicateQty() == null? this.qty : this.qty - ititmc.getShipIndicateQty();
             this.cost = ititmc.getStockAmt();
 //            this.storeCd = storeCd; // 바깥에서 set
-            this.moveQty = 0l;
+            this.shipQty = 0l;
         }
         private String storeCd;
         private String assortId;
@@ -54,9 +54,9 @@ public class GoodsModalListResponseData {
         private String optionNm1;
         private String optionNm2;
         private Long qty;
-        private Long qtyOfC01;
+        private Long orderQty;
         private Long availableQty;
-        private Long moveQty;
+        private Long shipQty;
         private Float cost;
     }
 }
