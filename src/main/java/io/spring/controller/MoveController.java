@@ -66,6 +66,20 @@ public class MoveController {
      * 상품이동지시 화면에서 storeCd, purchaseVendorId, assortId, assortNm로 상품(Ititmc 기준)을 가져와 목록을 return
      */
     @GetMapping(path="/items/goods")
+    public ResponseEntity getGoodsList(@RequestParam @Nullable String storeCd,
+                                           @RequestParam @Nullable String vendorId,
+                                           @RequestParam @Nullable String assortId,
+                                           @RequestParam @Nullable String assortNm){
+        GoodsModalListResponseData goodsMoveListDataListResponse = jpaMoveService.getGoodsList(storeCd, vendorId, assortId, assortNm);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), goodsMoveListDataListResponse);
+        return ResponseEntity.ok(res);
+    }
+
+    /**
+     * 상품선택창 검색 결과에서 상품들을 선택한 후 확인을 누르면 상품이동지시 화면에 선택된 물건 정보 리스트를 반환하는 함수
+     * 상품이동지시 화면에서 선택한 물건들의 json을 받아 리스트를 return
+     */
+    @GetMapping(path="/items/indicate/goods")
     public ResponseEntity getGoodsMoveList(@RequestParam @Nullable String storeCd,
                                            @RequestParam @Nullable String vendorId,
                                            @RequestParam @Nullable String assortId,

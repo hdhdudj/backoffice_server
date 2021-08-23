@@ -71,6 +71,15 @@ public class JpaMoveService {
         for(Lsdpsd lsdpsd : lsdpsdList){
             OrderMoveListResponseData orderMoveListResponseData = new OrderMoveListResponseData(lsdpsd);
             orderMoveListDataListResponse.add(orderMoveListResponseData);
+            List<Itvari> itvariList = lsdpsd.getItasrt().getItvariList();
+            if(itvariList.size() > 0){
+                Itvari itvari1 = itvariList.get(0);
+                orderMoveListResponseData.setOptionNm1(itvari1.getOptionNm());
+            }
+            if(itvariList.size() > 1){
+                Itvari itvari2 = itvariList.get(1);
+                orderMoveListResponseData.setOptionNm2(itvari2.getOptionNm());
+            }
         }
         return orderMoveListDataListResponse;
     }
@@ -209,6 +218,12 @@ public class JpaMoveService {
             GoodsModalListResponseData.Goods goods = new GoodsModalListResponseData.Goods(ititmc, itasrt);
             IfBrand ifBrand = jpaIfBrandRepository.findByChannelGbAndChannelBrandId(StringFactory.getGbOne(), itasrt.getBrandId()); // 채널은 01 하드코딩
             List<Itvari> itvariList = itasrt.getItvariList();
+            List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository.findByAssortIdAndItemId(ititmc.getAssortId(),ititmc.getItemId())
+                    .stream().filter(x->x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList());
+            long qtyOfC01 = tbOrderDetailList.size();
+            goods.setQtyOfC01(qtyOfC01);
+            goods.setAvailableQty(goods.getAvailableQty() - qtyOfC01);
+            goods.setStoreCd(goodsModalListResponseData.getStoreCd());
             if(itvariList.size() > 0){
                 Itvari itvari1 = itvariList.get(0);
                 goods.setOptionNm1(itvari1.getOptionNm());

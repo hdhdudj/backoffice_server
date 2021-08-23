@@ -70,6 +70,7 @@ public class JpaShipService {
         for(TbOrderDetail tbOrderDetail : tbOrderDetailList){
             List<Ititmc> ititmcList = jpaItitmcRepository.findByOrderIdAndOrderSeqOrderByEffEndDtAsc(tbOrderDetail.getAssortId(),tbOrderDetail.getItemId());
             long availableQty = this.calcMaxAvailableQty(ititmcList);
+            availableQty = tbOrderDetail.getQty() > availableQty? tbOrderDetail.getQty() : availableQty;
             ShipIndicateSaveListResponseData.Ship ship = new ShipIndicateSaveListResponseData.Ship(tbOrderDetail);
             ship.setAvailableQty(availableQty);
             shipList.add(ship);

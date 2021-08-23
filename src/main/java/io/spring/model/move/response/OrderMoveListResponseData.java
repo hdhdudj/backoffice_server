@@ -26,12 +26,13 @@ public class OrderMoveListResponseData {
         this.orderSeq = tbOrderDetail.getOrderSeq();
         this.deliMethod = tbOrderDetail.getDeliMethod();
         this.qty = tbOrderDetail.getQty();
+        this.orderStoreCd = tbOrderDetail.getStorageId();
 
         Itasrt itasrt = tbOrderDetail.getItasrt();
         this.assortNm = itasrt.getAssortNm();
-        this.optionNm = itasrt.getItvariList().get(0).getOptionNm();
+//        this.optionNm1 = itasrt.getItvariList().get(0).getOptionNm(); 바깥에서 set
     }
-
+    private String orderStoreCd;
     // lsdpsd
     private String depositNo;
     private String depositSeq;
@@ -50,5 +51,6 @@ public class OrderMoveListResponseData {
     // itasrt
     private String assortNm;
     // itvari
-    private String optionNm;
+    private String optionNm1;
+    private String optionNm2;
 }

@@ -1,5 +1,6 @@
 package io.spring.model.move.response;
 
+import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import lombok.AccessLevel;
@@ -36,19 +37,26 @@ public class GoodsModalListResponseData {
             this.assortId = ititmc.getAssortId();
             this.itemId = ititmc.getItemId();
             this.assortNm = itasrt.getAssortNm();
-//            this.brandNm = itasrt.getIfBrand().getBrandNm();
+            this.goodsKey = Utilities.addDashInMiddle(this.assortId, this.itemId);
+//            this.brandNm = itasrt.getIfBrand().getBrandNm(); 바깥에서 set
             this.qty = ititmc.getQty() == null? 0l : ititmc.getQty();
             this.availableQty = ititmc.getShipIndicateQty() == null? this.qty : this.qty - ititmc.getShipIndicateQty();
             this.cost = ititmc.getStockAmt();
+//            this.storeCd = storeCd; // 바깥에서 set
+            this.moveQty = 0l;
         }
+        private String storeCd;
         private String assortId;
         private String itemId;
+        private String goodsKey;
         private String assortNm;
         private String brandNm;
         private String optionNm1;
         private String optionNm2;
         private Long qty;
+        private Long qtyOfC01;
         private Long availableQty;
+        private Long moveQty;
         private Float cost;
     }
 }

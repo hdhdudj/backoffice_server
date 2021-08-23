@@ -6,6 +6,7 @@ import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.goods.idclass.ItitmcId;
+import io.spring.model.order.entity.TbOrderDetail;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
