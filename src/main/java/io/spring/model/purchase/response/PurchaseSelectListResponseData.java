@@ -1,6 +1,10 @@
 package io.spring.model.purchase.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.purchase.entity.Lspchm;
 import lombok.AccessLevel;
@@ -8,7 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -17,8 +21,8 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PurchaseSelectListResponseData {
     public PurchaseSelectListResponseData(Map<String, Object> param){
-        this.startDt = (Date) param.get(StringFactory.getStrStartDt());
-        this.endDt = (Date) param.get(StringFactory.getStrEndDt());
+        this.startDt = (LocalDate) param.get(StringFactory.getStrStartDt());
+        this.endDt = (LocalDate) param.get(StringFactory.getStrEndDt());
         this.assortId = (String) param.get(StringFactory.getStrAssortId());
         this.purchasStatus = (String) param.get(StringFactory.getStrPurchaseStatus());
         this.purchaseGb = (String)param.get(StringFactory.getStrPurchaseGb());
@@ -27,10 +31,14 @@ public class PurchaseSelectListResponseData {
         this.purchaseNo = purchaseNo;
     }
     // 발주리스트 화면
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private Date startDt;
+    private LocalDate startDt;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private Date endDt;
+    private LocalDate endDt;
     private String assortId;
     private String assortNm; // 바깥에서 set
     private String purchasStatus;
@@ -38,10 +46,14 @@ public class PurchaseSelectListResponseData {
 
     // 입고처리 화면
     private String purchaseNo;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private Date purchaseDt;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private Date DepositDt;
+//    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+//    @JsonSerialize(using = LocalDateTimeSerializer.class)
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private String purchaseDt;
+//    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+//    @JsonSerialize(using = LocalDateTimeSerializer.class)
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private String DepositDt;
     private String depositStoreId;
 
     // 화면 공통요소
@@ -67,8 +79,10 @@ public class PurchaseSelectListResponseData {
         private String optionNm2; // 사이즈
 
         // 발주리스트 화면 요소
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-        private Date purchaseDt; // 발주일자
+//        @JsonDeserialize(using = LocalDateDeserializer.class)
+//        @JsonSerialize(using = LocalDateSerializer.class)
+//        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+        private String purchaseDt; // 발주일자
         private String purchaseGb; // 발주구분
         private String purchaseStatus; // 발주상태
         private String purchaseVendorId; // 구매처

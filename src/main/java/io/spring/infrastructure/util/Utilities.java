@@ -2,16 +2,17 @@ package io.spring.infrastructure.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-//import org.flywaydb.core.internal.util.StringUtils;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
+//import org.flywaydb.core.internal.util.StringUtils;
 
 /**
  * 21-05-03 Pecan
@@ -122,5 +123,15 @@ public class Utilities {
      */
     public static String addDashInMiddle(String a, String b){
         return a + StringFactory.getStrDash() + b;
+    }
+
+    /**
+     * LocalDateTime을 받아서 T를 뗀 String(1111-11-11 11:11:11 꼴)을 반환하는 함수
+     * @return String
+     */
+    public static String removeTAndTransToStr(LocalDateTime localDateTime){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.KOREA);
+        String strDate = localDateTime.format(formatter).toString();
+        return strDate.replace('T', ' ');
     }
 }

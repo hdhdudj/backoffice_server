@@ -32,8 +32,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -359,7 +360,9 @@ public class JpaDepositService {
      * assortId가 null이거나 ""면 검색 조건에 미포함
      * assortNm은 like 검색
      */
-    public DepositSelectListResponseData getList(String purchaseVendorId, String assortId, String assortNm, Date depositDt) {
+    public DepositSelectListResponseData getList(String purchaseVendorId, String assortId, String assortNm, LocalDate startDt, LocalDate endDt) {
+        LocalDateTime start = startDt.atStartOfDay();
+        LocalDateTime end = endDt.atTime(23,59,59);
         List<DepositSelectListResponseData.Deposit> depositList = new ArrayList<>();
         TypedQuery<Lsdpsd> query = em.createQuery("select ld from Lsdpsd ld " +
                         "left join fetch ld.lsdpsm lm " +
@@ -375,9 +378,7 @@ public class JpaDepositService {
                         "and (?4 is null or trim(?4)='' or it.assortNm like concat('%', ?4, '%')) " +
                         "and (?5 is null or trim(?5)='' or lm.vendorId=?5)",
                 Lsdpsd.class);
-        Date startDt = depositDt == null? Utilities.getStringToDate(StringFactory.getStartDay()):Utilities.addHoursToJavaUtilDate(depositDt,0);
-        Date endDt = depositDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()):Utilities.addHoursToJavaUtilDate(depositDt,24);
-        query.setParameter(1, startDt).setParameter(2, endDt).setParameter(3, assortId)
+        query.setParameter(1, start).setParameter(2, end).setParameter(3, assortId)
         .setParameter(4, assortNm).setParameter(5, purchaseVendorId);
 //        query.setParameter(4, param.get("assortId"));
         List<Lsdpsd> resultList = query.getResultList();
@@ -403,7 +404,7 @@ public class JpaDepositService {
             //
             depositList.add(deposit);
         }
-        DepositSelectListResponseData depositSelectListResponseData = new DepositSelectListResponseData(depositDt, assortId, assortNm, purchaseVendorId);
+        DepositSelectListResponseData depositSelectListResponseData = new DepositSelectListResponseData(startDt, endDt, assortId, assortNm, purchaseVendorId);
         depositSelectListResponseData.setDepositList(depositList);
         return depositSelectListResponseData;
     }
@@ -468,11 +469,12 @@ public class JpaDepositService {
                 continue;
             }
             Lspchm lspchm = lsdpsp.getLspchd().getLspchm();
-            Date purchaseDt = lspchm.getPurchaseDt();
+            LocalDateTime purchaseDt = lspchm.getPurchaseDt();
             lsdpsp = this.changeLsdpspStatus(lsdpsp, isCompleteDeposit);
             lsdpspList.add(lsdpsp);
             this.saveItitmt(purchaseDt, storageId, deposit, dealtypeCd);
-            this.saveItitmc(depositListWithPurchaseInfoData.getDepositDt(), storageId, deposit);
+            LocalDateTime localDateTime = LocalDateTime.parse(depositListWithPurchaseInfoData.getDepositDt());
+            this.saveItitmc(localDateTime, storageId, deposit);
         }
         return lsdpspList;
     }
@@ -501,7 +503,7 @@ public class JpaDepositService {
         return lsdpsp;
     }
 
-    private Ititmc saveItitmc(Date depositDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit) {
+    private Ititmc saveItitmc(LocalDateTime depositDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit) {
         Ititmc ititmc = new Ititmc(storageId, depositDt, deposit);
 //        ititmc.setShipIndicateQty(deposit.getDepositQty());
         ititmc.setQty(deposit.getDepositQty());
@@ -509,7 +511,7 @@ public class JpaDepositService {
         return ititmc;
     }
 
-    private Ititmt saveItitmt(Date purchaseDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit, String dealTypeCd){
+    private Ititmt saveItitmt(LocalDateTime purchaseDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit, String dealTypeCd){
         Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt
                         (deposit.getAssortId(), deposit.getItemId(), storageId, StringFactory.getStrEleven(), purchaseDt); // dealtypeCd = '01'인 애들(주문)
         if(ititmt == null){

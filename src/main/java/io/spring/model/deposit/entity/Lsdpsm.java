@@ -12,9 +12,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-//import org.flywaydb.core.internal.util.StringUtils;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -38,7 +38,7 @@ public class Lsdpsm extends CommonProps {
     public Lsdpsm(String depositNo, DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
         this.vendorId = depositListWithPurchaseInfoData.getPurchaseVendorId();
         this.depositNo = depositNo;
-        this.depositDt = depositListWithPurchaseInfoData.getDepositDt();//new Date();
+        this.depositDt = LocalDateTime.parse(depositListWithPurchaseInfoData.getDepositDt());//new Date();
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
         this.depositGb = StringFactory.getGbOne(); // 01 하드코딩
         this.vendorId = depositListWithPurchaseInfoData.getPurchaseVendorId();
@@ -52,7 +52,7 @@ public class Lsdpsm extends CommonProps {
     @Id
     private String depositNo;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date depositDt;
+    private LocalDateTime depositDt;
     private String depositGb;
     private String siteGb;
     private String vendorId;

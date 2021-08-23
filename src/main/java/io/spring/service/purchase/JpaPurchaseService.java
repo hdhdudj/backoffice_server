@@ -30,7 +30,7 @@ import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.entity.Lspchm;
 import io.spring.model.purchase.entity.Lspchs;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
-import io.spring.model.purchase.response.PurchaseListInDepositModalData;
+import io.spring.model.deposit.response.PurchaseListInDepositModalData;
 import io.spring.model.purchase.response.PurchaseSelectDetailResponseData;
 import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
@@ -42,6 +42,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -359,14 +361,14 @@ public class JpaPurchaseService {
     /**
      * 입고 - 발주선택창 : 조건을 넣고 조회했을 때 동작하는 함수 (Lspchm 기준의 list를 가져옴)
      */
-    public PurchaseListInDepositModalData getPurchaseMasterList(Date startDt, Date endDt, String purchaseVendorId) {
+    public PurchaseListInDepositModalData getPurchaseMasterList(LocalDate startDt, LocalDate endDt, String purchaseVendorId) {
         PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData(startDt, endDt, purchaseVendorId);
-        startDt = startDt == null? Utilities.getStringToDate(StringFactory.getStartDay()) : startDt;
-        endDt = endDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()) : endDt;
+        LocalDateTime start = startDt.atStartOfDay();
+        LocalDateTime end = endDt.atTime(23,59,59);
         TypedQuery<Lspchm> query = em.createQuery("select m from Lspchm m" +
                 " where m.purchaseDt between ?1 and ?2" +
                 " and (?3 is null or trim(?3)='' or m.purchaseVendorId=?3)",Lspchm.class);
-        query.setParameter(1,startDt).setParameter(2,endDt).setParameter(3,purchaseVendorId);
+        query.setParameter(1,start).setParameter(2,end).setParameter(3,purchaseVendorId);
         List<Lspchm> lspchmList = query.getResultList();
         List<PurchaseListInDepositModalData.Purchase> purchaseList = new ArrayList<>();
         for(Lspchm lspchm : lspchmList){
@@ -425,7 +427,7 @@ public class JpaPurchaseService {
         if(lspchdList.size() > 0){
             lspchm = lspchdList.get(0).getLspchm();
             purchaseSelectListResponseData.setPurchaseNo(lspchm.getPurchaseNo());
-            purchaseSelectListResponseData.setPurchaseDt(lspchm.getPurchaseDt());
+            purchaseSelectListResponseData.setPurchaseDt(Utilities.removeTAndTransToStr(lspchm.getPurchaseDt()));
         }
 
         for(Lspchd lspchd : lspchdList){
@@ -445,7 +447,7 @@ public class JpaPurchaseService {
             purchase.setItemId(lspchd.getItemId());
             purchase.setItemNm(ititmm.getItemNm());
 
-            purchase.setPurchaseDt(lspchm.getPurchaseDt());
+            purchase.setPurchaseDt(Utilities.removeTAndTransToStr(lspchm.getPurchaseDt()));
             purchase.setPurchaseGb(lspchm.getPurchaseGb());
             purchase.setPurchaseCost(lspchd.getPurchaseUnitAmt());
             purchase.setPurchaseStatus(lspchm.getPurchaseStatus());
@@ -481,7 +483,7 @@ public class JpaPurchaseService {
         Lspchm lspchm = lsdpspList.get(0).getLspchd().getLspchm();
 
         purchaseSelectListResponseData.setPurchaseNo(lspchm.getPurchaseNo());
-        purchaseSelectListResponseData.setPurchaseDt(lspchm.getPurchaseDt());
+        purchaseSelectListResponseData.setPurchaseDt(Utilities.removeTAndTransToStr(lspchm.getPurchaseDt()));
         purchaseSelectListResponseData.setDepositStoreId(lspchm.getStoreCd());
         purchaseSelectListResponseData.setPurchaseVendorId(lspchm.getPurchaseVendorId());
 
@@ -619,7 +621,7 @@ public class JpaPurchaseService {
     private Lspchs updateLspchs(String purchaseNo, String purchaseStatus) {
         Date doomDay = Utilities.getStringToDate(StringFactory.getDoomDay());
         Lspchs lspchs = jpaLspchsRepository.findByPurchaseNoAndEffEndDt(purchaseNo, doomDay);
-        lspchs.setEffEndDt(new Date());
+        lspchs.setEffEndDt(LocalDateTime.now());
         Lspchs newLspchs = new Lspchs(lspchs);
         newLspchs.setPurchaseNo(this.getPurchaseNo());
         newLspchs.setPurchaseStatus(purchaseStatus);
@@ -742,7 +744,7 @@ public class JpaPurchaseService {
     private Lspchs updateLspchsStatus(Lspchm lspchm, String status){
         Lspchs lspchs = jpaLspchsRepository.findByPurchaseNoAndEffEndDt(lspchm.getPurchaseNo(),Utilities.getStringToDate(StringFactory.getDoomDay()));
         Lspchs newLspchs = new Lspchs(lspchs);
-        lspchs.setEffEndDt(new Date());
+        lspchs.setEffEndDt(LocalDateTime.now());
         newLspchs.setPurchaseStatus(status);
         jpaLspchsRepository.save(lspchs);
         jpaLspchsRepository.save(newLspchs);

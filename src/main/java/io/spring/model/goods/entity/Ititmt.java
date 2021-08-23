@@ -1,7 +1,6 @@
 package io.spring.model.goods.entity;
 
 import io.spring.infrastructure.util.StringFactory;
-import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.goods.idclass.ItitmtId;
@@ -15,6 +14,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -36,8 +36,8 @@ public class Ititmt extends CommonProps {
         this.storageId = storageId;
         this.assortId = deposit.getAssortId();
         this.itemId = deposit.getItemId();
-        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
-        this.effStaDt = new Date();
+        this.effEndDt = LocalDateTime.parse(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
+        this.effStaDt = LocalDateTime.now();
         this.stockGb = StringFactory.getGbOne(); // 01 하드코딩
         this.tempIndicateQty = deposit.getDepositQty();
         this.stockAmt = deposit.getPurchaseCost();
@@ -51,9 +51,9 @@ public class Ititmt extends CommonProps {
     @Id
     private String itemGrade = StringFactory.getStrEleven(); // 11 하드코딩
     @Id
-    private Date effEndDt;
+    private LocalDateTime effEndDt;
     @Id
-    private Date effStaDt;
+    private LocalDateTime effStaDt;
     private String stockGb;
     private Long tempIndicateQty;
     private Long tempQty;

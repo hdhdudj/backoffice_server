@@ -1,6 +1,10 @@
 package io.spring.model.deposit.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.deposit.entity.Lsdpsd;
 import lombok.AccessLevel;
@@ -8,7 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -18,14 +22,21 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DepositSelectListResponseData {
-    public DepositSelectListResponseData(Date depositDt, String assortId, String assortNm, String purchaseVendorId){
-        this.depositDt = depositDt;
+    public DepositSelectListResponseData(LocalDate startDt, LocalDate endDt, String assortId, String assortNm, String purchaseVendorId){
+        this.startDt = startDt;
+        this.endDt = endDt;
         this.assortId = assortId;
         this.assortNm = assortNm;
         this.purchaseVendorId = purchaseVendorId;
     }
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private Date depositDt;
+    private LocalDate startDt;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    private LocalDate endDt;
     private String assortId;
     private String assortNm;
     private String purchaseVendorId;
@@ -43,11 +54,13 @@ public class DepositSelectListResponseData {
             this.itemId = lsdpsd.getItemId();
             this.goodsKey = Utilities.addDashInMiddle(this.assortId, this.itemId);
             this.extraUnitcost = lsdpsd.getExtraUnitcost();
-            this.depositDt = lsdpsd.getLsdpsm().getDepositDt();
+            this.depositDt = Utilities.removeTAndTransToStr(lsdpsd.getLsdpsm().getDepositDt());
         }
         private String depositKey;
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-        private Date depositDt;
+//        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+//        @JsonSerialize(using = LocalDateTimeSerializer.class)
+//        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd' 'HH:mm:ss", timezone = "Asia/Seoul")
+        private String depositDt;
         public String purchaseNo;
         private String purchaseSeq;
         private String assortId;

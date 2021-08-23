@@ -1,6 +1,6 @@
 package io.spring.model.deposit.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import io.spring.infrastructure.util.Utilities;
 import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.deposit.entity.Lsdpsm;
 import lombok.AccessLevel;
@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,13 +18,15 @@ import java.util.List;
 public class DepositSelectDetailResponseData {
     public DepositSelectDetailResponseData(Lsdpsm lsdpsm){
         this.depositNo = lsdpsm.getDepositNo();
-        this.depositDt = lsdpsm.getDepositDt();
+        this.depositDt = Utilities.removeTAndTransToStr(lsdpsm.getDepositDt());
 //        this.storeCd = lsdpsm.getStoreCd();
         this.purchaseVendorId = lsdpsm.getVendorId();
     }
     private String depositNo;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private Date depositDt;
+//    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+//    @JsonSerialize(using = LocalDateTimeSerializer.class)
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private String depositDt;
     private String purchaseVendorId;
 //    private String storeCd;
 //    private String depositStatus;
@@ -40,7 +41,7 @@ public class DepositSelectDetailResponseData {
             // lsdpsd
             this.depositNo = lsdpsd.getDepositNo();
             this.depositSeq = lsdpsd.getDepositSeq();
-            this.depositDt = lsdpsd.getLsdpsm().getDepositDt();
+            this.depositDt = Utilities.removeTAndTransToStr(lsdpsd.getLsdpsm().getDepositDt());
             this.assortId = lsdpsd.getAssortId();
 //            this.itemGrade = lsdpsd.getItemGrade();
             this.itemId = lsdpsd.getItemId();
@@ -49,8 +50,10 @@ public class DepositSelectDetailResponseData {
         }
         private String depositNo;
         private String depositSeq;
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-        private Date depositDt;
+//        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+//        @JsonSerialize(using = LocalDateTimeSerializer.class)
+//        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        private String depositDt;
         public String purchaseNo;
         private String purchaseSeq;
         private String assortId;

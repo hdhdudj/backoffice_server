@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -43,6 +43,6 @@ public class ItitmtId implements Serializable {
     private String assortId;
     private String itemId;
     private String itemGrade;
-    private Date effEndDt;
-    private Date effStaDt;
+    private LocalDateTime effEndDt;
+    private LocalDateTime effStaDt;
 }

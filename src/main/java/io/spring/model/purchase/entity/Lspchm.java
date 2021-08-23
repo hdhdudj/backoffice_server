@@ -13,6 +13,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -89,7 +90,7 @@ public class Lspchm extends CommonProps {
      */
     public Lspchm(String purchaseNo) {
         this.purchaseNo = purchaseNo;
-        this.purchaseDt = new Date();
+        this.purchaseDt = LocalDateTime.now();
         this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
         this.purchaseStatus = StringFactory.getGbFour(); // 01 : 발주, 04 : 이동지시?, 05 : 취소 (04 하드코딩)
 //        this.purchaseRemark : 바깥 set
@@ -119,7 +120,7 @@ public class Lspchm extends CommonProps {
     @Id
     private String purchaseNo;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date purchaseDt;
+    private LocalDateTime purchaseDt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date effEndDt;
     private String purchaseStatus;

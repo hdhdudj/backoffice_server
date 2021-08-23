@@ -1,6 +1,6 @@
 package io.spring.model.deposit.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import io.spring.infrastructure.util.Utilities;
 import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.purchase.entity.Lspchm;
@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,14 +21,16 @@ public class DepositListWithPurchaseInfoData {
     public DepositListWithPurchaseInfoData(Lspchm lspchm, List<DepositListWithPurchaseInfoData.Deposit> deposits){
         this.purchaseNo = lspchm.getPurchaseNo();
         this.purchaseVendorId = lspchm.getVendorId();
-        this.depositDt = lspchm.getPurchaseDt();
+        this.depositDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
         this.storageId = lspchm.getStoreCd();
         this.deposits = deposits;
     }
     private String purchaseNo;
     private String purchaseVendorId;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private Date depositDt;
+//    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+//    @JsonSerialize(using = LocalDateTimeSerializer.class)
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private String depositDt;
     private String storageId;
     private String regId;
     private List<Deposit> deposits;

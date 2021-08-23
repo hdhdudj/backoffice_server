@@ -1,12 +1,10 @@
 package io.spring.jparepos.goods;
 
-import io.spring.infrastructure.util.StringFactory;
-import io.spring.infrastructure.util.Utilities;
 import org.junit.jupiter.api.Test;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 class JpaItasrtRepositoryTest {
 
@@ -22,17 +20,9 @@ class JpaItasrtRepositoryTest {
 
     @Test
     public void dateTest(){
-        Date a = null;
-        try{
-            a = new SimpleDateFormat("yyyy-MM-dd").parse("0000-01-01");
-        }
-        catch(Exception e){
-            System.out.println(e.getMessage());
-        }
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(a);
-        calendar.add(Calendar.HOUR_OF_DAY, 23);
-        System.out.printf(a.toString());
-        Date b = a;
+        LocalDateTime localDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.KOREA);
+        String strDate = localDateTime.format(formatter).toString();
+        System.out.println(strDate.replace('T', ' '));
     }
 }

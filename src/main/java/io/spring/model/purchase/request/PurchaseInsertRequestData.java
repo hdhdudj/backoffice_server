@@ -10,6 +10,7 @@ import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderMaster;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class PurchaseInsertRequestData {
         this.itemId = ititmt.getItemId();
         this.itemGrade = ititmt.getItemGrade();
 
-        this.purchaseDt = new Date();
+        this.purchaseDt = LocalDateTime.now();
     }
 
     /**
@@ -56,7 +57,7 @@ public class PurchaseInsertRequestData {
 
     // lspchm
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date purchaseDt ;
+    private LocalDateTime purchaseDt ;
     private String purchaseRemark;
     private String siteOrderNo;
     private String siteTrackNo;

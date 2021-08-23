@@ -1,13 +1,12 @@
 package io.spring.model.purchase.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import io.spring.infrastructure.util.Utilities;
 import io.spring.model.purchase.entity.Lspchm;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -15,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class PurchaseSelectDetailResponseData {
     public PurchaseSelectDetailResponseData(Lspchm lspchm){
-        this.purchaseDt = lspchm.getPurchaseDt();
+        this.purchaseDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
         this.purchaseVendorId = lspchm.getPurchaseVendorId();
         this.purchaseRemark = lspchm.getPurchaseRemark();
         this.storeCd = lspchm.getStoreCd();
@@ -26,8 +25,10 @@ public class PurchaseSelectDetailResponseData {
         this.siteOrderNo = lspchm.getSiteOrderNo();
         this.purchaseStatus = lspchm.getPurchaseStatus();
     }
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private Date purchaseDt;
+//    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+//    @JsonSerialize(using = LocalDateTimeSerializer.class)
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private String purchaseDt;
     private String purchaseVendorId;
     private String purchaseRemark;
     private String storeCd;

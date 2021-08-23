@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -12,7 +12,7 @@ import java.util.List;
 public class DepositInsertRequestData {
     private String depositNo;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date depositDt;
+    private LocalDateTime depositDt;
     private String storeCd;
     private String depositStatus;
     private String depositVendorId;

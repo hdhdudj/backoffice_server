@@ -9,7 +9,6 @@ import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
 import io.spring.model.deposit.entity.Lsdpsd;
-import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.move.request.GoodsMoveSaveData;
@@ -32,6 +31,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -153,12 +153,12 @@ public class JpaMoveService {
     /**
      * 주문이동 저장, 출고 관련 data 생성 함수 (lsshpm,d,s)
      */
-    public String makeOrderShipData(Lsdpsd lsdpsd, long qty, String shipStatus) {
+    private String makeOrderShipData(Lsdpsd lsdpsd, long qty, String shipStatus) {
         String shipId = getShipId();
 
         Itasrt itasrt = lsdpsd.getItasrt();
         List<Ititmc> ititmcList = lsdpsd.getItitmm().getItitmc();
-        Date depositDt = lsdpsd.getLsdpsm().getDepositDt();
+        LocalDateTime depositDt = lsdpsd.getLsdpsm().getDepositDt();
         String storageId = lsdpsd.getLsdpsm().getStoreCd();
         String itemGrade = lsdpsd.getItemGrade();
         ititmcList = ititmcList.stream().filter(x -> x.getEffEndDt().equals(depositDt)
@@ -174,7 +174,7 @@ public class JpaMoveService {
 
         for (int i = 0; i < qty; i++) {
             TbOrderDetail tbOrderDetail = lsdpsd.getLspchd().getLsdpsp().get(i).getTbOrderDetail();
-            Lsdpsp lsdpsp = lsdpsd.getLspchd().getLsdpsp().get(i);
+//            Lsdpsp lsdpsp = lsdpsd.getLspchd().getLsdpsp().get(i);
             if(i==0){
                 // lsshpm 저장
                 Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail);

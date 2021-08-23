@@ -1,13 +1,18 @@
-package io.spring.model.purchase.response;
+package io.spring.model.deposit.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import io.spring.infrastructure.util.Utilities;
 import io.spring.model.purchase.entity.Lspchm;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -17,15 +22,19 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PurchaseListInDepositModalData {
-    public PurchaseListInDepositModalData(Date startDt, Date endDt, String purchaseVendorId){
+    public PurchaseListInDepositModalData(LocalDate startDt, LocalDate endDt, String purchaseVendorId){
         this.startDt = startDt;
         this.endDt = endDt;
         this.purchaseVendorId = purchaseVendorId;
     }
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private Date startDt;
+    private LocalDate startDt;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private Date endDt;
+    private LocalDate endDt;
     private String purchaseVendorId;
     private List<Purchase> purchases;
 
@@ -36,7 +45,7 @@ public class PurchaseListInDepositModalData {
         public Purchase(Lspchm lspchm){
             this.purchaseNo = lspchm.getPurchaseNo();
             this.purchaseGb = lspchm.getPurchaseGb();
-            this.purchaseDt = lspchm.getPurchaseDt();
+            this.purchaseDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
             this.purchaseVendorId = lspchm.getPurchaseVendorId();
             this.purchaseStatus = lspchm.getPurchaseStatus();
             this.siteOrderNo = lspchm.getSiteOrderNo();
@@ -44,8 +53,11 @@ public class PurchaseListInDepositModalData {
         }
         private String purchaseNo;
         private String purchaseGb;
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-        private Date purchaseDt;
+
+//        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+//        @JsonSerialize(using = LocalDateTimeSerializer.class)
+//        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+        private String purchaseDt;
         private String purchaseVendorId;
         private String purchaseStatus;
         private String siteOrderNo; // 해외주문번호

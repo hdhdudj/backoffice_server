@@ -1,7 +1,9 @@
 package io.spring.model.goods.idclass;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class ItitmcId implements Serializable {
     //default serial version id, required for serializable classes.
@@ -11,6 +13,8 @@ public class ItitmcId implements Serializable {
     private String assortId;
     private String itemId;
     private String itemGrade;
-    private Date effEndDt;
-    private Date effStaDt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime effEndDt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime effStaDt;
 }

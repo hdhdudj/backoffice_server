@@ -15,7 +15,7 @@ import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -95,7 +95,7 @@ public class Lsshpd extends CommonProps {
     private String rackNumber;
     private Float customsTax;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date excAppDt;
+    private LocalDateTime excAppDt;
     private Float orderDiscount;
     private Float saleCost;
     private Float localPrice;

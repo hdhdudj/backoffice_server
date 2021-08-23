@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -29,7 +29,7 @@ public class Ititmc extends CommonProps {
         this.effStaDt = this.effEndDt;
         this.stockGb = StringFactory.getGbOne(); // 01 하드코딩
     }
-    public Ititmc(String storageId, Date depositDt, DepositListWithPurchaseInfoData.Deposit deposit) {
+    public Ititmc(String storageId, LocalDateTime depositDt, DepositListWithPurchaseInfoData.Deposit deposit) {
         this.storageId = storageId;
         this.assortId = deposit.getAssortId();
         this.itemId = deposit.getItemId();
@@ -48,10 +48,10 @@ public class Ititmc extends CommonProps {
     private String itemGrade = StringFactory.getStrEleven(); // 11 하드코딩
     @Id
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date effEndDt;
+    private LocalDateTime effEndDt;
     @Id
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date effStaDt;
+    private LocalDateTime effStaDt;
     private String stockGb;
     private Long shipIndicateQty;
     private Long qty;

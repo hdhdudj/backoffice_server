@@ -8,7 +8,7 @@ import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.deposit.response.DepositSelectDetailResponseData;
 import io.spring.model.deposit.response.DepositSelectListResponseData;
-import io.spring.model.purchase.response.PurchaseListInDepositModalData;
+import io.spring.model.deposit.response.PurchaseListInDepositModalData;
 import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.deposit.JpaDepositService;
@@ -20,7 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Slf4j
 @RestController
@@ -47,8 +47,8 @@ public class DepositController {
      * 입고 - 발주선택창 : 발주일과 구매처를 보내고 조회를 누르면 그에 맞는 발주 data를 보내줌.
      */
     @GetMapping(path = "/purchase/items")
-    public ResponseEntity getChoosePurchaseModalList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date startDt,
-                                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date endDt,
+    public ResponseEntity getChoosePurchaseModalList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable LocalDate startDt,
+                                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable LocalDate endDt,
                                                      @RequestParam @Nullable String purchaseVendorId){
         PurchaseListInDepositModalData purchaseListInDepositModalData = jpaPurchaseService.getPurchaseMasterList(startDt, endDt, purchaseVendorId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),purchaseListInDepositModalData);
@@ -115,12 +115,13 @@ public class DepositController {
      * 입고 - 입고리스트 : 입고일자와 상품코드(빈칸이면 없이 검색)or상품명(like 검색)과 구매처 아이디를 받아 입고 리스트를 검색하는 api
      */
     @GetMapping(path = "/items")
-    public ResponseEntity getDepositList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date depositDt,
+    public ResponseEntity getDepositList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable LocalDate startDt,
+                                         @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable LocalDate endDt,
                                          @RequestParam @Nullable String assortId,
                                          @RequestParam @Nullable String assortNm,
                                          @RequestParam @Nullable String purchaseVendorId){
 
-        DepositSelectListResponseData depositSelectListResponseData = jpaDepositService.getList(purchaseVendorId, assortId, assortNm, depositDt);
+        DepositSelectListResponseData depositSelectListResponseData = jpaDepositService.getList(purchaseVendorId, assortId, assortNm, startDt, endDt);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositSelectListResponseData);
         return ResponseEntity.ok(res);
     }
