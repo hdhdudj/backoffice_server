@@ -2,7 +2,6 @@ package io.spring.model.deposit.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.spring.infrastructure.util.StringFactory;
-import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.idclass.LsdpsdId;
 import io.spring.model.deposit.request.DepositInsertRequestData;
@@ -14,15 +13,16 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-//import org.flywaydb.core.internal.util.StringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
+
+//import org.flywaydb.core.internal.util.StringUtils;
 
 @Entity
 @Getter
@@ -45,7 +45,7 @@ public class Lsdpsd extends CommonProps implements Serializable {
         this.deliPrice = this.depositQty * this.extraUnitcost;
         this.extraCost = this.deliPrice;
         this.extraQty = this.depositQty;
-        this.finishYymm = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
+        this.finishYymm = LocalDateTime.parse(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
         this.depositType = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01' 입고
         this.siteGb = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
         this.vendorId = StringUtils.leftPad("1", 6, '0');
@@ -65,7 +65,7 @@ public class Lsdpsd extends CommonProps implements Serializable {
         this.deliPrice = extraUnitcost * depositQty; // 단가 * 개수
         this.extraCost = extraUnitcost * depositQty; // 단가 * 개수
         this.extraQty = deposit.getDepositQty();
-        this.finishYymm = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
+        this.finishYymm = LocalDateTime.parse(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
         this.depositType = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01' 입고
         this.siteGb = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
         this.vendorId = StringUtils.leftPad("1", 6, '0'); // 000001 하드코딩
@@ -87,7 +87,7 @@ public class Lsdpsd extends CommonProps implements Serializable {
     private Float extraCost;
     private Long extraQty;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date finishYymm;
+    private LocalDateTime finishYymm;
     private String depositType;
     private String siteGb;
     private String vendorId;
@@ -97,7 +97,7 @@ public class Lsdpsd extends CommonProps implements Serializable {
     private String inputNo;
     private String inputSeq;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date excAppDt;
+    private LocalDateTime excAppDt;
 
 
     // 연관 관계 lsdpsm

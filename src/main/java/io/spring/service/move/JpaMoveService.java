@@ -31,6 +31,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -55,8 +56,8 @@ public class JpaMoveService {
      * 주문 이동지시 대상 리스트 가져오는 함수 
      */
     public List<OrderMoveListData> getOrderMoveList(Map<String, Object> map) {
-        Date startDt = (Date)map.get(StringFactory.getStrStartDt());
-        Date endDt = (Date)map.get(StringFactory.getStrEndDt());
+        LocalDate startDt = (LocalDate)map.get(StringFactory.getStrStartDt());
+        LocalDate endDt = (LocalDate)map.get(StringFactory.getStrEndDt());
         String storageId = (String)map.get(StringFactory.getStrStorageId());
         String assortId = (String)map.get(StringFactory.getStrAssortId());
         String itemId = (String)map.get(StringFactory.getStrItemId());
@@ -73,25 +74,28 @@ public class JpaMoveService {
     /**
      * 주문 이동지시 화면에서 검색에 맞는 Lsdpsd들을 가져오는 함수
      */
-    private List<Lsdpsd> getLsdpsd(Date startDt, Date endDt, String storageId, String assortId, String itemId, String deliMethod) {
+    private List<Lsdpsd> getLsdpsd(LocalDate startDt, LocalDate endDt, String storageId, String assortId, String itemId, String deliMethod) {
         // lsdpsd, lsdpsm, tbOrderDetail, itasrt, itvari
-        startDt = startDt == null? Utilities.getStringToDate(StringFactory.getStartDay()) : Utilities.addHoursToJavaUtilDate(startDt,0);
-        endDt = endDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()) : Utilities.addHoursToJavaUtilDate(endDt,24);
-        storageId = storageId == null || storageId.equals("")? "" : " and m.storeCd='" + storageId + "'";
-        assortId = assortId == null || assortId.equals("")? "" : " and d.assortId='" + assortId + "'";
-        itemId = itemId == null || itemId.equals("")? "" : " and d.itemId='" + itemId + "'";
-        deliMethod = deliMethod == null || deliMethod.equals("")? "" : " and t.deliMethod='" + deliMethod + "'";
+        LocalDateTime start = startDt.atStartOfDay();
+        LocalDateTime end = endDt.atTime(23,59,59);
+//        storageId = storageId == null || storageId.equals("")? "" : " and m.storeCd='" + storageId + "'";
+//        assortId = assortId == null || assortId.equals("")? "" : " and d.assortId='" + assortId + "'";
+//        itemId = itemId == null || itemId.equals("")? "" : " and d.itemId='" + itemId + "'";
+//        deliMethod = deliMethod == null || deliMethod.equals("")? "" : " and t.deliMethod='" + deliMethod + "'";
         Query query = em.createQuery("select d from Lsdpsd d " +
                 "join fetch d.lsdpsm m " +
-//                "join fetch d.lsdpsp p " +
-//                "join fetch p.tbOrderDetail t " +
+                "join fetch d.lspchd pd " +
+                "join fetch pd.tbOrderDetail t " +
                 "join fetch d.itasrt i " +
                 "where " +
-                "m.depositDt between ?1 and ?2" +
-                storageId + assortId + itemId + deliMethod
+                "m.depositDt between ?1 and ?2 " +
+                "and (?3 is null or trim(?3)='' or m.storeCd=?3) " +
+                "and (?4 is null or trim(?4)='' or d.assortId=?4) " +
+                "and (?5 is null or trim(?5)='' or d.itemId=?5) " +
+                "and (?6 is null or trim(?6)='' or t.deliMethod=?6)"
         );
-        query.setParameter(1, startDt)
-                .setParameter(2, endDt);
+        query.setParameter(1, start).setParameter(2, end).setParameter(3,storageId)
+        .setParameter(4,assortId).setParameter(5,itemId).setParameter(6,deliMethod);
         List<Lsdpsd> lsdpsdList = query.getResultList();
         return lsdpsdList;
     }

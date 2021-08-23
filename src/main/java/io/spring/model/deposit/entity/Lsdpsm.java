@@ -2,7 +2,6 @@ package io.spring.model.deposit.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.spring.infrastructure.util.StringFactory;
-import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
@@ -15,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Getter
@@ -30,7 +28,7 @@ public class Lsdpsm extends CommonProps {
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
         this.depositGb = StringFactory.getGbOne(); // 01 하드코딩
         this.vendorId = StringUtils.leftPad("1",6,'0');
-        this.finishYymm = Utilities.getStringToDate(StringFactory.getDoomDay());
+        this.finishYymm = LocalDateTime.parse(StringFactory.getDoomDay());
         this.depositType = StringFactory.getGbOne(); // 01 하드코딩
         this.depositVendorId = depositInsertRequestData.getDepositVendorId();
     }
@@ -42,7 +40,7 @@ public class Lsdpsm extends CommonProps {
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
         this.depositGb = StringFactory.getGbOne(); // 01 하드코딩
         this.vendorId = depositListWithPurchaseInfoData.getPurchaseVendorId();
-        this.finishYymm = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
+        this.finishYymm = LocalDateTime.parse(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
         this.depositType = StringFactory.getGbOne(); // 01 하드코딩
         this.storeCd = depositListWithPurchaseInfoData.getStorageId();
         this.setRegId(depositListWithPurchaseInfoData.getRegId());
@@ -57,7 +55,7 @@ public class Lsdpsm extends CommonProps {
     private String siteGb;
     private String vendorId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date finishYymm;
+    private LocalDateTime finishYymm;
     private String depositType;
     private String storeCd;
     private String depositVendorId;

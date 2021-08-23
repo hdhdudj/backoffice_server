@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -30,9 +31,9 @@ public class MoveController {
     /**
      * 주문이동지시 화면에서 검색시 가져오는 주문 list를 return
      */
-    @GetMapping(path="/save/get/list/order")
-    public ResponseEntity getOrderMoveList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date startDt,
-                                           @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date endDt,
+    @GetMapping(path="/items/indicate/order")
+    public ResponseEntity getOrderMoveList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable LocalDate startDt,
+                                           @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable LocalDate endDt,
                                            @RequestParam @Nullable String storageId,
                                            @RequestParam @Nullable String assortId,
                                            @RequestParam @Nullable String itemId,
@@ -53,7 +54,7 @@ public class MoveController {
     /**
      * 주문이동지시 저장
      */
-    @PostMapping(path="/save/save/order")
+    @PostMapping(path="/indicate/order")
     public ResponseEntity saveOrderMove(@RequestBody List<OrderMoveSaveData> orderMoveSaveDataList){
         List<String> shipIdList = jpaMoveService.saveOrderMove(orderMoveSaveDataList);
 //        depositInsertRequestData.setDepositNo(depositNo); // deposit no 채번
@@ -64,7 +65,7 @@ public class MoveController {
     /**
      * 상품이동지시 화면에서 검색시 가져오는 상품 list를 return
      */
-    @GetMapping(path="/save/get/list/goods")
+    @GetMapping(path="/items/indicate/goods")
     public ResponseEntity getGoodsMoveList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable Date shipIndDt,
                                            @RequestParam @Nullable String storeCd,
                                            @RequestParam @Nullable String oStoreCd,
@@ -77,7 +78,7 @@ public class MoveController {
     /**
      * 상품이동지시 저장
      */
-    @PostMapping(path="/save/save/goods")
+    @PostMapping(path="/indicate/goods")
     public ResponseEntity saveGoodsMove(@RequestBody GoodsMoveSaveData goodsMoveSaveData){
         String shipId = jpaMoveService.saveGoodsMove(goodsMoveSaveData);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipId);
@@ -87,7 +88,7 @@ public class MoveController {
     /**
      * 이동처리
      */
-    @PostMapping(path = "/change/status")
+    @PostMapping(path = "/goods")
     public ResponseEntity changeShipStatus(@RequestBody List<ShipIdAndSeq> shipIdAndSeqList){
         List<String> shipIdList = jpaMoveService.changeShipStatus(shipIdAndSeqList);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipIdList);
