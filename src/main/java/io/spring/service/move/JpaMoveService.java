@@ -18,9 +18,9 @@ import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
 import io.spring.model.move.request.ShipIdAndSeq;
 import io.spring.model.move.response.GoodsModalListResponseData;
+import io.spring.model.move.response.MoveIndicateListResponseData;
 import io.spring.model.move.response.OrderMoveListResponseData;
 import io.spring.model.order.entity.TbOrderDetail;
-import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import io.spring.model.ship.entity.Lsshps;
@@ -52,14 +52,14 @@ public class JpaMoveService {
     private final JpaLsshpmRepository jpaLsshpmRepository;
     private final JpaLsshpdRepository jpaLsshpdRepository;
     private final JpaLsshpsRepository jpaLsshpsRepository;
-
+    /**
+     * 주문 이동지시 대상 리스트 가져오는 함수
+     */
     private final JpaPurchaseService jpaPurchaseService;
 
     private final EntityManager em;
 
-    /**
-     * 주문 이동지시 대상 리스트 가져오는 함수 
-     */
+
     public List<OrderMoveListResponseData> getOrderMoveList(Map<String, Object> map) {
         LocalDate startDt = (LocalDate)map.get(StringFactory.getStrStartDt());
         LocalDate endDt = (LocalDate)map.get(StringFactory.getStrEndDt());
@@ -117,20 +117,23 @@ public class JpaMoveService {
      * 주문 이동지시 저장 함수
      */
     @Transactional
-    public List<String> saveOrderMove(List<OrderMoveSaveData> orderMoveSaveDataList) {
-        if(orderMoveSaveDataList.size() == 0){
+    public List<String> saveOrderMove(OrderMoveSaveData orderMoveSaveData) {
+        List<OrderMoveSaveData.Move> moveList = orderMoveSaveData.getMoves();
+        if(moveList.size() == 0){
             log.debug("input data is empty.");
             return null;
         }
         List<String> shipIdList = new ArrayList<>();
         List<Lsdpsd> lsdpsdList = new ArrayList<>();
         // 1. 출고 data 생성
-        for(OrderMoveSaveData orderMoveSaveData : orderMoveSaveDataList){
-            String shipId = this.saveOrderMoveSaveData(lsdpsdList, orderMoveSaveData);
-            shipIdList.add(shipId);
+        for(OrderMoveSaveData.Move move : moveList){
+            String shipId = this.saveOrderMoveSaveData(lsdpsdList, move);
+            if(shipId != null){
+                shipIdList.add(shipId);
+            }
         }
         // 2. 발주 data 생성
-        jpaPurchaseService.makePurchaseDataFromOrderMoveSave(lsdpsdList, orderMoveSaveDataList);
+        jpaPurchaseService.makePurchaseDataFromOrderMoveSave(lsdpsdList, moveList);
         return shipIdList;
     }
 
@@ -139,10 +142,13 @@ public class JpaMoveService {
      * lsdpsm,d,s,b, lsdpsp, ititmt(발주데이터) 생성
      * tbOrderDetail를 변경
      */
-    private String saveOrderMoveSaveData(List<Lsdpsd> lsdpsdList, OrderMoveSaveData orderMoveSaveData) {
-        Lsdpsd lsdpsd = this.getLsdpsdByDepositNoAndDepositSeq(orderMoveSaveData);
-        String shipId = this.makeOrderShipData(lsdpsd, orderMoveSaveData.getQty(), StringFactory.getGbOne());
-        lsdpsdList.add(lsdpsd);
+    private String saveOrderMoveSaveData(List<Lsdpsd> lsdpsdList, OrderMoveSaveData.Move move) {
+        Lsdpsd lsdpsd = this.getLsdpsdByDepositNoAndDepositSeq(move);
+        TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(move.getOrderId(),move.getOrderSeq());
+        String shipId = this.makeOrderShipData(lsdpsd, tbOrderDetail, move.getQty(), StringFactory.getGbOne());
+        if(shipId != null){
+            lsdpsdList.add(lsdpsd);
+        }
 //        this.updateQty(orderMoveSaveData);
         return shipId;
     }
@@ -150,7 +156,7 @@ public class JpaMoveService {
     /**
      * depositNo와 depositSeq로 Lsdpsd를 가져오는 함수
      */
-    private Lsdpsd getLsdpsdByDepositNoAndDepositSeq(OrderMoveSaveData orderMoveSaveData) {
+    private Lsdpsd getLsdpsdByDepositNoAndDepositSeq(OrderMoveSaveData.Move move) {
         TypedQuery<Lsdpsd> query = em.createQuery("select d from Lsdpsd d " +
 //                "join fetch d.lsdpsp lp " +
 //                "join fetch d.lsdpsm lm " +
@@ -161,8 +167,8 @@ public class JpaMoveService {
                         "where " +
                         "d.depositNo=?1 and d.depositSeq=?2"
                 , Lsdpsd.class);
-        query.setParameter(1, orderMoveSaveData.getDepositNo())
-                .setParameter(2, orderMoveSaveData.getDepositSeq());
+        query.setParameter(1, move.getDepositNo())
+                .setParameter(2, move.getDepositSeq());
         Lsdpsd lsdpsd = query.getSingleResult();
         return lsdpsd;
     }
@@ -170,7 +176,7 @@ public class JpaMoveService {
     /**
      * 주문이동 저장, 출고 관련 data 생성 함수 (lsshpm,d,s)
      */
-    private String makeOrderShipData(Lsdpsd lsdpsd, long qty, String shipStatus) {
+    private String makeOrderShipData(Lsdpsd lsdpsd, TbOrderDetail tbOrderDetail, long qty, String shipStatus) {
         String shipId = getShipId();
 
         Itasrt itasrt = lsdpsd.getItasrt();
@@ -183,14 +189,15 @@ public class JpaMoveService {
                 && x.getItemGrade().equals(itemGrade)).collect(Collectors.toList());
         Ititmc ititmc = ititmcList.get(0);
         // ititmc에서 shipIndicateQty 변경해주기
-
+        if(qty > ititmc.getQty() - ititmc.getShipIndicateQty()){
+            log.debug("이동가능 재고량이 부족합니다.");
+            return null;
+        }
         ititmc.setShipIndicateQty(ititmc.getShipIndicateQty() + qty);
         jpaItitmcRepository.save(ititmc);
-        TbOrderMaster tbOrderMaster = lsdpsd.getLspchd().getLsdpsp().get(0).getTbOrderDetail().getTbOrderMaster();
-
+//        TbOrderMaster tbOrderMaster = lsdpsd.getLspchd().getLsdpsp().get(0).getTbOrderDetail().getTbOrderMaster();
 
         for (int i = 0; i < qty; i++) {
-            TbOrderDetail tbOrderDetail = lsdpsd.getLspchd().getLsdpsp().get(i).getTbOrderDetail();
 //            Lsdpsp lsdpsp = lsdpsd.getLspchd().getLsdpsp().get(i);
             if(i==0){
                 // lsshpm 저장
@@ -505,5 +512,8 @@ public class JpaMoveService {
         String shipId = jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLsshpm());
         shipId = Utilities.getStringNo('L',shipId,9);
         return shipId;
+    }
+
+    public MoveIndicateListResponseData getMoveIndicateList(LocalDate startDt, LocalDate endDt, String storageId, String assortId, String assortNm) {
     }
 }

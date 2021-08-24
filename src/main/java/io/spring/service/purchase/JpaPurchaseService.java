@@ -774,27 +774,26 @@ public class JpaPurchaseService {
     /**
      * 주문이동 저장시 생성되는 발주 data를 만드는 함수
      */
-    public void makePurchaseDataFromOrderMoveSave(List<Lsdpsd> lsdpsdList, List<OrderMoveSaveData> orderMoveSaveData) {
-        String purchaseNo = this.getPurchaseNo();
-        Lspchm receiveLsdpsm = lsdpsdList.get(0).getLspchd().getLsdpsp().get(0).getLspchd().getLspchm();
-        TbOrderMaster tbOrderMaster = lsdpsdList.get(0).getLspchd().getLsdpsp().get(0).getTbOrderDetail().getTbOrderMaster();
+    public void makePurchaseDataFromOrderMoveSave(List<Lsdpsd> lsdpsdList, List<OrderMoveSaveData.Move> orderMoveSaveData) {
+//        Lspchm receiveLsdpsm = lsdpsdList.get(0).getLspchd().getLsdpsp().get(0).getLspchd().getLspchm();
 
-        // lspchm insert
-        Lspchm lspchm = new Lspchm(purchaseNo);
-        lspchm.setDealtypeCd(StringFactory.getGbOne()); // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정 주문발주 (01 하드코딩)
-        // lspchm의 purchaseRemark, siteOrderNo, storeCd, oStoreCd set 해주기
-        lspchm.setPurchaseRemark(receiveLsdpsm.getRegId());
-        lspchm.setSiteOrderNo(tbOrderMaster.getChannelOrderNo());
-
-        Lspchs lspchs = new Lspchs(lspchm);
-        jpaLspchmRepository.save(lspchm);
-        jpaLspchsRepository.save(lspchs);
-
-        // lspchd insert
-        int length = lsdpsdList.size();
-        for (int i = 0; i < length ; i++) {
+        // lspchm,s,d,b insert
+        for (int i = 0; i < lsdpsdList.size() ; i++) {
+            String purchaseNo = this.getPurchaseNo();
             Lsdpsd itemLsdpsd = lsdpsdList.get(i);
-            TbOrderDetail tbOrderDetail = itemLsdpsd.getLspchd().getLsdpsp().get(i).getTbOrderDetail();
+            TbOrderDetail tbOrderDetail = itemLsdpsd.getLspchd().getTbOrderDetail();
+            TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
+
+            // lspchm insert
+            Lspchm lspchm = new Lspchm(purchaseNo);
+            lspchm.setDealtypeCd(StringFactory.getGbOne()); // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정 주문발주 (01 하드코딩)
+            lspchm.setSiteOrderNo(tbOrderMaster.getChannelOrderNo());
+            // lspchm의 purchaseRemark, siteOrderNo, storeCd, oStoreCd set 해주기
+//            lspchm.setPurchaseRemark(receiveLsdpsm.getRegId());
+
+            Lspchs lspchs = new Lspchs(lspchm);
+            jpaLspchmRepository.save(lspchm);
+            jpaLspchsRepository.save(lspchs);
 
             String purchaseSeq = StringUtils.leftPad(Integer.toString(i+1),4,'0');
             Lspchd lspchd = new Lspchd(purchaseNo, purchaseSeq,

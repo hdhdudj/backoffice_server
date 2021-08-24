@@ -78,6 +78,10 @@ public class Lspchd extends CommonProps {
         this.siteGb = lsdpsd.getSiteGb();
         this.vendorId = lsdpsd.getVendorId();
         this.siteOrderNo = tbOrderDetail.getChannelOrderNo();
+        this.orderId = tbOrderDetail.getOrderId();
+        this.orderSeq = tbOrderDetail.getOrderSeq();
+        this.depositNo = lsdpsd.getDepositNo();
+        this.depositSeq = lsdpsd.getDepositSeq();
     }
     /**
      * 주문이동지시 저장시 실행되는 생성자

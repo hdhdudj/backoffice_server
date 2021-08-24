@@ -6,6 +6,7 @@ import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
 import io.spring.model.move.request.ShipIdAndSeq;
 import io.spring.model.move.response.GoodsModalListResponseData;
+import io.spring.model.move.response.MoveIndicateListResponseData;
 import io.spring.model.move.response.OrderMoveListResponseData;
 import io.spring.service.move.JpaMoveService;
 import lombok.RequiredArgsConstructor;
@@ -56,8 +57,8 @@ public class MoveController {
      * 주문이동지시 저장
      */
     @PostMapping(path="/indicate/order")
-    public ResponseEntity saveOrderMove(@RequestBody List<OrderMoveSaveData> orderMoveSaveDataList){
-        List<String> shipIdList = jpaMoveService.saveOrderMove(orderMoveSaveDataList);
+    public ResponseEntity saveOrderMove(@RequestBody OrderMoveSaveData orderMoveSaveData){
+        List<String> shipIdList = jpaMoveService.saveOrderMove(orderMoveSaveData);
 //        depositInsertRequestData.setDepositNo(depositNo); // deposit no 채번
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipIdList);
         return ResponseEntity.ok(res);
@@ -111,6 +112,27 @@ public class MoveController {
     public ResponseEntity saveGoodsMove(@RequestBody GoodsMoveSaveData goodsMoveSaveData){
         String shipId = jpaMoveService.saveGoodsMove(goodsMoveSaveData);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipId);
+        return ResponseEntity.ok(res);
+    }
+
+    /**
+     * 이동지시리스트(상품, 주문)를 반환하는 api
+     * @param startDt 이동지시일자 min
+     * @param endDt 이동지시일자 max
+     * @param storageId 이동창고
+     * @param assortId 품목코드
+     * @param assortNm 품목이름
+     * @return 상품이동지시, 주문이동지시 리스트 DTO
+     */
+    @GetMapping(path = "/items/indicate")
+    public ResponseEntity getMoveIndicateList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+                                              @RequestParam String storageId,
+                                              @RequestParam String assortId,
+                                              @RequestParam String assortNm
+                                              ){
+        MoveIndicateListResponseData moveIndicateListResponseData = jpaMoveService.getMoveIndicateList(startDt,endDt,storageId,assortId,assortNm);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),moveIndicateListResponseData);
         return ResponseEntity.ok(res);
     }
 

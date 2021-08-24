@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShipIdAndSeq {
-
     private String shipId;
     private String shipSeq;
 }
