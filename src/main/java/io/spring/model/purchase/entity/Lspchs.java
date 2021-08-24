@@ -24,18 +24,18 @@ public class Lspchs extends CommonProps {
     private final static Logger logger = LoggerFactory.getLogger(Lspchs.class);
     public Lspchs(PurchaseInsertRequestData purchaseInsertRequestData){
         this.purchaseNo = purchaseInsertRequestData.getPurchaseNo();
-        this.effEndDt = LocalDateTime.parse(StringFactory.getDoomDay());
+        this.effEndDt = LocalDateTime.parse(StringFactory.getDoomDayT());
         this.purchaseStatus = purchaseInsertRequestData.getPurchaseStatus();
     }
     public Lspchs(Lspchs lspchs){
         this.purchaseNo = lspchs.getPurchaseNo();
-        this.effEndDt = LocalDateTime.parse(StringFactory.getDoomDay());
+        this.effEndDt = LocalDateTime.parse(StringFactory.getDoomDayT());
         this.purchaseStatus = lspchs.getPurchaseStatus();
         this.effStaDt = lspchs.getEffStaDt();
     }
     public Lspchs(Lspchm lspchm){
         this.purchaseNo = lspchm.getPurchaseNo();
-        this.effEndDt = LocalDateTime.parse(StringFactory.getDoomDay());
+        this.effEndDt = LocalDateTime.parse(StringFactory.getDoomDayT());
         this.purchaseStatus = lspchm.getPurchaseStatus();
         this.effStaDt = lspchm.getPurchaseDt();
     }

@@ -15,13 +15,13 @@ public class GoodsMoveListResponseData {
         this.itemId = ititmc.getItemId();
         this.assortNm = ititmc.getItasrt().getAssortNm();
         this.optionNm = ititmc.getItasrt().getItvariList().size() > 0? ititmc.getItasrt().getItvariList().get(0).getOptionNm() : null;
-        this.canShipQty = ititmc.getQty() - ititmc.getShipIndicateQty();
-        this.shipQty = 0l;
+        this.canMoveQty = ititmc.getQty() - ititmc.getShipIndicateQty();
+        this.moveQty = 0l;
     }
     private String assortId;
     private String itemId;
     private String assortNm;
     private String optionNm;
-    private Long canShipQty; // 이동가능수량
-    private Long shipQty; // 이동수량
+    private Long canMoveQty; // 이동가능수량
+    private Long moveQty; // 이동수량
 }

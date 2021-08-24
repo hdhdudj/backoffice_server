@@ -70,6 +70,8 @@ public class StringFactory {
     @Getter
     private final static String doomDay = "9999-12-31 23:59:59";
     @Getter
+    private final static String doomDayT = "9999-12-31T23:59:59";
+    @Getter
     private final static String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
     // 한글

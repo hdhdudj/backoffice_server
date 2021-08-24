@@ -303,7 +303,7 @@ public class JpaMoveService {
         Lsshpm lsshpm = new Lsshpm(shipId);
         lsshpm.setStorageId(goodsMoveSaveData.getStoreCd());
         lsshpm.setDelMethod(goodsMoveSaveData.getDeliMethod());
-        lsshpm.setReceiptDt(goodsMoveSaveData.getShipIndDt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+        lsshpm.setReceiptDt(goodsMoveSaveData.getMoveIndDt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
         long lsshpdNum = 0l;
         for (int i = 0; i < goodsList.size() ; i++) {
             lsshpdNum = this.saveGoodsMoveSaveData(shipId, goodsMoveSaveData, goodsList.get(i), indexStore, newGoodsList);
@@ -353,7 +353,7 @@ public class JpaMoveService {
         List<Ititmc> ititmcList = query.getResultList();
 
         // 2. ititmc qty값 변경
-        ititmcList = this.calcItitmcQty(ititmcList, goods.getShipQty());
+        ititmcList = this.calcItitmcQty(ititmcList, goods.getMoveQty());
         if(ititmcList.size() > 0){
             newGoodsList.add(goods);
         }
@@ -423,7 +423,7 @@ public class JpaMoveService {
         }
         goodsRow.setAvailableQty(ititmcQty - ititmcShipIndQty);
         goodsRow.setOrderQty(orderQty);
-        goodsRow.setShipQty(goods.getShipQty());
+        goodsRow.setMoveQty(goods.getMoveQty());
 
         return goodsRow;
     }
@@ -460,8 +460,8 @@ public class JpaMoveService {
             return 0l;
         }
         int index = indexStore.get(0);
-        long shipQty = goods.getShipQty();
-        for (long i = 0; i < shipQty ; i++) {
+        long moveQty = goods.getMoveQty();
+        for (long i = 0; i < moveQty ; i++) {
             String shipSeq = StringUtils.leftPad(Integer.toString(index),4,'0');
             // 1-2. Lsshpd 생성
             Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, goodsMoveSaveData, goods);
@@ -470,11 +470,11 @@ public class JpaMoveService {
             indexStore.remove(0);
             indexStore.add(index);
         }
-        return shipQty;
+        return moveQty;
     }
 
     /**
-     * 이동처리(lsshpm.shipStats를 01에서 04로 변경)
+     * 이동처리(lsshpm.shipStatus를 01에서 04로 변경)
      */
     public List<String> changeShipStatus(List<ShipIdAndSeq> shipIdAndSeqList) {
         List<String> newShipIdList = new ArrayList<>();
