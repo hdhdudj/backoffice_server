@@ -36,7 +36,6 @@ import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -68,12 +67,13 @@ public class JpaMoveService {
         String assortNm = (String)map.get(StringFactory.getStrAssortNm());
         String itemId = (String)map.get(StringFactory.getStrItemId());
         String deliMethod = (String)map.get(StringFactory.getStrDeliMethod());
-        List<Lsdpsd> lsdpsdList = this.getLsdpsd(startDt, endDt, storageId, assortId, assortNm, itemId, deliMethod);
+        List<TbOrderDetail> tbOrderDetailList = this.getTbOrderDetail(startDt, endDt, storageId, assortId, assortNm, itemId, deliMethod);
+//        List<Lsdpsd> lsdpsdList = this.getLsdpsd(startDt, endDt, storageId, assortId, assortNm, itemId, deliMethod);
         List<OrderMoveListResponseData> orderMoveListDataListResponse = new ArrayList<>();
-        for(Lsdpsd lsdpsd : lsdpsdList){
-            OrderMoveListResponseData orderMoveListResponseData = new OrderMoveListResponseData(lsdpsd);
+        for(TbOrderDetail tbOrderDetail : tbOrderDetailList){
+            OrderMoveListResponseData orderMoveListResponseData = new OrderMoveListResponseData(tbOrderDetail);
             orderMoveListDataListResponse.add(orderMoveListResponseData);
-            List<Itvari> itvariList = lsdpsd.getItasrt().getItvariList();
+            List<Itvari> itvariList = tbOrderDetail.getItasrt().getItvariList();
             if(itvariList.size() > 0){
                 Itvari itvari1 = itvariList.get(0);
                 orderMoveListResponseData.setOptionNm1(itvari1.getOptionNm());
@@ -84,6 +84,31 @@ public class JpaMoveService {
             }
         }
         return orderMoveListDataListResponse;
+    }
+
+    /**
+     * 주문 이동지시 화면에서 검색에 맞는 TbOrderDetail들을 가져오는 함수
+     */
+    private List<TbOrderDetail> getTbOrderDetail(LocalDate startDt, LocalDate endDt, String storageId, String assortId, String assortNm, String itemId, String deliMethod) {
+        // lsdpsd, lsdpsm, tbOrderDetail, itasrt, itvari
+        LocalDateTime start = startDt.atStartOfDay();
+        LocalDateTime end = endDt.atTime(23,59,59);
+        TypedQuery<TbOrderDetail> query = em.createQuery("select to from TbOrderDetail to " +
+                "join fetch to.lspchd pd " +
+                "join fetch to.itasrt i " +
+                "where " +
+                "to.regDt between ?1 and ?2 " +
+                "and (?3 is null or trim(?3)='' or to.storageId=?3) " +
+                "and (?4 is null or trim(?4)='' or to.assortId=?4) " +
+                "and (?5 is null or trim(?5)='' or to.itemId=?5) " +
+                "and (?6 is null or trim(?6)='' or to.deliMethod=?6) " +
+                "and (?7 is null or trim(?7)='' or i.assortNm like concat('%',?7,'%'))"
+        , TbOrderDetail.class);
+        query.setParameter(1, start).setParameter(2, end).setParameter(3,storageId)
+                .setParameter(4,assortId).setParameter(5,itemId).setParameter(6,deliMethod)
+                .setParameter(7,assortNm);
+        List<TbOrderDetail> tbOrderDetailList = query.getResultList();
+        return tbOrderDetailList;
     }
 
     /**
@@ -234,7 +259,7 @@ public class JpaMoveService {
             long qtyOfC01 = tbOrderDetailList.size();
             goods.setOrderQty(qtyOfC01);
             goods.setAvailableQty(goods.getAvailableQty() - qtyOfC01);
-            goods.setStoreCd(goodsModalListResponseData.getStoreCd());
+//            goods.setStoreCd(goodsModalListResponseData.getStoreCd());
             if(itvariList.size() > 0){
                 Itvari itvari1 = itvariList.get(0);
                 goods.setOptionNm1(itvari1.getOptionNm());
@@ -246,9 +271,31 @@ public class JpaMoveService {
             goods.setBrandNm(ifBrand.getBrandNm());
             goodsList.add(goods);
         }
+//        goodsList = this.removeDuplicate(goodsList); // goodsKey로 group by
         goodsModalListResponseData.setGoods(goodsList);
         return goodsModalListResponseData;
     }
+
+//    /**
+//     * goodsKey로 goodsList를 그루핑하는 함수 (이동가능수량과 해외입고완료 주문수량을 goodsKey별로 더함)
+//     * @param goodsList 상품이동지시 화면에 보일 goodsKey로 나뉜 row의 리스트
+//     * @return goodsKey로 그루핑 처리된 goodsList
+//     */
+//    private List<GoodsModalListResponseData.Goods> removeDuplicate(List<GoodsModalListResponseData.Goods> goodsList) {
+//        List<GoodsModalListResponseData.Goods> newGoodsList = new ArrayList<>();
+//        Map<String, GoodsModalListResponseData.Goods> goodsMap = new HashMap<>();
+//        for(GoodsModalListResponseData.Goods goods : goodsList){
+//            GoodsModalListResponseData.Goods goods1 = goodsMap.get(goods.getGoodsKey());
+//            if(goods1 == null){
+//                newGoodsList.add(goods);
+//            }
+//            else{
+//                goods1.setAvailableQty(goods1.getAvailableQty() + goods.getAvailableQty());
+//                goods1.setOrderQty(goods1.getOrderQty() + goods.getOrderQty());
+//            }
+//        }
+//        return newGoodsList;
+//    }
 
 //    /**
 //     * 상품 이동지시 : 이동지시일자, 출고센터, 입고센터, 이동방법을 입력한 후 상품추가 버튼을 눌렀을 때 상품 목록을 반환
@@ -310,7 +357,8 @@ public class JpaMoveService {
         Lsshpm lsshpm = new Lsshpm(shipId);
         lsshpm.setStorageId(goodsMoveSaveData.getStoreCd());
         lsshpm.setDelMethod(goodsMoveSaveData.getDeliMethod());
-        lsshpm.setReceiptDt(goodsMoveSaveData.getMoveIndDt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+        lsshpm.setReceiptDt(LocalDateTime.now());
+//        lsshpm.setReceiptDt(goodsMoveSaveData.getMoveIndDt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
         long lsshpdNum = 0l;
         for (int i = 0; i < goodsList.size() ; i++) {
             lsshpdNum = this.saveGoodsMoveSaveData(shipId, goodsMoveSaveData, goodsList.get(i), indexStore, newGoodsList);
@@ -515,5 +563,10 @@ public class JpaMoveService {
     }
 
     public MoveIndicateListResponseData getMoveIndicateList(LocalDate startDt, LocalDate endDt, String storageId, String assortId, String assortNm) {
+        MoveIndicateListResponseData moveIndicateListResponseData = new MoveIndicateListResponseData(startDt, endDt, storageId, assortId, assortNm);
+//        for(MoveIndicateListResponseData.Move move){
+//
+//        }
+        return moveIndicateListResponseData;
     }
 }

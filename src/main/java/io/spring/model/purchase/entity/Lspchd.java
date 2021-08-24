@@ -123,7 +123,9 @@ public class Lspchd extends CommonProps {
     private Float newTaxAmt;
     private Float saleAmt;
     private Float newSaleAmt;
+    @Column(name = "orderId")
     private String orderId;
+    @Column(name = "orderSeq")
     private String orderSeq;
     private String depositNo;
     private String depositSeq;

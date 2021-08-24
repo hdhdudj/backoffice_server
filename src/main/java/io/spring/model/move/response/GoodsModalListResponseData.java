@@ -34,10 +34,12 @@ public class GoodsModalListResponseData {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Goods{
         public Goods(Ititmc ititmc, Itasrt itasrt){
+            this.storeCd = ititmc.getStorageId();
             this.assortId = ititmc.getAssortId();
             this.itemId = ititmc.getItemId();
             this.assortNm = itasrt.getAssortNm();
             this.goodsKey = Utilities.addDashInMiddle(this.assortId, this.itemId);
+            this.depositDt = Utilities.removeTAndTransToStr(ititmc.getEffStaDt());
 //            this.brandNm = itasrt.getIfBrand().getBrandNm(); 바깥에서 set
             this.qty = ititmc.getQty() == null? 0l : ititmc.getQty();
             this.availableQty = ititmc.getShipIndicateQty() == null? this.qty : this.qty - ititmc.getShipIndicateQty();
@@ -46,6 +48,7 @@ public class GoodsModalListResponseData {
             this.moveQty = 0l;
         }
         private String storeCd;
+        private String depositDt;
         private String assortId;
         private String itemId;
         private String goodsKey;

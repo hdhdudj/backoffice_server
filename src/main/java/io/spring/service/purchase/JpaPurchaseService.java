@@ -15,6 +15,7 @@ import io.spring.jparepos.purchase.JpaLspchsRepository;
 import io.spring.model.common.entity.SequenceData;
 import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.deposit.entity.Lsdpsp;
+import io.spring.model.deposit.response.PurchaseListInDepositModalData;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.goods.entity.Ititmt;
@@ -30,7 +31,6 @@ import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.entity.Lspchm;
 import io.spring.model.purchase.entity.Lspchs;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
-import io.spring.model.deposit.response.PurchaseListInDepositModalData;
 import io.spring.model.purchase.response.PurchaseSelectDetailResponseData;
 import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
@@ -58,6 +58,7 @@ public class JpaPurchaseService {
     private final JpaLspchsRepository jpaLspchsRepository;
     private final JpaItitmtRepository jpaItitmtRepository;
     private final JpaCommonService jpaCommonService;
+    private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
 
 	private final JpaTbOrderMasterRepository tbOrderMasterRepository;
@@ -774,14 +775,14 @@ public class JpaPurchaseService {
     /**
      * 주문이동 저장시 생성되는 발주 data를 만드는 함수
      */
-    public void makePurchaseDataFromOrderMoveSave(List<Lsdpsd> lsdpsdList, List<OrderMoveSaveData.Move> orderMoveSaveData) {
+    public void makePurchaseDataFromOrderMoveSave(List<Lsdpsd> lsdpsdList, List<OrderMoveSaveData.Move> moveList) {
 //        Lspchm receiveLsdpsm = lsdpsdList.get(0).getLspchd().getLsdpsp().get(0).getLspchd().getLspchm();
-
         // lspchm,s,d,b insert
-        for (int i = 0; i < lsdpsdList.size() ; i++) {
+        for (int i = 0; i < moveList.size() ; i++) {
+            OrderMoveSaveData.Move move = moveList.get(i);
             String purchaseNo = this.getPurchaseNo();
             Lsdpsd itemLsdpsd = lsdpsdList.get(i);
-            TbOrderDetail tbOrderDetail = itemLsdpsd.getLspchd().getTbOrderDetail();
+            TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(move.getOrderId(),move.getOrderSeq());//itemLsdpsd.getLspchd().getTbOrderDetail();
             TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
 
             // lspchm insert
@@ -792,13 +793,18 @@ public class JpaPurchaseService {
 //            lspchm.setPurchaseRemark(receiveLsdpsm.getRegId());
 
             Lspchs lspchs = new Lspchs(lspchm);
-            jpaLspchmRepository.save(lspchm);
-            jpaLspchsRepository.save(lspchs);
 
             String purchaseSeq = StringUtils.leftPad(Integer.toString(i+1),4,'0');
+            if(jpaLspchdRepository.findByOrderIdAndOrderSeq(tbOrderDetail.getOrderId(),tbOrderDetail.getOrderSeq()) != null){
+                log.debug("이미 해당 주문에 대한 발주 데이터가 존재합니다!");
+                return;
+            }
             Lspchd lspchd = new Lspchd(purchaseNo, purchaseSeq,
                     itemLsdpsd, tbOrderDetail);
             Lspchb lspchb = new Lspchb(lspchd);
+
+            jpaLspchmRepository.save(lspchm);
+            jpaLspchsRepository.save(lspchs);
             jpaLspchdRepository.save(lspchd);
             jpaLspchbRepository.save(lspchb);
         }

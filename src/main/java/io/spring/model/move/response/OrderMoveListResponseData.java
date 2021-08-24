@@ -1,9 +1,9 @@
 package io.spring.model.move.response;
 
 import io.spring.infrastructure.util.Utilities;
-import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.purchase.entity.Lspchd;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,17 +16,17 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderMoveListResponseData {
-    public OrderMoveListResponseData(Lsdpsd lsdpsd){
-        this.depositNo = lsdpsd.getDepositNo();
-        this.depositSeq = lsdpsd.getDepositSeq();
-        this.assortId = lsdpsd.getAssortId();
-        this.itemId = lsdpsd.getItemId();
+    public OrderMoveListResponseData(TbOrderDetail tbOrderDetail){
+        Lspchd lspchd = tbOrderDetail.getLspchd();
+        this.depositNo = lspchd.getDepositNo();
+        this.depositSeq = lspchd.getDepositSeq();
+        this.assortId = lspchd.getAssortId();
+        this.itemId = lspchd.getItemId();
+        this.depositDt = Utilities.removeTAndTransToStr(lspchd.getLsdpsd().getLsdpsm().getDepositDt());
 
-        this.depositDt = Utilities.removeTAndTransToStr(lsdpsd.getLsdpsm().getDepositDt());
-
-        TbOrderDetail tbOrderDetail = lsdpsd.getLspchd().getTbOrderDetail();
         this.orderId = tbOrderDetail.getOrderId();
         this.orderSeq = tbOrderDetail.getOrderSeq();
+        this.orderKey = Utilities.addDashInMiddle(orderId,orderSeq);
         this.deliMethod = tbOrderDetail.getDeliMethod();
         this.qty = tbOrderDetail.getQty();
         this.orderStoreCd = tbOrderDetail.getStorageId();
@@ -49,6 +49,7 @@ public class OrderMoveListResponseData {
     // tbOrderDetail
     private String orderId;
     private String orderSeq;
+    private String orderKey;
     private String deliMethod;
     private Long qty;
     // itasrt

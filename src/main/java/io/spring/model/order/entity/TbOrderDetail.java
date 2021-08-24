@@ -12,7 +12,6 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name="tb_order_detail")
@@ -115,12 +114,13 @@ public class TbOrderDetail extends CommonProps
     @NotFound(action = NotFoundAction.IGNORE)
     private Itasrt itasrt; // itasrt 연관관계
 
-    @JoinColumns({
-        @JoinColumn(name = "orderId", referencedColumnName = "orderId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
-        @JoinColumn(name = "orderSeq", referencedColumnName = "orderSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
-    })
-    @OneToMany(fetch = FetchType.LAZY)
+//    @JoinColumns({
+//        @JoinColumn(name = "orderId", referencedColumnName = "orderId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
+//        @JoinColumn(name = "orderSeq", referencedColumnName = "orderSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
+//    })
+    @OneToOne(fetch = FetchType.LAZY,
+    mappedBy = "tbOrderDetail")
     @JsonIgnore
     @NotFound(action = NotFoundAction.IGNORE)
-    private List<Lspchd> lspchd; // lspchd 연관관계
+    private Lspchd lspchd; // lspchd 연관관계
 }

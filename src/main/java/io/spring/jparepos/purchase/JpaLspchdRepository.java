@@ -16,4 +16,6 @@ public interface JpaLspchdRepository extends JpaRepository<Lspchd, LspchdId> {
 
     @Query("select d from Lspchd d join fetch d.lspchm m join fetch d.lspchb b where d.assortId=?1 and d.itemId=?2 order by d.purchaseNo asc")
     List<Lspchd> findByAssortIdAndItemId(String assortId, String itemId);
+
+    Lspchd findByOrderIdAndOrderSeq(String orderId, String orderSeq);
 }
