@@ -15,9 +15,7 @@ import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -37,9 +35,7 @@ public class Lsshpm extends CommonProps {
 //        this.shipStatus = StringFactory.getGbOne(); // 01 출고지시, 04 출고.. 이동지시시 실행되는 생성자이므로 01 하드코딩
         this.deliId = null; // 이동지시 null, 출고지시 tb_order_master.deli_id
         this.shipItemCnt = null;
-        this.receiptDt = new Date().toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime(); // 출고지시 일자
+        this.receiptDt = LocalDateTime.now(); // 출고지시 일자
         this.storageId = itasrt.getStorageId();
         this.instructDt = new Date(); // 패킹일자 //Utilities.getStringToDate(StringFactory.getDoomDay());
         this.applyDay = Utilities.getStringToDate(StringFactory.getDoomDay()); // 출고처리 일자
@@ -49,9 +45,12 @@ public class Lsshpm extends CommonProps {
         this.delMethod = tbOrderDetail.getDeliMethod();
         this.rematGb = StringFactory.getGbOne(); // 01 하드코딩
         this.shipGb = StringFactory.getGbTwo(); // 02 하드코딩 (01 : 출고, 02 : 이동)
-//        this.itemGrade = ititmc.getItemGrade(); : 11로 고정. 이동지시와 출고에서는 11(정상품)만 다룸.
+//        this.itemGrade = ititmc.getItemGrade(); //: 11로 고정. 이동지시와 출고에서는 11(정상품)만 다룸.
         this.deliCompanyCd = null;
         this.orderId = tbOrderDetail.getOrderId();
+
+        this.shipGb = StringFactory.getGbThree(); // 01:일반출고 03:주문이동지시 04:상품이동지시
+        this.masterShipGb = StringFactory.getGbThree(); // 01:일반출고 03:주문이동지시 04:상품이동지시
     }
 
     /**
@@ -64,9 +63,7 @@ public class Lsshpm extends CommonProps {
         this.shipStatus = StringFactory.getGbOne(); // 01 : 출고지시, 04 : 출고 (04 하드코딩)
         this.deliId = null; // 이동지시 : null, 출고지시 : tbOrderDetail.deliId
         this.shipItemCnt = null;
-        this.receiptDt = new Date().toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
+        this.receiptDt = LocalDateTime.now();
 //        this.storageId : 바깥에서 set
         this.instructDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
         this.applyDay = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
@@ -78,6 +75,9 @@ public class Lsshpm extends CommonProps {
         this.shipGb = StringFactory.getGbTwo(); // 02 하드코딩 (01 : 출고, 02 : 이동)
 //        this.itemGrade : 11로 고정. 해당 객체에서는 정상품만 다룸.
         this.deliCompanyCd = null;
+
+        this.shipGb = StringFactory.getGbFour(); // 01:일반출고 03:주문이동지시 04:상품이동지시
+        this.masterShipGb = StringFactory.getGbFour(); // 01:일반출고 03:주문이동지시 04:상품이동지시
     }
 
     /**

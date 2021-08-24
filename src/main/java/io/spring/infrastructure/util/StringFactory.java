@@ -77,6 +77,10 @@ public class StringFactory {
     // 한글
     @Getter
     private final static String strSingleGoods = "단품";
+    @Getter
+    private final static String strOrder = "주문";
+    @Getter
+    private final static String strGoods = "상품";
 
     // code
 

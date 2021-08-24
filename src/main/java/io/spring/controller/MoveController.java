@@ -6,6 +6,7 @@ import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
 import io.spring.model.move.request.ShipIdAndSeq;
 import io.spring.model.move.response.GoodsModalListResponseData;
+import io.spring.model.move.response.MoveIndicateDetailResponseData;
 import io.spring.model.move.response.MoveIndicateListResponseData;
 import io.spring.model.move.response.OrderMoveListResponseData;
 import io.spring.service.move.JpaMoveService;
@@ -127,12 +128,19 @@ public class MoveController {
     @GetMapping(path = "/items/indicate")
     public ResponseEntity getMoveIndicateList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
                                               @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
-                                              @RequestParam String storageId,
-                                              @RequestParam String assortId,
-                                              @RequestParam String assortNm
+                                              @RequestParam @Nullable String storageId,
+                                              @RequestParam @Nullable String assortId,
+                                              @RequestParam @Nullable String assortNm
                                               ){
         MoveIndicateListResponseData moveIndicateListResponseData = jpaMoveService.getMoveIndicateList(startDt,endDt,storageId,assortId,assortNm);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),moveIndicateListResponseData);
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping(path = "/item/{shipId}")
+    public ResponseEntity getMoveIndicateDetail(@PathVariable String shipId){
+        MoveIndicateDetailResponseData moveIndicateDetailResponseData = jpaMoveService.getMoveIndicateDetail(shipId);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),moveIndicateDetailResponseData);
         return ResponseEntity.ok(res);
     }
 

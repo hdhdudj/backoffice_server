@@ -2,7 +2,6 @@ package io.spring.model.move.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import io.spring.model.goods.entity.Ititmc;
 import lombok.AccessLevel;
@@ -11,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,6 +39,8 @@ public class GoodsMoveSaveData {
         }
         private String storeCd;
         private String assortId;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        private Date depositDt;
         private String itemId;
         private String goodsKey;
         private String assortNm;

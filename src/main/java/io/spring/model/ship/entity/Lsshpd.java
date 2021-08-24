@@ -1,6 +1,7 @@
 package io.spring.model.ship.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.entity.Itasrt;
@@ -13,6 +14,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -50,6 +53,8 @@ public class Lsshpd extends CommonProps {
         this.localTax = 0f;
         this.disPrice = 0f;
         this.oStorageId = tbOrderDetail.getStorageId();
+
+        this.shipGb = StringFactory.getGbThree(); // 01:일반출고 03:주문이동지시 04:상품이동지시
     }
     // 상품이동지시 저장시 작동하는 생성자
     public Lsshpd(String shipId, String shipSeq, GoodsMoveSaveData goodsMoveSaveData, GoodsMoveSaveData.Goods goods) {
@@ -75,6 +80,7 @@ public class Lsshpd extends CommonProps {
         this.localTax = 0f;
         this.disPrice = 0f;
 //        this.oStorageId = tbOrderDetail.getStorageId();
+        this.shipGb = StringFactory.getGbFour(); // 01:일반출고 03:주문이동지시 04:상품이동지시
     }
     @Id
     private String shipId;
@@ -116,6 +122,12 @@ public class Lsshpd extends CommonProps {
         @JoinColumn(name = "orderSeq", referencedColumnName = "orderSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     })
     private TbOrderDetail tbOrderDetail;
+
+    @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
+    @OneToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @NotFound(action = NotFoundAction.IGNORE)
+    private Itasrt itasrt; // itasrt 연관관계
 //
 //    // 연관관계 : Lspchd
 //    @OneToMany(fetch = FetchType.LAZY, targetEntity = Lspchd.class)

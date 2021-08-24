@@ -810,6 +810,34 @@ public class JpaPurchaseService {
         }
     }
 
+//    /**
+//     * 상품이동 저장시 생성되는 발주 data를 만드는 함수
+//     */
+//    public void makePurchaseDataFromGoodsMoveSave(String regId, GoodsMoveSaveData goodsMoveSaveData, List<GoodsMoveSaveData.Goods> newGoodsList) {
+//        String purchaseNo = this.getPurchaseNo();
+//        List<GoodsMoveSaveData.Goods> goodsList = goodsMoveSaveData.getGoods();
+//
+//        // lspchm insert
+//        Lspchm lspchm = new Lspchm(purchaseNo);
+//        lspchm.setDealtypeCd(StringFactory.getGbTwo()); // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정 주문발주 (02 하드코딩)
+//        // lspchm의 purchaseRemark, siteOrderNo, storeCd, oStoreCd set 해주기
+//        lspchm.setPurchaseRemark(regId);
+//
+//        Lspchs lspchs = new Lspchs(lspchm);
+//        jpaLspchmRepository.save(lspchm);
+//        jpaLspchsRepository.save(lspchs);
+//
+//        // lspchd insert
+//        int length = newGoodsList.size();
+//        for (int i = 0; i < length ; i++) {
+//            String purchaseSeq = StringUtils.leftPad(Integer.toString(i+1),4,'0');
+//            Lspchd lspchd = new Lspchd(purchaseNo, purchaseSeq, newGoodsList.get(i));
+//            Lspchb lspchb = new Lspchb(lspchd);
+//            jpaLspchdRepository.save(lspchd);
+//            jpaLspchbRepository.save(lspchb);
+//        }
+//    }
+
     /**
      * 상품이동 저장시 생성되는 발주 data를 만드는 함수
      */
@@ -846,6 +874,4 @@ public class JpaPurchaseService {
         purchaseNo = Utilities.getStringNo('C',purchaseNo,9);
         return purchaseNo;
     }
-
-
 }

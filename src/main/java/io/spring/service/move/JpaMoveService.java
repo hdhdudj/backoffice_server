@@ -18,6 +18,7 @@ import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
 import io.spring.model.move.request.ShipIdAndSeq;
 import io.spring.model.move.response.GoodsModalListResponseData;
+import io.spring.model.move.response.MoveIndicateDetailResponseData;
 import io.spring.model.move.response.MoveIndicateListResponseData;
 import io.spring.model.move.response.OrderMoveListResponseData;
 import io.spring.model.order.entity.TbOrderDetail;
@@ -360,8 +361,17 @@ public class JpaMoveService {
         lsshpm.setReceiptDt(LocalDateTime.now());
 //        lsshpm.setReceiptDt(goodsMoveSaveData.getMoveIndDt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
         long lsshpdNum = 0l;
-        for (int i = 0; i < goodsList.size() ; i++) {
-            lsshpdNum = this.saveGoodsMoveSaveData(shipId, goodsMoveSaveData, goodsList.get(i), indexStore, newGoodsList);
+        for (GoodsMoveSaveData.Goods goods : goodsMoveSaveData.getGoods()) {
+            Ititmc ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(goods.getAssortId(), goods.getItemId(),
+                    goods.getStoreCd(), StringFactory.getStrEleven(), Utilities.dateToLocalDateTime(goods.getDepositDt()));
+            List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository.findByAssortIdAndItemId(ititmc.getAssortId(),ititmc.getItemId())
+                .stream().filter(x->x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList());
+            long qtyOfC01 = tbOrderDetailList.size();
+            if(goods.getMoveQty() > ititmc.getQty() - ititmc.getShipIndicateQty() - qtyOfC01){
+                log.debug("입력량이 이동가능량보다 큽니다.");
+                continue;
+            }
+            lsshpdNum = this.saveGoodsMoveSaveData(shipId, goodsMoveSaveData, goods, indexStore, newGoodsList);
         }
         // 1-3. Lsshps 생성
         Lsshps lsshps = new Lsshps(lsshpm);
@@ -412,6 +422,9 @@ public class JpaMoveService {
         if(ititmcList.size() > 0){
             newGoodsList.add(goods);
         }
+        else{
+            log.debug("이동할 수 있는 재고가 존재하지 않습니다.");
+        }
 
         GoodsMoveSaveData.Goods rowGoods = this.makeItitmcsToOneRow(ititmcList, goods);
         return rowGoods;
@@ -432,6 +445,7 @@ public class JpaMoveService {
             long shipIndQty = ititmc.getShipIndicateQty() == null? 0l:ititmc.getShipIndicateQty(); // ititmc 출고예정량
             long canShipQty = qty - shipIndQty; // 출고가능량
             if(canShipQty <= 0){ // 출고 불가
+                log.debug("출고 또는 이동이 불가합니다.");
                 continue;
             }
             if(shipQty <= canShipQty){ // 이 차례에서 출고 완료 가능
@@ -484,29 +498,6 @@ public class JpaMoveService {
     }
 
     /**
-     * ititmc list의 shipIndQty를 다 더해서 반환하는 함수 (move와 ship에서 사용)
-     */
-    public long getItitmcShipIndQtyByStream(List<Ititmc> ititmcList){
-        return ititmcList.stream().map(x-> {
-            if (x.getShipIndicateQty() == null) {
-                return 0l;
-            } else {
-                return x.getShipIndicateQty();
-            }}).reduce((a,b)->a+b).get();
-    }
-
-    /**
-     * ititmc list의 qty를 다 더해서 반환하는 함수 (move와 ship에서 사용)
-     */
-    public long getItitmcQtyByStream(List<Ititmc> ititmcList){
-        return ititmcList.stream().map(x-> {
-            if (x.getQty() == null) {
-                return 0l;
-            } else {
-                return x.getQty();
-            }}).reduce((a,b)->a+b).get();
-    }
-    /**
      * goods 정보를 받아 입고 data (lsshpd) 생성하는 함수
      */
     private long makeGoodsShipData(String shipId, GoodsMoveSaveData.Goods goods, GoodsMoveSaveData goodsMoveSaveData, List<Integer> indexStore) {
@@ -554,19 +545,102 @@ public class JpaMoveService {
     }
 
     /**
+     *
+     * @param startDt
+     * @param endDt
+     * @param storageId
+     * @param assortId
+     * @param assortNm
+     * @return
+     */
+    public MoveIndicateListResponseData getMoveIndicateList(LocalDate startDt, LocalDate endDt, String storageId, String assortId, String assortNm) {
+        List<Lsshpd> lsshpdList = this.getLsshpd(startDt, endDt, storageId, assortId, assortNm);
+        MoveIndicateListResponseData moveIndicateListResponseData = new MoveIndicateListResponseData(startDt, endDt, storageId, assortId, assortNm);
+        List<MoveIndicateListResponseData.Move> moveList = new ArrayList<>();
+        for(Lsshpd lsshpd : lsshpdList){
+            MoveIndicateListResponseData.Move move = new MoveIndicateListResponseData.Move(lsshpd);
+            List<Itvari> itvariList = lsshpd.getItasrt().getItvariList();
+            if(itvariList.size() > 0){
+                Itvari itvari1 = itvariList.get(0);
+                move.setOptionNm1(itvari1.getOptionNm());
+            }
+            if(itvariList.size() > 1){
+                Itvari itvari2 = itvariList.get(1);
+                move.setOptionNm2(itvari2.getOptionNm());
+            }
+            moveList.add(move);
+        }
+        moveIndicateListResponseData.setMoves(moveList);
+        return moveIndicateListResponseData;
+    }
+
+    /**
+     * 조건에 맞는 lsshpd 리스트를 반환하는 함수
+    */
+    private List<Lsshpd> getLsshpd(LocalDate startDt, LocalDate endDt, String storageId, String assortId, String assortNm) {
+        LocalDateTime start = startDt.atStartOfDay();
+        LocalDateTime end = endDt.atTime(23,59,59);
+        TypedQuery<Lsshpd> query = em.createQuery("select ld from Lsshpd ld " +
+                        "left join fetch ld.tbOrderDetail td " +
+                        "join fetch ld.itasrt it " +
+                        "where ld.regDt between ?1 and ?2 " +
+                        "and (?3 is null or trim(?3)='' or ld.oStorageId=?3) " +
+                        "and (?4 is null or trim(?4)='' or ld.assortId=?4) " +
+                        "and (?5 is null or trim(?5)='' or it.assortNm like concat('%',?5,'%'))"
+                ,Lsshpd.class);
+        query.setParameter(1,start).setParameter(2,end).setParameter(3,storageId)
+        .setParameter(4,assortId).setParameter(5,assortNm);
+        List<Lsshpd> lsshpdList = query.getResultList();
+        return lsshpdList;
+    }
+
+    /**
+     * 이동지시번호로 이동지시내역 리스트를 가져오는 함수
+     * @param shipId
+     * @return 이동지시내역 DTO
+     */
+    public MoveIndicateDetailResponseData getMoveIndicateDetail(String shipId) {
+        List<Lsshpd> lsshpdList = jpaLsshpdRepository.findByShipId(shipId);
+        Lsshpm lsshpm = lsshpdList.get(0).getLsshpm();
+        MoveIndicateDetailResponseData moveIndicateDetailResponseData = new MoveIndicateDetailResponseData(lsshpm);
+        List<MoveIndicateDetailResponseData.Move> moveList = new ArrayList<>();
+        for(Lsshpd lsshpd : lsshpdList){
+//            MoveIndicateDetailResponseData.Move move = new MoveIndicateDetailResponseData.Move();
+//            moveList.add(move);
+        }
+        moveIndicateDetailResponseData.setMoves(moveList);
+        return moveIndicateDetailResponseData;
+    }
+
+    /**
+     * ititmc list의 shipIndQty를 다 더해서 반환하는 함수 (move와 ship에서 사용)
+     */
+    public long getItitmcShipIndQtyByStream(List<Ititmc> ititmcList){
+        return ititmcList.stream().map(x-> {
+            if (x.getShipIndicateQty() == null) {
+                return 0l;
+            } else {
+                return x.getShipIndicateQty();
+            }}).reduce((a,b)->a+b).get();
+    }
+
+    /**
+     * ititmc list의 qty를 다 더해서 반환하는 함수 (move와 ship에서 사용)
+     */
+    public long getItitmcQtyByStream(List<Ititmc> ititmcList){
+        return ititmcList.stream().map(x-> {
+            if (x.getQty() == null) {
+                return 0l;
+            } else {
+                return x.getQty();
+            }}).reduce((a,b)->a+b).get();
+    }
+    /**
      * shipId 채번 함수
      */
     public String getShipId(){
         String shipId = jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLsshpm());
         shipId = Utilities.getStringNo('L',shipId,9);
         return shipId;
-    }
-
-    public MoveIndicateListResponseData getMoveIndicateList(LocalDate startDt, LocalDate endDt, String storageId, String assortId, String assortNm) {
-        MoveIndicateListResponseData moveIndicateListResponseData = new MoveIndicateListResponseData(startDt, endDt, storageId, assortId, assortNm);
-//        for(MoveIndicateListResponseData.Move move){
-//
-//        }
-        return moveIndicateListResponseData;
     }
 }

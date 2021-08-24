@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
@@ -133,5 +134,14 @@ public class Utilities {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.KOREA);
         String strDate = localDateTime.format(formatter).toString();
         return strDate.replace('T', ' ');
+    }
+
+    /**
+     * Date를 localDateTime으로 변환
+     * @param date
+     * @return
+     */
+    public static LocalDateTime dateToLocalDateTime(Date date){
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 }
