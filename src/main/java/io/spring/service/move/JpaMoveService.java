@@ -605,8 +605,8 @@ public class JpaMoveService {
         MoveIndicateDetailResponseData moveIndicateDetailResponseData = new MoveIndicateDetailResponseData(lsshpm);
         List<MoveIndicateDetailResponseData.Move> moveList = new ArrayList<>();
         for(Lsshpd lsshpd : lsshpdList){
-//            MoveIndicateDetailResponseData.Move move = new MoveIndicateDetailResponseData.Move();
-//            moveList.add(move);
+            MoveIndicateDetailResponseData.Move move = new MoveIndicateDetailResponseData.Move(lsshpd);
+            moveList.add(move);
         }
         moveIndicateDetailResponseData.setMoves(moveList);
         return moveIndicateDetailResponseData;

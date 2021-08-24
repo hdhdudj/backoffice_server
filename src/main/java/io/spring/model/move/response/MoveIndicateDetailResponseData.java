@@ -1,5 +1,7 @@
 package io.spring.model.move.response;
 
+import io.spring.infrastructure.util.Utilities;
+import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,6 +32,13 @@ public class MoveIndicateDetailResponseData {
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Move{
+        public Move(Lsshpd lsshpd){
+            this.shipId = lsshpd.getShipId();
+            this.shipSeq = lsshpd.getShipSeq();
+            this.shipKey = Utilities.addDashInMiddle(shipId,shipSeq);
+            this.orderId = lsshpd.getOrderId();
+            this.orderSeq = lsshpd.getOrderSeq();
+        }
         private String shipId;
         private String shipSeq;
         private String shipKey;

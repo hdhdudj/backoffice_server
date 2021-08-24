@@ -3,6 +3,7 @@ package io.spring.model.move.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.order.entity.TbOrderDetail;
@@ -51,7 +52,10 @@ public class MoveIndicateListResponseData {
             this.shipSeq = lsshpd.getShipSeq();
             this.shipKey = Utilities.addDashInMiddle(shipId,shipSeq);
             this.moveIndGb = lsshpd.getShipGb();
-            this.deliMethod = lsshpd.getOrderId() == null? null:tbOrderDetail.getDeliMethod();
+            this.deliMethod = lsshpd.getShipGb().equals(StringFactory.getGbThree())? tbOrderDetail.getDeliMethod():lsshpd.getLsshpm().getDelMethod(); // 주문인가?
+            this.orderId = lsshpd.getShipGb().equals(StringFactory.getGbThree())? tbOrderDetail.getOrderId():null;
+            this.orderSeq = lsshpd.getShipGb().equals(StringFactory.getGbThree())? tbOrderDetail.getOrderSeq():null;
+            this.orderKey = orderId != null? Utilities.addDashInMiddle(orderId,orderSeq):null;
             this.storageId = lsshpd.getOStorageId();
             this.moveIndDt = Utilities.removeTAndTransToStr(lsshpd.getRegDt());
             this.assortId = lsshpd.getAssortId();
@@ -69,6 +73,9 @@ public class MoveIndicateListResponseData {
         private String deliMethod;
         private String storageId;
         private String moveIndDt;
+        private String orderId;
+        private String orderSeq;
+        private String orderKey;
         private String assortId;
         private String itemId;
         private String goodsKey;
