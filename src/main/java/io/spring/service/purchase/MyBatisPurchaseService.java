@@ -1,16 +1,15 @@
 package io.spring.service.purchase;
 
+import io.spring.dao.purchase.MyBatisPurchaseDao;
+import io.spring.model.purchase.response.PurchaseItemResponseData;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
-import org.springframework.stereotype.Service;
-
-import io.spring.dao.purchase.MyBatisPurchaseDao;
-import io.spring.model.purchase.response.PurchaseItemResponseData;
-import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +52,7 @@ public class MyBatisPurchaseService {
 		r.setPayment(o.get("payment").toString());
 		r.setSiteOrderNo(o.get("siteOrderNo").toString());
 		r.setStorageNm(o.get("storageNm").toString());
-		r.setStoreCd(o.get("storeCd").toString());
+		r.setStorageId(o.get("storeCd").toString());
 		r.setTerms(o.get("terms").toString());
 		r.setPurchaseGb(o.get("purchaseGb").toString());
 

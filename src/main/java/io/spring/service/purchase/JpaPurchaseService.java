@@ -117,7 +117,7 @@ public class JpaPurchaseService {
             lspchm.setNewLocalTax(purchaseInsertRequestData.getLocalTax());
             lspchm.setNewDisPrice(purchaseInsertRequestData.getDisPrice());
 //            lspchm.setPurchaseGb(purchaseInsertRequest.getPurchaseGb());
-            lspchm.setStoreCd(purchaseInsertRequestData.getStoreCd());
+            lspchm.setStoreCd(purchaseInsertRequestData.getStorageId());
             lspchm.setTerms(purchaseInsertRequestData.getTerms());
             lspchm.setDelivery(purchaseInsertRequestData.getDelivery());
             lspchm.setPayment(purchaseInsertRequestData.getPayment());

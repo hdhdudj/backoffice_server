@@ -28,7 +28,7 @@ public class MoveListSaveData {
         this.shipId = shipId;
         this.assortId = assortId;
         this.assortNm = assortNm;
-        this.storeCd = storeCd;
+        this.storageId = storeCd;
         this.deliMethod = deliMethod;
     }
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -40,7 +40,7 @@ public class MoveListSaveData {
     private String shipId;
     private String assortId;
     private String assortNm;
-    private String storeCd;
+    private String storageId;
     private String deliMethod;
     private List<Move> moves;
 

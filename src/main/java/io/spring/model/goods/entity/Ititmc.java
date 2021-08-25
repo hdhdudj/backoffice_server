@@ -6,7 +6,6 @@ import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.goods.idclass.ItitmcId;
-import io.spring.model.order.entity.TbOrderDetail;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +13,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Getter
@@ -24,7 +22,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Ititmc extends CommonProps {
     public Ititmc(DepositInsertRequestData depositInsertRequestData, DepositInsertRequestData.Item item){
-        this.storageId = depositInsertRequestData.getStoreCd();
+        this.storageId = depositInsertRequestData.getStorageId();
         this.assortId = item.getAssortId();
         this.itemId = item.getItemId();
         this.effEndDt = depositInsertRequestData.getDepositDt();

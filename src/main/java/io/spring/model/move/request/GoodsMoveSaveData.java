@@ -24,8 +24,8 @@ public class GoodsMoveSaveData {
 //    @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate moveIndDt;
-    private String oStoreCd; // 목적지(to) 코드 (출고) - 발주할 때 넣는 창고 
-    private String storeCd; // 나가는(from) 창고 - 출고할 때 넣는 창고
+    private String oStorageId; // 목적지(to) 코드 (출고) - 발주할 때 넣는 창고
+    private String storageId; // 나가는(from) 창고 - 출고할 때 넣는 창고
     private String deliMethod;
     private List<Goods> goods;
 
@@ -37,7 +37,7 @@ public class GoodsMoveSaveData {
             this.assortId = ititmc.getAssortId();
             this.itemId = ititmc.getItemId();
         }
-        private String storeCd;
+        private String storageId;
         private String assortId;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
         private Date depositDt;

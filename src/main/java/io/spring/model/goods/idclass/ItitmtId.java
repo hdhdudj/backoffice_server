@@ -22,7 +22,7 @@ public class ItitmtId implements Serializable {
     }
 
     public ItitmtId(PurchaseInsertRequestData purchaseInsertRequestData, PurchaseInsertRequestData.Items items){
-        this.storageId = purchaseInsertRequestData.getStoreCd();
+        this.storageId = purchaseInsertRequestData.getStorageId();
         this.assortId = items.getAssortId();
         this.itemId = items.getItemId();
         this.itemGrade = items.getItemGrade();
@@ -31,7 +31,7 @@ public class ItitmtId implements Serializable {
     }
 
     public ItitmtId(DepositInsertRequestData depositInsertRequestData, DepositInsertRequestData.Item item){
-        this.storageId = depositInsertRequestData.getStoreCd();
+        this.storageId = depositInsertRequestData.getStorageId();
         this.assortId = item.getAssortId();
         this.itemId = item.getItemId();
         this.itemGrade = item.getItemGrade();

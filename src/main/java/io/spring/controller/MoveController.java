@@ -64,14 +64,14 @@ public class MoveController {
 
     /**
      * 상품선택창 검색 결과 return 함수
-     * 상품이동지시 화면에서 storeCd, purchaseVendorId, assortId, assortNm로 상품(Ititmc 기준)을 가져와 목록을 return
+     * 상품이동지시 화면에서 storageId, purchaseVendorId, assortId, assortNm로 상품(Ititmc 기준)을 가져와 목록을 return
      */
     @GetMapping(path="/items/goods")
-    public ResponseEntity getGoodsList(@RequestParam @Nullable String storeCd,
+    public ResponseEntity getGoodsList(@RequestParam @Nullable String storageId,
                                            @RequestParam @Nullable String vendorId,
                                            @RequestParam @Nullable String assortId,
                                            @RequestParam @Nullable String assortNm){
-        GoodsModalListResponseData goodsMoveListDataListResponse = jpaMoveService.getGoodsList(storeCd, vendorId, assortId, assortNm);
+        GoodsModalListResponseData goodsMoveListDataListResponse = jpaMoveService.getGoodsList(storageId, vendorId, assortId, assortNm);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), goodsMoveListDataListResponse);
         return ResponseEntity.ok(res);
     }
@@ -81,11 +81,11 @@ public class MoveController {
      * 상품이동지시 화면에서 선택한 물건들의 json을 받아 리스트를 return
      */
     @GetMapping(path="/items/indicate/goods")
-    public ResponseEntity getGoodsMoveList(@RequestParam @Nullable String storeCd,
+    public ResponseEntity getGoodsMoveList(@RequestParam @Nullable String storageId,
                                            @RequestParam @Nullable String vendorId,
                                            @RequestParam @Nullable String assortId,
                                            @RequestParam @Nullable String assortNm){
-        GoodsModalListResponseData goodsMoveListDataListResponse = jpaMoveService.getGoodsList(storeCd, vendorId, assortId, assortNm);
+        GoodsModalListResponseData goodsMoveListDataListResponse = jpaMoveService.getGoodsList(storageId, vendorId, assortId, assortNm);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), goodsMoveListDataListResponse);
         return ResponseEntity.ok(res);
     }
@@ -155,9 +155,9 @@ public class MoveController {
                                       @RequestParam @Nullable String shipId,
                                       @RequestParam @Nullable String assortId,
                                       @RequestParam @Nullable String assortNm,
-                                      @RequestParam @Nullable String storeCd,
+                                      @RequestParam @Nullable String storageId,
                                       @RequestParam @Nullable String deliMethod){
-        MoveListResponseData moveListResponseData = jpaMoveService.getMoveList(startDt, endDt, shipId, assortId, assortNm, storeCd, deliMethod);
+        MoveListResponseData moveListResponseData = jpaMoveService.getMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, deliMethod);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveListResponseData);
         return ResponseEntity.ok(res);
     }
@@ -169,6 +169,29 @@ public class MoveController {
     public ResponseEntity changeShipStatus(@RequestBody MoveListSaveData moveListSaveData){
         List<String> shipIdList = jpaMoveService.changeShipStatus(moveListSaveData);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipIdList);
+        return ResponseEntity.ok(res);
+    }
+
+    /**
+     * 이동리스트 조회
+     * @return 이동완료리스트 DTO 반환
+     */
+    @GetMapping(path = "/items")
+    public ResponseEntity getMoveCompletedList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+                                           @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+                                           @RequestParam @Nullable String shipId,
+                                           @RequestParam @Nullable String assortId,
+                                           @RequestParam @Nullable String assortNm,
+                                           @RequestParam @Nullable String storageId){
+        MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.getMoveCompletedList(startDt, endDt, shipId, assortId, assortNm, storageId);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveCompletedLIstReponseData);
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping(path = "/item/{shipId}")
+    public ResponseEntity changeShipStatus(@PathVariable String shipId){
+        MovedDetailResponseData movedDetailResponseData = jpaMoveService.getMovedDetail(shipId);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), movedDetailResponseData);
         return ResponseEntity.ok(res);
     }
 }

@@ -1,11 +1,11 @@
 package io.spring.model.purchase.request;
 
-import java.util.Date;
-import java.util.List;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -36,8 +36,8 @@ public class PurchaseUpdateRequestData {
 	private Long newDisPrice;
 	private String purchaseGb;
 	private String purchaseVendorId;
-	private String storeCd;
-	private String oStoreCd;
+	private String storageId;
+	private String oStorageId;
 	private String terms;
 	private String delivery;
 	private String payment;

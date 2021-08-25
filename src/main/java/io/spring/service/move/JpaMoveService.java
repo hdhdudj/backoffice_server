@@ -242,10 +242,10 @@ public class JpaMoveService {
     /**
      * 상품 선택창 : 물류센터, 구매처, 상품, 상품명을 입력한 후 검색 버튼을 눌렀을 때 상품 목록을 반환
      */
-    public GoodsModalListResponseData getGoodsList(String storeCd, String purchaseVendorId, String assortId, String assortNm) {
-        List<Ititmc> ititmcList = this.getItitmc(storeCd, purchaseVendorId, assortId, assortNm);
+    public GoodsModalListResponseData getGoodsList(String storageId, String purchaseVendorId, String assortId, String assortNm) {
+        List<Ititmc> ititmcList = this.getItitmc(storageId, purchaseVendorId, assortId, assortNm);
         List<GoodsModalListResponseData.Goods> goodsList = new ArrayList<>();
-        GoodsModalListResponseData goodsModalListResponseData = new GoodsModalListResponseData(storeCd, purchaseVendorId, assortId, assortNm);
+        GoodsModalListResponseData goodsModalListResponseData = new GoodsModalListResponseData(storageId, purchaseVendorId, assortId, assortNm);
         for(Ititmc ititmc : ititmcList){
             Itasrt itasrt = ititmc.getItasrt();
             GoodsModalListResponseData.Goods goods = new GoodsModalListResponseData.Goods(ititmc, itasrt);
@@ -323,7 +323,7 @@ public class JpaMoveService {
     /**
      * 상품이동지시 화면에서 검색에 맞는 Ititmc들을 가져오는 함수
      */
-    private List<Ititmc> getItitmc(String storeCd, String purchaseVendorId, String assortId, String assortNm) {
+    private List<Ititmc> getItitmc(String storageId, String purchaseVendorId, String assortId, String assortNm) {
         Query query = em.createQuery("select ic from Ititmc ic " +
                 "join fetch ic.itasrt it " +
                 "where " +
@@ -332,7 +332,7 @@ public class JpaMoveService {
                 "and (?3 is null or trim(?3)='' or ic.assortId=?3) " +
                 "and (?4 is null or trim(?4)='' or it.assortNm like concat('%',?4,'%'))"
         );
-        query.setParameter(1,storeCd).setParameter(2,purchaseVendorId).setParameter(3,assortId)
+        query.setParameter(1,storageId).setParameter(2,purchaseVendorId).setParameter(3,assortId)
         .setParameter(4,assortNm);
         List<Ititmc> ititmcList = query.getResultList();
         return ititmcList;
@@ -358,12 +358,12 @@ public class JpaMoveService {
                 // 1-1. Lsshpm 생성
                 String shipId = this.getShipId();
                 Lsshpm lsshpm = new Lsshpm(shipId);
-                lsshpm.setStorageId(goodsMoveSaveData.getStoreCd());
-                lsshpm.setOStorageId(goodsMoveSaveData.getOStoreCd());
+                lsshpm.setStorageId(goodsMoveSaveData.getStorageId());
+                lsshpm.setOStorageId(goodsMoveSaveData.getStorageId());
                 lsshpm.setDelMethod(goodsMoveSaveData.getDeliMethod());
                 lsshpm.setReceiptDt(LocalDateTime.now());
                 Ititmc ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(goods.getAssortId(), goods.getItemId(),
-                        goods.getStoreCd(), StringFactory.getStrEleven(), Utilities.dateToLocalDateTime(goods.getDepositDt()));
+                        goods.getStorageId(), StringFactory.getStrEleven(), Utilities.dateToLocalDateTime(goods.getDepositDt()));
                 List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository.findByAssortIdAndItemId(ititmc.getAssortId(),ititmc.getItemId())
                     .stream().filter(x->x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList());
                 long qtyOfC01 = tbOrderDetailList.size();
@@ -531,6 +531,7 @@ public class JpaMoveService {
     /**
      * 이동처리(lsshpm.shipStatus를 01에서 04로 변경)
      */
+    @Transactional
     public List<String> changeShipStatus(MoveListSaveData moveListSaveData) {
         List<String> newShipIdList = new ArrayList<>();
         List<String> shipIdList = new ArrayList<>();
@@ -653,15 +654,15 @@ public class JpaMoveService {
      * 이동처리 화면 조회시 이동지시 목록을 반환해주는 함수
      * @return 이동지시 목록 반환 DTO
      */
-    public MoveListResponseData getMoveList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storeCd, String deliMethod) {
-        List<Lsshpd> lsshpdList = this.getLsshpdMoveList(startDt, endDt, shipId, assortId, assortNm, storeCd, deliMethod);
+    public MoveListResponseData getMoveList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId, String deliMethod) {
+        List<Lsshpd> lsshpdList = this.getLsshpdMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, deliMethod);
         // 03 : 주문이동지시, 04 : 상품이동지시인 애들만 남겨둠
         lsshpdList = lsshpdList.stream().filter(x->x.getShipGb().equals(StringFactory.getGbThree())||x.getShipGb().equals(StringFactory.getGbFour())).collect(Collectors.toList());
         if(lsshpdList.size()==0){
             log.debug("조건에 맞는 이동지시 데이터가 존재하지 않습니다.");
             return null;
         }
-        MoveListResponseData moveListResponseData = new MoveListResponseData(startDt, endDt, shipId, assortId, assortNm, storeCd, deliMethod);
+        MoveListResponseData moveListResponseData = new MoveListResponseData(startDt, endDt, shipId, assortId, assortNm, storageId, deliMethod);
         List<MoveListResponseData.Move> moveList = new ArrayList<>();
         for(Lsshpd lsshpd : lsshpdList){
             Lsshpm lsshpm = lsshpd.getLsshpm();
@@ -689,11 +690,11 @@ public class JpaMoveService {
      * @param shipId
      * @param assortId
      * @param assortNm
-     * @param storeCd
+     * @param storageId
      * @param deliMethod
      * @return
      */
-    private List<Lsshpd> getLsshpdMoveList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storeCd, String deliMethod) {
+    private List<Lsshpd> getLsshpdMoveList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId, String deliMethod) {
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
         TypedQuery<Lsshpd> query = em.createQuery("select ld from Lsshpd ld " +
@@ -709,11 +710,39 @@ public class JpaMoveService {
                 ,Lsshpd.class);
         query.setParameter(1,start).setParameter(2,end).setParameter(3,shipId)
                 .setParameter(4,assortId).setParameter(5,assortNm)
-                .setParameter(6,storeCd).setParameter(7,deliMethod);
+                .setParameter(6,storageId).setParameter(7,deliMethod);
         List<Lsshpd> lsshpdList = query.getResultList();
         return lsshpdList;
     }
 
+    /**
+     * 이동처리 조회
+     * @param startDt
+     * @param endDt
+     * @param shipId
+     * @param assortId
+     * @param assortNm
+     * @param storageId
+     * @return 이동처리 조회 리스트 DTO 반환
+     */
+    public MoveCompletedLIstReponseData getMoveCompletedList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId) {
+        MoveCompletedLIstReponseData moveCompletedLIstReponseData = new MoveCompletedLIstReponseData(startDt, endDt, shipId, assortId, assortNm, storageId);
+        return moveCompletedLIstReponseData;
+    }
+
+    /**
+     * 이동내역 조회
+     * @return 이동내역 DTO 반환
+     */
+    public MovedDetailResponseData getMovedDetail(String shipId) {
+        MovedDetailResponseData movedDetailResponseData = new MovedDetailResponseData(shipId);
+        return movedDetailResponseData;
+    }
+
+
+    /**
+     * --------------------------------- 해당 서비스의 유틸성 함수들 ---------------------------
+     */
     /**
      * ititmc list의 shipIndQty를 다 더해서 반환하는 함수 (move와 ship에서 사용)
      */

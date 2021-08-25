@@ -18,12 +18,12 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GoodsModalListResponseData {
     public GoodsModalListResponseData(String storeCd, String purchaseVendorId, String assortId, String assortNm){
-        this.storeCd = storeCd;
+        this.storageId = storeCd;
         this.purchaseVendorId = purchaseVendorId;
         this.assortId = assortId;
         this.assortNm = assortNm;
     }
-    private String storeCd;
+    private String storageId;
     private String purchaseVendorId;
     private String assortId;
     private String assortNm;
@@ -34,7 +34,7 @@ public class GoodsModalListResponseData {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Goods{
         public Goods(Ititmc ititmc, Itasrt itasrt){
-            this.storeCd = ititmc.getStorageId();
+            this.storageId = ititmc.getStorageId();
             this.assortId = ititmc.getAssortId();
             this.itemId = ititmc.getItemId();
             this.assortNm = itasrt.getAssortNm();
@@ -47,7 +47,7 @@ public class GoodsModalListResponseData {
 //            this.storeCd = storeCd; // 바깥에서 set
             this.moveQty = 0l;
         }
-        private String storeCd;
+        private String storageId;
         private String depositDt;
         private String assortId;
         private String itemId;

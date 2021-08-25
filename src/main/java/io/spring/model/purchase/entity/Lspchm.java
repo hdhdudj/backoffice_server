@@ -75,8 +75,8 @@ public class Lspchm extends CommonProps {
 		// this.purchaseGb = StringFactory.getGbOne(); // "01" : 일반발주
 		this.purchaseGb = purchaseInsertRequestData.getPurchaseGb();
         this.purchaseVendorId = purchaseInsertRequestData.getPurchaseVendorId();
-        this.storeCd = purchaseInsertRequestData.getStoreCd(); // "00001"
-        this.oStoreCd = purchaseInsertRequestData.getOStoreCd();
+        this.storeCd = purchaseInsertRequestData.getStorageId(); // "00001"
+        this.oStoreCd = purchaseInsertRequestData.getOStorageId();
         this.terms = purchaseInsertRequestData.getTerms();
         this.delivery = purchaseInsertRequestData.getDelivery();
         this.payment = purchaseInsertRequestData.getPayment();

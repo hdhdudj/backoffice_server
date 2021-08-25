@@ -1,15 +1,10 @@
 package io.spring.model.purchase.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.*;
+
 import java.util.Date;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 @ToString
 @Getter
@@ -22,7 +17,7 @@ public class PurchaseItemResponseData {
 	private String purchaseVendorId;
 	private String purchaseVendorNm;
 	private String purchaseRemark;
-	private String storeCd;
+	private String storageId;
 	private String storageNm;
 	private String terms;
 	private String delivery;

@@ -17,7 +17,7 @@ public class PurchaseSelectDetailResponseData {
         this.purchaseDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
         this.purchaseVendorId = lspchm.getPurchaseVendorId();
         this.purchaseRemark = lspchm.getPurchaseRemark();
-        this.storeCd = lspchm.getStoreCd();
+        this.storageId = lspchm.getStoreCd();
         this.terms = lspchm.getTerms();
         this.delivery = lspchm.getDelivery();
         this.payment = lspchm.getPayment();
@@ -31,7 +31,7 @@ public class PurchaseSelectDetailResponseData {
     private String purchaseDt;
     private String purchaseVendorId;
     private String purchaseRemark;
-    private String storeCd;
+    private String storageId;
     private String terms;
     private String delivery;
     private String payment;

@@ -30,13 +30,13 @@ public class OrderMoveListResponseData {
         this.orderKey = Utilities.addDashInMiddle(orderId,orderSeq);
         this.deliMethod = tbOrderDetail.getDeliMethod();
         this.qty = tbOrderDetail.getQty();
-        this.orderStoreCd = tbOrderDetail.getStorageId();
+        this.orderStorageId = tbOrderDetail.getStorageId();
 
         Itasrt itasrt = tbOrderDetail.getItasrt();
         this.assortNm = itasrt.getAssortNm();
 //        this.optionNm1 = itasrt.getItvariList().get(0).getOptionNm(); 바깥에서 set
     }
-    private String orderStoreCd;
+    private String orderStorageId;
     // lsdpsd
     private String depositNo;
     private String depositSeq;
