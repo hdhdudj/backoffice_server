@@ -52,14 +52,13 @@ public class JpaMoveService {
     private final JpaLsshpmRepository jpaLsshpmRepository;
     private final JpaLsshpdRepository jpaLsshpdRepository;
     private final JpaLsshpsRepository jpaLsshpsRepository;
-    /**
-     * 주문 이동지시 대상 리스트 가져오는 함수
-     */
     private final JpaPurchaseService jpaPurchaseService;
 
     private final EntityManager em;
 
-
+    /**
+     * 주문 이동지시 대상 리스트 가져오는 함수
+     */
     public List<OrderMoveListResponseData> getOrderMoveList(Map<String, Object> map) {
         LocalDate startDt = (LocalDate)map.get(StringFactory.getStrStartDt());
         LocalDate endDt = (LocalDate)map.get(StringFactory.getStrEndDt());
@@ -601,11 +600,31 @@ public class JpaMoveService {
      */
     public MoveIndicateDetailResponseData getMoveIndicateDetail(String shipId) {
         List<Lsshpd> lsshpdList = jpaLsshpdRepository.findByShipId(shipId);
-        Lsshpm lsshpm = lsshpdList.get(0).getLsshpm();
+        // 03 : 주문이동지시, 04 : 상품이동지시인 애들만 남겨둠
+        lsshpdList = lsshpdList.stream().filter(x->x.getShipGb().equals(StringFactory.getGbThree())||x.getShipGb().equals(StringFactory.getGbFour())).collect(Collectors.toList());
+        if(lsshpdList.size() == 0){
+            log.debug("해당 이동지시내역이 존재하지 않습니다.");
+            return null;
+        }
+        Lsshpd lsshpdOne = lsshpdList.get(0);
+        Lsshpm lsshpm = lsshpdOne.getLsshpm();
         MoveIndicateDetailResponseData moveIndicateDetailResponseData = new MoveIndicateDetailResponseData(lsshpm);
+        moveIndicateDetailResponseData.setOStorageId(lsshpdOne.getOStorageId());
+        moveIndicateDetailResponseData.setDealtypeCd(lsshpdOne.getShipGb()); // 이동지시구분
+
         List<MoveIndicateDetailResponseData.Move> moveList = new ArrayList<>();
         for(Lsshpd lsshpd : lsshpdList){
             MoveIndicateDetailResponseData.Move move = new MoveIndicateDetailResponseData.Move(lsshpd);
+            move.setDeliMethod(lsshpm.getDelMethod());
+            List<Itvari> itvariList = lsshpd.getItasrt().getItvariList();
+            if(itvariList.size() > 0){
+                Itvari itvari1 = itvariList.get(0);
+                move.setOptionNm1(itvari1.getOptionNm());
+            }
+            if(itvariList.size() > 1){
+                Itvari itvari2 = itvariList.get(1);
+                move.setOptionNm2(itvari2.getOptionNm());
+            }
             moveList.add(move);
         }
         moveIndicateDetailResponseData.setMoves(moveList);

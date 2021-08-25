@@ -137,6 +137,11 @@ public class MoveController {
         return ResponseEntity.ok(res);
     }
 
+    /**
+     * 이동지시내역
+     * @param shipId 출고번호
+     * @return 이동지시내역 리스트를 가진 DTO
+     */
     @GetMapping(path = "/item/{shipId}")
     public ResponseEntity getMoveIndicateDetail(@PathVariable String shipId){
         MoveIndicateDetailResponseData moveIndicateDetailResponseData = jpaMoveService.getMoveIndicateDetail(shipId);

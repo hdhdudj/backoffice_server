@@ -75,7 +75,7 @@ public class Lsshpd extends CommonProps {
 //        this.excAppDt = ititmc.getEffStaDt();
 //        this.orderDiscount = tbOrderDetail.getSalePrice();
 //        this.saleCost = ititmc.getStockAmt();
-//        this.localPrice = ititmc.getStockAmt();
+        this.localPrice = goods.getCost();
         this.localDeliFee = 0f;
         this.localTax = 0f;
         this.disPrice = 0f;

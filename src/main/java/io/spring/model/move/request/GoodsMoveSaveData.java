@@ -48,5 +48,6 @@ public class GoodsMoveSaveData {
         private Long availableQty; // 이동가능수량
         private Long orderQty; // 주문수량
         private Long moveQty; // 이동수량
+        private Float cost;
     }
 }

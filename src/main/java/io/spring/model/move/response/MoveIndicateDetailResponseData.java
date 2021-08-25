@@ -20,12 +20,15 @@ public class MoveIndicateDetailResponseData {
     public MoveIndicateDetailResponseData(Lsshpm lsshpm){
         this.shipId = lsshpm.getShipId();
 //        this.oStorageId = lsshpm.geto 바깥에서 set
+        this.storageId = lsshpm.getStorageId();
+        this.moveIndDt = Utilities.removeTAndTransToStr(lsshpm.getApplyDay());
+//        this.dealtypeCd = lsshpm.
     }
     private String shipId;
     private String oStorageId;
     private String storageId;
     private String moveIndDt;
-    private String delitypeCd;
+    private String dealtypeCd;
     private List<Move> moves;
 
     @Getter
@@ -38,6 +41,15 @@ public class MoveIndicateDetailResponseData {
             this.shipKey = Utilities.addDashInMiddle(shipId,shipSeq);
             this.orderId = lsshpd.getOrderId();
             this.orderSeq = lsshpd.getOrderSeq();
+            this.orderKey = Utilities.addDashInMiddle(orderId,orderSeq);
+//            this.deliMethod = lsshpd.getd
+            this.assortId = lsshpd.getAssortId();
+            this.itemId = lsshpd.getItemId();
+            this.goodsKey = Utilities.addDashInMiddle(assortId,itemId);
+            this.assortNm = lsshpd.getItasrt().getAssortNm();
+            // 옵션은 바깥에서 set
+            this.qty = lsshpd.getShipIndicateQty();
+            this.cost = lsshpd.getLocalPrice();
         }
         private String shipId;
         private String shipSeq;

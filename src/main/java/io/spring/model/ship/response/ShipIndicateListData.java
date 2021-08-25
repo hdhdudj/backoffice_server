@@ -65,14 +65,13 @@ public class ShipIndicateListData {
             this.custNm = tbOrderDetail.getTbOrderMaster().getTbMember().getCustNm();
             this.assortNm = tbOrderDetail.getGoodsNm();
             this.blNo = lsshpm.getBlNo(); // 트래킹 번호
-            this.shipDt = lsshpm.getApplyDay();
+            this.shipDt = Utilities.removeTAndTransToStr(lsshpm.getApplyDay());
             // 옵션은 외부 set
             // qty는 외부 set
         }
 
         // 출고리스트에서만 쓰이는 요소
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-        private Date shipDt;
+        private String shipDt;
 //        private String 송장번호
 
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")

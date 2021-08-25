@@ -114,7 +114,12 @@ public class Utilities {
         return calendar.getTime();
     }
 
-    public static LocalDateTime strToLocalDate(String strDt){
+    /**
+     * String 날짜를 받아서 LocalDateTime으로 변환해 반환하는 함수
+     * @param strDt
+     * @return LocalDateTime
+     */
+    public static LocalDateTime strToLocalDateTime(String strDt){
         LocalDateTime date = LocalDateTime.parse(strDt, DateTimeFormatter.ISO_DATE_TIME);
         return date;
     }

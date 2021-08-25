@@ -329,7 +329,7 @@ public class JpaShipService {
                 log.debug("요청된 출고처리 " + Utilities.addDashInMiddle(lsshpd.getShipId(), lsshpd.getShipSeq()) + "는 이미 출고된 상태입니다.");
                 continue;
             }
-            lsshpm.setApplyDay(new Date());
+            lsshpm.setApplyDay(LocalDateTime.now());
             lsshpdList.add(lsshpd);
             // 2. 해당 tbOrderDetail statusCd 변경
             TbOrderDetail tbOrderDetail = lsshpd.getTbOrderDetail();

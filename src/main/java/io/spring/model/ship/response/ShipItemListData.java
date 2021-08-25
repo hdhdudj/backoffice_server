@@ -1,6 +1,5 @@
 package io.spring.model.ship.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
@@ -9,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,7 +24,7 @@ public class ShipItemListData {
         this.vendorId = lsshpm.getVendorId();
 //        this.orderDt = lsshpm.get 밖에서 set
         this.shipIndicateDt = Utilities.removeTAndTransToStr(lsshpm.getReceiptDt());
-        this.shipDt = lsshpm.getApplyDay();
+        this.shipDt = Utilities.removeTAndTransToStr(lsshpm.getApplyDay());
     }
     private String shipId;
     private String storageId;
@@ -37,8 +35,7 @@ public class ShipItemListData {
     private String shipIndicateDt;
     private List<Ship> ships;
     // 출고내역에만 있는 요소
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date shipDt;
+    private String shipDt;
 
     @Getter
     @Setter
