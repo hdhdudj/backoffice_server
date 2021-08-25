@@ -15,12 +15,9 @@ import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Itvari;
 import io.spring.model.move.request.GoodsMoveSaveData;
+import io.spring.model.move.request.MoveListSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
-import io.spring.model.move.request.ShipIdAndSeq;
-import io.spring.model.move.response.GoodsModalListResponseData;
-import io.spring.model.move.response.MoveIndicateDetailResponseData;
-import io.spring.model.move.response.MoveIndicateListResponseData;
-import io.spring.model.move.response.OrderMoveListResponseData;
+import io.spring.model.move.response.*;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
@@ -521,16 +518,17 @@ public class JpaMoveService {
     /**
      * 이동처리(lsshpm.shipStatus를 01에서 04로 변경)
      */
-    public List<String> changeShipStatus(List<ShipIdAndSeq> shipIdAndSeqList) {
+    public List<String> changeShipStatus(MoveListSaveData moveListSaveData) {
         List<String> newShipIdList = new ArrayList<>();
         List<String> shipIdList = new ArrayList<>();
-        shipIdAndSeqList.stream().forEach(x->shipIdList.add(x.getShipId()));
+        List<MoveListSaveData.Move> moveList = moveListSaveData.getMoves();
+        moveList.stream().forEach(x->shipIdList.add(x.getShipId()));
         Set<String> shipNoSet = new HashSet(shipIdList);
 
         for(String shipId : shipNoSet){
             Lsshpm lsshpm = jpaLsshpmRepository.findByShipId(shipId);
             if(lsshpm == null){
-                log.debug("there's no data(lsshpm) of shipId - " + shipId);
+                log.debug("there's no data(lsshpm) of shipId : " + shipId);
                 continue;
             }
             else{
@@ -544,19 +542,24 @@ public class JpaMoveService {
     }
 
     /**
-     *
+     * 이동지시리스트를 가져오는 함수
      * @param startDt
      * @param endDt
      * @param storageId
      * @param assortId
      * @param assortNm
-     * @return
+     * @return 이동지시리스트를 가진 DTO
      */
     public MoveIndicateListResponseData getMoveIndicateList(LocalDate startDt, LocalDate endDt, String storageId, String assortId, String assortNm) {
-        List<Lsshpd> lsshpdList = this.getLsshpd(startDt, endDt, storageId, assortId, assortNm);
+        List<Lsshpd> lsshpdList = this.getLsshpdMoveIndList(startDt, endDt, storageId, assortId, assortNm);
         MoveIndicateListResponseData moveIndicateListResponseData = new MoveIndicateListResponseData(startDt, endDt, storageId, assortId, assortNm);
         List<MoveIndicateListResponseData.Move> moveList = new ArrayList<>();
         for(Lsshpd lsshpd : lsshpdList){
+            Lsshpm lsshpm = lsshpd.getLsshpm();
+            // lsshpm의 shipStatus를 확인 (01 : 출고지시or이동지시, 04 : 출고)
+            if(lsshpm.getShipStatus().equals(StringFactory.getGbFour())){
+                continue;
+            }
             MoveIndicateListResponseData.Move move = new MoveIndicateListResponseData.Move(lsshpd);
             List<Itvari> itvariList = lsshpd.getItasrt().getItvariList();
             if(itvariList.size() > 0){
@@ -576,10 +579,11 @@ public class JpaMoveService {
     /**
      * 조건에 맞는 lsshpd 리스트를 반환하는 함수
     */
-    private List<Lsshpd> getLsshpd(LocalDate startDt, LocalDate endDt, String storageId, String assortId, String assortNm) {
+    private List<Lsshpd> getLsshpdMoveIndList(LocalDate startDt, LocalDate endDt, String storageId, String assortId, String assortNm) {
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
         TypedQuery<Lsshpd> query = em.createQuery("select ld from Lsshpd ld " +
+                        "join fetch ld.lsshpm lm " +
                         "left join fetch ld.tbOrderDetail td " +
                         "join fetch ld.itasrt it " +
                         "where ld.regDt between ?1 and ?2 " +
@@ -629,6 +633,71 @@ public class JpaMoveService {
         }
         moveIndicateDetailResponseData.setMoves(moveList);
         return moveIndicateDetailResponseData;
+    }
+
+    /**
+     * 이동처리 화면 조회시 이동지시 목록을 반환해주는 함수
+     * @return 이동지시 목록 반환 DTO
+     */
+    public MoveListResponseData getMoveList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storeCd, String deliMethod) {
+        List<Lsshpd> lsshpdList = this.getLsshpdMoveList(startDt, endDt, shipId, assortId, assortNm, storeCd, deliMethod);
+        // 03 : 주문이동지시, 04 : 상품이동지시인 애들만 남겨둠
+        lsshpdList = lsshpdList.stream().filter(x->x.getShipGb().equals(StringFactory.getGbThree())||x.getShipGb().equals(StringFactory.getGbFour())).collect(Collectors.toList());
+        if(lsshpdList.size()==0){
+            log.debug("조건에 맞는 이동지시 데이터가 존재하지 않습니다.");
+            return null;
+        }
+        MoveListResponseData moveListResponseData = new MoveListResponseData(startDt, endDt, shipId, assortId, assortNm, storeCd, deliMethod);
+        List<MoveListResponseData.Move> moveList = new ArrayList<>();
+        for(Lsshpd lsshpd : lsshpdList){
+            Lsshpm lsshpm = lsshpd.getLsshpm();
+            if(lsshpm.getShipStatus().equals(StringFactory.getGbFour())){ // 출고지시or이동지시(01)가 아니고 출고(04)면 패스
+                continue;
+            }
+            MoveListResponseData.Move move = new MoveListResponseData.Move(lsshpm, lsshpd);
+            List<Itvari> itvariList = lsshpd.getItasrt().getItvariList();
+            if(itvariList.size() > 0){
+                move.setOptionNm1(itvariList.get(0).getOptionNm());
+            }
+            if(itvariList.size() > 1){
+                move.setOptionNm1(itvariList.get(1).getOptionNm());
+            }
+            moveList.add(move);
+        }
+        moveListResponseData.setMoves(moveList);
+        return moveListResponseData;
+    }
+
+    /**
+     * 조건에 맞는 lsshpd의 리스트를 반환
+     * @param startDt
+     * @param endDt
+     * @param shipId
+     * @param assortId
+     * @param assortNm
+     * @param storeCd
+     * @param deliMethod
+     * @return
+     */
+    private List<Lsshpd> getLsshpdMoveList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storeCd, String deliMethod) {
+        LocalDateTime start = startDt.atStartOfDay();
+        LocalDateTime end = endDt.atTime(23,59,59);
+        TypedQuery<Lsshpd> query = em.createQuery("select ld from Lsshpd ld " +
+                        "join fetch ld.lsshpm lm " +
+                        "left join fetch ld.tbOrderDetail td " +
+                        "join fetch ld.itasrt it " +
+                        "where lm.receiptDt between ?1 and ?2 " +
+                        "and (?3 is null or trim(?3)='' or ld.shipId=?3) " +
+                        "and (?4 is null or trim(?4)='' or ld.assortId=?4) " +
+                        "and (?5 is null or trim(?5)='' or it.assortNm like concat('%',?5,'%')) " +
+                        "and (?6 is null or trim(?6)='' or ld.oStorageId=?6) " +
+                        "and (?7 is null or trim(?7)='' or lm.delMethod=?7)"
+                ,Lsshpd.class);
+        query.setParameter(1,start).setParameter(2,end).setParameter(3,shipId)
+                .setParameter(4,assortId).setParameter(5,assortNm)
+                .setParameter(6,storeCd).setParameter(7,deliMethod);
+        List<Lsshpd> lsshpdList = query.getResultList();
+        return lsshpdList;
     }
 
     /**

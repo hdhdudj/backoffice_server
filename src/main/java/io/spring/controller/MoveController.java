@@ -3,12 +3,9 @@ package io.spring.controller;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.move.request.GoodsMoveSaveData;
+import io.spring.model.move.request.MoveListSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
-import io.spring.model.move.request.ShipIdAndSeq;
-import io.spring.model.move.response.GoodsModalListResponseData;
-import io.spring.model.move.response.MoveIndicateDetailResponseData;
-import io.spring.model.move.response.MoveIndicateListResponseData;
-import io.spring.model.move.response.OrderMoveListResponseData;
+import io.spring.model.move.response.*;
 import io.spring.service.move.JpaMoveService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -150,11 +147,27 @@ public class MoveController {
     }
 
     /**
-     * 이동처리
+     * 이동처리 조회
      */
-    @PostMapping(path = "/goods")
-    public ResponseEntity changeShipStatus(@RequestBody List<ShipIdAndSeq> shipIdAndSeqList){
-        List<String> shipIdList = jpaMoveService.changeShipStatus(shipIdAndSeqList);
+    @GetMapping(path = "/move/items")
+    public ResponseEntity getMoveList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+                                      @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+                                      @RequestParam @Nullable String shipId,
+                                      @RequestParam @Nullable String assortId,
+                                      @RequestParam @Nullable String assortNm,
+                                      @RequestParam @Nullable String storeCd,
+                                      @RequestParam @Nullable String deliMethod){
+        MoveListResponseData moveListResponseData = jpaMoveService.getMoveList(startDt, endDt, shipId, assortId, assortNm, storeCd, deliMethod);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveListResponseData);
+        return ResponseEntity.ok(res);
+    }
+    
+    /**
+     * 이동처리 저장
+     */
+    @PostMapping(path = "/move")
+    public ResponseEntity changeShipStatus(@RequestBody MoveListSaveData moveListSaveData){
+        List<String> shipIdList = jpaMoveService.changeShipStatus(moveListSaveData);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipIdList);
         return ResponseEntity.ok(res);
     }
