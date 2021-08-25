@@ -177,19 +177,23 @@ public class MoveController {
      * @return 이동완료리스트 DTO 반환
      */
     @GetMapping(path = "/items")
-    public ResponseEntity getMoveCompletedList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+    public ResponseEntity getMovedList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
                                            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
                                            @RequestParam @Nullable String shipId,
                                            @RequestParam @Nullable String assortId,
                                            @RequestParam @Nullable String assortNm,
                                            @RequestParam @Nullable String storageId){
-        MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.getMoveCompletedList(startDt, endDt, shipId, assortId, assortNm, storageId);
+        MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.getMovedList(startDt, endDt, shipId, assortId, assortNm, storageId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveCompletedLIstReponseData);
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping(path = "/item/{shipId}")
-    public ResponseEntity changeShipStatus(@PathVariable String shipId){
+    /**
+     * 이동내역 조회
+     * @return 이동내역 DTO 반환
+     */
+    @GetMapping(path = "/move/item/{shipId}")
+    public ResponseEntity getMovedDetail(@PathVariable String shipId){
         MovedDetailResponseData movedDetailResponseData = jpaMoveService.getMovedDetail(shipId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), movedDetailResponseData);
         return ResponseEntity.ok(res);

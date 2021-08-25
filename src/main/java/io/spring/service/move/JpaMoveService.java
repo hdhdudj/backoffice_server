@@ -540,14 +540,16 @@ public class JpaMoveService {
         Set<String> shipNoSet = new HashSet(shipIdList);
 
         for(String shipId : shipNoSet){
-            Lsshpm lsshpm = jpaLsshpmRepository.findByShipId(shipId);
+            Lsshpd lsshpd = jpaLsshpdRepository.findByShipId(shipId).get(0);
+            Lsshpm lsshpm = lsshpd.getLsshpm();
             if(lsshpm == null){
                 log.debug("there's no data(lsshpm) of shipId : " + shipId);
                 continue;
             }
             else{
+                lsshpd.setShipQty(lsshpd.getShipIndicateQty());
                 lsshpm.setShipStatus(StringFactory.getGbFour()); // 04 하드코딩
-
+                lsshpm.setApplyDay(LocalDateTime.now()); // 출고일자 now date
                 newShipIdList.add(lsshpm.getShipId());
                 jpaLsshpmRepository.save(lsshpm);
             }
@@ -675,7 +677,7 @@ public class JpaMoveService {
                 move.setOptionNm1(itvariList.get(0).getOptionNm());
             }
             if(itvariList.size() > 1){
-                move.setOptionNm1(itvariList.get(1).getOptionNm());
+                move.setOptionNm2(itvariList.get(1).getOptionNm());
             }
             moveList.add(move);
         }
@@ -716,17 +718,33 @@ public class JpaMoveService {
     }
 
     /**
-     * 이동처리 조회
+     * 이동리스트 조회
      * @param startDt
      * @param endDt
      * @param shipId
      * @param assortId
      * @param assortNm
      * @param storageId
-     * @return 이동처리 조회 리스트 DTO 반환
+     * @return 이동리스트 조회 리스트 DTO 반환
      */
-    public MoveCompletedLIstReponseData getMoveCompletedList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId) {
+    public MoveCompletedLIstReponseData getMovedList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId) {
         MoveCompletedLIstReponseData moveCompletedLIstReponseData = new MoveCompletedLIstReponseData(startDt, endDt, shipId, assortId, assortNm, storageId);
+        List<Lsshpd> lsshpdList = this.getLsshpdMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, null);
+        // lsshpm의 shipStatus가 04(출고)인 놈만 남기기
+        lsshpdList = lsshpdList.stream().filter(x->x.getLsshpm().getShipStatus().equals(StringFactory.getGbFour())).collect(Collectors.toList());
+        List<MoveCompletedLIstReponseData.Move> moveList = new ArrayList<>();
+        for(Lsshpd lsshpd : lsshpdList){
+            MoveCompletedLIstReponseData.Move move = new MoveCompletedLIstReponseData.Move(lsshpd.getLsshpm(), lsshpd);
+            List<Itvari> itvariList = lsshpd.getItasrt().getItvariList();
+            if(itvariList.size() > 0){
+                move.setOptionNm1(itvariList.get(0).getOptionNm());
+            }
+            if(itvariList.size() > 1){
+                move.setOptionNm2(itvariList.get(1).getOptionNm());
+            }
+            moveList.add(move);
+        }
+        moveCompletedLIstReponseData.setMoves(moveList);
         return moveCompletedLIstReponseData;
     }
 
