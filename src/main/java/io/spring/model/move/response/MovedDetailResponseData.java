@@ -1,5 +1,8 @@
 package io.spring.model.move.response;
 
+import io.spring.infrastructure.util.Utilities;
+import io.spring.model.ship.entity.Lsshpd;
+import io.spring.model.ship.entity.Lsshpm;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +33,21 @@ public class MovedDetailResponseData {
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Move{
+        public Move(Lsshpm lsshpm, Lsshpd lsshpd){
+            this.shipId = lsshpd.getShipId();
+            this.shipSeq = lsshpd.getShipSeq();
+            this.shipKey = Utilities.addDashInMiddle(shipId,shipSeq);
+            this.orderId = lsshpd.getOrderId();
+            this.orderSeq = lsshpd.getOrderSeq();
+            this.orderKey = Utilities.addDashInMiddle(orderId,orderSeq);
+            this.deliMethod = lsshpm.getDelMethod();
+            this.assortId = lsshpd.getAssortId();
+            this.itemId = lsshpd.getItemId();
+            this.assortNm = lsshpd.getItasrt().getAssortNm();
+            // 옵션은 밖에서
+            this.qty = lsshpd.getShipQty();
+            this.cost = lsshpd.getLocalPrice();
+        }
         private String shipId;
         private String shipSeq;
         private String shipKey;

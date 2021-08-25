@@ -192,7 +192,7 @@ public class MoveController {
      * 이동내역 조회
      * @return 이동내역 DTO 반환
      */
-    @GetMapping(path = "/move/item/{shipId}")
+    @GetMapping(path = "/moved/item/{shipId}")
     public ResponseEntity getMovedDetail(@PathVariable String shipId){
         MovedDetailResponseData movedDetailResponseData = jpaMoveService.getMovedDetail(shipId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), movedDetailResponseData);

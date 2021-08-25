@@ -753,7 +753,27 @@ public class JpaMoveService {
      * @return 이동내역 DTO 반환
      */
     public MovedDetailResponseData getMovedDetail(String shipId) {
+        List<Lsshpd> lsshpdList = jpaLsshpdRepository.findByShipId(shipId);
+        // lsshpm의 shipStatus가 04(출고)인 놈만 남기기
+        lsshpdList = lsshpdList.stream().filter(x->x.getLsshpm().getShipStatus().equals(StringFactory.getGbFour())).collect(Collectors.toList());
+        if(lsshpdList.size() == 0){
+            log.debug("조건에 맞는 데이터가 없습니다.");
+            return null;
+        }
         MovedDetailResponseData movedDetailResponseData = new MovedDetailResponseData(shipId);
+        List<MovedDetailResponseData.Move> moveList = new ArrayList<>();
+        for(Lsshpd lsshpd : lsshpdList){
+            MovedDetailResponseData.Move move = new MovedDetailResponseData.Move(lsshpd.getLsshpm(), lsshpd);
+            List<Itvari> itvariList = lsshpd.getItasrt().getItvariList();
+            if(itvariList.size() > 0){
+                move.setOptionNm1(itvariList.get(0).getOptionNm());
+            }
+            if(itvariList.size() > 1){
+                move.setOptionNm2(itvariList.get(1).getOptionNm());
+            }
+            moveList.add(move);
+        }
+        movedDetailResponseData.setMoves(moveList);
         return movedDetailResponseData;
     }
 
