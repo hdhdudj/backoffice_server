@@ -342,46 +342,58 @@ public class JpaMoveService {
      * 상품 이동지시 저장 함수
      */
     @Transactional
-    public String saveGoodsMove(GoodsMoveSaveData goodsMoveSaveData) {
+    public List<String> saveGoodsMove(GoodsMoveSaveData goodsMoveSaveData) {
+        List<String> shipIdList = new ArrayList<>();
         List<GoodsMoveSaveData.Goods> goodsList = goodsMoveSaveData.getGoods();
         List<GoodsMoveSaveData.Goods> newGoodsList = new ArrayList<>();
         // shipSeq 순서 저장용 list
         List<Integer> indexStore = new ArrayList<>();
-        indexStore.add(1);
-        // 1. 출고 data 생성
-        // 1-1. Lsshpm 생성
-        String shipId = this.getShipId();
-        Lsshpm lsshpm = new Lsshpm(shipId);
-        lsshpm.setStorageId(goodsMoveSaveData.getStoreCd());
-        lsshpm.setOStorageId(goodsMoveSaveData.getOStoreCd());
-        lsshpm.setDelMethod(goodsMoveSaveData.getDeliMethod());
-        lsshpm.setReceiptDt(LocalDateTime.now());
 //        lsshpm.setReceiptDt(goodsMoveSaveData.getMoveIndDt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
         long lsshpdNum = 0l;
+        String regId = null;
         for (GoodsMoveSaveData.Goods goods : goodsMoveSaveData.getGoods()) {
-            Ititmc ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(goods.getAssortId(), goods.getItemId(),
-                    goods.getStoreCd(), StringFactory.getStrEleven(), Utilities.dateToLocalDateTime(goods.getDepositDt()));
-            List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository.findByAssortIdAndItemId(ititmc.getAssortId(),ititmc.getItemId())
-                .stream().filter(x->x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList());
-            long qtyOfC01 = tbOrderDetailList.size();
-            if(goods.getMoveQty() > ititmc.getQty() - ititmc.getShipIndicateQty() - qtyOfC01){
-                log.debug("입력량이 이동가능량보다 큽니다.");
-                continue;
+            long moveQty = goods.getMoveQty();
+            for (int i = 0; i < moveQty ; i++) {
+                // 1. 출고 data 생성
+                // 1-1. Lsshpm 생성
+                String shipId = this.getShipId();
+                Lsshpm lsshpm = new Lsshpm(shipId);
+                lsshpm.setStorageId(goodsMoveSaveData.getStoreCd());
+                lsshpm.setOStorageId(goodsMoveSaveData.getOStoreCd());
+                lsshpm.setDelMethod(goodsMoveSaveData.getDeliMethod());
+                lsshpm.setReceiptDt(LocalDateTime.now());
+                Ititmc ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(goods.getAssortId(), goods.getItemId(),
+                        goods.getStoreCd(), StringFactory.getStrEleven(), Utilities.dateToLocalDateTime(goods.getDepositDt()));
+                List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository.findByAssortIdAndItemId(ititmc.getAssortId(),ititmc.getItemId())
+                    .stream().filter(x->x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList());
+                long qtyOfC01 = tbOrderDetailList.size();
+                if(goods.getMoveQty() > ititmc.getQty() - ititmc.getShipIndicateQty() - qtyOfC01){
+                    log.debug("입력량이 이동가능량보다 큽니다.");
+                    continue;
+                }
+                // 1-2. lsshpd 생성
+                String shipSeq = StringFactory.getFourStartCd(); // 0001 하드코딩 //StringUtils.leftPad(Integer.toString(index),4,'0');
+                // 1-2. Lsshpd 생성
+                Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, goodsMoveSaveData, goods);
+                jpaLsshpdRepository.save(lsshpd);
+    //            lsshpdNum = this.saveGoodsMoveSaveData(shipId, goodsMoveSaveData, goods, indexStore, newGoodsList);
+                // 1-3. Lsshps 생성
+                Lsshps lsshps = new Lsshps(lsshpm);
+    //            if(lsshpdNum <= 0){
+    //                return null;
+    //            }
+                jpaLsshpmRepository.save(lsshpm);
+                jpaLsshpsRepository.save(lsshps);
+
+                regId = lsshpm.getRegId();
+                shipIdList.add(shipId);
             }
-            lsshpdNum = this.saveGoodsMoveSaveData(shipId, goodsMoveSaveData, goods, indexStore, newGoodsList);
         }
-        // 1-3. Lsshps 생성
-        Lsshps lsshps = new Lsshps(lsshpm);
-        if(lsshpdNum <= 0){
-            return null;
-        }
-        jpaLsshpmRepository.save(lsshpm);
-        jpaLsshpsRepository.save(lsshps);
 
         // 3. 발주 data 생성
-        jpaPurchaseService.makePurchaseDataFromGoodsMoveSave(lsshpm.getRegId(), goodsMoveSaveData, newGoodsList);
+        jpaPurchaseService.makePurchaseDataFromGoodsMoveSave(regId, goodsMoveSaveData, newGoodsList);
 
-        return shipId;
+        return shipIdList;
     }
 
     /**

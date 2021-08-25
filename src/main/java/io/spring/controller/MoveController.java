@@ -108,8 +108,8 @@ public class MoveController {
      */
     @PostMapping(path="/indicate/goods")
     public ResponseEntity saveGoodsMove(@RequestBody GoodsMoveSaveData goodsMoveSaveData){
-        String shipId = jpaMoveService.saveGoodsMove(goodsMoveSaveData);
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipId);
+        List<String> shipIdList = jpaMoveService.saveGoodsMove(goodsMoveSaveData);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipIdList);
         return ResponseEntity.ok(res);
     }
 

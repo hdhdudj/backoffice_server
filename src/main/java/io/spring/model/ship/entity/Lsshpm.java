@@ -66,7 +66,7 @@ public class Lsshpm extends CommonProps {
         this.receiptDt = LocalDateTime.now();
 //        this.storageId : 바깥에서 set
         this.instructDt = new Date();//Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
-        this.applyDay = Utilities.strToLocalDateTime(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
+        this.applyDay = Utilities.strToLocalDateTime(StringFactory.getDoomDayT()); // 9999-12-31 하드코딩
         this.masterShipGb = StringFactory.getGbOne(); // 01 하드코딩
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
         this.vendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
