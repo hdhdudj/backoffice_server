@@ -145,18 +145,18 @@ public class JpaMoveService {
             log.debug("input data is empty.");
             return null;
         }
-        List<String> shipIdList = new ArrayList<>();
+        List<String> newShipIdList = new ArrayList<>();
         List<Lsdpsd> lsdpsdList = new ArrayList<>();
         // 1. 출고 data 생성
         for(OrderMoveSaveData.Move move : moveList){
-            String shipId = this.saveOrderMoveSaveData(lsdpsdList, move);
-            if(shipId != null){
-                shipIdList.add(shipId);
+            List<String> shipIdList = this.saveOrderMoveSaveData(lsdpsdList, move);
+            if(shipIdList.size() > 0){
+                shipIdList.stream().forEach(x->newShipIdList.add(x));
             }
         }
         // 2. 발주 data 생성
         jpaPurchaseService.makePurchaseDataFromOrderMoveSave(lsdpsdList, moveList);
-        return shipIdList;
+        return newShipIdList;
     }
 
     /**
@@ -164,15 +164,15 @@ public class JpaMoveService {
      * lsdpsm,d,s,b, lsdpsp, ititmt(발주데이터) 생성
      * tbOrderDetail를 변경
      */
-    private String saveOrderMoveSaveData(List<Lsdpsd> lsdpsdList, OrderMoveSaveData.Move move) {
+    private List<String> saveOrderMoveSaveData(List<Lsdpsd> lsdpsdList, OrderMoveSaveData.Move move) {
         Lsdpsd lsdpsd = this.getLsdpsdByDepositNoAndDepositSeq(move);
         TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(move.getOrderId(),move.getOrderSeq());
-        String shipId = this.makeOrderShipData(lsdpsd, tbOrderDetail, move.getQty(), StringFactory.getGbOne());
-        if(shipId != null){
+        List<String> shipIdList = this.makeOrderShipData(lsdpsd, tbOrderDetail, move.getQty(), StringFactory.getGbOne());
+        if(shipIdList.size() > 0){
             lsdpsdList.add(lsdpsd);
         }
 //        this.updateQty(orderMoveSaveData);
-        return shipId;
+        return shipIdList;
     }
 
     /**
@@ -198,8 +198,8 @@ public class JpaMoveService {
     /**
      * 주문이동 저장, 출고 관련 data 생성 함수 (lsshpm,d,s)
      */
-    private String makeOrderShipData(Lsdpsd lsdpsd, TbOrderDetail tbOrderDetail, long qty, String shipStatus) {
-        String shipId = getShipId();
+    private List<String> makeOrderShipData(Lsdpsd lsdpsd, TbOrderDetail tbOrderDetail, long qty, String shipStatus) {
+        List<String> shipIdList = new ArrayList<>();
 
         Itasrt itasrt = lsdpsd.getItasrt();
         List<Ititmc> ititmcList = lsdpsd.getItitmm().getItitmc();
@@ -220,23 +220,23 @@ public class JpaMoveService {
 //        TbOrderMaster tbOrderMaster = lsdpsd.getLspchd().getLsdpsp().get(0).getTbOrderDetail().getTbOrderMaster();
 
         for (int i = 0; i < qty; i++) {
+            String shipId = getShipId();
 //            Lsdpsp lsdpsp = lsdpsd.getLspchd().getLsdpsp().get(i);
-            if(i==0){
-                // lsshpm 저장
-                Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail);
-                lsshpm.setShipStatus(shipStatus); // 01 : 이동지시, 04 : 출고
-                // lsshps 저장
-                Lsshps lsshps = new Lsshps(lsshpm);
-                jpaLsshpsRepository.save(lsshps);
-                jpaLsshpmRepository.save(lsshpm);
-            }
+            // lsshpm 저장
+            Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail);
+            lsshpm.setShipStatus(shipStatus); // 01 : 이동지시, 04 : 출고
+            // lsshps 저장
+            Lsshps lsshps = new Lsshps(lsshpm);
+            jpaLsshpsRepository.save(lsshps);
+            jpaLsshpmRepository.save(lsshpm);
             // lsshpd 저장
-            String shipSeq = StringUtils.leftPad(Integer.toString(i + 1), 4,'0');
+            String shipSeq = StringFactory.getFourStartCd(); // 0001 하드코딩 //StringUtils.leftPad(Integer.toString(i + 1), 4,'0');
             Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc, itasrt);
             lsshpd.setShipIndicateQty(1l);
             jpaLsshpdRepository.save(lsshpd);
+            shipIdList.add(shipId);
         }
-        return shipId;
+        return shipIdList;
     }
 
     /**
@@ -353,6 +353,7 @@ public class JpaMoveService {
         String shipId = this.getShipId();
         Lsshpm lsshpm = new Lsshpm(shipId);
         lsshpm.setStorageId(goodsMoveSaveData.getStoreCd());
+        lsshpm.setOStorageId(goodsMoveSaveData.getOStoreCd());
         lsshpm.setDelMethod(goodsMoveSaveData.getDeliMethod());
         lsshpm.setReceiptDt(LocalDateTime.now());
 //        lsshpm.setReceiptDt(goodsMoveSaveData.getMoveIndDt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
@@ -556,6 +557,7 @@ public class JpaMoveService {
         List<MoveIndicateListResponseData.Move> moveList = new ArrayList<>();
         for(Lsshpd lsshpd : lsshpdList){
             Lsshpm lsshpm = lsshpd.getLsshpm();
+            moveIndicateListResponseData.setOStorageId(lsshpm.getOStorageId());
             // lsshpm의 shipStatus를 확인 (01 : 출고지시or이동지시, 04 : 출고)
             if(lsshpm.getShipStatus().equals(StringFactory.getGbFour())){
                 continue;

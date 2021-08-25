@@ -37,6 +37,7 @@ public class MoveIndicateListResponseData {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate endDt;
     private String storageId;
+    private String oStorageId;
     private String assortId;
     private String assortNm;
     private List<Move> moves;
@@ -56,7 +57,8 @@ public class MoveIndicateListResponseData {
             this.orderId = lsshpd.getShipGb().equals(StringFactory.getGbThree())? tbOrderDetail.getOrderId():null;
             this.orderSeq = lsshpd.getShipGb().equals(StringFactory.getGbThree())? tbOrderDetail.getOrderSeq():null;
             this.orderKey = orderId != null? Utilities.addDashInMiddle(orderId,orderSeq):null;
-            this.storageId = lsshpd.getOStorageId();
+            this.storageId = lsshpd.getLsshpm().getStorageId();
+            this.oStorageId = lsshpd.getOStorageId();
             this.moveIndDt = Utilities.removeTAndTransToStr(lsshpd.getRegDt());
             this.assortId = lsshpd.getAssortId();
             this.itemId = lsshpd.getItemId();
@@ -72,6 +74,7 @@ public class MoveIndicateListResponseData {
         private String moveIndGb;
         private String deliMethod;
         private String storageId;
+        private String oStorageId;
         private String moveIndDt;
         private String orderId;
         private String orderSeq;

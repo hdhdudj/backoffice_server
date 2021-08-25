@@ -38,7 +38,7 @@ public class Lsshpm extends CommonProps {
         this.receiptDt = LocalDateTime.now(); // 출고지시 일자
         this.storageId = itasrt.getStorageId();
         this.instructDt = new Date(); // 패킹일자 //Utilities.getStringToDate(StringFactory.getDoomDay());
-        this.applyDay = Utilities.strToLocalDateTime(StringFactory.getDoomDay()); // 출고처리 일자
+        this.applyDay = Utilities.strToLocalDateTime(StringFactory.getDoomDayT()); // 출고처리 일자
         this.masterShipGb = StringFactory.getGbOne(); // 01 하드코딩
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
         this.vendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
@@ -98,6 +98,7 @@ public class Lsshpm extends CommonProps {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime receiptDt;
     private String storageId;
+    private String oStorageId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date instructDt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
