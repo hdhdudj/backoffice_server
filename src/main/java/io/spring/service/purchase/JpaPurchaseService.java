@@ -437,26 +437,12 @@ public class JpaPurchaseService {
             Itvari itvari2 = ititmm.getItvari2();
             String optionNm1 = itvari1 == null? null : itvari1.getOptionNm();
             String optionNm2 = itvari2 == null? null : itvari2.getOptionNm();
-            PurchaseSelectListResponseData.Purchase purchase = new PurchaseSelectListResponseData.Purchase(lspchd.getLspchm());
-            purchase.setPurchaseNo(lspchd.getPurchaseNo());
-            purchase.setPurchaseSeq(lspchd.getPurchaseSeq());
-            purchase.setPurchaseVendorId(lspchm.getPurchaseVendorId());
+            PurchaseSelectListResponseData.Purchase purchase = new PurchaseSelectListResponseData.Purchase(lspchd.getLspchm(), lspchd);
 //            purchase.setAssortNm(lspchd.getItitmm().getItasrt().getAssortNm());
             purchase.setOptionNm1(optionNm1);
             purchase.setOptionNm2(optionNm2);
-            purchase.setAssortId(lspchd.getAssortId());
-            purchase.setItemId(lspchd.getItemId());
             purchase.setItemNm(ititmm.getItemNm());
-
-            purchase.setPurchaseDt(Utilities.removeTAndTransToStr(lspchm.getPurchaseDt()));
-            purchase.setPurchaseGb(lspchm.getPurchaseGb());
-            purchase.setPurchaseCost(lspchd.getPurchaseUnitAmt());
-            purchase.setPurchaseStatus(lspchm.getPurchaseStatus());
-            purchase.setOrderId(lspchd.getOrderId());
-            purchase.setOrderSeq(lspchd.getOrderSeq());
-            purchase.setPurchaseQty(lspchd.getPurchaseQty());
-            purchase.setPurchaseUnitAmt(lspchd.getPurchaseUnitAmt());
-            purchase.setSiteOrderNo(lspchd.getSiteOrderNo());
+            purchase.setDepositQty(lspchd.getLsdpsd().getDepositQty());
             purchaseList.add(purchase);
         }
         purchaseSelectListResponseData.setPurchaseList(purchaseList);

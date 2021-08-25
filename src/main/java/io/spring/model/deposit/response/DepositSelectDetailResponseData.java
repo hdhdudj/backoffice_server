@@ -42,6 +42,10 @@ public class DepositSelectDetailResponseData {
             this.depositNo = lsdpsd.getDepositNo();
             this.depositSeq = lsdpsd.getDepositSeq();
             this.depositDt = Utilities.removeTAndTransToStr(lsdpsd.getLsdpsm().getDepositDt());
+            this.depositKey = Utilities.addDashInMiddle(depositNo,depositSeq);
+            this.purchaseNo = lsdpsd.getInputNo();
+            this.purchaseSeq = lsdpsd.getInputSeq();
+            this.purchaseKey = Utilities.addDashInMiddle(purchaseNo,purchaseSeq);
             this.assortId = lsdpsd.getAssortId();
 //            this.itemGrade = lsdpsd.getItemGrade();
             this.itemId = lsdpsd.getItemId();
@@ -50,12 +54,14 @@ public class DepositSelectDetailResponseData {
         }
         private String depositNo;
         private String depositSeq;
+        private String depositKey;
 //        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
 //        @JsonSerialize(using = LocalDateTimeSerializer.class)
 //        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
         private String depositDt;
         public String purchaseNo;
         private String purchaseSeq;
+        private String purchaseKey;
         private String assortId;
         private String itemId;
         private String purchaseGb;

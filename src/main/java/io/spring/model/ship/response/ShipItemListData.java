@@ -47,6 +47,7 @@ public class ShipItemListData {
             this.shipKey = Utilities.addDashInMiddle(shipId, shipSeq);
             this.orderId = lsshpd.getOrderId();
             this.orderSeq = lsshpd.getOrderSeq();
+            this.orderKey = Utilities.addDashInMiddle(orderId,orderSeq);
             this.assortGb = lsshpd.getTbOrderDetail().getAssortGb();
             this.deliMethod = lsshpd.getTbOrderDetail().getDeliMethod();
             this.assortId = lsshpd.getAssortId();
@@ -61,6 +62,7 @@ public class ShipItemListData {
         private String shipKey;
         private String orderId;
         private String orderSeq;
+        private String orderKey;
         private String assortGb;
         private String deliMethod;
         private String assortId;

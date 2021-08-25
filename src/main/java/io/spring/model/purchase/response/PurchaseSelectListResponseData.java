@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.infrastructure.util.Utilities;
+import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.entity.Lspchm;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -70,9 +72,28 @@ public class PurchaseSelectListResponseData {
             this.purchaseVendorId = lspchm.getPurchaseVendorId();
             this.purchaseGb = lspchm.getPurchaseGb();
         }
+        public Purchase(Lspchm lspchm, Lspchd lspchd){
+            this.purchaseNo = lspchm.getPurchaseNo();
+            this.purchaseSeq = lspchd.getPurchaseSeq();
+            this.purchaseKey = Utilities.addDashInMiddle(purchaseNo, purchaseSeq);
+            this.purchaseVendorId = lspchm.getPurchaseVendorId();
+            this.purchaseGb = lspchm.getPurchaseGb();
+            this.assortId = lspchd.getAssortId();
+            this.itemId = lspchd.getItemId();
+            this.purchaseDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
+            this.purchaseGb = lspchm.getPurchaseGb();
+            this.purchaseCost = lspchd.getPurchaseUnitAmt();
+            this.purchaseStatus = lspchm.getPurchaseStatus();
+            this.orderId = lspchd.getOrderId();
+            this.orderSeq = lspchd.getOrderSeq();
+            this.purchaseQty = lspchd.getPurchaseQty();
+            this.purchaseUnitAmt = lspchd.getPurchaseUnitAmt();
+            this.siteOrderNo = lspchd.getSiteOrderNo();
+        }
         // 발주리스트, 입고처리 화면 공통 요소
         private String purchaseNo; // 발주번호
         private String purchaseSeq; // 발주순번
+        private String purchaseKey; // 발주번호-발주순번
         private String assortId; // 품목코드
         private String itemId; // 상품코드
         private String itemNm; // 상품이름

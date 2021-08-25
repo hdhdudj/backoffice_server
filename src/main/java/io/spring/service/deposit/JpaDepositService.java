@@ -340,12 +340,12 @@ public class JpaDepositService {
                 Itvari itvari2 = itvariList.get(1);
                 item.setOptionNm2(itvari2.getOptionNm());
             }
-//            item.setPurchaseNo(lsdpsd.getLsdpsp().getPurchaseNo());
-//            item.setPurchaseSeq(lsdpsd.getLsdpsp().getPurchaseSeq());
-//            item.setDepositQty(lsdpsd.getLsdpsp().getPurchasePlanQty());
+            item.setPurchaseNo(lsdpsd.getLspchd().getPurchaseNo());
+            item.setPurchaseSeq(lsdpsd.getLspchd().getPurchaseSeq());
+            item.setDepositQty(lsdpsd.getDepositQty());
 //            Date doomDay = Utilities.getStringToDate(StringFactory.getDoomDay());
 //            Lsdpds lsdpds1 = lsdpsd.getLsdpds().stream().filter(x -> x.getEffEndDt().equals(doomDay)).collect(Collectors.toList()).get(0);
-//            item.setDepositStatus(lsdpds1.getDepositStatus());
+//            item.setDepositStatus(lsdpsd.getLsdpsm().getDepositStatus());
             itemList.add(item);
         }
         Lsdpsm lsdpsm = lsdpsdList.get(0).getLsdpsm();

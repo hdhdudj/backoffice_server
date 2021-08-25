@@ -149,4 +149,11 @@ public class Utilities {
     public static LocalDateTime dateToLocalDateTime(Date date){
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
+
+    /**
+     * LocalDateTime to Date
+     */
+    public static Date localDateTimeToDate(LocalDateTime localDateTime){
+        return java.sql.Timestamp.valueOf(localDateTime);
+    }
 }

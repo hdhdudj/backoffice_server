@@ -56,6 +56,7 @@ public class ShipIndicateSaveListResponseData {
         this.orderDt = Utilities.removeTAndTransToStr(tbOrderDetail.getTbOrderMaster().getOrderDate());
         this.orderId = tbOrderDetail.getOrderId();
         this.orderSeq = tbOrderDetail.getOrderSeq();
+        this.orderKey = Utilities.addDashInMiddle(orderId,orderSeq);
         this.assortGb = itasrt.getAssortGb();
         this.deliMethod = tbOrderDetail.getDeliMethod();
         this.assortId = tbOrderDetail.getAssortId();
@@ -70,6 +71,7 @@ public class ShipIndicateSaveListResponseData {
         private String orderDt;
         private String orderId;
         private String orderSeq;
+        private String orderKey;
         private String assortGb;
         private String deliMethod;
         private String assortId;

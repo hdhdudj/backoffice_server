@@ -20,6 +20,7 @@ public class OrderMoveListResponseData {
         Lspchd lspchd = tbOrderDetail.getLspchd();
         this.depositNo = lspchd.getDepositNo();
         this.depositSeq = lspchd.getDepositSeq();
+        this.depositKey = Utilities.addDashInMiddle(depositNo,depositSeq);
         this.assortId = lspchd.getAssortId();
         this.itemId = lspchd.getItemId();
         this.depositDt = Utilities.removeTAndTransToStr(lspchd.getLsdpsd().getLsdpsm().getDepositDt());
@@ -39,6 +40,7 @@ public class OrderMoveListResponseData {
     // lsdpsd
     private String depositNo;
     private String depositSeq;
+    private String depositKey;
     private String assortId;
     private String itemId;
     // lsdpsm

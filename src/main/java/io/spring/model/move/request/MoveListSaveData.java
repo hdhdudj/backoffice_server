@@ -1,8 +1,8 @@
 package io.spring.model.move.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,10 +31,10 @@ public class MoveListSaveData {
         this.storeCd = storeCd;
         this.deliMethod = deliMethod;
     }
-    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate startDt;
-    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate endDt;
     private String shipId;
@@ -49,7 +49,7 @@ public class MoveListSaveData {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Move{
         public Move(Lsshpm lsshpm, Lsshpd lsshpd){
-            this.moveIndDt = lsshpm.getReceiptDt();
+            this.moveIndDt = Utilities.localDateTimeToDate(lsshpm.getReceiptDt());
             this.shipId = lsshpd.getShipId();
             this.shipSeq = lsshpd.getShipSeq();
             this.shipKey = Utilities.addDashInMiddle(shipId, shipSeq);
@@ -63,7 +63,8 @@ public class MoveListSaveData {
             // 옵션은 바깥에서 set
             this.qty = lsshpd.getShipIndicateQty();
         }
-        private LocalDateTime moveIndDt;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+        private Date moveIndDt;
         private String shipId;
         private String shipSeq;
         private String shipKey;
