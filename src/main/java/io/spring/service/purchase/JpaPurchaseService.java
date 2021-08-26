@@ -105,7 +105,7 @@ public class JpaPurchaseService {
 
         }
         else { // update
-            lspchm.setPurchaseDt(purchaseInsertRequestData.getPurchaseDt());
+            lspchm.setPurchaseDt(Utilities.dateToLocalDateTime(purchaseInsertRequestData.getPurchaseDt()));
             lspchm.setEffEndDt(new Date());
             lspchm.setPurchaseStatus(purchaseInsertRequestData.getPurchaseStatus());
             lspchm.setPurchaseRemark(purchaseInsertRequestData.getPurchaseRemark());
@@ -143,7 +143,7 @@ public class JpaPurchaseService {
     private Lspchs saveLspchs(Lspchm lspchm, PurchaseInsertRequestData purchaseInsertRequestData) {
         Date effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
 
-        Lspchs lspchs = jpaLspchsRepository.findByPurchaseNoAndEffEndDt(lspchm.getPurchaseNo(), effEndDt);
+        Lspchs lspchs = jpaLspchsRepository.findByPurchaseNoAndEffEndDt(lspchm.getPurchaseNo(), Utilities.dateToLocalDateTime(effEndDt));
         if(lspchs == null){ // insert
             lspchs = new Lspchs(purchaseInsertRequestData);
             jpaLspchsRepository.save(lspchs);
@@ -241,8 +241,7 @@ public class JpaPurchaseService {
 			String purchaseStatus = purchaseInsertRequestData.getPurchaseStatus();
 
 			if (purchaseGb.equals("01")) {
-
-				if (dealTypeCd.equals("01") && purchaseStatus.equals("01")) { // 주문발주면서 발주상태라면
+				if (dealTypeCd != null && dealTypeCd.equals("01") && purchaseStatus.equals("01")) { // 주문발주면서 발주상태라면
 					updateOrderStatusCd(item.getOrderId(), item.getOrderSeq(), StringFactory.getStrB01());
 				}
 			}
@@ -608,7 +607,7 @@ public class JpaPurchaseService {
      */
     private Lspchs updateLspchs(String purchaseNo, String purchaseStatus) {
         Date doomDay = Utilities.getStringToDate(StringFactory.getDoomDay());
-        Lspchs lspchs = jpaLspchsRepository.findByPurchaseNoAndEffEndDt(purchaseNo, doomDay);
+        Lspchs lspchs = jpaLspchsRepository.findByPurchaseNoAndEffEndDt(purchaseNo, Utilities.dateToLocalDateTime(doomDay));
         lspchs.setEffEndDt(LocalDateTime.now());
         Lspchs newLspchs = new Lspchs(lspchs);
         newLspchs.setPurchaseNo(this.getPurchaseNo());
@@ -730,7 +729,7 @@ public class JpaPurchaseService {
      * lspchs의 status를 이력 꺾기 업데이트 해주는 함수
      */
     private Lspchs updateLspchsStatus(Lspchm lspchm, String status){
-        Lspchs lspchs = jpaLspchsRepository.findByPurchaseNoAndEffEndDt(lspchm.getPurchaseNo(),Utilities.getStringToDate(StringFactory.getDoomDay()));
+        Lspchs lspchs = jpaLspchsRepository.findByPurchaseNoAndEffEndDt(lspchm.getPurchaseNo(),Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
         Lspchs newLspchs = new Lspchs(lspchs);
         lspchs.setEffEndDt(LocalDateTime.now());
         newLspchs.setPurchaseStatus(status);

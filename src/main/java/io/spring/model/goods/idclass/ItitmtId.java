@@ -1,5 +1,6 @@
 package io.spring.model.goods.idclass;
 
+import io.spring.infrastructure.util.Utilities;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import lombok.AccessLevel;
@@ -26,7 +27,7 @@ public class ItitmtId implements Serializable {
         this.assortId = items.getAssortId();
         this.itemId = items.getItemId();
         this.itemGrade = items.getItemGrade();
-        this.effStaDt = purchaseInsertRequestData.getPurchaseDt();
+        this.effStaDt = Utilities.dateToLocalDateTime(purchaseInsertRequestData.getPurchaseDt());
         this.effEndDt = this.effStaDt;
     }
 

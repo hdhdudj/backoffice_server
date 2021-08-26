@@ -1,16 +1,5 @@
 package io.spring.controller;
 
-import java.util.HashMap;
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.order.MyBatisOrderDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
@@ -20,6 +9,14 @@ import io.spring.service.common.JpaCommonService;
 import io.spring.service.order.JpaOrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -83,9 +80,10 @@ public class OrderController {
 	@RequestMapping(path = "/orders", method = RequestMethod.GET)
 	// public ResponseEntity selectOrderListByCondition(@Valid @RequestBody
 	// Map<String, Object> param) {
-	public ResponseEntity selectOrderListByCondition(@RequestParam String channelGb, @RequestParam String orderFromDt,
-			@RequestParam String orderEndDt) {
-		
+	public ResponseEntity selectOrderListByCondition(@RequestParam String channelGb, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate orderFromDt,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate orderEndDt) {
+		LocalDateTime from = orderFromDt.atStartOfDay();
+		LocalDateTime end = orderEndDt.atTime(23,59,59);
 		
 
 		/*
@@ -123,8 +121,8 @@ public class OrderController {
 		// }
 
 		log.debug(channelGb);
-		log.debug(orderFromDt);
-		log.debug(orderEndDt);
+		log.debug(orderFromDt.toString());
+		log.debug(orderEndDt.toString());
 
 		long rx = jpaCommonService.getSequence("seq_TMPSEQ");
 
@@ -133,8 +131,8 @@ public class OrderController {
 		HashMap<String, Object> h = new HashMap<String, Object>();
 
 		h.put("channelGb", channelGb);
-		h.put("orderFromDt", orderFromDt);
-		h.put("orderEndDt", orderEndDt);
+		h.put("orderFromDt", from);
+		h.put("orderEndDt", end);
 
 		List<HashMap<String, Object>> r = myBatisOrderDao.selectOrderListByCondition(h);
 		

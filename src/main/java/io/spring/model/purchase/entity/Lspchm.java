@@ -56,7 +56,7 @@ public class Lspchm extends CommonProps {
     }
     public Lspchm(PurchaseInsertRequestData purchaseInsertRequestData){
         this.purchaseNo = purchaseInsertRequestData.getPurchaseNo();
-        this.purchaseDt = purchaseInsertRequestData.getPurchaseDt();
+        this.purchaseDt = Utilities.dateToLocalDateTime(purchaseInsertRequestData.getPurchaseDt());
         this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
         this.purchaseStatus = purchaseInsertRequestData.getPurchaseStatus(); // 01 : 발주, 05 : 취소
         this.purchaseRemark = purchaseInsertRequestData.getPurchaseRemark();
