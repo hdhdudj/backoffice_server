@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -176,8 +177,8 @@ public class PurchaseController {
     public ResponseEntity getPurchaseListJpa(@RequestParam @Nullable String purchaseVendorId,
                                              @RequestParam @Nullable String assortId,
                                              @RequestParam @Nullable String purchaseStatus,
-                                             @RequestParam @Nullable @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDt,
-                                             @RequestParam @Nullable @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDt,
+                                             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+                                             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
                                              @RequestParam @Nullable String purchaseGb){
         log.debug("get purchase list - jpa");
 

@@ -391,16 +391,8 @@ public class JpaPurchaseService {
         String assortId = (String)param.get(StringFactory.getStrAssortId());
         String purchaseStatus = (String)param.get(StringFactory.getStrPurchaseStatus());
         String purchaseGb = (String)param.get(StringFactory.getStrPurchaseGb());
-        Date startDt = (Date)param.get(StringFactory.getStrStartDt());
-        Date endDt = (Date)param.get(StringFactory.getStrEndDt());
-//        String purchaseNo = (String)param.get(StringFactory.getStrPurchaseNo());
-
-//        purchaseVendorId = purchaseVendorId == null || purchaseVendorId.equals("")? "":" and m.purchaseVendorId='"+purchaseVendorId+"'";
-//        assortId = assortId == null || assortId.equals("")? "":" and d.assortId='"+assortId+"'";
-//        purchaseStatus = purchaseStatus == null || purchaseStatus.equals("")? "":" and m.purchaseStatus='"+purchaseStatus+"'";
-//        purchaseGb = purchaseGb == null || purchaseGb.equals("")? "":" and m.purchaseGb='"+purchaseGb+"'";
-        startDt = startDt == null? Utilities.getStringToDate(StringFactory.getStartDay()):startDt;
-        endDt = endDt == null? Utilities.getStringToDate(StringFactory.getDoomDay()):endDt;
+        LocalDateTime start = ((LocalDate)param.get(StringFactory.getStrStartDt())).atStartOfDay();
+        LocalDateTime end = ((LocalDate)param.get(StringFactory.getStrEndDt())).atTime(23,59,59);
 //        purchaseNo = purchaseNo == null || purchaseNo.equals("")? "":" and d.depositNo='"+purchaseNo+"'";
 
         List<PurchaseSelectListResponseData.Purchase> purchaseList = new ArrayList<>();
@@ -419,7 +411,7 @@ public class JpaPurchaseService {
                     "and (?5 is null or trim(?5)='' or m.purchaseStatus=?5) "+
                     "and (?6 is null or trim(?6)='' or m.purchaseGb=?6) "
                         , Lspchd.class);
-        query.setParameter(1, startDt).setParameter(2, endDt)
+        query.setParameter(1, start).setParameter(2, end)
                 .setParameter(3,purchaseVendorId).setParameter(4,assortId)
                 .setParameter(5,purchaseStatus).setParameter(6,purchaseGb);
         List<Lspchd> lspchdList = query.getResultList();
