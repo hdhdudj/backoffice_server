@@ -3,6 +3,7 @@ package io.spring.controller;
 import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.order.MyBatisOrderDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
+import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.order.entity.OrderStock;
 import io.spring.model.order.request.OrderStockMngInsertRequestData;
 import io.spring.service.common.JpaCommonService;
@@ -142,11 +143,10 @@ public class OrderController {
 
 
 		if (r.size() > 0) {
-			res = new ApiResponseMessage<List<HashMap<String, Object>>>("SUCCESS", "", r);
+			res = new ApiResponseMessage<List<HashMap<String, Object>>>(StringFactory.getStrOk(),StringFactory.getStrSuccess(), r);
 		} else {
 			res = new ApiResponseMessage<List<HashMap<String, Object>>>("ERROR", "ERROR", null);
 		}
-		
 
 		return ResponseEntity.ok(res);
 
