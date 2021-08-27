@@ -1,6 +1,5 @@
 package io.spring.jparepos.order;
 
-import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.idclass.TbOrderDetailId;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -114,10 +114,10 @@ public class TbOrderDetail extends CommonProps
     @NotFound(action = NotFoundAction.IGNORE)
     private Itasrt itasrt; // itasrt 연관관계
 
-//    @JoinColumns({
-//        @JoinColumn(name = "orderId", referencedColumnName = "orderId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
-//        @JoinColumn(name = "orderSeq", referencedColumnName = "orderSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
-//    })
+    @JoinColumns({
+        @JoinColumn(name = "orderId", referencedColumnName = "orderId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
+        @JoinColumn(name = "orderSeq", referencedColumnName = "orderSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
+    })
     @OneToOne(fetch = FetchType.LAZY,
     mappedBy = "tbOrderDetail")
     @JsonIgnore

@@ -19,7 +19,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -201,13 +200,13 @@ public class PurchaseController {
         return ResponseEntity.ok(res);
     }
 
-    // 발주 list get (mybatis)
+    // 발주 list get (mybatis) : 발주리스트 화면에서 검색 누르면 작동하는 api
     @GetMapping(path="/purchaselistmybatis")
 	public ResponseEntity getPurchaseListMyBatis(@RequestParam(required = false) String purchaseVendorId,
 			@RequestParam(required = false) String dealtypeCd, @RequestParam(required = false) String assortId,
 			@RequestParam(required = false) String purchaseStatus,
-			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDt,
-			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDt
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt
 			) {
         log.debug("get purchase list - mybatis");
 
@@ -217,8 +216,8 @@ public class PurchaseController {
 		param.put("dealtypeCd", dealtypeCd);
         param.put("assortId", assortId);
         param.put("purchaseStatus", purchaseStatus);
-        param.put("startDt", startDt);
-        param.put("endDt", endDt);
+        param.put("startDt", startDt.atStartOfDay());
+        param.put("endDt", endDt.atTime(23,59,59));
 
 
         List<HashMap<String, Object>> result = myBatisPurchaseService.getPurchaseList(param);

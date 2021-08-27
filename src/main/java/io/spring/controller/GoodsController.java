@@ -13,12 +13,13 @@ import io.spring.service.common.MyBatisCommonService;
 import io.spring.service.goods.JpaGoodsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-//import org.flywaydb.core.internal.util.StringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -184,16 +185,19 @@ public class GoodsController {
 	}
 
 	@GetMapping(path="/getgoodslistmybatis")
-	public ResponseEntity getGoodsList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtBegin,
-			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtEnd,
+	public ResponseEntity getGoodsList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate regDtBegin,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate regDtEnd,
 			@RequestParam String shortageYn) {
 		log.debug("get goods list data");
+
+		LocalDateTime begin = regDtBegin.atStartOfDay();
+		LocalDateTime end = regDtEnd.atTime(23,59,59);
 
 		HashMap<String, Object> param = new HashMap<String, Object>();
 
 		param.put("shortageYn", shortageYn);
-		param.put("regDtBegin", regDtBegin);
-		param.put("regDtEnd", regDtEnd);
+		param.put("regDtBegin", begin);
+		param.put("regDtEnd", end);
 
 		List<HashMap<String, Object>> responseData = goodsRepository.getGoodsList(param);
 		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
