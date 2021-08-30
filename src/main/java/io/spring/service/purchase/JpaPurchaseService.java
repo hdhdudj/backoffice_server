@@ -125,6 +125,7 @@ public class JpaPurchaseService {
 
             lspchm.setDealtypeCd(purchaseInsertRequestData.getDealtypeCd());
 
+            lspchm.setUpdId(purchaseInsertRequestData.getUpdId());
         }
         float localPriceSum = lspchdList.stream().map(x-> {
             {
@@ -177,11 +178,12 @@ public class JpaPurchaseService {
                     purchaseSeq = Utilities.plusOne(purchaseSeq, 4);
                 }
                 lspchd = new Lspchd(purchaseInsertRequestData.getPurchaseNo(), purchaseSeq);
+                lspchd.setRegId(purchaseInsertRequestData.getRegId());
             }
 
             lspchd.setPurchaseQty(item.getPurchaseQty());
             lspchd.setPurchaseUnitAmt(item.getPurchaseUnitAmt());
-
+            lspchd.setPurchaseItemAmt(item.getPurchaseQty()*item.getPurchaseUnitAmt());
 			lspchd.setOrderId(item.getOrderId());
 			lspchd.setOrderSeq(item.getOrderSeq());;
             lspchd.setAssortId(item.getAssortId());
@@ -190,6 +192,9 @@ public class JpaPurchaseService {
 			lspchd.setOrderSeq(item.getOrderSeq());
 			lspchd.setSiteGb(StringFactory.getGbOne()); // 01 하드코딩
 			lspchd.setVendorId(StringUtils.leftPad(StringFactory.getStrOne(), 6, '0')); // 000001 하드코딩
+
+            lspchd.setUpdId(purchaseInsertRequestData.getUpdId());
+
             jpaLspchdRepository.save(lspchd);
             lspchdList.add(lspchd);
         }
@@ -215,10 +220,15 @@ public class JpaPurchaseService {
 //                }
 //                lspchb.setPurchaseSeq(purchaseSeq);
                 lspchb = new Lspchb(lspchd);
+                lspchb.setPurchaseStatus(purchaseInsertRequestData.getPurchaseStatus());
+
+                lspchb.setRegId(purchaseInsertRequestData.getRegId());
+
                 jpaLspchbRepository.save(lspchb);
             }
             else{ // update (꺾기)
                 lspchb = this.updateLspchbd(lspchd, 0l);
+                lspchb.setUpdId(purchaseInsertRequestData.getUpdId());
 //                Calendar cal = Calendar.getInstance();
 //                cal.setTime(new Date());
 //                cal.add(Calendar.SECOND, -1);
@@ -276,6 +286,7 @@ public class JpaPurchaseService {
                 lsdpsp.setAssortId(items.getAssortId());
                 lsdpsp.setItemId(items.getItemId());
                 lsdpsp.setPlanStatus(purchaseInsertRequestData.getPlanStatus());
+                lsdpsp.setUpdId(purchaseInsertRequestData.getUpdId());
             }
             lsdpspList.add(lsdpsp);
             jpaLsdpspRepository.save(lsdpsp);

@@ -1,6 +1,7 @@
 package io.spring.model.purchase.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.deposit.entity.Lsdpsp;
@@ -60,6 +61,7 @@ public class Lspchd extends CommonProps {
     public Lspchd(String purchaseNo, String purchaseSeq){
         this.purchaseNo = purchaseNo;
         this.purchaseSeq = purchaseSeq;
+        this.itemGrade = StringFactory.getStrEleven();
     }
 
     /**

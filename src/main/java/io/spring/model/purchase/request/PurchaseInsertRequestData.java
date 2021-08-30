@@ -116,6 +116,9 @@ public class PurchaseInsertRequestData {
     private Long tempQty;
     private Float stockAmt;
 
+    // id 관련
+    private String regId;
+    private String updId;
 
     @Getter
     @Setter
@@ -127,7 +130,7 @@ public class PurchaseInsertRequestData {
         private String purchaseSeq;
         private Long purchaseQty;
         private Float purchaseUnitAmt;
-        private String purchaseStatus;
+//        private String purchaseStatus;
 		private String orderId;
 		private String orderSeq;
     }
