@@ -74,6 +74,7 @@ public class PurchaseSelectListResponseData {
         }
         public Purchase(Lspchm lspchm, Lspchd lspchd){
             this.purchaseNo = lspchm.getPurchaseNo();
+            this.dealtypeCd = lspchm.getDealtypeCd();
             this.purchaseSeq = lspchd.getPurchaseSeq();
             this.purchaseKey = Utilities.addDashInMiddle(purchaseNo, purchaseSeq);
             this.purchaseVendorId = lspchm.getPurchaseVendorId();
@@ -105,8 +106,9 @@ public class PurchaseSelectListResponseData {
 //        @JsonSerialize(using = LocalDateSerializer.class)
 //        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
         private String purchaseDt; // 발주일자
-        private String purchaseGb; // 발주구분
-        private String purchaseStatus; // 발주상태
+        private String purchaseGb; // 발주구분 - 01 : 일반발주, 02 : 이동요청
+        private String purchaseStatus; // 발주상태 - 01 : 발주, 03 : 부분입고, 04 : 완전입고, 05 : 취소
+        private String dealtypeCd; // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정
         private String purchaseVendorId; // 구매처
         private String orderId; // 주문번호
         private String orderSeq; // 주문순번

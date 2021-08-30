@@ -58,8 +58,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.POST, "/testa").permitAll()
 				.antMatchers(HttpMethod.GET, "/order/orders").permitAll()
 				//
-				.antMatchers(HttpMethod.GET, "/goods/*").permitAll()
-				.antMatchers(HttpMethod.POST, "/goods/*").permitAll()
+				.antMatchers(HttpMethod.GET, "/goods/**").permitAll()
+				.antMatchers(HttpMethod.POST, "/goods/**").permitAll()
 				 .antMatchers(HttpMethod.GET, "/purchase/**").permitAll()
 				.antMatchers(HttpMethod.POST, "/purchase/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/order/**").permitAll()

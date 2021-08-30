@@ -125,7 +125,7 @@ public class JpaPurchaseService {
 
             lspchm.setDealtypeCd(purchaseInsertRequestData.getDealtypeCd());
 
-            lspchm.setUpdId(purchaseInsertRequestData.getUpdId());
+            lspchm.setUpdId(purchaseInsertRequestData.getUserId());
         }
         float localPriceSum = lspchdList.stream().map(x-> {
             {
@@ -158,7 +158,7 @@ public class JpaPurchaseService {
 //            Lspchs newLspchs = new Lspchs(lspchs);
 //            jpaLspchsRepository.save(newLspchs);
             lspchs = this.updateLspchs(lspchm.getPurchaseNo(), purchaseInsertRequestData.getPurchaseStatus());
-            lspchs.setUpdId(purchaseInsertRequestData.getUpdId());
+            lspchs.setUpdId(purchaseInsertRequestData.getUserId());
         }
 //        lspchs.setPurchaseNo(purchaseInsertRequestData.getPurchaseNo());
 //        lspchs.setPurchaseStatus(purchaseInsertRequestData.getPurchaseStatus());
@@ -179,8 +179,8 @@ public class JpaPurchaseService {
                     purchaseSeq = Utilities.plusOne(purchaseSeq, 4);
                 }
                 lspchd = new Lspchd(purchaseInsertRequestData.getPurchaseNo(), purchaseSeq);
-                lspchd.setRegId(purchaseInsertRequestData.getRegId());
-                lspchd.setUpdId(purchaseInsertRequestData.getUpdId());
+                lspchd.setRegId(purchaseInsertRequestData.getUserId());
+                lspchd.setUpdId(purchaseInsertRequestData.getUserId());
             }
 
             lspchd.setPurchaseQty(item.getPurchaseQty());
@@ -195,7 +195,7 @@ public class JpaPurchaseService {
 			lspchd.setSiteGb(StringFactory.getGbOne()); // 01 하드코딩
 			lspchd.setVendorId(StringUtils.leftPad(StringFactory.getStrOne(), 6, '0')); // 000001 하드코딩
 
-            lspchd.setUpdId(purchaseInsertRequestData.getUpdId());
+            lspchd.setUpdId(purchaseInsertRequestData.getUserId());
 
             jpaLspchdRepository.save(lspchd);
             lspchdList.add(lspchd);
@@ -224,14 +224,14 @@ public class JpaPurchaseService {
                 lspchb = new Lspchb(lspchd);
                 lspchb.setPurchaseStatus(purchaseInsertRequestData.getPurchaseStatus());
 
-                lspchb.setRegId(purchaseInsertRequestData.getRegId());
-                lspchb.setUpdId(purchaseInsertRequestData.getUpdId());
+                lspchb.setRegId(purchaseInsertRequestData.getUserId());
+                lspchb.setUpdId(purchaseInsertRequestData.getUserId());
 
                 jpaLspchbRepository.save(lspchb);
             }
             else{ // update (꺾기)
                 lspchb = this.updateLspchbd(lspchd, 0l);
-                lspchb.setUpdId(purchaseInsertRequestData.getUpdId());
+                lspchb.setUpdId(purchaseInsertRequestData.getUserId());
 //                Calendar cal = Calendar.getInstance();
 //                cal.setTime(new Date());
 //                cal.add(Calendar.SECOND, -1);
@@ -289,7 +289,7 @@ public class JpaPurchaseService {
                 lsdpsp.setAssortId(items.getAssortId());
                 lsdpsp.setItemId(items.getItemId());
                 lsdpsp.setPlanStatus(purchaseInsertRequestData.getPlanStatus());
-                lsdpsp.setUpdId(purchaseInsertRequestData.getUpdId());
+                lsdpsp.setUpdId(purchaseInsertRequestData.getUserId());
             }
             lsdpspList.add(lsdpsp);
             jpaLsdpspRepository.save(lsdpsp);
@@ -312,8 +312,8 @@ public class JpaPurchaseService {
                 ititmt.setTempQty(items.getPurchaseQty());
                 ititmt.setTempIndicateQty(0l);
 
-                ititmt.setRegId(purchaseInsertRequestData.getRegId());
-                ititmt.setUpdId(purchaseInsertRequestData.getUpdId());
+                ititmt.setRegId(purchaseInsertRequestData.getUserId());
+                ititmt.setUpdId(purchaseInsertRequestData.getUserId());
             }
 
 //            if (purchaseGb.equals("02")) { // 01 : 일반발주, 02 : 이동요청
@@ -337,7 +337,7 @@ public class JpaPurchaseService {
                 ititmt.setVendorId(purchaseInsertRequestData.getVendorId());
                 ititmt.setSiteGb(purchaseInsertRequestData.getSiteGb());
 
-                ititmt.setUpdId(purchaseInsertRequestData.getUpdId());
+                ititmt.setUpdId(purchaseInsertRequestData.getUserId());
             }
             jpaItitmtRepository.save(ititmt);
             ititmtList.add(ititmt);
@@ -345,26 +345,52 @@ public class JpaPurchaseService {
         return ititmtList;
     }
 
+    /**
+     * 발주사후(발주관리) 페이지 json 만드는 함수
+     * @param purchaseNo
+     * @return
+     */
     public PurchaseSelectDetailResponseData getPurchaseDetailPage(String purchaseNo) {
         Lspchm lspchm = jpaLspchmRepository.findById(purchaseNo).orElseGet(() -> null);//.get();
         if(lspchm == null){
-            return new PurchaseSelectDetailResponseData();
+            return null;
         }
-        List<PurchaseSelectDetailResponseData.Items> itemsList = makeItemsList(lspchm.getLspchdList());
+        List<PurchaseSelectDetailResponseData.Items> itemsList = makeItemsList(lspchm);
         PurchaseSelectDetailResponseData purchaseSelectDetailResponseData = new PurchaseSelectDetailResponseData(lspchm);
         purchaseSelectDetailResponseData.setItems(itemsList);
         return purchaseSelectDetailResponseData;
     }
 
-    private List<PurchaseSelectDetailResponseData.Items> makeItemsList(List<Lspchd> lspchdList) {
+    private List<PurchaseSelectDetailResponseData.Items> makeItemsList(Lspchm lspchm) {
+        List<Lspchd> lspchdList = lspchm.getLspchdList();
         List<PurchaseSelectDetailResponseData.Items> itemsList = new ArrayList<>();
+        this.makePurchaseItem(itemsList, lspchdList);
+        return itemsList;
+    }
+
+    private void makePurchaseItem(List<PurchaseSelectDetailResponseData.Items> itemsList, List<Lspchd> lspchdList) {
         for(Lspchd lspchd : lspchdList){
-            PurchaseSelectDetailResponseData.Items item = new PurchaseSelectDetailResponseData.Items();
-            item.setAssortId(lspchd.getAssortId());
-            item.setItemId(lspchd.getItemId());
-            item.setPurchaseQty(lspchd.getPurchaseQty());
-            item.setPurchaseUnitAmt(lspchd.getPurchaseUnitAmt());
-            item.setPurchaseSeq(lspchd.getPurchaseSeq());
+            Itasrt itasrt = lspchd.getItitmm().getItasrt();
+            PurchaseSelectDetailResponseData.Items item = new PurchaseSelectDetailResponseData.Items(lspchd, itasrt);
+//            item.setAssortId(lspchd.getAssortId());
+//            item.setItemId(lspchd.getItemId());
+//            item.setPurchaseQty(lspchd.getPurchaseQty());
+//            item.setPurchaseUnitAmt(lspchd.getPurchaseUnitAmt());
+//            item.setPurchaseSeq(lspchd.getPurchaseSeq());
+            List<Itvari> itvariList = itasrt.getItvariList();
+            if(itvariList.size() > 0){
+                item.setOptionNm1(itvariList.get(0).getOptionNm());
+            }
+            else if (itvariList.size() > 1){
+                item.setOptionNm2(itvariList.get(1).getOptionNm());
+            }
+            if(lspchd.getLspchm().getDealtypeCd().equals(StringFactory.getGbOne())){ // 01 : 주문발주
+                TbOrderDetail tbOrderDetail = lspchd.getTbOrderDetail();
+                item.setOrderId(tbOrderDetail.getOrderId());
+                item.setOrderSeq(tbOrderDetail.getOrderSeq());
+                item.setDeliMethod(tbOrderDetail.getDeliMethod());
+            }
+
             List<Lspchb> lspchbList = lspchd.getLspchb();
             for(Lspchb lspchb : lspchbList){
                 if(lspchb.getEffEndDt().compareTo(Utilities.getStringToDate(StringFactory.getDoomDay())) == 0){
@@ -374,8 +400,28 @@ public class JpaPurchaseService {
             }
             itemsList.add(item);
         }
-        return itemsList;
     }
+
+//    private void makeOrderPurchaseItem(List<PurchaseSelectDetailResponseData.Items> itemsList, List<Lspchd> lspchdList) {
+//        for(Lspchd lspchd : lspchdList){
+//            TbOrderDetail tbOrderDetail = lspchd.getTbOrderDetail();
+//            Itasrt itasrt = tbOrderDetail.getItasrt();
+//            PurchaseSelectDetailResponseData.Items item = new PurchaseSelectDetailResponseData.Items(lspchd, tbOrderDetail, itasrt);
+//            item.setAssortId(lspchd.getAssortId());
+//            item.setItemId(lspchd.getItemId());
+//            item.setPurchaseQty(lspchd.getPurchaseQty());
+//            item.setPurchaseUnitAmt(lspchd.getPurchaseUnitAmt());
+//            item.setPurchaseSeq(lspchd.getPurchaseSeq());
+//            List<Lspchb> lspchbList = lspchd.getLspchb();
+//            for(Lspchb lspchb : lspchbList){
+//                if(lspchb.getEffEndDt().compareTo(Utilities.getStringToDate(StringFactory.getDoomDay())) == 0){
+//                    item.setPurchaseStatus(lspchb.getPurchaseStatus());
+//                    break;
+//                }
+//            }
+//            itemsList.add(item);
+//        }
+//    }
 
     /**
      * 입고 - 발주선택창 : 조건을 넣고 조회했을 때 동작하는 함수 (Lspchm 기준의 list를 가져옴)

@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -108,9 +109,13 @@ public class GoodsController {
 
 	// jpa로 get list
 	@GetMapping(path="/getgoodslistjpa")
-	public ResponseEntity getGoodsListJpa(@RequestParam String shortageYn, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtBegin, @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") @RequestParam Date regDtEnd){
+	public ResponseEntity getGoodsListJpa(@RequestParam @Nullable String shortageYn,
+										  @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate regDtBegin,
+										  @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam LocalDate regDtEnd,
+										  @RequestParam @Nullable String assortId,
+										  @RequestParam @Nullable String assortNm){
 		log.debug("get goods list data");
-		GoodsSelectListResponseData goodsSelectListResponseData = jpaGoodsService.getGoodsList(shortageYn, regDtBegin, regDtEnd);
+		GoodsSelectListResponseData goodsSelectListResponseData = jpaGoodsService.getGoodsList(shortageYn, regDtBegin, regDtEnd, assortId, assortNm);
 		List<GoodsSelectListResponseData.Goods> responseData = null;
 		if(goodsSelectListResponseData != null){
 			responseData = goodsSelectListResponseData.getGoodsList();
@@ -133,7 +138,7 @@ public class GoodsController {
 		param.put("shortageYn", shortageYn);
 		param.put("regDtBegin", regDtBegin);
 		param.put("regDtEnd", regDtEnd);
-		if (assortId != null) {
+		if (assortId != null && !assortId.trim().equals("")) {
 			param.put("assortId", assortId);
 		}
 
@@ -205,11 +210,5 @@ public class GoodsController {
 			return null;
 		}
 		return ResponseEntity.ok(res);
-	}
-
-	// table 초기화용
-	@RequestMapping(path = "/inittables")
-	public void initTables(){
-		jpaGoodsService.initTables();
 	}
 }

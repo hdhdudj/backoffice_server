@@ -117,8 +117,7 @@ public class PurchaseInsertRequestData {
     private Float stockAmt;
 
     // id 관련
-    private String regId;
-    private String updId;
+    private String userId;
 
     @Getter
     @Setter

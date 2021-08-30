@@ -94,9 +94,12 @@ public class PurchaseController {
 
         PurchaseSelectDetailResponseData responseData = jpaPurchaseService.getPurchaseDetailPage(purchaseNo);
 
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), responseData);
+        ApiResponseMessage res = null;
         if(responseData == null){
-            return null;
+            res = new ApiResponseMessage("error","not found error",responseData);
+        }
+        else {
+            res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), responseData);
         }
         return ResponseEntity.ok(res);
     }
@@ -161,6 +164,7 @@ public class PurchaseController {
 
         PurchaseSelectDetailResponseData purchaseSelectDetailResponseData = jpaPurchaseService.getPurchaseDetailPage(purchaseNo);
 
+//        PurchaseItemResponseData purchaseItemResponseData = myBatisPurchaseService.getPurchase()
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectDetailResponseData);
 
         if(res == null){

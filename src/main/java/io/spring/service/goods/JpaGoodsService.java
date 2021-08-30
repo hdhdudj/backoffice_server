@@ -7,7 +7,6 @@ import io.spring.infrastructure.util.exception.ResourceNotFoundException;
 import io.spring.jparepos.category.JpaIfCategoryRepository;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.goods.*;
-import io.spring.model.common.entity.SequenceData;
 import io.spring.model.file.FileVo;
 import io.spring.model.goods.entity.*;
 import io.spring.model.goods.request.GoodsInsertRequestData;
@@ -22,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -696,18 +697,21 @@ public class JpaGoodsService {
      * @param shortageYn, RegDtBegin, regDtEnd
      * @return GoodsSelectListResponseData
      */
-    public GoodsSelectListResponseData getGoodsList(String shortageYn, Date regDtBegin, Date regDtEnd) {
+    public GoodsSelectListResponseData getGoodsList(String shortageYn, LocalDate regDtBegin, LocalDate regDtEnd, String assortId, String assortNm) {
+        LocalDateTime start = regDtBegin.atStartOfDay();
+        LocalDateTime end = regDtEnd.atTime(23,59,59);
         TypedQuery<Itasrt> query =
                 em.createQuery("select t from Itasrt t " +
                                 "left join fetch t.itcatg c " +
                                 "where t.regDt " +
-                                "between ?1 " +
-                                "and ?2 " +
-                                "and t.shortageYn = ?3 "
+                                "between ?1 and ?2 " +
+                                "and (?3 is null or trim(?3)='' or t.shortageYn = ?3) " +
+                                "and (?4 is null or trim(?4)='' or t.assortId = ?4) " +
+                                "and (?5 is null or trim(?5)='' or t.assortNm like concat('%',?5,'%'))"
                         , Itasrt.class);
-        query.setParameter(1, regDtBegin)
-                .setParameter(2, regDtEnd)
-                .setParameter(3, shortageYn);
+        query.setParameter(1, start)
+                .setParameter(2, end)
+                .setParameter(3, shortageYn).setParameter(4,assortId).setParameter(5,assortNm);
         List<Itasrt> itasrtList = query.getResultList();
         List<GoodsSelectListResponseData.Goods> goodsList = new ArrayList<>();
         for(Itasrt itasrt : itasrtList){
@@ -745,22 +749,4 @@ public class JpaGoodsService {
      jpaItaimgRepository.delete(ii);
 
     }
-
-
-    /**
-     * Table 초기화 함수
-     */
-    public void initTables(){
-        Optional<SequenceData> op = jpaSequenceDataRepository.findById("seq_ITASRT");
-        SequenceData seq = op.get();
-        jpaItasrtRepository.deleteAll();
-        jpaItasrdRepository.deleteAll();
-        jpaItasrnRepository.deleteAll();
-        jpaItitmmRepository.deleteAll();
-        jpaItitmdRepository.deleteAll();
-        jpaItvariRepository.deleteAll();
-        seq.setSequenceCurValue(StringFactory.getStrZero());
-        jpaSequenceDataRepository.save(seq);
-    }
-
 }
