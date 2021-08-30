@@ -158,6 +158,7 @@ public class JpaPurchaseService {
 //            Lspchs newLspchs = new Lspchs(lspchs);
 //            jpaLspchsRepository.save(newLspchs);
             lspchs = this.updateLspchs(lspchm.getPurchaseNo(), purchaseInsertRequestData.getPurchaseStatus());
+            lspchs.setUpdId(purchaseInsertRequestData.getUpdId());
         }
 //        lspchs.setPurchaseNo(purchaseInsertRequestData.getPurchaseNo());
 //        lspchs.setPurchaseStatus(purchaseInsertRequestData.getPurchaseStatus());
@@ -179,13 +180,14 @@ public class JpaPurchaseService {
                 }
                 lspchd = new Lspchd(purchaseInsertRequestData.getPurchaseNo(), purchaseSeq);
                 lspchd.setRegId(purchaseInsertRequestData.getRegId());
+                lspchd.setUpdId(purchaseInsertRequestData.getUpdId());
             }
 
             lspchd.setPurchaseQty(item.getPurchaseQty());
             lspchd.setPurchaseUnitAmt(item.getPurchaseUnitAmt());
             lspchd.setPurchaseItemAmt(item.getPurchaseQty()*item.getPurchaseUnitAmt());
 			lspchd.setOrderId(item.getOrderId());
-			lspchd.setOrderSeq(item.getOrderSeq());;
+			lspchd.setOrderSeq(item.getOrderSeq());
             lspchd.setAssortId(item.getAssortId());
             lspchd.setItemId(item.getItemId());
 			lspchd.setOrderId(item.getOrderId());
@@ -223,6 +225,7 @@ public class JpaPurchaseService {
                 lspchb.setPurchaseStatus(purchaseInsertRequestData.getPurchaseStatus());
 
                 lspchb.setRegId(purchaseInsertRequestData.getRegId());
+                lspchb.setUpdId(purchaseInsertRequestData.getUpdId());
 
                 jpaLspchbRepository.save(lspchb);
             }
@@ -308,6 +311,9 @@ public class JpaPurchaseService {
 
                 ititmt.setTempQty(items.getPurchaseQty());
                 ititmt.setTempIndicateQty(0l);
+
+                ititmt.setRegId(purchaseInsertRequestData.getRegId());
+                ititmt.setUpdId(purchaseInsertRequestData.getUpdId());
             }
 
 //            if (purchaseGb.equals("02")) { // 01 : 일반발주, 02 : 이동요청
@@ -330,6 +336,7 @@ public class JpaPurchaseService {
                 ititmt.setStockAmt(purchaseInsertRequestData.getStockAmt());
                 ititmt.setVendorId(purchaseInsertRequestData.getVendorId());
                 ititmt.setSiteGb(purchaseInsertRequestData.getSiteGb());
+                ititmt.setUpdId(purchaseInsertRequestData.getUpdId());
             }
             jpaItitmtRepository.save(ititmt);
             ititmtList.add(ititmt);

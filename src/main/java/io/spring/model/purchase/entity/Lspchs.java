@@ -26,6 +26,9 @@ public class Lspchs extends CommonProps {
         this.purchaseNo = purchaseInsertRequestData.getPurchaseNo();
         this.effEndDt = LocalDateTime.parse(StringFactory.getDoomDayT());
         this.purchaseStatus = purchaseInsertRequestData.getPurchaseStatus();
+
+        this.setRegId(purchaseInsertRequestData.getRegId());
+        this.setUpdId(purchaseInsertRequestData.getUpdId());
     }
     public Lspchs(Lspchs lspchs){
         this.purchaseNo = lspchs.getPurchaseNo();
