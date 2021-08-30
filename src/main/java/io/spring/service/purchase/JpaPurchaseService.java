@@ -300,7 +300,7 @@ public class JpaPurchaseService {
     private List<Ititmt> saveItitmt(PurchaseInsertRequestData purchaseInsertRequestData) {
         List<Ititmt> ititmtList = new ArrayList<>();
 
-		String purchaseGb = purchaseInsertRequestData.getPurchaseGb();
+//		String purchaseGb = purchaseInsertRequestData.getPurchaseGb();
 
         for(PurchaseInsertRequestData.Items items : purchaseInsertRequestData.getItems()){
             ItitmtId ititmtId = new ItitmtId(purchaseInsertRequestData, items);
@@ -336,6 +336,7 @@ public class JpaPurchaseService {
                 ititmt.setStockAmt(purchaseInsertRequestData.getStockAmt());
                 ititmt.setVendorId(purchaseInsertRequestData.getVendorId());
                 ititmt.setSiteGb(purchaseInsertRequestData.getSiteGb());
+
                 ititmt.setUpdId(purchaseInsertRequestData.getUpdId());
             }
             jpaItitmtRepository.save(ititmt);
