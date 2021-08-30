@@ -89,7 +89,23 @@ public class JpaPurchaseService {
         List<Lsdpsp> lsdpsp = this.saveLsdpsp(purchaseInsertRequestData);
         // ititmt (예정 재고)
         List<Ititmt> ititmt = this.saveItitmt(purchaseInsertRequestData);
+        // tbOrderDetail 상태변경
+        this.changeStatusCdOfTbOrderDetail(lspchdList);
+
         return lspchm.getPurchaseNo();
+    }
+
+    /**
+     * 발주등록(주문) 저장 후 tbOrderDetail의 statusCd를 B01에서 B02로 변경해주는 함수
+     */
+    private void changeStatusCdOfTbOrderDetail(List<Lspchd> lspchdList) {
+        for(Lspchd lspchd : lspchdList){
+            TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(lspchd.getOrderId(),lspchd.getOrderSeq());
+            if(tbOrderDetail != null){ // 01 : 주문이동, 02 : 상품이동
+                tbOrderDetail.setStatusCd(StringFactory.getStrB02());
+                jpaTbOrderDetailRepository.save(tbOrderDetail);
+            }
+        }
     }
 
     public void updatePurchaseSquence(String purchaseNo, PurchaseInsertRequestData purchaseInsertRequestData) {
@@ -137,6 +153,7 @@ public class JpaPurchaseService {
             }
         }).reduce((a,b)->a+b).get();
         lspchm.setLocalPrice(localPriceSum);
+
         jpaLspchmRepository.save(lspchm);
         return lspchm;
     }
