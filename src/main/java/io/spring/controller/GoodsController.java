@@ -126,8 +126,8 @@ public class GoodsController {
 	@GetMapping(path = "/goods-item")
 	public ResponseEntity getGoodsItem(@RequestParam String shortageYn,
 			@RequestParam(required = false) String assortId, @RequestParam(required = false) String assortNm,
-			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtBegin,
-			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date regDtEnd) {
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date regDtBegin,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date regDtEnd) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 
 		param.put("shortageYn", shortageYn);
