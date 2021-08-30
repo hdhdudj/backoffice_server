@@ -59,6 +59,7 @@ public class PurchaseSelectDetailResponseData {
             this.assortNm = itasrt.getAssortNm();
             this.mdRrp = itasrt.getMdRrp();
             this.buySupplyDiscount = itasrt.getBuySupplyDiscount();
+            this.deliMethod = itasrt.getDeliMth();
         }
 //        public Items(Lspchd lspchd, TbOrderDetail tbOrderDetail, Itasrt itasrt){
 //            this.purchaseId = lspchd.getPurchaseNo();
