@@ -424,6 +424,7 @@ public class JpaPurchaseService {
 
         for(Lspchd lspchd : lspchdList){
             Ititmm ititmm = lspchd.getItitmm();
+//            Lsdpsd lsdpsd = lspchd.getLsdpsd();
             Itvari itvari1 = ititmm.getItvari1();
             Itvari itvari2 = ititmm.getItvari2();
             String optionNm1 = itvari1 == null? null : itvari1.getOptionNm();
@@ -433,7 +434,7 @@ public class JpaPurchaseService {
             purchase.setOptionNm1(optionNm1);
             purchase.setOptionNm2(optionNm2);
             purchase.setItemNm(ititmm.getItemNm());
-            purchase.setDepositQty(lspchd.getLsdpsd().getDepositQty());
+            purchase.setDepositQty(lspchd.getPurchaseQty());
             purchaseList.add(purchase);
         }
         purchaseSelectListResponseData.setPurchaseList(purchaseList);
