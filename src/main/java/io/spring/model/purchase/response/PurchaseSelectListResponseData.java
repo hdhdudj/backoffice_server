@@ -7,6 +7,9 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.SetOptionInterface;
+import io.spring.model.deposit.entity.Lsdpsp;
+import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.entity.Lspchm;
 import lombok.AccessLevel;
@@ -29,8 +32,12 @@ public class PurchaseSelectListResponseData {
         this.purchasStatus = (String) param.get(StringFactory.getStrPurchaseStatus());
         this.purchaseGb = (String)param.get(StringFactory.getStrPurchaseGb());
     }
-    public PurchaseSelectListResponseData(String purchaseNo){
-        this.purchaseNo = purchaseNo;
+    public PurchaseSelectListResponseData(Lspchm lspchm){
+        this.purchaseNo = lspchm.getPurchaseNo();
+        this.purchaseDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
+        this.depositStoreId = lspchm.getStoreCd();
+        this.purchaseVendorId = lspchm.getPurchaseVendorId();
+        this.purchaseGb = lspchm.getPurchaseGb();
     }
     // 발주리스트 화면
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -66,11 +73,25 @@ public class PurchaseSelectListResponseData {
     @Getter
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class Purchase{
-        public Purchase(Lspchm lspchm){
+    public static class Purchase implements SetOptionInterface {
+        /**
+         * 발주리스트 get 시 작동하는 생성자 
+         */
+        public Purchase(Lspchm lspchm, Lsdpsp lsdpsp, Itasrt itasrt){
             this.purchaseNo = lspchm.getPurchaseNo();
             this.purchaseVendorId = lspchm.getPurchaseVendorId();
             this.purchaseGb = lspchm.getPurchaseGb();
+
+            this.purchaseSeq = lsdpsp.getPurchaseSeq();
+            this.assortId = lsdpsp.getAssortId();
+            this.itemId = lsdpsp.getItemId();
+            this.depositPlanId = lsdpsp.getDepositPlanId();
+
+            this.itemNm = itasrt.getAssortNm();
+
+            this.depositQty = 0l;
+
+            this.purchaseCost = lsdpsp.getLspchd().getPurchaseUnitAmt();
         }
         public Purchase(Lspchm lspchm, Lspchd lspchd){
             this.purchaseNo = lspchm.getPurchaseNo();

@@ -1,5 +1,7 @@
 package io.spring.infrastructure.util;
 
+import io.spring.model.common.SetOptionInterface;
+import io.spring.model.goods.entity.Itvari;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -7,8 +9,8 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -104,17 +106,6 @@ public class Utilities {
     }
 
     /**
-     * 시간 없는 날짜에 시간을 추가해주는 함수
-     */
-    public static Date addHoursToJavaUtilDate(Date date, int hours) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        System.out.printf(date.toString());
-        calendar.set(Calendar.HOUR_OF_DAY, hours);
-        return calendar.getTime();
-    }
-
-    /**
      * String 날짜를 받아서 LocalDateTime으로 변환해 반환하는 함수
      * @param strDt
      * @return LocalDateTime
@@ -155,5 +146,17 @@ public class Utilities {
      */
     public static Date localDateTimeToDate(LocalDateTime localDateTime){
         return java.sql.Timestamp.valueOf(localDateTime);
+    }
+
+    /**
+     * optionNm1, optionNm2 설정 함수
+     */
+    public static void setOptionNames(SetOptionInterface setOptionInterface, List<Itvari> itvariList){
+        if(itvariList.size() > 0){
+            setOptionInterface.setOptionNm1(itvariList.get(0).getOptionNm());
+        }
+        if(itvariList.size() > 1){
+            setOptionInterface.setOptionNm2(itvariList.get(1).getOptionNm());
+        }
     }
 }

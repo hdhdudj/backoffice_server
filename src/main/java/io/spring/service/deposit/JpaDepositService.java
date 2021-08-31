@@ -39,7 +39,6 @@ import io.spring.model.deposit.response.DepositSelectListResponseData;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
-import io.spring.model.goods.entity.Itvari;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.entity.Lspchd;
@@ -342,15 +341,7 @@ public class JpaDepositService {
             DepositSelectDetailResponseData.Item item = new DepositSelectDetailResponseData.Item(lsdpsd);
             Itasrt itasrt = lsdpsd.getItasrt();
             item.setItemNm(itasrt.getAssortNm());
-            List<Itvari> itvariList = itasrt.getItvariList();
-            if(itvariList.size() > 0){
-                Itvari itvari1 = itvariList.get(0);
-                item.setOptionNm1(itvari1.getOptionNm());
-            }
-            if(itvariList.size() > 1){
-                Itvari itvari2 = itvariList.get(1);
-                item.setOptionNm2(itvari2.getOptionNm());
-            }
+            Utilities.setOptionNames(item,itasrt.getItvariList());
             item.setPurchaseNo(lsdpsd.getLspchd().getPurchaseNo());
             item.setPurchaseSeq(lsdpsd.getLspchd().getPurchaseSeq());
             item.setDepositQty(lsdpsd.getDepositQty());
@@ -398,17 +389,8 @@ public class JpaDepositService {
             deposit.setPurchaseVendorId(lsdpsd.getLsdpsm().getVendorId());
             deposit.setVdNm(lsdpsd.getLsdpsm().getCmvdmr().getVdNm());
             Itasrt itasrt = lsdpsd.getItasrt();
-            List<Itvari> itvariList = itasrt.getItvariList();
             deposit.setAssortNm(itasrt.getAssortNm());
-            if(itvariList.size() > 0){
-                Itvari itvari1 = itvariList.get(0);
-                deposit.setOptionNm1(itvari1.getOptionNm());
-            }
-            if(itvariList.size() > 1){
-                // 2 depth 주의...
-                Itvari itvari2 = itvariList.get(1);
-                deposit.setOptionNm2(itvari2.getOptionNm());
-            }
+            Utilities.setOptionNames(deposit, itasrt.getItvariList());
 //            List<Lsdpsp> lsdpspList = lsdpsd.getLspchd().getLsdpsp();
 //            lsdpspList.stream().filter(x->x.getPlanStatus().equals(StringFactory.getGbOne())).map(x->x.getq).reduce((a,b)->a+b).get();
             deposit.setDepositQty(lsdpsd.getDepositQty());
