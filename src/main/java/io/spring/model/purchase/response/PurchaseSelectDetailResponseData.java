@@ -1,6 +1,7 @@
 package io.spring.model.purchase.response;
 
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.SetOptionInterface;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.entity.Lspchm;
@@ -49,7 +50,7 @@ public class PurchaseSelectDetailResponseData {
     @Getter
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class Items{
+    public static class Items implements SetOptionInterface {
         public Items(Lspchd lspchd, Itasrt itasrt){
             this.assortId = lspchd.getAssortId();
             this.itemId = lspchd.getItemId();

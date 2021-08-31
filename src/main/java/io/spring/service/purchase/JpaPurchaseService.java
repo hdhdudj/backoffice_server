@@ -12,7 +12,6 @@ import io.spring.jparepos.purchase.JpaLspchbRepository;
 import io.spring.jparepos.purchase.JpaLspchdRepository;
 import io.spring.jparepos.purchase.JpaLspchmRepository;
 import io.spring.jparepos.purchase.JpaLspchsRepository;
-import io.spring.model.common.entity.SequenceData;
 import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.deposit.response.PurchaseListInDepositModalData;
@@ -44,7 +43,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -403,13 +405,7 @@ public class JpaPurchaseService {
 //            item.setPurchaseQty(lspchd.getPurchaseQty());
 //            item.setPurchaseUnitAmt(lspchd.getPurchaseUnitAmt());
 //            item.setPurchaseSeq(lspchd.getPurchaseSeq());
-            List<Itvari> itvariList = itasrt.getItvariList();
-            if(itvariList.size() > 0){
-                item.setOptionNm1(itvariList.get(0).getOptionNm());
-            }
-            else if (itvariList.size() > 1){
-                item.setOptionNm2(itvariList.get(1).getOptionNm());
-            }
+            Utilities.setOptionNames(item, itasrt.getItvariList());
             if(lspchd.getTbOrderDetail() != null){ // 주문발주인 경우
                 TbOrderDetail tbOrderDetail = lspchd.getTbOrderDetail();
                 item.setOrderId(tbOrderDetail.getOrderId());
@@ -477,40 +473,10 @@ public class JpaPurchaseService {
      */
     public PurchaseSelectListResponseData getPurchaseList(HashMap<String, Object> param) {
         PurchaseSelectListResponseData purchaseSelectListResponseData = new PurchaseSelectListResponseData(param);
-
-        String purchaseVendorId = (String)param.get(StringFactory.getStrPurchaseVendorId());
-        String assortId = (String)param.get(StringFactory.getStrAssortId());
-        String assortNm = (String)param.get(StringFactory.getStrAssortNm());
-        String dealtypeCd = (String)param.get(StringFactory.getStrDealtypeCd());
-        String purchaseStatus = (String)param.get(StringFactory.getStrPurchaseStatus());
-        String purchaseGb = (String)param.get(StringFactory.getStrPurchaseGb());
-        LocalDateTime start = ((LocalDate)param.get(StringFactory.getStrStartDt())).atStartOfDay();
-        LocalDateTime end = ((LocalDate)param.get(StringFactory.getStrEndDt())).atTime(23,59,59);
-//        purchaseNo = purchaseNo == null || purchaseNo.equals("")? "":" and d.depositNo='"+purchaseNo+"'";
-
         List<PurchaseSelectListResponseData.Purchase> purchaseList = new ArrayList<>();
-        TypedQuery<Lspchd> query =
-                em.createQuery("select d from Lspchd d " +
-                    "join fetch d.lspchm m " +
-                    "left join fetch d.ititmm it " +
-                    "join fetch it.itasrt " +
-                    "left join fetch it.itvari1 " +
-                    "left join fetch it.itvari2 " +
-                    "where m.purchaseDt " +
-                    "between ?1 " +
-                    "and ?2 " +
-                    "and (?3 is null or trim(?3)='' or m.purchaseVendorId=?3) "+
-                    "and (?4 is null or trim(?4)='' or d.assortId=?4) "+
-                    "and (?5 is null or trim(?5)='' or m.purchaseStatus=?5) "+
-                    "and (?6 is null or trim(?6)='' or m.purchaseGb=?6) " +
-                    "and (?7 is null or trim(?7)='' or m.dealtypeCd=?7) " +
-                    "and (?8 is null or trim(?8)='' or m.purchaseGb like concat('%',?8,'%'))"
-                        , Lspchd.class);
-        query.setParameter(1, start).setParameter(2, end)
-                .setParameter(3,purchaseVendorId).setParameter(4,assortId)
-                .setParameter(5,purchaseStatus).setParameter(6,purchaseGb).setParameter(7,dealtypeCd)
-                .setParameter(8,assortNm);
-        List<Lspchd> lspchdList = query.getResultList();
+
+        List<Lspchd> lspchdList = this.getLspchd(param);
+        
         Lspchm lspchm = null;
         if(lspchdList.size() > 0){
             lspchm = lspchdList.get(0).getLspchm();
@@ -538,59 +504,70 @@ public class JpaPurchaseService {
     }
 
     /**
+     * lspchd 조건 검색 쿼리로 lspchd의 리스트를 가져오는 함수
+     * @param param
+     * @return
+     */
+    private List<Lspchd> getLspchd(HashMap<String, Object> param) {
+        String purchaseVendorId = (String)param.get(StringFactory.getStrPurchaseVendorId());
+        String assortId = (String)param.get(StringFactory.getStrAssortId());
+        String assortNm = (String)param.get(StringFactory.getStrAssortNm());
+        String dealtypeCd = (String)param.get(StringFactory.getStrDealtypeCd());
+        String purchaseStatus = (String)param.get(StringFactory.getStrPurchaseStatus());
+        String purchaseGb = (String)param.get(StringFactory.getStrPurchaseGb());
+        LocalDateTime start = ((LocalDate)param.get(StringFactory.getStrStartDt())).atStartOfDay();
+        LocalDateTime end = ((LocalDate)param.get(StringFactory.getStrEndDt())).atTime(23,59,59);
+//        purchaseNo = purchaseNo == null || purchaseNo.equals("")? "":" and d.depositNo='"+purchaseNo+"'";
+
+        TypedQuery<Lspchd> query =
+                em.createQuery("select d from Lspchd d " +
+                                "join fetch d.lspchm m " +
+                                "left join fetch d.ititmm it " +
+                                "join fetch it.itasrt " +
+                                "left join fetch it.itvari1 " +
+                                "left join fetch it.itvari2 " +
+                                "where m.purchaseDt between ?1 and ?2 " +
+                                "and (?3 is null or trim(?3)='' or m.purchaseVendorId=?3) "+
+                                "and (?4 is null or trim(?4)='' or d.assortId=?4) "+
+                                "and (?5 is null or trim(?5)='' or m.purchaseStatus=?5) "+
+                                "and (?6 is null or trim(?6)='' or m.purchaseGb=?6) " +
+                                "and (?7 is null or trim(?7)='' or m.dealtypeCd=?7) " +
+                                "and (?8 is null or trim(?8)='' or m.purchaseGb like concat('%',?8,'%'))"
+                        , Lspchd.class);
+        query.setParameter(1, start).setParameter(2, end)
+                .setParameter(3,purchaseVendorId).setParameter(4,assortId)
+                .setParameter(5,purchaseStatus).setParameter(6,purchaseGb).setParameter(7,dealtypeCd)
+                .setParameter(8,assortNm);
+        List<Lspchd> lspchdList = query.getResultList();
+        return lspchdList;
+    }
+
+    /**
      * 입고처리 화면에서 발주번호로 검색 시 결과 리스트 가져오는 함수
      */
     public PurchaseSelectListResponseData getDepositPlanList(String purchaseNo) {
-        PurchaseSelectListResponseData purchaseSelectListResponseData = new PurchaseSelectListResponseData(purchaseNo);
-
         List<PurchaseSelectListResponseData.Purchase> purchaseList = new ArrayList<>();
-        TypedQuery<Lsdpsp> query =
-                em.createQuery("select p from Lsdpsp p " +
-                                "left join fetch p.lspchd d " +
-                                "where p.purchaseNo=?1"
-                        , Lsdpsp.class);
-        query.setParameter(1, purchaseNo);
-        List<Lsdpsp> lsdpspList = query.getResultList();
+        List<Lsdpsp> lsdpspList = this.getLsdpsp(purchaseNo);
+
         if(lsdpspList.size() == 0){ // 해당 purchaseNo에 해당하는 data가 없을 때
             log.debug("there's no purchase exist.");
             return null;
         }
         Lspchm lspchm = lsdpspList.get(0).getLspchd().getLspchm();
 
-        purchaseSelectListResponseData.setPurchaseNo(lspchm.getPurchaseNo());
-        purchaseSelectListResponseData.setPurchaseDt(Utilities.removeTAndTransToStr(lspchm.getPurchaseDt()));
-        purchaseSelectListResponseData.setDepositStoreId(lspchm.getStoreCd());
-        purchaseSelectListResponseData.setPurchaseVendorId(lspchm.getPurchaseVendorId());
-        purchaseSelectListResponseData.setPurchaseGb(lspchm.getPurchaseGb());
+        PurchaseSelectListResponseData purchaseSelectListResponseData = new PurchaseSelectListResponseData(lspchm);
 
         for(Lsdpsp lsdpsp : lsdpspList){
             if(lsdpsp.getPurchasePlanQty() == lsdpsp.getPurchaseTakeQty()){
                 continue;
             }
-            PurchaseSelectListResponseData.Purchase purchase = new PurchaseSelectListResponseData.Purchase(lspchm);
-            purchase.setPurchaseNo(lsdpsp.getPurchaseNo());
-            purchase.setPurchaseSeq(lsdpsp.getPurchaseSeq());
-            purchase.setAssortId(lsdpsp.getAssortId());
-            purchase.setItemId(lsdpsp.getItemId());
-
             Itasrt itasrt = lsdpsp.getItasrt();//lsdpsp.getTbOrderDetail().getItasrt();//.getLsdpsd().getItasrt();
-            purchase.setItemNm(itasrt.getAssortNm());
-            int optionSize = itasrt.getItvariList().size();
-            if(optionSize > 0){
-                Itvari itvari1 = itasrt.getItvariList().get(0);
-                purchase.setOptionNm1(itvari1.getOptionNm());
-            }
-            if(optionSize > 1){
-                Itvari itvari2 = itasrt.getItvariList().get(1);
-                purchase.setOptionNm2(itvari2.getOptionNm());
-            }
+            PurchaseSelectListResponseData.Purchase purchase = new PurchaseSelectListResponseData.Purchase(lspchm, lsdpsp, itasrt);
+            Utilities.setOptionNames(purchase, itasrt.getItvariList());
 
-            purchase.setDepositPlanId(lsdpsp.getDepositPlanId());
             long planQty = lsdpsp.getPurchasePlanQty() == null? 0l:lsdpsp.getPurchasePlanQty();
             long takeQty = lsdpsp.getPurchaseTakeQty() == null? 0l:lsdpsp.getPurchaseTakeQty();
             purchase.setAvailableQty(planQty - takeQty);
-            purchase.setDepositQty(0l);
-            purchase.setPurchaseCost(lsdpsp.getLspchd().getPurchaseUnitAmt());
 
             purchaseList.add(purchase);
         }
@@ -598,7 +575,23 @@ public class JpaPurchaseService {
         return purchaseSelectListResponseData;
     }
 
-	private void updateOrderStatusCd(String orderId, String orderSeq, String statusCd) {
+    /**
+     * lsdpsp의 리스트를 조건 검색 쿼리로 가져오는 함수
+     * @param purchaseNo
+     * @return
+     */
+    private List<Lsdpsp> getLsdpsp(String purchaseNo) {
+        TypedQuery<Lsdpsp> query =
+                em.createQuery("select p from Lsdpsp p " +
+                                "left join fetch p.lspchd d " +
+                                "where p.purchaseNo=?1"
+                        , Lsdpsp.class);
+        query.setParameter(1, purchaseNo);
+        List<Lsdpsp> lsdpspList = query.getResultList();
+        return lsdpspList;
+    }
+
+    private void updateOrderStatusCd(String orderId, String orderSeq, String statusCd) {
 
 		TbOrderDetail tod = tbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
         Date date = Utilities.getStringToDate(StringFactory.getDoomDay());
@@ -621,30 +614,7 @@ public class JpaPurchaseService {
 		tbOrderDetailRepository.save(tod);
 
 		tbOrderHistoryrRepository.saveAll(tohs);
-
 	}
-
-    /**
-     * Table 초기화 함수
-     */
-    public void initTables(){
-        Optional<SequenceData> op = jpaSequenceDataRepository.findById(StringFactory.getStrSeqLspchm());
-        SequenceData seq = op.get();
-        seq.setSequenceCurValue(StringFactory.getStrZero());
-        jpaSequenceDataRepository.save(seq);
-        op = jpaSequenceDataRepository.findById(StringFactory.getStrSeqLsdpsp());
-        seq = op.get();
-        seq.setSequenceCurValue(StringFactory.getStrZero());
-        jpaSequenceDataRepository.save(seq);
-        jpaLspchmRepository.deleteAll();
-        jpaLspchsRepository.deleteAll();
-        jpaLspchmRepository.deleteAll();
-        jpaLspchbRepository.deleteAll();
-        jpaLspchdRepository.deleteAll();
-        jpaLsdpspRepository.deleteAll();
-        jpaItitmtRepository.deleteAll();
-
-    }
 
     /**
      * tbOrderDetail에서 발주 data가 만들어질 때 쓰는 함수 (lspchm, lspchd, lspchs, lspchb, lsdpsp)

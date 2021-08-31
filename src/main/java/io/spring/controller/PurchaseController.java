@@ -237,10 +237,5 @@ public class PurchaseController {
         }
         return ResponseEntity.ok(res);
     }
-
-    @GetMapping(path="/init")
-    public void initTabled(){
-        jpaPurchaseService.initTables();
-    }
 }
 

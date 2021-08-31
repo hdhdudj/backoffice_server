@@ -1,6 +1,7 @@
 package io.spring.model.deposit.response;
 
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.SetOptionInterface;
 import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.deposit.entity.Lsdpsm;
 import lombok.AccessLevel;
@@ -36,7 +37,7 @@ public class DepositSelectDetailResponseData {
     @Getter
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class Item{
+    public static class Item implements SetOptionInterface {
         public Item(Lsdpsd lsdpsd){
             // lsdpsd
             this.depositNo = lsdpsd.getDepositNo();
