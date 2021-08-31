@@ -310,7 +310,7 @@ public class JpaPurchaseService {
             else{ // update
                 lsdpsp.setPurchaseNo(purchaseInsertRequestData.getPurchaseId());
                 lsdpsp.setPurchaseSeq(items.getPurchaseSeq());
-                lsdpsp.setPurchasePlanQty(items.getPurchaseQty() + lsdpsp.getPurchasePlanQty());
+                lsdpsp.setPurchasePlanQty(items.getPurchaseQty());//(items.getPurchaseQty() + lsdpsp.getPurchasePlanQty());
 //                lsdpsp.setPurchaseTakeQty(purchaseInsertRequestData.getPurchaseTakeQty());
                 lsdpsp.setAssortId(items.getAssortId());
                 lsdpsp.setItemId(items.getItemId());
