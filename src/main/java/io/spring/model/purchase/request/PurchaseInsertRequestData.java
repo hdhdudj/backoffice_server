@@ -46,7 +46,7 @@ public class PurchaseInsertRequestData {
      * (무슨 화면인지 애매함.. 확인 필요)
       */
     // 여러 테이블에서 쓰는 변수
-    private String purchaseNo; // lspchm, lspchs
+    private String purchaseId; // lspchm, lspchs
     private String purchaseStatus; // lspchm, lspchs, lspchb
     private Date effEndDt; // lspchm, lspchs
     private String siteGb; // lspchm, ititmt

@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 public class Lspchs extends CommonProps {
     private final static Logger logger = LoggerFactory.getLogger(Lspchs.class);
     public Lspchs(PurchaseInsertRequestData purchaseInsertRequestData){
-        this.purchaseNo = purchaseInsertRequestData.getPurchaseNo();
+        this.purchaseNo = purchaseInsertRequestData.getPurchaseId();
         this.effEndDt = LocalDateTime.parse(StringFactory.getDoomDayT());
         this.purchaseStatus = purchaseInsertRequestData.getPurchaseStatus();
 

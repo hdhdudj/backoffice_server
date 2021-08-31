@@ -27,6 +27,7 @@ public class PurchaseSelectDetailResponseData {
         this.carrier = lspchm.getCarrier();
         this.siteOrderNo = lspchm.getSiteOrderNo();
         this.purchaseStatus = lspchm.getPurchaseStatus();
+        this.dealtypeCd = lspchm.getDealtypeCd();
     }
 //    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
 //    @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -37,6 +38,7 @@ public class PurchaseSelectDetailResponseData {
     private String purchaseRemark;
     private String storageId;
     private String terms;
+    private String dealtypeCd;
     private String delivery;
     private String payment;
     private String carrier;

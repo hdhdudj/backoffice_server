@@ -179,20 +179,25 @@ public class PurchaseController {
     @GetMapping(path="/items")
     public ResponseEntity getPurchaseListJpa(@RequestParam @Nullable String purchaseVendorId,
                                              @RequestParam @Nullable String assortId,
+                                             @RequestParam @Nullable String assortNm,
                                              @RequestParam @Nullable String purchaseStatus,
                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
-                                             @RequestParam @Nullable String purchaseGb){
+                                             @RequestParam @Nullable String purchaseGb,
+                                             @RequestParam @Nullable String dealtypeCd
+                                             ){
         log.debug("get purchase list - jpa");
 
         HashMap<String, Object> param = new HashMap<>();
 
         param.put("purchaseVendorId", purchaseVendorId);
         param.put("assortId", assortId);
+        param.put("assortNm", assortNm);
         param.put("purchaseStatus", purchaseStatus);
         param.put("startDt", startDt);
         param.put("endDt", endDt);
         param.put("purchaseGb", purchaseGb);
+        param.put("dealtypeCd", dealtypeCd);
         param.put("purchaseNo", null);
 
         PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getPurchaseList(param);

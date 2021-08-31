@@ -75,8 +75,11 @@ public class JpaPurchaseService {
      */
     @Transactional
     public String createPurchaseSquence(PurchaseInsertRequestData purchaseInsertRequestData) {
-        String purchaseNo = this.getPurchaseNo();
-        purchaseInsertRequestData.setPurchaseNo(purchaseNo);
+        String purchaseNo = null;
+        if(purchaseInsertRequestData.getPurchaseId() == null){
+            purchaseNo = this.getPurchaseNo();
+            purchaseInsertRequestData.setPurchaseId(purchaseNo);
+        }
         // lspchd (발주 디테일)
         List<Lspchd> lspchdList = this.saveLspchd(purchaseInsertRequestData);
         // lspchm (발주마스터)
@@ -113,7 +116,7 @@ public class JpaPurchaseService {
     }
 
     private Lspchm saveLspchm(PurchaseInsertRequestData purchaseInsertRequestData, List<Lspchd> lspchdList) {
-        Lspchm lspchm = jpaLspchmRepository.findByPurchaseNo(purchaseInsertRequestData.getPurchaseNo()).orElseGet(() -> null);
+        Lspchm lspchm = jpaLspchmRepository.findByPurchaseNo(purchaseInsertRequestData.getPurchaseId()).orElseGet(() -> null);
         if(lspchm == null){ // insert
             lspchm = new Lspchm(purchaseInsertRequestData);
 
@@ -186,23 +189,29 @@ public class JpaPurchaseService {
         List<Lspchd> lspchdList = new ArrayList<>();
 
         for(PurchaseInsertRequestData.Items item : purchaseInsertRequestData.getItems()){
-            Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequestData.getPurchaseNo(), item.getPurchaseSeq() == null? null:item.getPurchaseSeq());
+            Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequestData.getPurchaseId(), item.getPurchaseSeq() == null? null:item.getPurchaseSeq());
             if(lspchd == null){ // insert
-                String purchaseSeq = jpaLspchdRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequestData.getPurchaseNo());
+                String purchaseSeq = jpaLspchdRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequestData.getPurchaseId());
                 if(purchaseSeq == null){
                     purchaseSeq = StringFactory.getFourStartCd();
                 }
                 else {
                     purchaseSeq = Utilities.plusOne(purchaseSeq, 4);
                 }
-                lspchd = new Lspchd(purchaseInsertRequestData.getPurchaseNo(), purchaseSeq);
+                lspchd = new Lspchd(purchaseInsertRequestData.getPurchaseId(), purchaseSeq);
                 lspchd.setRegId(purchaseInsertRequestData.getUserId());
                 lspchd.setUpdId(purchaseInsertRequestData.getUserId());
             }
 
             lspchd.setPurchaseQty(item.getPurchaseQty());
             lspchd.setPurchaseUnitAmt(item.getPurchaseUnitAmt());
-            lspchd.setPurchaseItemAmt(item.getPurchaseQty()*item.getPurchaseUnitAmt());
+            if(item.getPurchaseQty()== null || item.getPurchaseUnitAmt() == null){
+                log.debug("purchaseQty 또는 purchaseUnitAmt가 null 입니다.");
+                lspchd.setPurchaseItemAmt(null);
+            }
+            else{
+                lspchd.setPurchaseItemAmt(item.getPurchaseQty()*item.getPurchaseUnitAmt());
+            }
 			lspchd.setOrderId(item.getOrderId());
 			lspchd.setOrderSeq(item.getOrderSeq());
             lspchd.setAssortId(item.getAssortId());
@@ -283,11 +292,11 @@ public class JpaPurchaseService {
     private List<Lsdpsp> saveLsdpsp(PurchaseInsertRequestData purchaseInsertRequestData) {
         List<Lsdpsp> lsdpspList = new ArrayList<>();
         for(PurchaseInsertRequestData.Items items : purchaseInsertRequestData.getItems()){
-            Lsdpsp lsdpsp = items.getPurchaseSeq() == null || items.getPurchaseSeq().equals("")? null : jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequestData.getPurchaseNo(), items.getPurchaseSeq());
+            Lsdpsp lsdpsp = items.getPurchaseSeq() == null || items.getPurchaseSeq().equals("")? null : jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequestData.getPurchaseId(), items.getPurchaseSeq());
             if(lsdpsp == null){ // insert
                 String depositPlanId = jpaCommonService.getNumberId(purchaseInsertRequestData.getDepositPlanId(), StringFactory.getStrSeqLsdpsp(), StringFactory.getIntNine());
                 purchaseInsertRequestData.setDepositPlanId(depositPlanId); // depositPlanId 채번
-                String seq = jpaLsdpspRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequestData.getPurchaseNo());
+                String seq = jpaLsdpspRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequestData.getPurchaseId());
                 if(seq == null){
                     seq = StringFactory.getFourStartCd();
                 }
@@ -299,7 +308,7 @@ public class JpaPurchaseService {
                 purchaseInsertRequestData.setDepositPlanId(null);
             }
             else{ // update
-                lsdpsp.setPurchaseNo(purchaseInsertRequestData.getPurchaseNo());
+                lsdpsp.setPurchaseNo(purchaseInsertRequestData.getPurchaseId());
                 lsdpsp.setPurchaseSeq(items.getPurchaseSeq());
                 lsdpsp.setPurchasePlanQty(items.getPurchaseQty() + lsdpsp.getPurchasePlanQty());
 //                lsdpsp.setPurchaseTakeQty(purchaseInsertRequestData.getPurchaseTakeQty());
@@ -471,6 +480,8 @@ public class JpaPurchaseService {
 
         String purchaseVendorId = (String)param.get(StringFactory.getStrPurchaseVendorId());
         String assortId = (String)param.get(StringFactory.getStrAssortId());
+        String assortNm = (String)param.get(StringFactory.getStrAssortNm());
+        String dealtypeCd = (String)param.get(StringFactory.getStrDealtypeCd());
         String purchaseStatus = (String)param.get(StringFactory.getStrPurchaseStatus());
         String purchaseGb = (String)param.get(StringFactory.getStrPurchaseGb());
         LocalDateTime start = ((LocalDate)param.get(StringFactory.getStrStartDt())).atStartOfDay();
@@ -491,11 +502,14 @@ public class JpaPurchaseService {
                     "and (?3 is null or trim(?3)='' or m.purchaseVendorId=?3) "+
                     "and (?4 is null or trim(?4)='' or d.assortId=?4) "+
                     "and (?5 is null or trim(?5)='' or m.purchaseStatus=?5) "+
-                    "and (?6 is null or trim(?6)='' or m.purchaseGb=?6) "
+                    "and (?6 is null or trim(?6)='' or m.purchaseGb=?6) " +
+                    "and (?7 is null or trim(?7)='' or m.dealtypeCd=?7) " +
+                    "and (?8 is null or trim(?8)='' or m.purchaseGb like concat('%',?8,'%'))"
                         , Lspchd.class);
         query.setParameter(1, start).setParameter(2, end)
                 .setParameter(3,purchaseVendorId).setParameter(4,assortId)
-                .setParameter(5,purchaseStatus).setParameter(6,purchaseGb);
+                .setParameter(5,purchaseStatus).setParameter(6,purchaseGb).setParameter(7,dealtypeCd)
+                .setParameter(8,assortNm);
         List<Lspchd> lspchdList = query.getResultList();
         Lspchm lspchm = null;
         if(lspchdList.size() > 0){

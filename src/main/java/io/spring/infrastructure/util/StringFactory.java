@@ -151,4 +151,6 @@ public class StringFactory {
     private final static String strDeliMethod = "deliMethod";
     @Getter
     public final static String strShipSeqNum = "shipSeqNum";
+    @Getter
+    public final static String strDealtypeCd = "dealtypeCd";
 }
