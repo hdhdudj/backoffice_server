@@ -401,7 +401,7 @@ public class JpaPurchaseService {
             else if (itvariList.size() > 1){
                 item.setOptionNm2(itvariList.get(1).getOptionNm());
             }
-            if(lspchd.getLspchm().getDealtypeCd().equals(StringFactory.getGbOne())){ // 01 : 주문발주
+            if(lspchd.getTbOrderDetail() != null){ // 주문발주인 경우
                 TbOrderDetail tbOrderDetail = lspchd.getTbOrderDetail();
                 item.setOrderId(tbOrderDetail.getOrderId());
                 item.setOrderSeq(tbOrderDetail.getOrderSeq());
