@@ -439,6 +439,10 @@ public class JpaDepositService {
             boolean isCompleteDeposit = availableQty == deposit.getDepositQty(); // 완전입고
             boolean notGoodsPurchaseAndAvailableQty = availableQty >= deposit.getDepositQty() && !dealtypeCd.equals(StringFactory.getGbOne()); // 입고가능수량 >= 입력값 && 주문발주 아님
             boolean orderPurchaseAndCompleteDeposit = isCompleteDeposit && dealtypeCd.equals(StringFactory.getGbOne());
+            if(deposit.getDepositQty() == 0){
+                log.debug("지정 입고수량이 0입니다. 입고수량은 0을 초과해야 합니다.");
+                continue;
+            }
             if(notGoodsPurchaseAndAvailableQty || orderPurchaseAndCompleteDeposit){ // '주문발주가 아니고 부분입고or완전입고' or '주문발주이고 완전입고'
                 lsdpsp.setPurchaseTakeQty(lsdpsp.getPurchaseTakeQty() + deposit.getDepositQty());
                 jpaLsdpspRepository.save(lsdpsp);

@@ -45,6 +45,7 @@ public class PurchaseListInDepositModalData {
         public Purchase(Lspchm lspchm){
             this.purchaseNo = lspchm.getPurchaseNo();
             this.purchaseGb = lspchm.getPurchaseGb();
+            this.dealtypeCd = lspchm.getDealtypeCd();
             this.purchaseDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
             this.purchaseVendorId = lspchm.getPurchaseVendorId();
             this.purchaseStatus = lspchm.getPurchaseStatus();
@@ -53,6 +54,7 @@ public class PurchaseListInDepositModalData {
         }
         private String purchaseNo;
         private String purchaseGb;
+        private String dealtypeCd;
 
 //        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
 //        @JsonSerialize(using = LocalDateTimeSerializer.class)
