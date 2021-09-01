@@ -368,7 +368,8 @@ public class JpaDepositService {
                         "where lm.depositDt between ?1 and ?2 " +
                         "and (?3 is null or trim(?3)='' or it.assortId=?3) " +
                         "and (?4 is null or trim(?4)='' or it.assortNm like concat('%', ?4, '%')) " +
-                        "and (?5 is null or trim(?5)='' or lm.vendorId=?5)",
+                        "and (?5 is null or trim(?5)='' or lm.vendorId=?5) " +
+                        "order by ld.depositNo asc, ld.depositSeq asc",
                 Lsdpsd.class);
         query.setParameter(1, start).setParameter(2, end).setParameter(3, assortId)
         .setParameter(4, assortNm).setParameter(5, purchaseVendorId);
