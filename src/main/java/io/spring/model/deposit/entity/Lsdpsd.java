@@ -1,27 +1,6 @@
 package io.spring.model.deposit.entity;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.idclass.LsdpsdId;
@@ -34,6 +13,14 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 //import org.flywaydb.core.internal.util.StringUtils;
 
@@ -44,9 +31,9 @@ import lombok.Setter;
 @IdClass(LsdpsdId.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lsdpsd extends CommonProps implements Serializable {
-    // 발주 생성시 실행되는 생성자
-    public Lsdpsd(String depositNo, DepositInsertRequestData.Item item){
-        this.depositNo = depositNo;
+    // 입고 생성시 실행되는 생성자
+    public Lsdpsd(DepositInsertRequestData depositInsertRequestData, DepositInsertRequestData.Item item){
+        this.depositNo = depositInsertRequestData.getDepositNo();
         this.depositSeq = item.getDepositSeq();
         this.assortId = item.getAssortId();
         this.itemGrade = item.getItemGrade();
@@ -59,15 +46,15 @@ public class Lsdpsd extends CommonProps implements Serializable {
         this.extraCost = this.deliPrice;
         this.extraQty = this.depositQty;
 		this.finishYymm = LocalDateTime.parse(StringFactory.getDoomDay(),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // 9999-12-31 하드코딩
+				DateTimeFormatter.ofPattern(StringFactory.getDateFormat())); // 9999-12-31 하드코딩
         this.depositType = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01' 입고
         this.siteGb = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
-        this.vendorId = StringUtils.leftPad("1", 6, '0');
+        this.vendorId = depositInsertRequestData.getDepositVendorId();//StringUtils.leftPad("1", 6, '0'); // 000001 하드코딩
         this.inputNo = item.getPurchaseNo();
         this.inputSeq = item.getPurchaseSeq();
     }
     // 입고 체크 후 저장시 실행되는 생성자
-    public Lsdpsd(Lsdpsm lsdpsm, String depositSeq, DepositListWithPurchaseInfoData.Deposit deposit) {
+    public Lsdpsd(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData, Lsdpsm lsdpsm, String depositSeq, DepositListWithPurchaseInfoData.Deposit deposit) {
         this.depositNo = lsdpsm.getDepositNo();
         this.depositSeq = depositSeq;
         this.assortId = deposit.getAssortId();
@@ -83,7 +70,7 @@ public class Lsdpsd extends CommonProps implements Serializable {
 				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // 9999-12-31 하드코딩
         this.depositType = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01' 입고
         this.siteGb = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
-        this.vendorId = StringUtils.leftPad("1", 6, '0'); // 000001 하드코딩
+        this.vendorId = depositListWithPurchaseInfoData.getPurchaseVendorId();//StringUtils.leftPad("1", 6, '0'); // 000001 하드코딩
         this.inputNo = deposit.getPurchaseNo();
         this.inputSeq = deposit.getPurchaseSeq();
     }

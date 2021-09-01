@@ -568,9 +568,9 @@ public class JpaMoveService {
      * @param assortNm
      * @return 이동지시리스트를 가진 DTO
      */
-    public MoveIndicateListResponseData getMoveIndicateList(LocalDate startDt, LocalDate endDt, String storageId, String assortId, String assortNm) {
-        List<Lsshpd> lsshpdList = this.getLsshpdMoveIndList(startDt, endDt, storageId, assortId, assortNm);
-        MoveIndicateListResponseData moveIndicateListResponseData = new MoveIndicateListResponseData(startDt, endDt, storageId, assortId, assortNm);
+    public MoveIndicateListResponseData getMoveIndicateList(LocalDate startDt, LocalDate endDt, String storageId, String oStorageId, String assortId, String assortNm) {
+        List<Lsshpd> lsshpdList = this.getLsshpdMoveIndList(startDt, endDt, storageId, oStorageId, assortId, assortNm);
+        MoveIndicateListResponseData moveIndicateListResponseData = new MoveIndicateListResponseData(startDt, endDt, storageId, oStorageId, assortId, assortNm);
         List<MoveIndicateListResponseData.Move> moveList = new ArrayList<>();
         for(Lsshpd lsshpd : lsshpdList){
             Lsshpm lsshpm = lsshpd.getLsshpm();
@@ -598,7 +598,7 @@ public class JpaMoveService {
     /**
      * 조건에 맞는 lsshpd 리스트를 반환하는 함수
     */
-    private List<Lsshpd> getLsshpdMoveIndList(LocalDate startDt, LocalDate endDt, String storageId, String assortId, String assortNm) {
+    private List<Lsshpd> getLsshpdMoveIndList(LocalDate startDt, LocalDate endDt, String storageId, String oStorageId, String assortId, String assortNm) {
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
         TypedQuery<Lsshpd> query = em.createQuery("select ld from Lsshpd ld " +
@@ -606,12 +606,13 @@ public class JpaMoveService {
                         "left join fetch ld.tbOrderDetail td " +
                         "join fetch ld.itasrt it " +
                         "where ld.regDt between ?1 and ?2 " +
-                        "and (?3 is null or trim(?3)='' or ld.oStorageId=?3) " +
+                        "and (?3 is null or trim(?3)='' or lm.storageId=?3) " +
                         "and (?4 is null or trim(?4)='' or ld.assortId=?4) " +
-                        "and (?5 is null or trim(?5)='' or it.assortNm like concat('%',?5,'%'))"
+                        "and (?5 is null or trim(?5)='' or it.assortNm like concat('%',?5,'%')) " +
+                        "and (?6 is null or trim(?6)='' or ld.oStorageId=?6)"
                 ,Lsshpd.class);
         query.setParameter(1,start).setParameter(2,end).setParameter(3,storageId)
-        .setParameter(4,assortId).setParameter(5,assortNm);
+        .setParameter(4,assortId).setParameter(5,assortNm).setParameter(6,oStorageId);
         List<Lsshpd> lsshpdList = query.getResultList();
         return lsshpdList;
     }

@@ -1,37 +1,15 @@
 package io.spring.service.deposit;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
-import io.spring.jparepos.deposit.JpaLsdpdsRepository;
-import io.spring.jparepos.deposit.JpaLsdpsdRepository;
-import io.spring.jparepos.deposit.JpaLsdpsmRepository;
-import io.spring.jparepos.deposit.JpaLsdpspRepository;
-import io.spring.jparepos.deposit.JpaLsdpssRepository;
+import io.spring.jparepos.deposit.*;
 import io.spring.jparepos.goods.JpaItasrtRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.purchase.JpaLspchmRepository;
-import io.spring.model.deposit.entity.Lsdpds;
-import io.spring.model.deposit.entity.Lsdpsd;
-import io.spring.model.deposit.entity.Lsdpsm;
-import io.spring.model.deposit.entity.Lsdpsp;
-import io.spring.model.deposit.entity.Lsdpss;
+import io.spring.model.deposit.entity.*;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.deposit.response.DepositSelectDetailResponseData;
@@ -55,6 +33,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -165,25 +144,25 @@ public class JpaDepositService {
         return lsdpsm;
     }
 
-    private List<Lsdpsd> saveLsdpsd(DepositInsertRequestData depositInsertRequestData){
-        List<Lsdpsd> lsdpsdList = new ArrayList<>();
-        for(DepositInsertRequestData.Item item : depositInsertRequestData.getItems()){
-            if(item.getDepositSeq() == null || item.getDepositSeq().equals("")){
-                String depositSeq = jpaLsdpsdRepository.findMaxDepositSeqByDepositNo(depositInsertRequestData.getDepositNo());
-                if(depositSeq == null){
-                    depositSeq = StringUtils.leftPad("1", 4, '0');
-                }
-                else{
-                    depositSeq = Utilities.plusOne(depositSeq, 4);
-                }
-                item.setDepositSeq(depositSeq);
-            }
-            Lsdpsd lsdpsd = new Lsdpsd(depositInsertRequestData.getDepositNo(), item);
-            jpaLsdpsdRepository.save(lsdpsd);
-            lsdpsdList.add(lsdpsd);
-        }
-        return lsdpsdList;
-    }
+//    private List<Lsdpsd> saveLsdpsd(DepositInsertRequestData depositInsertRequestData){
+//        List<Lsdpsd> lsdpsdList = new ArrayList<>();
+//        for(DepositInsertRequestData.Item item : depositInsertRequestData.getItems()){
+//            if(item.getDepositSeq() == null || item.getDepositSeq().equals("")){
+//                String depositSeq = jpaLsdpsdRepository.findMaxDepositSeqByDepositNo(depositInsertRequestData.getDepositNo());
+//                if(depositSeq == null){
+//                    depositSeq = StringUtils.leftPad("1", 4, '0');
+//                }
+//                else{
+//                    depositSeq = Utilities.plusOne(depositSeq, 4);
+//                }
+//                item.setDepositSeq(depositSeq);
+//            }
+//            Lsdpsd lsdpsd = new Lsdpsd(depositInsertRequestData, item);
+//            jpaLsdpsdRepository.save(lsdpsd);
+//            lsdpsdList.add(lsdpsd);
+//        }
+//        return lsdpsdList;
+//    }
 
     private List<Lsdpsd> insertLsdpsd(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData, Lsdpsm lsdpsm){
         List<Lsdpsd> lsdpsdList = new ArrayList<>();
@@ -194,7 +173,7 @@ public class JpaDepositService {
                 continue;
             }
             String depositSeq = StringUtils.leftPad(Integer.toString(index), 4, '0');
-            Lsdpsd lsdpsd = new Lsdpsd(lsdpsm, depositSeq, deposit);
+            Lsdpsd lsdpsd = new Lsdpsd(depositListWithPurchaseInfoData, lsdpsm, depositSeq, deposit);
             lsdpsdList.add(lsdpsd);
             jpaLsdpsdRepository.save(lsdpsd);
             index++;

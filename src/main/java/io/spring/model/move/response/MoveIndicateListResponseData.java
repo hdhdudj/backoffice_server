@@ -23,10 +23,11 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MoveIndicateListResponseData {
-    public MoveIndicateListResponseData(LocalDate startDt,LocalDate endDt,String storageId,String assortId,String assortNm){
+    public MoveIndicateListResponseData(LocalDate startDt,LocalDate endDt,String storageId,String oStorageId,String assortId,String assortNm){
         this.startDt = startDt;
         this.endDt = endDt;
         this.storageId = storageId;
+        this.oStorageId = oStorageId;
         this.assortId = assortId;
         this.assortNm = assortNm;
     }

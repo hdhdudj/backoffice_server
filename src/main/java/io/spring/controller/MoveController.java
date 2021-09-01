@@ -118,6 +118,7 @@ public class MoveController {
      * @param startDt 이동지시일자 min
      * @param endDt 이동지시일자 max
      * @param storageId 이동창고
+     * @param oStorageId 출고창고
      * @param assortId 품목코드
      * @param assortNm 품목이름
      * @return 상품이동지시, 주문이동지시 리스트 DTO
@@ -126,10 +127,11 @@ public class MoveController {
     public ResponseEntity getMoveIndicateList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
                                               @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
                                               @RequestParam @Nullable String storageId,
+                                              @RequestParam @Nullable String oStorageId,
                                               @RequestParam @Nullable String assortId,
                                               @RequestParam @Nullable String assortNm
                                               ){
-        MoveIndicateListResponseData moveIndicateListResponseData = jpaMoveService.getMoveIndicateList(startDt,endDt,storageId,assortId,assortNm);
+        MoveIndicateListResponseData moveIndicateListResponseData = jpaMoveService.getMoveIndicateList(startDt,endDt,storageId,oStorageId,assortId,assortNm);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),moveIndicateListResponseData);
         return ResponseEntity.ok(res);
     }

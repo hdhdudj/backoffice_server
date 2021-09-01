@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class Lsshpm extends CommonProps {
         this.receiptDt = LocalDateTime.now(); // 출고지시 일자
         this.storageId = itasrt.getStorageId();
         this.instructDt = new Date(); // 패킹일자 //Utilities.getStringToDate(StringFactory.getDoomDay());
-        this.applyDay = Utilities.strToLocalDateTime(StringFactory.getDoomDayT()); // 출고처리 일자
+        this.applyDay = LocalDateTime.parse(StringFactory.getDoomDay(), DateTimeFormatter.ofPattern(StringFactory.getDateFormat())); // 출고처리 일자
         this.masterShipGb = StringFactory.getGbOne(); // 01 하드코딩
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
         this.vendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
