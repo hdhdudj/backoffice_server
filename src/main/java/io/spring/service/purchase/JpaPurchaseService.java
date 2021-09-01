@@ -43,6 +43,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -701,7 +702,7 @@ public class JpaPurchaseService {
      * lspchs의 status를 이력 꺾기 업데이트 해주는 함수
      */
     private Lspchs updateLspchsStatus(Lspchm lspchm, String status){
-        Lspchs lspchs = jpaLspchsRepository.findByPurchaseNoAndEffEndDt(lspchm.getPurchaseNo(),Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
+        Lspchs lspchs = jpaLspchsRepository.findByPurchaseNoAndEffEndDt(lspchm.getPurchaseNo(), LocalDateTime.parse(StringFactory.getDoomDay(), DateTimeFormatter.ofPattern(StringFactory.getDateFormat())));
         Lspchs newLspchs = new Lspchs(lspchs);
         lspchs.setEffEndDt(LocalDateTime.now());
         newLspchs.setPurchaseStatus(status);

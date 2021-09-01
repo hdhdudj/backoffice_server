@@ -428,6 +428,7 @@ public class JpaDepositService {
     private List<Lsdpsp> updateDepositQty(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
         String storageId = depositListWithPurchaseInfoData.getStorageId();
         List<Lsdpsp> lsdpspList = new ArrayList<>();
+        List<DepositListWithPurchaseInfoData.Deposit> depositList = new ArrayList<>();
         for(DepositListWithPurchaseInfoData.Deposit deposit : depositListWithPurchaseInfoData.getDeposits()){
             Lsdpsp lsdpsp = jpaLsdpspRepository.findByDepositPlanId(deposit.getDepositPlanId());
             Long purchasePlanQty = lsdpsp.getPurchasePlanQty() == null? 0l : lsdpsp.getPurchasePlanQty();
@@ -459,6 +460,7 @@ public class JpaDepositService {
             LocalDateTime purchaseDt = lspchm.getPurchaseDt();
             lsdpsp = this.changeLsdpspStatus(lsdpsp, isCompleteDeposit);
             lsdpspList.add(lsdpsp);
+            depositList.add(deposit);
             this.saveItitmt(purchaseDt, storageId, deposit, dealtypeCd);
 
 			// System.out.println(depositListWithPurchaseInfoData.getDepositDt());
@@ -468,6 +470,7 @@ public class JpaDepositService {
 
 			this.saveItitmc(localDateTime, storageId, deposit);
         }
+        depositListWithPurchaseInfoData.setDeposits(depositList);
         return lsdpspList;
     }
 
