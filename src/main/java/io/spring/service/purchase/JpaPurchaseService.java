@@ -389,7 +389,8 @@ public class JpaPurchaseService {
         LocalDateTime end = endDt.atTime(23,59,59);
         TypedQuery<Lspchm> query = em.createQuery("select m from Lspchm m" +
                 " where m.purchaseDt between ?1 and ?2" +
-                " and (?3 is null or trim(?3)='' or m.purchaseVendorId=?3)",Lspchm.class);
+                " and (?3 is null or trim(?3)='' or m.purchaseVendorId=?3) " +
+                "and m.purchaseStatus <> '04'",Lspchm.class);
         query.setParameter(1,start).setParameter(2,end).setParameter(3,purchaseVendorId);
         List<Lspchm> lspchmList = query.getResultList();
         List<PurchaseListInDepositModalData.Purchase> purchaseList = new ArrayList<>();
