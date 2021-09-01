@@ -45,7 +45,7 @@ public class Lsdpsd extends CommonProps implements Serializable {
         this.deliPrice = this.depositQty * this.extraUnitcost;
         this.extraCost = this.deliPrice;
         this.extraQty = this.depositQty;
-        this.finishYymm = LocalDateTime.parse(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
+        this.finishYymm = LocalDateTime.parse(StringFactory.getDoomDayT()); // 9999-12-31 하드코딩
         this.depositType = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01' 입고
         this.siteGb = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
         this.vendorId = StringUtils.leftPad("1", 6, '0');
@@ -65,7 +65,7 @@ public class Lsdpsd extends CommonProps implements Serializable {
         this.deliPrice = extraUnitcost * depositQty; // 단가 * 개수
         this.extraCost = extraUnitcost * depositQty; // 단가 * 개수
         this.extraQty = deposit.getDepositQty();
-        this.finishYymm = LocalDateTime.parse(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
+        this.finishYymm = LocalDateTime.parse(StringFactory.getDoomDayT()); // 9999-12-31 하드코딩
         this.depositType = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01' 입고
         this.siteGb = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
         this.vendorId = StringUtils.leftPad("1", 6, '0'); // 000001 하드코딩

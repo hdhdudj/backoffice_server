@@ -29,13 +29,7 @@ public class Tmitem extends CommonProps {
         this.assortId = ititmm.getAssortId();
         this.itemId = ititmm.getItemId();
         this.effStaDt = new Date(); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
-        try
-        {
-            this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
-        }
-        catch (Exception e){
-            log.debug(e.getMessage());
-        }
+        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
     }
 
     @Id

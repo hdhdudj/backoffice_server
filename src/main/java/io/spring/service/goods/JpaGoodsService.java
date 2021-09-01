@@ -49,24 +49,6 @@ public class JpaGoodsService {
 
     private final EntityManager em;
 
-    private List<Itasrt> findAllItasrt() {
-        List<Itasrt> goods = new ArrayList<>();
-        jpaItasrtRepository.findAll().forEach(e -> goods.add(e));
-        return goods;
-    }
-
-    private List<Itvari> findAllItvari() {
-        List<Itvari> goods = jpaItvariRepository.findAll();
-        jpaItvariRepository.flush();
-        return goods;
-    }
-
-    private List<Ititmd> findAllItitmd() {
-        List<Ititmd> goods = jpaItitmdRepository.findAll();
-        jpaItitmdRepository.flush();
-        return goods;
-    }
-
     public Optional<Itasrt> findById(String goodsId) {
         Optional<Itasrt> goods = jpaItasrtRepository.findById(goodsId);
         return goods;

@@ -17,7 +17,6 @@ import io.spring.model.deposit.response.DepositSelectListResponseData;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
-import io.spring.model.goods.entity.Itvari;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.entity.Lspchd;
@@ -32,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.rmi.CORBA.Util;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -317,7 +315,7 @@ public class JpaDepositService {
     public DepositSelectDetailResponseData getDetail(String depositNo){
         TypedQuery<Lsdpsd> query = em.createQuery("select d from Lsdpsd d " +
                 "left join fetch d.lspchd lspchd " +
-                "left join fetch lspchd.lsdpsp lsdpsp " +
+//                "left join fetch lspchd.lsdpsp lsdpsp " +
 //                "left join fetch d.lsdpsm m " +
 //                "left join fetch d.lsdpds s " +
                 "where d.depositNo=?1", Lsdpsd.class);
@@ -457,7 +455,7 @@ public class JpaDepositService {
             lsdpsp = this.changeLsdpspStatus(lsdpsp, isCompleteDeposit);
             lsdpspList.add(lsdpsp);
             this.saveItitmt(purchaseDt, storageId, deposit, dealtypeCd);
-            LocalDateTime localDateTime = LocalDateTime.parse(depositListWithPurchaseInfoData.getDepositDt());
+            LocalDateTime localDateTime = Utilities.dateToLocalDateTime(Utilities.getStringToDate(depositListWithPurchaseInfoData.getDepositDt()));
             this.saveItitmc(localDateTime, storageId, deposit);
         }
         return lsdpspList;

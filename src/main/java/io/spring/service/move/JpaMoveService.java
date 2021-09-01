@@ -265,7 +265,9 @@ public class JpaMoveService {
                 Itvari itvari2 = itvariList.get(1);
                 goods.setOptionNm2(itvari2.getOptionNm());
             }
-            goods.setBrandNm(ifBrand.getBrandNm());
+            if(ifBrand != null){
+                goods.setBrandNm(ifBrand.getBrandNm());
+            }
             goodsList.add(goods);
         }
 //        goodsList = this.removeDuplicate(goodsList); // goodsKey로 group by

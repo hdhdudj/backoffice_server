@@ -48,6 +48,7 @@ public class DepositSelectDetailResponseData {
             this.purchaseSeq = lsdpsd.getInputSeq();
             this.purchaseKey = Utilities.addDashInMiddle(purchaseNo,purchaseSeq);
             this.assortId = lsdpsd.getAssortId();
+            this.dealtypeCd = lsdpsd.getLspchd().getLspchm().getDealtypeCd();
 //            this.itemGrade = lsdpsd.getItemGrade();
             this.itemId = lsdpsd.getItemId();
             this.extraUnitcost = lsdpsd.getExtraUnitcost();
@@ -63,6 +64,7 @@ public class DepositSelectDetailResponseData {
         public String purchaseNo;
         private String purchaseSeq;
         private String purchaseKey;
+        private String dealtypeCd;
         private String assortId;
         private String itemId;
         private String purchaseGb;
