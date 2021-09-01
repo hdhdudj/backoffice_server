@@ -369,10 +369,15 @@ public class JpaMoveService {
                 List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository.findByAssortIdAndItemId(ititmc.getAssortId(),ititmc.getItemId())
                     .stream().filter(x->x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList());
                 long qtyOfC01 = tbOrderDetailList.size();
-                if(goods.getMoveQty() > ititmc.getQty() - ititmc.getShipIndicateQty() - qtyOfC01){
+                long qty = ititmc.getQty() == null? 0l:ititmc.getQty();
+                long shipIndicateQty = ititmc.getShipIndicateQty() == null? 0l:ititmc.getShipIndicateQty();
+                if(goods.getMoveQty() > qty - shipIndicateQty - qtyOfC01){
                     log.debug("입력량이 이동가능량보다 큽니다.");
                     continue;
                 }
+                // ititmc 값 변경
+                ititmc.setShipIndicateQty(shipIndicateQty + 1l);
+                jpaItitmcRepository.save(ititmc);
                 // 1-2. lsshpd 생성
                 String shipSeq = StringFactory.getFourStartCd(); // 0001 하드코딩 //StringUtils.leftPad(Integer.toString(index),4,'0');
                 // 1-2. Lsshpd 생성
