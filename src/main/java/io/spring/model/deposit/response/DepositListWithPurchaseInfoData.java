@@ -1,5 +1,7 @@
 package io.spring.model.deposit.response;
 
+import java.util.List;
+
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.goods.entity.Itasrt;
@@ -8,8 +10,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 /**
  * 입고처리 화면에서 쓰는 DTO
@@ -29,7 +29,9 @@ public class DepositListWithPurchaseInfoData {
     private String purchaseVendorId;
 //    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
 //    @JsonSerialize(using = LocalDateTimeSerializer.class)
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+
+	// @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss",
+	// timezone = "Asia/Seoul")
     private String depositDt;
     private String storageId;
     private String regId;
