@@ -39,7 +39,7 @@ public class MovedDetailResponseData {
             this.shipKey = Utilities.addDashInMiddle(shipId,shipSeq);
             this.orderId = lsshpd.getOrderId();
             this.orderSeq = lsshpd.getOrderSeq();
-            this.orderKey = Utilities.addDashInMiddle(orderId,orderSeq);
+            this.orderKey = this.orderId != null && this.orderSeq != null? Utilities.addDashInMiddle(orderId,orderSeq) : "";
             this.deliMethod = lsshpm.getDelMethod();
             this.assortId = lsshpd.getAssortId();
             this.itemId = lsshpd.getItemId();
