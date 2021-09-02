@@ -439,8 +439,8 @@ public class JpaDepositService {
 //            boolean isOrderPurchase = dealtypeCd.equals(StringFactory.getGbOne()); // 주문발주
 //            boolean isPartDeposit = availableQty >= deposit.getDepositQty(); // 부분입고
             boolean isCompleteDeposit = availableQty == deposit.getDepositQty(); // 완전입고
-            boolean notGoodsPurchaseAndAvailableQty = availableQty >= deposit.getDepositQty() && !dealtypeCd.equals(StringFactory.getGbOne()); // 입고가능수량 >= 입력값 && 주문발주 아님
-            boolean orderPurchaseAndCompleteDeposit = isCompleteDeposit && dealtypeCd.equals(StringFactory.getGbOne());
+            boolean notGoodsPurchaseAndAvailableQty = availableQty >= deposit.getDepositQty() && !StringFactory.getGbOne().equals(dealtypeCd); // 입고가능수량 >= 입력값 && 주문발주 아님
+            boolean orderPurchaseAndCompleteDeposit = isCompleteDeposit && StringFactory.getGbOne().equals(dealtypeCd);
             if(deposit.getDepositQty() == 0){
                 log.debug("지정 입고수량이 0입니다. 입고수량은 0을 초과해야 합니다.");
                 continue;

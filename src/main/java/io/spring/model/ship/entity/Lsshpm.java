@@ -5,6 +5,7 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
@@ -57,7 +58,7 @@ public class Lsshpm extends CommonProps {
     /**
      * 상품이동지시 저장시 실행되는 생성자
      */
-    public Lsshpm(String shipId){
+    public Lsshpm(String shipId, GoodsMoveSaveData goodsMoveSaveData){
         this.shipId = shipId;
         this.shipOrderGb = StringFactory.getGbOne(); // 01 하드코딩
         this.shipTimes = 1l;
@@ -65,13 +66,15 @@ public class Lsshpm extends CommonProps {
         this.deliId = null; // 이동지시 : null, 출고지시 : tbOrderDetail.deliId
         this.shipItemCnt = null;
         this.receiptDt = LocalDateTime.now();
-//        this.storageId : 바깥에서 set
+        this.storageId = goodsMoveSaveData.getStorageId();
+        this.oStorageId = goodsMoveSaveData.getOStorageId();
+        this.receiptDt = LocalDateTime.now();
         this.instructDt = new Date();//Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
         this.applyDay = Utilities.strToLocalDateTime(StringFactory.getDoomDayT()); // 9999-12-31 하드코딩
         this.masterShipGb = StringFactory.getGbOne(); // 01 하드코딩
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
         this.vendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
-//        this.delMethod : 바깥에서 set
+        this.delMethod = goodsMoveSaveData.getDeliMethod();
         this.rematGb = StringFactory.getGbOne(); // 01 하드코딩
         this.shipGb = StringFactory.getGbTwo(); // 02 하드코딩 (01 : 출고, 02 : 이동)
 //        this.itemGrade : 11로 고정. 해당 객체에서는 정상품만 다룸.

@@ -76,6 +76,7 @@ public class DepositController {
      */
     @PostMapping(path="")
     public ResponseEntity createDepositListJpa(@RequestBody DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
+        log.debug("입고처리 호출");
         String depositNo = jpaDepositService.sequenceCreateDeposit(depositListWithPurchaseInfoData);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), depositNo);
         return ResponseEntity.ok(res);

@@ -94,9 +94,9 @@ public class Lspchd extends CommonProps {
         this.assortId = goods.getAssortId();
         this.itemId = goods.getItemId();
         this.purchaseQty = goods.getMoveQty();
-//        this.purchaseUnitAmt = lsdpsd.getExtraUnitcost();
+        this.purchaseUnitAmt = goods.getCost();
 //        this.purchaseItemAmt = lsdpsd.getExtraCost();
-//        this.itemGrade = lsdpsd.getItemGrade();
+        this.itemGrade = StringFactory.getStrEleven(); // 11 하드코딩
 //        this.siteGb = lsdpsd.getSiteGb();
 //        this.vendorId = lsdpsd.getVendorId();
     }

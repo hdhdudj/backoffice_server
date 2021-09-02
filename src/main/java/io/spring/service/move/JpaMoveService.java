@@ -346,24 +346,14 @@ public class JpaMoveService {
     @Transactional
     public List<String> saveGoodsMove(GoodsMoveSaveData goodsMoveSaveData) {
         List<String> shipIdList = new ArrayList<>();
-        List<GoodsMoveSaveData.Goods> goodsList = goodsMoveSaveData.getGoods();
-        List<GoodsMoveSaveData.Goods> newGoodsList = new ArrayList<>();
-        // shipSeq 순서 저장용 list
-        List<Integer> indexStore = new ArrayList<>();
-//        lsshpm.setReceiptDt(goodsMoveSaveData.getMoveIndDt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
-        long lsshpdNum = 0l;
+
         String regId = null;
+        LocalDateTime purchaseDt = null;
+
         for (GoodsMoveSaveData.Goods goods : goodsMoveSaveData.getGoods()) {
             long moveQty = goods.getMoveQty();
             for (int i = 0; i < moveQty ; i++) {
                 // 1. 출고 data 생성
-                // 1-1. Lsshpm 생성
-                String shipId = this.getShipId();
-                Lsshpm lsshpm = new Lsshpm(shipId);
-                lsshpm.setStorageId(goodsMoveSaveData.getStorageId());
-                lsshpm.setOStorageId(goodsMoveSaveData.getStorageId());
-                lsshpm.setDelMethod(goodsMoveSaveData.getDeliMethod());
-                lsshpm.setReceiptDt(LocalDateTime.now());
                 Ititmc ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(goods.getAssortId(), goods.getItemId(),
                         goods.getStorageId(), StringFactory.getStrEleven(), Utilities.dateToLocalDateTime(goods.getDepositDt()));
                 List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository.findByAssortIdAndItemId(ititmc.getAssortId(),ititmc.getItemId())
@@ -375,30 +365,31 @@ public class JpaMoveService {
                     log.debug("입력량이 이동가능량보다 큽니다.");
                     continue;
                 }
-                // ititmc 값 변경
-                ititmc.setShipIndicateQty(shipIndicateQty + 1l);
-                jpaItitmcRepository.save(ititmc);
-                // 1-2. lsshpd 생성
+                // 1-0. Lsshpm 생성
+                String shipId = this.getShipId();
+                Lsshpm lsshpm = new Lsshpm(shipId, goodsMoveSaveData);
+                purchaseDt = lsshpm.getReceiptDt();
+                // 1-1. ititmc 값 변경
+                if(lsshpm != null){
+                    ititmc.setShipIndicateQty(shipIndicateQty++);
+                    jpaItitmcRepository.save(ititmc);
+                }
                 String shipSeq = StringFactory.getFourStartCd(); // 0001 하드코딩 //StringUtils.leftPad(Integer.toString(index),4,'0');
                 // 1-2. Lsshpd 생성
-                Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, goodsMoveSaveData, goods);
+                Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, ititmc, goods);
                 jpaLsshpdRepository.save(lsshpd);
-    //            lsshpdNum = this.saveGoodsMoveSaveData(shipId, goodsMoveSaveData, goods, indexStore, newGoodsList);
                 // 1-3. Lsshps 생성
                 Lsshps lsshps = new Lsshps(lsshpm);
-    //            if(lsshpdNum <= 0){
-    //                return null;
-    //            }
                 jpaLsshpmRepository.save(lsshpm);
                 jpaLsshpsRepository.save(lsshps);
 
                 regId = lsshpm.getRegId();
                 shipIdList.add(shipId);
+
+                // 2. 발주 data 생성
+                jpaPurchaseService.makePurchaseDataFromGoodsMoveSave(regId, purchaseDt, goodsMoveSaveData);
             }
         }
-
-        // 3. 발주 data 생성
-        jpaPurchaseService.makePurchaseDataFromGoodsMoveSave(regId, goodsMoveSaveData, newGoodsList);
 
         return shipIdList;
     }
@@ -514,7 +505,7 @@ public class JpaMoveService {
     }
 
     /**
-     * goods 정보를 받아 입고 data (lsshpd) 생성하는 함수
+     * goods 정보를 받아 출고 data (lsshpd) 생성하는 함수
      */
     private long makeGoodsShipData(String shipId, GoodsMoveSaveData.Goods goods, GoodsMoveSaveData goodsMoveSaveData, List<Integer> indexStore) {
         if(goods ==  null){
@@ -526,7 +517,7 @@ public class JpaMoveService {
         for (long i = 0; i < moveQty ; i++) {
             String shipSeq = StringUtils.leftPad(Integer.toString(index),4,'0');
             // 1-2. Lsshpd 생성
-            Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, goodsMoveSaveData, goods);
+            Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, null, goods);
             jpaLsshpdRepository.save(lsshpd);
             index++;
             indexStore.remove(0);
