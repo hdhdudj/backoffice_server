@@ -28,6 +28,16 @@ public class Lsshps extends CommonProps {
         super.setRegId(userId);
         super.setUpdId(userId);
     }
+    public Lsshps(Lsshpm lsshpm){
+        this.shipId = lsshpm.getShipId();
+        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
+        this.effStaDt = new Date();
+        this.shipStatus = lsshpm.getShipStatus();
+//        this.shipIndicateUserid =
+//        this.shipUserid =
+        super.setRegId(lsshpm.getUpdId());
+        super.setUpdId(lsshpm.getUpdId());
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String seq;

@@ -525,7 +525,7 @@ public class JpaMoveService {
         for (long i = 0; i < moveQty ; i++) {
             String shipSeq = StringUtils.leftPad(Integer.toString(index),4,'0');
             // 1-2. Lsshpd 생성
-            Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, null, goods);
+            Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, null, goods, goodsMoveSaveData.getUserId());
             jpaLsshpdRepository.save(lsshpd);
             index++;
             indexStore.remove(0);
