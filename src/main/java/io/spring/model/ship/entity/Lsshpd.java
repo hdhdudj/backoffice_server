@@ -63,7 +63,7 @@ public class Lsshpd extends CommonProps {
         this.assortId = goods.getAssortId();
         this.itemId = goods.getItemId();
         this.shipVendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
-        this.shipIndicateQty = 1l;
+//        this.shipIndicateQty = 1l; : 바깥에서 set
         this.shipQty = 0l;
         this.vendorDealCd = StringFactory.getGbTwo(); // 01 : 주문, 02 : 상품, 03 : 입고예정 (02 하드코딩)
         this.vatGb = StringFactory.getGbOne(); // 01 하드코딩
