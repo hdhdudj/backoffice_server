@@ -828,8 +828,8 @@ public class JpaMoveService {
      * lsshpd 수량 수정, lsshpm shipStatus 01->04 수정, lsshps 꺾어주는 함수
      */
     public String updateLssSeries(Lsshpd lsshpd){
-        // 3-1. lsshpd 수량 수정
-        lsshpd.setShipQty(1l);
+//         3-1. lsshpd 수량 수정
+//        lsshpd.setShipQty(1l);
         jpaLsshpdRepository.save(lsshpd);
         // 3-2. lsshpm shipStatus 01 -> 04
         Lsshpm lsshpm = lsshpd.getLsshpm();

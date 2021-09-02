@@ -323,6 +323,8 @@ public class JpaShipService {
         List<Lsshpd> lsshpdList = new ArrayList<>();
         for(ShipSaveListData.Ship ship : shipSaveListData.getShips()){
             Lsshpd lsshpd = jpaLsshpdRepository.findByShipIdAndShipSeq(ship.getShipId(), ship.getShipSeq());
+            // 수량 완전입고로 변경
+            lsshpd.setShipQty(lsshpd.getShipIndicateQty());
             Lsshpm lsshpm = lsshpd.getLsshpm();
             if(lsshpm.getShipStatus().equals(StringFactory.getGbFour())){ // shipStatus가 이미 04(출고)면 패스
                 log.debug("요청된 출고처리 " + Utilities.addDashInMiddle(lsshpd.getShipId(), lsshpd.getShipSeq()) + "는 이미 출고된 상태입니다.");
