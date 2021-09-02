@@ -1,20 +1,6 @@
 package io.spring.model.purchase.entity;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
@@ -22,6 +8,13 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Getter
@@ -46,12 +39,15 @@ public class Lspchs extends CommonProps {
         this.purchaseStatus = lspchs.getPurchaseStatus();
         this.effStaDt = lspchs.getEffStaDt();
     }
-    public Lspchs(Lspchm lspchm){
+    public Lspchs(Lspchm lspchm, String regId){
         this.purchaseNo = lspchm.getPurchaseNo();
 		this.effEndDt = LocalDateTime.parse(StringFactory.getDoomDay(),
 				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         this.purchaseStatus = lspchm.getPurchaseStatus();
         this.effStaDt = lspchm.getPurchaseDt();
+
+        super.setRegId(regId);
+        super.setUpdId(regId);
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

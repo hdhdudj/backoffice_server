@@ -6,9 +6,9 @@ import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.goods.entity.Ititmm;
-import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.idclass.LspchdId;
+import io.spring.model.ship.entity.Lsshpd;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -86,19 +86,21 @@ public class Lspchd extends CommonProps {
         this.depositSeq = lsdpsd.getDepositSeq();
     }
     /**
-     * 주문이동지시 저장시 실행되는 생성자
+     * 상품이동지시 저장시 실행되는 생성자
      */
-    public Lspchd(String purchaseNo, String purchaseSeq, GoodsMoveSaveData.Goods goods){
+    public Lspchd(String purchaseNo, String purchaseSeq, Lsshpd lsshpd, String regId){
         this.purchaseNo = purchaseNo;
         this.purchaseSeq = purchaseSeq;
-        this.assortId = goods.getAssortId();
-        this.itemId = goods.getItemId();
-        this.purchaseQty = goods.getMoveQty();
-        this.purchaseUnitAmt = goods.getCost();
+        this.assortId = lsshpd.getAssortId();
+        this.itemId = lsshpd.getItemId();
+        this.purchaseQty = lsshpd.getShipQty();
+        this.purchaseUnitAmt = lsshpd.getLocalPrice();
 //        this.purchaseItemAmt = lsdpsd.getExtraCost();
         this.itemGrade = StringFactory.getStrEleven(); // 11 하드코딩
 //        this.siteGb = lsdpsd.getSiteGb();
-//        this.vendorId = lsdpsd.getVendorId();
+        this.vendorId = lsshpd.getVendorId();
+        super.setRegId(regId);
+        super.setUpdId(regId);
     }
     @Id
     private String purchaseNo;

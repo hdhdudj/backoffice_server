@@ -6,6 +6,7 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
+import io.spring.model.ship.entity.Lsshpm;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -89,7 +90,7 @@ public class Lspchm extends CommonProps {
     }
 
     /**
-     * 주문이동지시, 상품이동지시 저장시 실행되는 생성자
+     * 주문이동지시 저장시 실행되는 생성자
      */
     public Lspchm(String purchaseNo) {
         this.purchaseNo = purchaseNo;
@@ -117,6 +118,39 @@ public class Lspchm extends CommonProps {
 //        this.payment : ?
 //        this.carrier : ?
 
+//        this.dealtypeCd = StringFactory.getGbOne(); // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정 주문발주 (01 하드코딩) 바깥에서 set
+    }
+
+    /**
+     * 상품이동지시 저장시 실행되는 생성자
+     */
+    public Lspchm(String purchaseNo, Lsshpm lsshpm, String regId) {
+        this.purchaseNo = purchaseNo;
+        this.purchaseDt = LocalDateTime.now();
+        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
+        this.purchaseStatus = StringFactory.getGbFour(); // 01 : 발주, 04 : 이동지시?, 05 : 취소 (04 하드코딩)
+//        this.purchaseRemark : 바깥 set
+        this.siteGb = StringFactory.getGbOne(); // "01" 하드코딩
+        this.vendorId = StringFactory.getFourStartCd(); // "0001" 하드코딩
+//        this.siteOrderNo : 바깥 set
+//        this.siteTrackNo : 바깥 set (?)
+//        this.localPrice : ?
+        this.newLocalPrice = this.localPrice;
+//        this.localDeliFee : ?
+        this.newLocalDeliFee = this.localDeliFee;
+//        this.localTax : ?
+//        this.disPrice : ?
+        this.newDisPrice = this.disPrice;
+        this.purchaseGb = StringFactory.getGbTwo(); // 01 : 일반발주, 02 : 이동요청 (02 하드코딩)
+//        this.purchaseVendorId : ?
+//        this.storeCd : 바깥 set
+//        this.oStoreCd : 바깥 set (itasrt의 창고id)
+//        this.terms : ?
+//        this.delivery : ?
+//        this.payment : ?
+//        this.carrier : ?
+        super.setRegId(regId);
+        super.setUpdId(regId);
 //        this.dealtypeCd = StringFactory.getGbOne(); // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정 주문발주 (01 하드코딩) 바깥에서 set
     }
 

@@ -8,6 +8,7 @@ import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.entity.Lspchd;
+import io.spring.model.purchase.entity.Lspchm;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -81,6 +82,25 @@ public class Lsdpsp extends CommonProps implements Serializable {
 		this.planStatus = StringFactory.getGbOne();
 		this.lspchd = lsdpsp.getLspchd();
     }
+
+    /**
+     * 상품이동지시 저장 -> 발주 data 생성시
+     */
+    public Lsdpsp(String depositPlanId, Lspchd lspchd, String regId) {
+        this.depositPlanId = depositPlanId;
+        this.purchasePlanQty = lspchd.getPurchaseQty();
+        this.purchaseTakeQty = 0l;
+        this.assortId = lspchd.getAssortId();
+        this.itemId = lspchd.getItemId();
+        this.planStatus = StringFactory.getGbOne(); // 01 : 입고전, 03 : 부분입고, 04 : 입고완료, 05 : 취소. 01 하드코딩
+        this.purchaseNo = lspchd.getPurchaseNo();
+        this.purchaseSeq = lspchd.getPurchaseSeq();
+        this.purchaseGb = StringFactory.getGbTwo(); // 01 : 일반발주, 02 : 이동요청. 02 하드코딩
+        this.dealtypeCd = StringFactory.getGbTwo(); // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정 주문발주. 02 하드코딩
+        super.setRegId(regId);
+        super.setUpdId(regId);
+    }
+
     @Id
     private String depositPlanId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
@@ -120,6 +140,7 @@ public class Lsdpsp extends CommonProps implements Serializable {
     @ManyToOne
     @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     private Itasrt itasrt;
+
 
 //    // 연관 관계 : lsdpsd
 //    @OneToMany

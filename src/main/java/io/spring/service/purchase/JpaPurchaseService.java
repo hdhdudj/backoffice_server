@@ -20,7 +20,6 @@ import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.entity.Itvari;
 import io.spring.model.goods.idclass.ItitmtId;
-import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
@@ -32,6 +31,8 @@ import io.spring.model.purchase.entity.Lspchs;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import io.spring.model.purchase.response.PurchaseSelectDetailResponseData;
 import io.spring.model.purchase.response.PurchaseSelectListResponseData;
+import io.spring.model.ship.entity.Lsshpd;
+import io.spring.model.ship.entity.Lsshpm;
 import io.spring.service.common.JpaCommonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -232,7 +233,7 @@ public class JpaPurchaseService {
             Date doomDate = Utilities.getStringToDate(StringFactory.getDoomDay());
             Lspchb lspchb = jpaLspchbRepository.findByPurchaseNoAndPurchaseSeqAndEffEndDt(lspchd.getPurchaseNo(), lspchd.getPurchaseSeq(), doomDate);
             if(lspchb == null){ // insert
-                lspchb = new Lspchb(lspchd);
+                lspchb = new Lspchb(lspchd, null);
                 lspchb.setPurchaseStatus(purchaseInsertRequestData.getPurchaseStatus());
 
                 lspchb.setRegId(purchaseInsertRequestData.getUserId());
@@ -667,7 +668,6 @@ public class JpaPurchaseService {
             Lspchb lspchb = lspchbList1.get(0);
             if(planQty - takeQty > 0){ // 부분입고 : 03
                 lspchb = this.updateLspchbdStatus(lspchb,StringFactory.getGbThree()); // planStatus : 03으로 설정
-
             }
             else if(planQty - takeQty == 0){ // 완전입고 : 04
                 lsdpsp.setPlanStatus(StringFactory.getGbFour()); // planStatus : 04로 설정
@@ -749,7 +749,7 @@ public class JpaPurchaseService {
             // lspchm의 purchaseRemark, siteOrderNo, storeCd, oStoreCd set 해주기
 //            lspchm.setPurchaseRemark(receiveLsdpsm.getRegId());
 
-            Lspchs lspchs = new Lspchs(lspchm);
+            Lspchs lspchs = new Lspchs(lspchm, null);
 
             String purchaseSeq = StringUtils.leftPad(Integer.toString(i+1),4,'0');
             if(jpaLspchdRepository.findByOrderIdAndOrderSeq(tbOrderDetail.getOrderId(),tbOrderDetail.getOrderSeq()) != null){
@@ -758,7 +758,7 @@ public class JpaPurchaseService {
             }
             Lspchd lspchd = new Lspchd(purchaseNo, purchaseSeq,
                     itemLsdpsd, tbOrderDetail);
-            Lspchb lspchb = new Lspchb(lspchd);
+            Lspchb lspchb = new Lspchb(lspchd, null);
 
             jpaLspchmRepository.save(lspchm);
             jpaLspchsRepository.save(lspchs);
@@ -798,31 +798,38 @@ public class JpaPurchaseService {
     /**
      * 상품이동 저장시 생성되는 발주 data를 만드는 함수
      */
-    public void makePurchaseDataFromGoodsMoveSave(String regId, LocalDateTime purchaseDt, GoodsMoveSaveData goodsMoveSaveData) {
-        List<GoodsMoveSaveData.Goods> goodsList = goodsMoveSaveData.getGoods();
+    public Lsdpsp makePurchaseDataFromGoodsMoveSave(String regId, LocalDateTime purchaseDt, Lsshpm lsshpm, Lsshpd lsshpd) {
         String purchaseNo = this.getPurchaseNo();
 
         // lspchm insert
-        Lspchm lspchm = new Lspchm(purchaseNo);
+        Lspchm lspchm = new Lspchm(purchaseNo, lsshpm, regId);
         lspchm.setPurchaseDt(purchaseDt); // ititmc.effEndDt
         lspchm.setDealtypeCd(StringFactory.getGbTwo()); // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정 주문발주 (02 하드코딩)
         // lspchm의 purchaseRemark, siteOrderNo, storeCd, oStoreCd set 해주기
         lspchm.setPurchaseRemark(regId);
 
-        Lspchs lspchs = new Lspchs(lspchm);
+        // lspchs insert
+        Lspchs lspchs = new Lspchs(lspchm, regId);
         jpaLspchmRepository.save(lspchm);
         jpaLspchsRepository.save(lspchs);
 
-        // lspchd insert
-        int length = goodsList.size();
-        for (int i = 0; i < length ; i++) {
-            String purchaseSeq = StringUtils.leftPad(Integer.toString(i+1),4,'0');
-            Lspchd lspchd = new Lspchd(purchaseNo, purchaseSeq, goodsList.get(i));
-            lspchd.setVendorId(goodsList.get(i).getVendorId());
-            Lspchb lspchb = new Lspchb(lspchd);
-            jpaLspchdRepository.save(lspchd);
-            jpaLspchbRepository.save(lspchb);
-        }
+        // lspchd,b insert
+        String purchaseSeq = StringUtils.leftPad(Integer.toString(1),4,'0');
+        Lspchd lspchd = new Lspchd(purchaseNo, purchaseSeq, lsshpd, regId);
+        Lspchb lspchb = new Lspchb(lspchd, regId);
+        jpaLspchdRepository.save(lspchd);
+        jpaLspchbRepository.save(lspchb);
+
+        // lsdpsp insert
+        String depositPlanId = this.getDepositPlanId();
+        Lsdpsp lsdpsp = new Lsdpsp(depositPlanId, lspchd, regId);
+        jpaLsdpspRepository.save(lsdpsp);
+
+        // ititmt qty update
+        Ititmt ititmt = new Ititmt(lspchd, regId);
+        jpaItitmtRepository.save(ititmt);
+
+        return lsdpsp;
     }
 
     /**
@@ -832,5 +839,14 @@ public class JpaPurchaseService {
         String purchaseNo = jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLspchm());
         purchaseNo = Utilities.getStringNo('C',purchaseNo,9);
         return purchaseNo;
+    }
+
+    /**
+     * depositPlanId 채번 함수
+     */
+    private String getDepositPlanId(){
+        String depositPlanId = jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLsdpsp());
+        depositPlanId = StringUtils.leftPad(depositPlanId,9,'0');
+        return depositPlanId;
     }
 }

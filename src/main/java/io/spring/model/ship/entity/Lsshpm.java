@@ -73,7 +73,7 @@ public class Lsshpm extends CommonProps {
         this.applyDay = Utilities.strToLocalDateTime(StringFactory.getDoomDayT()); // 9999-12-31 하드코딩
         this.masterShipGb = StringFactory.getGbOne(); // 01 하드코딩
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
-        this.vendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
+//        this.vendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
         this.delMethod = goodsMoveSaveData.getDeliMethod();
         this.rematGb = StringFactory.getGbOne(); // 01 하드코딩
         this.shipGb = StringFactory.getGbTwo(); // 02 하드코딩 (01 : 출고, 02 : 이동)

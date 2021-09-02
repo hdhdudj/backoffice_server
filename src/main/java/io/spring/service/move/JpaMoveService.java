@@ -10,6 +10,7 @@ import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
 import io.spring.model.deposit.entity.Lsdpsd;
+import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.goods.entity.IfBrand;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
@@ -377,6 +378,7 @@ public class JpaMoveService {
                 String shipSeq = StringFactory.getFourStartCd(); // 0001 하드코딩 //StringUtils.leftPad(Integer.toString(index),4,'0');
                 // 1-2. Lsshpd 생성
                 Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, ititmc, goods);
+                lsshpm.setVendorId(goods.getVendorId()); // vendorId는 바깥에서 set
                 jpaLsshpdRepository.save(lsshpd);
                 // 1-3. Lsshps 생성
                 Lsshps lsshps = new Lsshps(lsshpm);
@@ -387,7 +389,12 @@ public class JpaMoveService {
                 shipIdList.add(shipId);
 
                 // 2. 발주 data 생성
-                jpaPurchaseService.makePurchaseDataFromGoodsMoveSave(regId, purchaseDt, goodsMoveSaveData);
+                Lsdpsp lsdpsp = jpaPurchaseService.makePurchaseDataFromGoodsMoveSave(regId, purchaseDt, lsshpm, lsshpd);
+                List<Lsdpsp> lsdpspList = new ArrayList<>();
+                lsdpspList.add(lsdpsp);
+
+                // 3. purchaseStatus 변경
+                jpaPurchaseService.changePurchaseStatus(lsdpspList);
             }
         }
 

@@ -34,13 +34,16 @@ public class Lspchb extends CommonProps {
         this.purchaseQty = lspchb.getPurchaseQty();
 //        this.cancelGb = StringFactory.getNinetyNine(); // 99 하드코딩
     }
-    public Lspchb(Lspchd lspchd){
+    public Lspchb(Lspchd lspchd, String regId){
         this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
         this.purchaseNo = lspchd.getPurchaseNo();
         this.purchaseSeq = lspchd.getPurchaseSeq();
         this.purchaseStatus = StringFactory.getGbOne(); // 01 하드코딩
 //        this.cancelGb = StringFactory.getNinetyNine(); // 99 하드코딩
         this.purchaseQty = lspchd.getPurchaseQty();
+
+        super.setRegId(regId);
+        super.setUpdId(regId);
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
