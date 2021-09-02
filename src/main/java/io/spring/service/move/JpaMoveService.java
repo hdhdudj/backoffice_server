@@ -10,7 +10,6 @@ import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
 import io.spring.model.deposit.entity.Lsdpsd;
-import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.goods.entity.IfBrand;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
@@ -352,13 +351,6 @@ public class JpaMoveService {
         LocalDateTime purchaseDt = null;
 
         for (GoodsMoveSaveData.Goods goods : goodsMoveSaveData.getGoods()) {
-            String purchaseStatus = null;
-            if(goods.getAvailableQty() > goods.getMoveQty()){ // purchaseStatus = '03' (부분입고)
-                purchaseStatus = StringFactory.getGbThree();
-            }
-            else if(goods.getAvailableQty() == goods.getMoveQty()){ //purchaseStatus = '04' (완전입고)
-                purchaseStatus = StringFactory.getGbFour();
-            }
             long moveQty = goods.getMoveQty();
             // 1. 출고 data 생성
             Ititmc ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(goods.getAssortId(), goods.getItemId(),
@@ -396,12 +388,12 @@ public class JpaMoveService {
             shipIdList.add(shipId);
 
             // 2. 발주 data 생성
-            Lsdpsp lsdpsp = jpaPurchaseService.makePurchaseDataFromGoodsMoveSave(regId, purchaseDt, purchaseStatus, lsshpm, lsshpd);
-            List<Lsdpsp> lsdpspList = new ArrayList<>();
-            lsdpspList.add(lsdpsp);
+            jpaPurchaseService.makePurchaseDataFromGoodsMoveSave(regId, purchaseDt, lsshpm, lsshpd);
+//            List<Lsdpsp> lsdpspList = new ArrayList<>();
+//            lsdpspList.add(lsdpsp);
 
             // 3. purchaseStatus 변경
-            jpaPurchaseService.changePurchaseStatus(lsdpspList);
+//            jpaPurchaseService.changePurchaseStatus(lsdpspList);
         }
 
         return shipIdList;
