@@ -79,7 +79,7 @@ public class Lsshpd extends CommonProps {
         this.localDeliFee = 0f;
         this.localTax = 0f;
         this.disPrice = 0f;
-//        this.oStorageId = tbOrderDetail.getStorageId();
+//        this.oStorageId = tbOrderDetail.getStorageId(); : 바깥에서 set
         this.shipGb = StringFactory.getGbFour(); // 01:일반출고 03:주문이동지시 04:상품이동지시
     }
     @Id

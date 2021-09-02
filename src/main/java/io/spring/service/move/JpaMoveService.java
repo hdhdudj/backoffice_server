@@ -376,6 +376,7 @@ public class JpaMoveService {
             String shipSeq = StringFactory.getFourStartCd(); // 0001 하드코딩 //StringUtils.leftPad(Integer.toString(index),4,'0');
             // 1-2. Lsshpd 생성
             Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, ititmc, goods);
+            lsshpd.setOStorageId(goodsMoveSaveData.getOStorageId());
             lsshpd.setShipIndicateQty(moveQty);
             lsshpm.setVendorId(goods.getVendorId()); // vendorId는 바깥에서 set
             jpaLsshpdRepository.save(lsshpd);
@@ -646,15 +647,16 @@ public class JpaMoveService {
         for(Lsshpd lsshpd : lsshpdList){
             MoveIndicateDetailResponseData.Move move = new MoveIndicateDetailResponseData.Move(lsshpd);
             move.setDeliMethod(lsshpm.getDelMethod());
+            Utilities.setOptionNames(move,lsshpd.getItasrt().getItvariList());
             List<Itvari> itvariList = lsshpd.getItasrt().getItvariList();
-            if(itvariList.size() > 0){
-                Itvari itvari1 = itvariList.get(0);
-                move.setOptionNm1(itvari1.getOptionNm());
-            }
-            if(itvariList.size() > 1){
-                Itvari itvari2 = itvariList.get(1);
-                move.setOptionNm2(itvari2.getOptionNm());
-            }
+//            if(itvariList.size() > 0){
+//                Itvari itvari1 = itvariList.get(0);
+//                move.setOptionNm1(itvari1.getOptionNm());
+//            }
+//            if(itvariList.size() > 1){
+//                Itvari itvari2 = itvariList.get(1);
+//                move.setOptionNm2(itvari2.getOptionNm());
+//            }
             moveList.add(move);
         }
         moveIndicateDetailResponseData.setMoves(moveList);

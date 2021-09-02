@@ -1,6 +1,7 @@
 package io.spring.model.move.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import io.spring.model.goods.entity.Ititmc;
@@ -24,9 +25,11 @@ public class GoodsMoveSaveData {
 //    @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate moveIndDt;
+    @JsonProperty("oStorageId")
     private String oStorageId; // 목적지(to) 코드 (출고) - 발주할 때 넣는 창고
     private String storageId; // 나가는(from) 창고 - 출고할 때 넣는 창고
     private String deliMethod;
+    private String userId;
     private List<Goods> goods;
 
     @Getter

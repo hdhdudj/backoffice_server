@@ -1,6 +1,7 @@
 package io.spring.model.purchase.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.entity.Itasrt;
@@ -74,6 +75,7 @@ public class PurchaseInsertRequestData {
     private String purchaseGb;
     private String purchaseVendorId;
     private String storageId;
+    @JsonProperty("oStorageId")
     private String oStorageId;
     private String terms;
     private String delivery;

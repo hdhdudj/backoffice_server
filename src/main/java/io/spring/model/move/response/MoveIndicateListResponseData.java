@@ -1,6 +1,7 @@
 package io.spring.model.move.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import io.spring.infrastructure.util.StringFactory;
@@ -38,6 +39,7 @@ public class MoveIndicateListResponseData {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate endDt;
     private String storageId;
+    @JsonProperty("oStorageId")
     private String oStorageId;
     private String assortId;
     private String assortNm;

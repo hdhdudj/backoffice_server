@@ -1,6 +1,8 @@
 package io.spring.model.move.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.SetOptionInterface;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import lombok.AccessLevel;
@@ -25,6 +27,7 @@ public class MoveIndicateDetailResponseData {
 //        this.dealtypeCd = lsshpm.
     }
     private String shipId;
+    @JsonProperty("oStorageId")
     private String oStorageId;
     private String storageId;
     private String moveIndDt;
@@ -34,7 +37,7 @@ public class MoveIndicateDetailResponseData {
     @Getter
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class Move{
+    public static class Move implements SetOptionInterface {
         public Move(Lsshpd lsshpd){
             this.shipId = lsshpd.getShipId();
             this.shipSeq = lsshpd.getShipSeq();
