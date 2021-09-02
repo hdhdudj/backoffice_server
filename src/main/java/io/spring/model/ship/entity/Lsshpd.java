@@ -57,7 +57,7 @@ public class Lsshpd extends CommonProps {
         this.shipGb = StringFactory.getGbThree(); // 01:일반출고 03:주문이동지시 04:상품이동지시
     }
     // 상품이동지시 저장시 작동하는 생성자
-    public Lsshpd(String shipId, String shipSeq, Ititmc ititmc, GoodsMoveSaveData.Goods goods) {
+    public Lsshpd(String shipId, String shipSeq, Ititmc ititmc, GoodsMoveSaveData.Goods goods, String userId) {
         this.shipId = shipId;
         this.shipSeq = shipSeq;
         this.assortId = goods.getAssortId();
@@ -81,6 +81,9 @@ public class Lsshpd extends CommonProps {
         this.disPrice = 0f;
 //        this.oStorageId = tbOrderDetail.getStorageId(); : 바깥에서 set
         this.shipGb = StringFactory.getGbFour(); // 01:일반출고 03:주문이동지시 04:상품이동지시
+
+        super.setRegId(userId);
+        super.setUpdId(userId);
     }
     @Id
     private String shipId;

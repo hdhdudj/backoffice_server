@@ -351,6 +351,8 @@ public class JpaMoveService {
         LocalDateTime purchaseDt = null;
 
         for (GoodsMoveSaveData.Goods goods : goodsMoveSaveData.getGoods()) {
+            regId = goodsMoveSaveData.getUserId();
+
             long moveQty = goods.getMoveQty();
             // 1. 출고 data 생성
             Ititmc ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(goods.getAssortId(), goods.getItemId(),
@@ -371,21 +373,21 @@ public class JpaMoveService {
             // 1-1. ititmc 값 변경
             if(lsshpm != null){
                 ititmc.setShipIndicateQty(shipIndicateQty + moveQty);
+                ititmc.setUpdId(goodsMoveSaveData.getUserId());
                 jpaItitmcRepository.save(ititmc);
             }
             String shipSeq = StringFactory.getFourStartCd(); // 0001 하드코딩 //StringUtils.leftPad(Integer.toString(index),4,'0');
             // 1-2. Lsshpd 생성
-            Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, ititmc, goods);
+            Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, ititmc, goods, regId);
             lsshpd.setOStorageId(goodsMoveSaveData.getOStorageId());
             lsshpd.setShipIndicateQty(moveQty);
             lsshpm.setVendorId(goods.getVendorId()); // vendorId는 바깥에서 set
             jpaLsshpdRepository.save(lsshpd);
             // 1-3. Lsshps 생성
-            Lsshps lsshps = new Lsshps(lsshpm);
+            Lsshps lsshps = new Lsshps(lsshpm, regId);
             jpaLsshpmRepository.save(lsshpm);
             jpaLsshpsRepository.save(lsshps);
 
-            regId = lsshpm.getRegId();
             shipIdList.add(shipId);
 
             // 2. 발주 data 생성

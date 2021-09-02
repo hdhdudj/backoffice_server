@@ -82,6 +82,9 @@ public class Lsshpm extends CommonProps {
 
         this.shipGb = StringFactory.getGbFour(); // 01:일반출고 03:주문이동지시 04:상품이동지시
         this.masterShipGb = StringFactory.getGbFour(); // 01:일반출고 03:주문이동지시 04:상품이동지시
+
+        super.setRegId(goodsMoveSaveData.getUserId());
+        super.setUpdId(goodsMoveSaveData.getUserId());
     }
 
     /**
