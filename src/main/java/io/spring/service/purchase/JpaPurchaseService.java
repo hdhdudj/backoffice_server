@@ -657,6 +657,10 @@ public class JpaPurchaseService {
      *  (01 : 기본, 03 : 부분입고, 04 : 완전입고)
      */
 	public Lspchm changePurchaseStatus(List<Lsdpsp> lsdpspList) {
+	    if(lsdpspList.size() == 0){
+	        log.debug("purchaseStatus를 변경할 lsdpsp가 존재하지 않습니다.");
+	        return null;
+        }
         List<Lspchb> lspchbList = new ArrayList<>();
         for(Lsdpsp lsdpsp : lsdpspList){
             long planQty = lsdpsp.getPurchasePlanQty();
@@ -840,7 +844,6 @@ public class JpaPurchaseService {
         else{
             ititmt.setTempQty(ititmt.getTempQty() + lspchd.getPurchaseQty());
         }
-        Ititmt newItitmt = ititmt;
         jpaItitmtRepository.save(ititmt);
 
         return lsdpsp;

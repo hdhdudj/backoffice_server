@@ -551,6 +551,7 @@ public class JpaMoveService {
         moveList.stream().forEach(x->shipIdList.add(x.getShipId()));
         Set<String> shipNoSet = new HashSet(shipIdList);
 
+        // lss- 변경
         for(String shipId : shipNoSet){
             Lsshpd lsshpd = jpaLsshpdRepository.findByShipId(shipId).get(0);
             Lsshpm lsshpm = lsshpd.getLsshpm();
@@ -565,6 +566,10 @@ public class JpaMoveService {
                 newShipIdList.add(lsshpm.getShipId());
                 jpaLsshpmRepository.save(lsshpm);
             }
+            // ititmc.shipIndicateQty, ititmc.shipQty 차감
+            List<Ititmc> ititmcList = jpaItitmcRepository.findByOrderIdAndOrderSeqOrderByEffEndDtAsc(lsshpd.getAssortId(), lsshpd.getItemId());
+            this.subItitmcQties(ititmcList, lsshpd.getShipIndicateQty());
+            this.updateLssSeries(lsshpd);
         }
         return newShipIdList;
     }
@@ -792,6 +797,63 @@ public class JpaMoveService {
 
 
     /**
+     * 상품이동지시 저장시 ititmc의 qty 값을 차감해주는 함수
+     */
+    public List<Ititmc> subItitmcQties(List<Ititmc> ititmcList, long shipQty) {
+        List<Ititmc> newItitmcList = new ArrayList<>();
+        long ititmcShipIndQty = this.getItitmcShipIndQtyByStream(ititmcList);
+        long ititmcQty = this.getItitmcQtyByStream(ititmcList);
+        if(ititmcShipIndQty < shipQty){
+            return newItitmcList;
+        }
+        for(Ititmc ititmc : ititmcList){
+            long qty = ititmc.getQty() == null? 0l:ititmc.getQty(); // ititmc 재고량
+            long shipIndQty = ititmc.getShipIndicateQty() == null? 0l:ititmc.getShipIndicateQty(); // ititmc 출고예정량
+//            long canShipQty = qty - shipIndQty; // 출고가능량
+            if(shipIndQty < shipQty){ // 출고 불가
+                continue;
+            }
+            else { // 이 차례에서 출고 완료 가능
+                ititmc.setShipIndicateQty(shipIndQty - shipQty);
+                ititmc.setQty(qty - shipQty);
+                jpaItitmcRepository.save(ititmc);
+                newItitmcList.add(ititmc);
+                break;
+            }
+        }
+        return newItitmcList;
+    }
+
+
+    /**
+     * lsshpd 수량 수정, lsshpm shipStatus 01->04 수정, lsshps 꺾어주는 함수
+     */
+    public String updateLssSeries(Lsshpd lsshpd){
+        // 3-1. lsshpd 수량 수정
+        lsshpd.setShipQty(1l);
+        jpaLsshpdRepository.save(lsshpd);
+        // 3-2. lsshpm shipStatus 01 -> 04
+        Lsshpm lsshpm = lsshpd.getLsshpm();
+        lsshpm.setShipStatus(StringFactory.getGbFour()); // 01 : 출고지시or이동지시, 04 : 출고. 04 하드코딩
+        jpaLsshpmRepository.save(lsshpm);
+        // 2-3. lsshps 꺾어주기
+        Lsshps lsshps = new Lsshps(lsshpm);
+        this.updateLsshps(lsshps);
+        return lsshpd.getShipSeq();
+    }
+
+    /**
+     * Lsshps를 꺾어주는 함수
+     */
+    private void updateLsshps(Lsshps newLsshps) {
+        Lsshps lsshps = jpaLsshpsRepository.findByShipIdAndEffEndDt(newLsshps.getShipId(), Utilities.getStringToDate(StringFactory.getDoomDay()));
+        lsshps.setEffEndDt(new Date());
+        jpaLsshpsRepository.save(lsshps);
+        jpaLsshpsRepository.save(newLsshps);
+    }
+
+
+    /**
      * --------------------------------- 해당 서비스의 유틸성 함수들 ---------------------------
      */
     /**
@@ -817,6 +879,7 @@ public class JpaMoveService {
                 return x.getQty();
             }}).reduce((a,b)->a+b).get();
     }
+
     /**
      * shipId 채번 함수
      */
