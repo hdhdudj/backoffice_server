@@ -241,7 +241,7 @@ public class JpaMoveService {
     }
 
     /**
-     * 상품 선택창 : 물류센터, 구매처, 상품, 상품명을 입력한 후 검색 버튼을 눌렀을 때 상품 목록을 반환
+     * 상품 선택창 : 입고처리 상품추가 모달에서 상품을 선택하고 확인을 눌렀을 때 리스트를 반환
      */
     public GoodsModalListResponseData getGoodsList(String storageId, String purchaseVendorId, String assortId, String assortNm) {
         List<Ititmc> ititmcList = this.getItitmc(storageId, purchaseVendorId, assortId, assortNm);
@@ -352,6 +352,13 @@ public class JpaMoveService {
         LocalDateTime purchaseDt = null;
 
         for (GoodsMoveSaveData.Goods goods : goodsMoveSaveData.getGoods()) {
+            String purchaseStatus = null;
+            if(goods.getAvailableQty() > goods.getMoveQty()){ // purchaseStatus = '03' (부분입고)
+                purchaseStatus = StringFactory.getGbThree();
+            }
+            else if(goods.getAvailableQty() == goods.getMoveQty()){ //purchaseStatus = '04' (완전입고)
+                purchaseStatus = StringFactory.getGbFour();
+            }
             long moveQty = goods.getMoveQty();
             for (int i = 0; i < moveQty ; i++) {
                 // 1. 출고 data 생성
@@ -372,7 +379,7 @@ public class JpaMoveService {
                 purchaseDt = lsshpm.getReceiptDt();
                 // 1-1. ititmc 값 변경
                 if(lsshpm != null){
-                    ititmc.setShipIndicateQty(shipIndicateQty++);
+                    ititmc.setShipIndicateQty(shipIndicateQty + 1l);
                     jpaItitmcRepository.save(ititmc);
                 }
                 String shipSeq = StringFactory.getFourStartCd(); // 0001 하드코딩 //StringUtils.leftPad(Integer.toString(index),4,'0');
@@ -389,7 +396,7 @@ public class JpaMoveService {
                 shipIdList.add(shipId);
 
                 // 2. 발주 data 생성
-                Lsdpsp lsdpsp = jpaPurchaseService.makePurchaseDataFromGoodsMoveSave(regId, purchaseDt, lsshpm, lsshpd);
+                Lsdpsp lsdpsp = jpaPurchaseService.makePurchaseDataFromGoodsMoveSave(regId, purchaseDt, purchaseStatus, lsshpm, lsshpd);
                 List<Lsdpsp> lsdpspList = new ArrayList<>();
                 lsdpspList.add(lsdpsp);
 

@@ -798,12 +798,13 @@ public class JpaPurchaseService {
     /**
      * 상품이동 저장시 생성되는 발주 data를 만드는 함수
      */
-    public Lsdpsp makePurchaseDataFromGoodsMoveSave(String regId, LocalDateTime purchaseDt, Lsshpm lsshpm, Lsshpd lsshpd) {
+    public Lsdpsp makePurchaseDataFromGoodsMoveSave(String regId, LocalDateTime purchaseDt, String purchaseStatus, Lsshpm lsshpm, Lsshpd lsshpd) {
         String purchaseNo = this.getPurchaseNo();
 
         // lspchm insert
         Lspchm lspchm = new Lspchm(purchaseNo, lsshpm, regId);
         lspchm.setPurchaseDt(purchaseDt); // ititmc.effEndDt
+        lspchm.setPurchaseStatus(purchaseStatus);
         lspchm.setDealtypeCd(StringFactory.getGbTwo()); // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정 주문발주 (02 하드코딩)
         // lspchm의 purchaseRemark, siteOrderNo, storeCd, oStoreCd set 해주기
         lspchm.setPurchaseRemark(regId);
