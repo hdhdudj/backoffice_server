@@ -119,6 +119,9 @@ public class Utilities {
      * 두 String 사이에 -를 넣어서 붙여서 반환하는 함수 (a,b) -> "a-b"
      */
     public static String addDashInMiddle(String a, String b){
+        if(a == null || b == null){
+            return "";
+        }
         return a + StringFactory.getStrDash() + b;
     }
 

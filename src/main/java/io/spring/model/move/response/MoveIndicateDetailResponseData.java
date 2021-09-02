@@ -44,7 +44,7 @@ public class MoveIndicateDetailResponseData {
             this.shipKey = Utilities.addDashInMiddle(shipId,shipSeq);
             this.orderId = lsshpd.getOrderId();
             this.orderSeq = lsshpd.getOrderSeq();
-            this.orderKey = this.orderId != null && this.orderSeq != null? Utilities.addDashInMiddle(orderId,orderSeq) : "";
+            this.orderKey = Utilities.addDashInMiddle(orderId,orderSeq);
 //            this.deliMethod = lsshpd.getd
             this.assortId = lsshpd.getAssortId();
             this.itemId = lsshpd.getItemId();

@@ -378,7 +378,7 @@ public class JpaDepositService {
         for(Lsdpsd lsdpsd : resultList){
             DepositSelectListResponseData.Deposit deposit = new DepositSelectListResponseData.Deposit(lsdpsd);
             deposit.setPurchaseVendorId(lsdpsd.getLsdpsm().getVendorId());
-            deposit.setVdNm(lsdpsd.getLsdpsm().getCmvdmr().getVdNm());
+            deposit.setVdNm(lsdpsd.getLsdpsm().getCmvdmr() == null? "":lsdpsd.getLsdpsm().getCmvdmr().getVdNm());
             Itasrt itasrt = lsdpsd.getItasrt();
             deposit.setAssortNm(itasrt.getAssortNm());
             Utilities.setOptionNames(deposit, itasrt.getItvariList());
