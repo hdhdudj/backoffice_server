@@ -366,6 +366,10 @@ public class JpaMoveService {
                 log.debug("입력량이 이동가능량보다 큽니다.");
                 continue;
             }
+            if(goods.getMoveQty() == 0){
+                log.debug("입력량이 0이어서 저장되지 않습니다.");
+                continue;
+            }
             // 1-0. Lsshpm 생성
             String shipId = this.getShipId();
             Lsshpm lsshpm = new Lsshpm(shipId, goodsMoveSaveData);
