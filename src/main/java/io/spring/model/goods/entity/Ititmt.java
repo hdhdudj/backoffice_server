@@ -5,6 +5,7 @@ import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.purchase.entity.Lspchd;
+import io.spring.model.purchase.entity.Lspchm;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,6 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 @Entity
@@ -38,23 +38,23 @@ public class Ititmt extends CommonProps {
         this.storageId = storageId;
         this.assortId = deposit.getAssortId();
         this.itemId = deposit.getItemId();
-		this.effEndDt = LocalDateTime.parse(StringFactory.getDoomDay(),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // 9999-12-31 하드코딩
-        this.effStaDt = LocalDateTime.now();
+		this.effEndDt = LocalDateTime.now();//LocalDateTime.parse(StringFactory.getDoomDay(),DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // 9999-12-31 하드코딩
+        this.effStaDt = this.effEndDt;
         this.stockGb = StringFactory.getGbOne(); // 01 하드코딩
         this.tempIndicateQty = deposit.getDepositQty();
         this.stockAmt = deposit.getPurchaseCost();
     }
 
-    public Ititmt(Lspchd lspchd, String regId) {
-        this.storageId = lspchd.getLspchm().getStoreCd();
+    public Ititmt(Lspchm lspchm, Lspchd lspchd, String regId) {
+        this.storageId = lspchm.getStoreCd();
         this.assortId = lspchd.getAssortId();
         this.itemId = lspchd.getItemId();
-        this.effEndDt = LocalDateTime.parse(StringFactory.getDoomDay(),
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // 9999-12-31 하드코딩
-        this.effStaDt = LocalDateTime.now();
+        this.itemGrade = StringFactory.getStrEleven(); // 11 하드코딩
+        this.effEndDt = LocalDateTime.now();//LocalDateTime.parse(StringFactory.getDoomDay(),DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // 9999-12-31 하드코딩
+        this.effStaDt = this.effEndDt;
         this.stockGb = StringFactory.getGbOne(); // 01 하드코딩
-        this.tempIndicateQty = lspchd.getPurchaseQty();
+        this.tempIndicateQty = 0l;
+        this.tempQty = lspchd.getPurchaseQty();
         this.stockAmt = lspchd.getPurchaseUnitAmt();
         super.setRegId(regId);
         super.setUpdId(regId);

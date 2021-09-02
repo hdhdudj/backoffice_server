@@ -817,16 +817,29 @@ public class JpaPurchaseService {
         String purchaseSeq = StringUtils.leftPad(Integer.toString(1),4,'0');
         Lspchd lspchd = new Lspchd(purchaseNo, purchaseSeq, lsshpd, regId);
         Lspchb lspchb = new Lspchb(lspchd, regId);
+        List<Lspchb> lspchbList = new ArrayList<>();
+        lspchbList.add(lspchb);
+        lspchd.setLspchb(lspchbList);
+        lspchd.setLspchm(lspchm);
         jpaLspchdRepository.save(lspchd);
         jpaLspchbRepository.save(lspchb);
 
         // lsdpsp insert
         String depositPlanId = this.getDepositPlanId();
         Lsdpsp lsdpsp = new Lsdpsp(depositPlanId, lspchd, regId);
+        lsdpsp.setLspchd(lspchd);
         jpaLsdpspRepository.save(lsdpsp);
 
         // ititmt qty update
-        Ititmt ititmt = new Ititmt(lspchd, regId);
+        Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(lsshpd.getAssortId(), lsshpd.getItemId(), lsshpm.getStorageId(),
+                StringFactory.getStrEleven(),LocalDateTime.now());
+        if(ititmt == null){
+            ititmt = new Ititmt(lspchm, lspchd, regId);
+        }
+        else{
+            ititmt.setTempQty(ititmt.getTempQty() + lspchd.getPurchaseQty());
+        }
+        Ititmt newItitmt = ititmt;
         jpaItitmtRepository.save(ititmt);
 
         return lsdpsp;
