@@ -562,12 +562,14 @@ public class JpaMoveService {
                 lsshpm.setShipStatus(StringFactory.getGbFour()); // 04 하드코딩
                 lsshpm.setApplyDay(LocalDateTime.now()); // 출고일자 now date
                 newShipIdList.add(lsshpm.getShipId());
-                jpaLsshpmRepository.save(lsshpm);
             }
             // ititmc.shipIndicateQty, ititmc.shipQty 차감
-            List<Ititmc> ititmcList = jpaItitmcRepository.findByOrderIdAndOrderSeqOrderByEffEndDtAsc(lsshpd.getAssortId(), lsshpd.getItemId());
-            this.subItitmcQties(ititmcList, lsshpd.getShipIndicateQty());
-            this.updateLssSeries(lsshpd);
+            List<Ititmc> ititmcList = jpaItitmcRepository.findByAssortIdAndItemIdAndEffEndDtOrderByEffEndDtAsc(lsshpd.getAssortId(), lsshpd.getItemId(), lsshpd.getExcAppDt());
+            if(this.subItitmcQties(ititmcList, lsshpd.getShipIndicateQty()).size() > 0){
+                System.out.println("----------------- : this.subItitmcQties.size() > 0");
+                this.updateLssSeries(lsshpd);
+//                jpaLsshpmRepository.save(lsshpm);
+            }
         }
         return newShipIdList;
     }
@@ -801,8 +803,9 @@ public class JpaMoveService {
     public List<Ititmc> subItitmcQties(List<Ititmc> ititmcList, long shipQty) {
         List<Ititmc> newItitmcList = new ArrayList<>();
         long ititmcShipIndQty = this.getItitmcShipIndQtyByStream(ititmcList);
-        long ititmcQty = this.getItitmcQtyByStream(ititmcList);
+//        long ititmcQty = this.getItitmcQtyByStream(ititmcList);
         if(ititmcShipIndQty < shipQty){
+            log.debug("재고량이 맞지 않아 출고가 불가합니다.");
             return newItitmcList;
         }
         for(Ititmc ititmc : ititmcList){
@@ -819,6 +822,9 @@ public class JpaMoveService {
                 newItitmcList.add(ititmc);
                 break;
             }
+        }
+        if(newItitmcList.size() == 0){
+           log.debug("재고량이 맞지 않아 출고가 불가합니다.");
         }
         return newItitmcList;
     }

@@ -67,7 +67,7 @@ public class JpaShipService {
         // tbOrderDetailList 중 statusCd가 C04인 애들만 남겨두기
         tbOrderDetailList = tbOrderDetailList.stream().filter(x->x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList());
         for(TbOrderDetail tbOrderDetail : tbOrderDetailList){
-            List<Ititmc> ititmcList = jpaItitmcRepository.findByOrderIdAndOrderSeqOrderByEffEndDtAsc(tbOrderDetail.getAssortId(),tbOrderDetail.getItemId());
+            List<Ititmc> ititmcList = jpaItitmcRepository.findByAssortIdAndItemIdOrderByEffEndDtAsc(tbOrderDetail.getAssortId(),tbOrderDetail.getItemId());
             long availableQty = this.calcMaxAvailableQty(ititmcList);
             availableQty = tbOrderDetail.getQty() > availableQty? tbOrderDetail.getQty() : availableQty;
             ShipIndicateSaveListResponseData.Ship ship = new ShipIndicateSaveListResponseData.Ship(tbOrderDetail);
@@ -147,7 +147,7 @@ public class JpaShipService {
                 continue;
             }
 
-            List<Ititmc> ititmcList = jpaItitmcRepository.findByOrderIdAndOrderSeqOrderByEffEndDtAsc(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
+            List<Ititmc> ititmcList = jpaItitmcRepository.findByAssortIdAndItemIdOrderByEffEndDtAsc(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
             // 1. 재고에서 출고 차감 계산
             ititmcList = this.calcItitmcQties(ititmcList, ship.getQty()); // 주문량만큼 출고차감 (하나의 ititmc에서 모두 차감하므로 ititmcList에 값이 있다면 한 개만 들어있어야 함)
             if(ititmcList.size()==0){
@@ -334,7 +334,7 @@ public class JpaShipService {
             lsshpdList.add(lsshpd);
             // 2. 해당 tbOrderDetail statusCd 변경
             TbOrderDetail tbOrderDetail = lsshpd.getTbOrderDetail();
-            List<Ititmc> ititmcList = jpaItitmcRepository.findByOrderIdAndOrderSeqOrderByEffEndDtAsc(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
+            List<Ititmc> ititmcList = jpaItitmcRepository.findByAssortIdAndItemIdOrderByEffEndDtAsc(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
             // 재고에서 출고 차감 계산
             ititmcList = jpaMoveService.subItitmcQties(ititmcList, ship.getQty()); // 주문량만큼 출고차감 (하나의 ititmc에서 모두 차감하므로 ititmcList에 값이 있다면 한 개만 들어있어야 함)
             if(ititmcList.size()==0){
