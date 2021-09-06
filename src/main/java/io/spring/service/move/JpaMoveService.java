@@ -330,7 +330,7 @@ public class JpaMoveService {
                 "join fetch ic.itasrt it " +
                 "where " +
                 "(?1 is null or trim(?1)='' or ic.storageId=?1) " +
-                "and (?2 is null or trim(?2)='' or ic.vendorId=?2) " +
+                "and (?2 is null or trim(?2)='' or it.vendorId=?2) " +
                 "and (?3 is null or trim(?3)='' or ic.assortId=?3) " +
                 "and (?4 is null or trim(?4)='' or it.assortNm like concat('%',?4,'%'))"
         );
