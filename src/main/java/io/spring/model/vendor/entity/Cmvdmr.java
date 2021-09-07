@@ -24,7 +24,7 @@ import lombok.ToString;
 @Setter
 public class Cmvdmr extends CommonProps {
     @Id
-    private String vendorId;
+    private String id;
     private String vdNm;
     private String vendorType;
     private String terms;
