@@ -553,6 +553,11 @@ public class JpaMoveService {
         for(String shipId : shipNoSet){
             Lsshpd lsshpd = jpaLsshpdRepository.findByShipId(shipId).get(0);
             Lsshpm lsshpm = lsshpd.getLsshpm();
+            // ititmc.shipIndicateQty, ititmc.shipQty 차감
+            List<Ititmc> ititmcList = jpaItitmcRepository.findByAssortIdAndItemIdAndEffEndDtOrderByEffEndDtAsc(lsshpd.getAssortId(), lsshpd.getItemId(), lsshpd.getExcAppDt());
+            if(this.subItitmcQties(ititmcList, lsshpd.getShipIndicateQty()).size() == 0){
+                continue;
+            }
             if(lsshpm == null){
                 log.debug("there's no data(lsshpm) of shipId : " + shipId);
                 continue;
@@ -563,13 +568,7 @@ public class JpaMoveService {
                 lsshpm.setApplyDay(LocalDateTime.now()); // 출고일자 now date
                 newShipIdList.add(lsshpm.getShipId());
             }
-            // ititmc.shipIndicateQty, ititmc.shipQty 차감
-            List<Ititmc> ititmcList = jpaItitmcRepository.findByAssortIdAndItemIdAndEffEndDtOrderByEffEndDtAsc(lsshpd.getAssortId(), lsshpd.getItemId(), lsshpd.getExcAppDt());
-            if(this.subItitmcQties(ititmcList, lsshpd.getShipIndicateQty()).size() > 0){
-                System.out.println("----------------- : this.subItitmcQties.size() > 0");
-                this.updateLssSeries(lsshpd);
-//                jpaLsshpmRepository.save(lsshpm);
-            }
+            this.updateLssSeries(lsshpd);
         }
         return newShipIdList;
     }
