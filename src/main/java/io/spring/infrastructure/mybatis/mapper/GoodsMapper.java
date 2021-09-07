@@ -26,7 +26,6 @@ public interface GoodsMapper {
 
 	List<HashMap<String, Object>> getGoodsList(HashMap<String, Object> param);
 
-
 	List<HashMap<String, Object>> getGoodsItemList(HashMap<String, Object> param);
 
 	List<HashMap<String, Object>> getGoodsItemListWithCategory(HashMap<String, Object> param);

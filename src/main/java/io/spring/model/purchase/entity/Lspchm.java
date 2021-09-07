@@ -142,8 +142,8 @@ public class Lspchm extends CommonProps {
 //        this.disPrice : ?
         this.newDisPrice = this.disPrice;
         this.purchaseGb = StringFactory.getGbTwo(); // 01 : 일반발주, 02 : 이동요청 (02 하드코딩)
-        this.storeCd = lsshpm.getStorageId();
-        this.oStoreCd = lsshpm.getOStorageId();
+        this.storeCd = lsshpm.getOStorageId();
+        this.oStoreCd = null;//lsshpm.getOStorageId();
 //        this.purchaseVendorId : ?
 //        this.terms : ?
 //        this.delivery : ?
