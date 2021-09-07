@@ -385,7 +385,7 @@ public class JpaMoveService {
             Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, ititmc, goods, regId);
             lsshpd.setOStorageId(goodsMoveSaveData.getOStorageId());
             lsshpd.setShipIndicateQty(moveQty);
-            lsshpm.setVendorId(goods.getVendorId()); // vendorId는 바깥에서 set
+            lsshpm.setChannelId(goods.getChannelId()); // vendorId는 바깥에서 set
             jpaLsshpdRepository.save(lsshpd);
             // 1-3. Lsshps 생성
             Lsshps lsshps = new Lsshps(lsshpm, regId);

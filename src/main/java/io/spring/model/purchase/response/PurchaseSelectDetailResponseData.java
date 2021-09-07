@@ -12,6 +12,9 @@ import lombok.Setter;
 
 import java.util.List;
 
+/**
+ * 발주내역(발주사후) get DTO
+ */
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
@@ -19,7 +22,7 @@ public class PurchaseSelectDetailResponseData {
     public PurchaseSelectDetailResponseData(Lspchm lspchm){
         this.purchaseId = lspchm.getPurchaseNo();
         this.purchaseDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
-        this.purchaseVendorId = lspchm.getPurchaseVendorId();
+        this.ownerId = lspchm.getOwnerId();
         this.purchaseRemark = lspchm.getPurchaseRemark();
         this.storageId = lspchm.getStoreCd();
         this.terms = lspchm.getTerms();
@@ -35,7 +38,8 @@ public class PurchaseSelectDetailResponseData {
 //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private String purchaseId;
     private String purchaseDt;
-    private String purchaseVendorId;
+//    private String purchaseVendorId; : ownerId로 수정
+    private String ownerId;
     private String purchaseRemark;
     private String storageId;
     private String terms;

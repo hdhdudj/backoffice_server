@@ -25,7 +25,7 @@ public class PurchaseListInDepositModalData {
     public PurchaseListInDepositModalData(LocalDate startDt, LocalDate endDt, String purchaseVendorId){
         this.startDt = startDt;
         this.endDt = endDt;
-        this.purchaseVendorId = purchaseVendorId;
+        this.ownerId = purchaseVendorId;
     }
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -35,7 +35,8 @@ public class PurchaseListInDepositModalData {
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate endDt;
-    private String purchaseVendorId;
+    private String ownerId;
+    //        private String purchaseVendorId; : ownerId로 수정
     private List<Purchase> purchases;
 
     @Getter
@@ -47,7 +48,7 @@ public class PurchaseListInDepositModalData {
             this.purchaseGb = lspchm.getPurchaseGb();
             this.dealtypeCd = lspchm.getDealtypeCd();
             this.purchaseDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
-            this.purchaseVendorId = lspchm.getPurchaseVendorId();
+            this.ownerId = lspchm.getOwnerId();
             this.purchaseStatus = lspchm.getPurchaseStatus();
             this.siteOrderNo = lspchm.getSiteOrderNo();
             this.siteTrackNo = lspchm.getSiteTrackNo();
@@ -60,7 +61,8 @@ public class PurchaseListInDepositModalData {
 //        @JsonSerialize(using = LocalDateTimeSerializer.class)
 //        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
         private String purchaseDt;
-        private String purchaseVendorId;
+//        private String purchaseVendorId; : ownerId로 수정
+        private String ownerId;
         private String purchaseStatus;
         private String siteOrderNo; // 해외주문번호
         private String siteTrackNo; // 해외트래킹번호

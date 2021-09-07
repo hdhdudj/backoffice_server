@@ -212,7 +212,7 @@ public class JpaPurchaseService {
 			lspchd.setOrderId(item.getOrderId());
 			lspchd.setOrderSeq(item.getOrderSeq());
 			lspchd.setSiteGb(StringFactory.getGbOne()); // 01 하드코딩
-			lspchd.setVendorId(StringUtils.leftPad(StringFactory.getStrOne(), 6, '0')); // 000001 하드코딩
+			lspchd.setOwnerId(StringUtils.leftPad(StringFactory.getStrOne(), 6, '0')); // 000001 하드코딩
 
             lspchd.setUpdId(purchaseInsertRequestData.getUserId());
 
@@ -402,7 +402,7 @@ public class JpaPurchaseService {
         LocalDateTime end = endDt.atTime(23,59,59);
         TypedQuery<Lspchm> query = em.createQuery("select m from Lspchm m" +
                 " where m.purchaseDt between ?1 and ?2" +
-                " and (?3 is null or trim(?3)='' or m.purchaseVendorId=?3) " +
+                " and (?3 is null or trim(?3)='' or m.ownerId=?3) " +
                 "and m.purchaseStatus in :statusArr", Lspchm.class);
         List<String> statusArr = Arrays.asList(StringFactory.getGbOne(), StringFactory.getGbThree()); // 01:발주 03:부분입고 04:완전입고 05:취소  A1:송금완료 A2:거래처선금입금 A3:거래처잔금입금
         query.setParameter(1,start).setParameter(2,end).setParameter(3,purchaseVendorId)
@@ -478,7 +478,7 @@ public class JpaPurchaseService {
                                 "left join fetch it.itvari1 " +
                                 "left join fetch it.itvari2 " +
                                 "where m.purchaseDt between ?1 and ?2 " +
-                                "and (?3 is null or trim(?3)='' or m.purchaseVendorId=?3) "+
+                                "and (?3 is null or trim(?3)='' or m.ownerId=?3) "+
                                 "and (?4 is null or trim(?4)='' or d.assortId=?4) "+
                                 "and (?5 is null or trim(?5)='' or m.purchaseStatus=?5) "+
                                 "and (?6 is null or trim(?6)='' or m.purchaseGb=?6) " +

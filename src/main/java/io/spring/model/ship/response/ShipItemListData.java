@@ -21,14 +21,15 @@ public class ShipItemListData {
     public ShipItemListData(Lsshpm lsshpm){
         this.shipId = lsshpm.getShipId();
         this.storageId = lsshpm.getStorageId();
-        this.vendorId = lsshpm.getVendorId();
+        this.channelId = lsshpm.getChannelId();
 //        this.orderDt = lsshpm.get 밖에서 set
         this.shipIndicateDt = Utilities.removeTAndTransToStr(lsshpm.getReceiptDt());
         this.shipDt = Utilities.removeTAndTransToStr(lsshpm.getApplyDay());
     }
     private String shipId;
     private String storageId;
-    private String vendorId;
+//    private String vendorId; : channelId로 변경
+    private String channelId;
 //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private String orderDt;
 //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")

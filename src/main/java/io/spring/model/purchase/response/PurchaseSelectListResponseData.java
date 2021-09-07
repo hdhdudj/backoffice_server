@@ -36,7 +36,7 @@ public class PurchaseSelectListResponseData {
         this.purchaseNo = lspchm.getPurchaseNo();
         this.purchaseDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
         this.depositStoreId = lspchm.getStoreCd();
-        this.purchaseVendorId = lspchm.getPurchaseVendorId();
+        this.ownerId = lspchm.getOwnerId();
         this.purchaseGb = lspchm.getPurchaseGb();
     }
     // 발주리스트 화면
@@ -66,7 +66,8 @@ public class PurchaseSelectListResponseData {
     private String depositStoreId;
 
     // 화면 공통요소
-    private String purchaseVendorId;
+//    private String purchaseVendorId; : ownerId로 수정
+    private String ownerId;
 
     private List<Purchase> purchaseList;
 
@@ -79,7 +80,7 @@ public class PurchaseSelectListResponseData {
          */
         public Purchase(Lspchm lspchm, Lsdpsp lsdpsp, Itasrt itasrt){
             this.purchaseNo = lspchm.getPurchaseNo();
-            this.purchaseVendorId = lspchm.getPurchaseVendorId();
+            this.ownerId = lspchm.getOwnerId();
             this.purchaseGb = lspchm.getPurchaseGb();
 
             this.purchaseSeq = lsdpsp.getPurchaseSeq();
@@ -98,7 +99,7 @@ public class PurchaseSelectListResponseData {
             this.dealtypeCd = lspchm.getDealtypeCd();
             this.purchaseSeq = lspchd.getPurchaseSeq();
             this.purchaseKey = Utilities.addDashInMiddle(purchaseNo, purchaseSeq);
-            this.purchaseVendorId = lspchm.getPurchaseVendorId();
+            this.ownerId = lspchm.getOwnerId();
             this.purchaseGb = lspchm.getPurchaseGb();
             this.assortId = lspchd.getAssortId();
             this.itemId = lspchd.getItemId();
@@ -130,7 +131,8 @@ public class PurchaseSelectListResponseData {
         private String purchaseGb; // 발주구분 - 01 : 일반발주, 02 : 이동요청
         private String purchaseStatus; // 발주상태 - 01 : 발주, 03 : 부분입고, 04 : 완전입고, 05 : 취소
         private String dealtypeCd; // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정
-        private String purchaseVendorId; // 구매처
+//        private String purchaseVendorId; // 구매처 : ownerId로 수정
+        private String ownerId;
         private String orderId; // 주문번호
         private String orderSeq; // 주문순번
         private Float purchaseUnitAmt; // 개당금액

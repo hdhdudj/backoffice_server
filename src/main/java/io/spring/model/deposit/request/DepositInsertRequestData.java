@@ -22,6 +22,8 @@ public class DepositInsertRequestData {
     @Getter
     @Setter
     public static class Item{
+        private String purchaseNo;
+        private String purchaseSeq;
         private String depositSeq;
         private String assortId;
         private String itemGrade;
@@ -29,7 +31,5 @@ public class DepositInsertRequestData {
         private Long depositQty;
         private Float extraUnitcost;
         private String depositStatus;
-        public String purchaseNo;
-        private String purchaseSeq;
     }
 }
