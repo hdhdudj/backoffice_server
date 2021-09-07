@@ -118,8 +118,7 @@ public class TbOrderDetail extends CommonProps
         @JoinColumn(name = "orderId", referencedColumnName = "orderId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
         @JoinColumn(name = "orderSeq", referencedColumnName = "orderSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
     })
-    @OneToOne(fetch = FetchType.LAZY,
-    mappedBy = "tbOrderDetail")
+    @OneToOne(fetch = FetchType.LAZY,mappedBy = "tbOrderDetail")
     @JsonIgnore
     @NotFound(action = NotFoundAction.IGNORE)
     private Lspchd lspchd; // lspchd 연관관계

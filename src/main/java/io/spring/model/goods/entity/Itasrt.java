@@ -251,7 +251,7 @@ public class Itasrt extends CommonProps {
 	@NotFound(action = NotFoundAction.IGNORE)
 	private List<Itaimg> itaimg; // itaimg 연관관계
 
-	@JoinColumn(name = "vendorId", referencedColumnName = "vendorId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+	@JoinColumn(name = "vendorId", referencedColumnName = "id", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	@NotFound(action = NotFoundAction.IGNORE)

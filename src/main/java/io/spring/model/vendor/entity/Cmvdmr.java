@@ -1,25 +1,20 @@
 package io.spring.model.vendor.entity;
 
-import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import io.spring.model.common.entity.CommonProps;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import lombok.AccessLevel;
+import io.spring.model.goods.entity.Itasrt;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.List;
 
 @ToString
 @Entity
 @Table(name="cmvdmr")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
 public class Cmvdmr extends CommonProps {
@@ -31,4 +26,7 @@ public class Cmvdmr extends CommonProps {
     private String delivery;
     private String payment;
     private String carrier;
+
+//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "itasrt")
+//    private List<Itasrt> itasrt;
 }
