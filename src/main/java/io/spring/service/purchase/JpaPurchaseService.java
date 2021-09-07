@@ -37,6 +37,7 @@ import io.spring.service.common.JpaCommonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,10 +46,7 @@ import javax.persistence.TypedQuery;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -337,7 +335,7 @@ public class JpaPurchaseService {
     }
 
     /**
-     * 발주사후(발주관리) 페이지 json 만드는 함수
+     * 발주사후(발주관리, 발주내역) 페이지 json 만드는 함수
      * @param purchaseNo
      * @return
      */
@@ -346,7 +344,7 @@ public class JpaPurchaseService {
         if(lspchm == null){
             return null;
         }
-        List<PurchaseSelectDetailResponseData.Items> itemsList = makeItemsList(lspchm);
+        List<PurchaseSelectDetailResponseData.Items> itemsList = this.makeItemsList(lspchm);
         PurchaseSelectDetailResponseData purchaseSelectDetailResponseData = new PurchaseSelectDetailResponseData(lspchm);
         purchaseSelectDetailResponseData.setItems(itemsList);
         return purchaseSelectDetailResponseData;
@@ -373,7 +371,7 @@ public class JpaPurchaseService {
 
             List<Lspchb> lspchbList = lspchd.getLspchb();
             for(Lspchb lspchb : lspchbList){
-                if(lspchb.getEffEndDt().compareTo(Utilities.getStringToDate(StringFactory.getDoomDay())) == 0){
+                if(lspchb.getEffEndDt().compareTo(LocalDateTime.parse(StringFactory.getDoomDay(), DateTimeFormatter.ofPattern(StringFactory.getDateFormat()))) == 0){
                     item.setPurchaseStatus(lspchb.getPurchaseStatus());
                     break;
                 }
@@ -383,7 +381,20 @@ public class JpaPurchaseService {
     }
 
     /**
-     * 입고 - 발주선택창 : 조건을 넣고 조회했을 때 동작하는 함수 (Lspchm 기준의 list를 가져옴)
+     * 발주사후(발주관리, 발주내역) 페이지에서 purchaseStatus를 변경해주는 함수 (A1:송금완료 A2:거래처선금입금 A3:거래처잔금입금)
+     */
+    private void changePurchaseStatusInDetailPage(List<Lspchd> lspchdList) {
+        for(Lspchd lspchd : lspchdList){
+            TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(lspchd.getOrderId(),lspchd.getOrderSeq());
+            if(tbOrderDetail != null){ // 01 : 주문이동, 02 : 상품이동
+                tbOrderDetail.setStatusCd(StringFactory.getStrB02());
+                jpaTbOrderDetailRepository.save(tbOrderDetail);
+            }
+        }
+    }
+
+    /**
+     * 입고 - 발주선택창 (입고처리 -> 발주조회 > 조회) : 조건을 넣고 조회했을 때 동작하는 함수 (Lspchm 기준의 list를 가져옴)
      */
     public PurchaseListInDepositModalData getPurchaseMasterList(LocalDate startDt, LocalDate endDt, String purchaseVendorId) {
         PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData(startDt, endDt, purchaseVendorId);
@@ -392,8 +403,10 @@ public class JpaPurchaseService {
         TypedQuery<Lspchm> query = em.createQuery("select m from Lspchm m" +
                 " where m.purchaseDt between ?1 and ?2" +
                 " and (?3 is null or trim(?3)='' or m.purchaseVendorId=?3) " +
-                "and m.purchaseStatus <> '04'",Lspchm.class);
-        query.setParameter(1,start).setParameter(2,end).setParameter(3,purchaseVendorId);
+                "and m.purchaseStatus in :statusArr", Lspchm.class);
+        List<String> statusArr = Arrays.asList(StringFactory.getGbOne(), StringFactory.getGbThree()); // 01:발주 03:부분입고 04:완전입고 05:취소  A1:송금완료 A2:거래처선금입금 A3:거래처잔금입금
+        query.setParameter(1,start).setParameter(2,end).setParameter(3,purchaseVendorId)
+                .setParameter("statusArr",statusArr);
         List<Lspchm> lspchmList = query.getResultList();
         List<PurchaseListInDepositModalData.Purchase> purchaseList = new ArrayList<>();
         for(Lspchm lspchm : lspchmList){
@@ -497,6 +510,7 @@ public class JpaPurchaseService {
 
         for(Lsdpsp lsdpsp : lsdpspList){
             if(lsdpsp.getPurchasePlanQty() == lsdpsp.getPurchaseTakeQty()){
+                log.debug("더 이상 입고할 수 없습니다.");
                 continue;
             }
             Itasrt itasrt = lsdpsp.getItasrt();//lsdpsp.getTbOrderDetail().getItasrt();//.getLsdpsd().getItasrt();
@@ -522,6 +536,7 @@ public class JpaPurchaseService {
         TypedQuery<Lsdpsp> query =
                 em.createQuery("select p from Lsdpsp p " +
                                 "left join fetch p.lspchd d " +
+                                "left join fetch d.lspchm m " +
                                 "where p.purchaseNo=?1 order by p.depositPlanId asc"
                         , Lsdpsp.class);
         query.setParameter(1, purchaseNo);
@@ -568,7 +583,7 @@ public class JpaPurchaseService {
         List<Lsdpsp> lsdpspList1 = new ArrayList<>();
         for(Lsdpsp lsdpsp : lsdpspList){
             List<Lspchb> lspchbList = lsdpsp.getLspchd().getLspchb();
-            Date date = Utilities.getStringToDate(StringFactory.getDoomDay());
+            LocalDateTime date = LocalDateTime.parse(StringFactory.getDoomDay(), DateTimeFormatter.ofPattern(StringFactory.getDateFormat()));
             lspchbList = lspchbList.stream().filter(x->x.getPurchaseStatus().equals(StringFactory.getGbOne())&& x.getEffEndDt().compareTo(date)==0).collect(Collectors.toList());
             int num = lspchbList.size(); //.forEach(x -> System.out.println("ㅡㅡㅡㅡㅡ compare : "+date.compareTo(x.getEffEndDt())));
             if(num > 0){
@@ -621,7 +636,7 @@ public class JpaPurchaseService {
      */
     private Lspchb updateLspchbd(Lspchd lspchd, long qty) {
         Lspchb lspchb = lspchd.getLspchb().get(0);
-        lspchb.setEffEndDt(new Date());
+        lspchb.setEffEndDt(LocalDateTime.now());
         Lspchb newLspchb = new Lspchb(lspchb);
         long newQty = lspchd.getPurchaseQty() + qty;
         newLspchb.setPurchaseQty(newQty);
@@ -656,17 +671,17 @@ public class JpaPurchaseService {
      *  depositService에서 이용하는 함수로, 입고 데이터 생성 후 부분입고/완전입고 여부를 따져 lsdchm,b,s의 purchaseStatus를 변경해줌.
      *  (01 : 기본, 03 : 부분입고, 04 : 완전입고)
      */
-	public Lspchm changePurchaseStatus(List<Lsdpsp> lsdpspList) {
+	public Lspchm changePurchaseStatus(String purchaseNo, List<Lsdpsp> lsdpspList) {
 	    if(lsdpspList.size() == 0){
 	        log.debug("purchaseStatus를 변경할 lsdpsp가 존재하지 않습니다.");
 	        return null;
         }
-        List<Lspchb> lspchbList = new ArrayList<>();
+        List<Lsdpsp> newLsdpspList = jpaLsdpspRepository.findByPurchaseNo(purchaseNo);
         for(Lsdpsp lsdpsp : lsdpspList){
             long planQty = lsdpsp.getPurchasePlanQty();
             long takeQty = lsdpsp.getPurchaseTakeQty();
             Lspchd lspchd = lsdpsp.getLspchd();
-            Date doomDay = Utilities.getStringToDate(StringFactory.getDoomDay());
+            LocalDateTime doomDay = LocalDateTime.parse(StringFactory.getDoomDay(), DateTimeFormatter.ofPattern(StringFactory.getDateFormat()));
             List<Lspchb> lspchbList1 = lspchd.getLspchb();
             lspchbList1 = lspchbList1.stream().filter(x->x.getEffEndDt().compareTo(doomDay)==0).collect(Collectors.toList());
             Lspchb lspchb = lspchbList1.get(0);
@@ -680,10 +695,14 @@ public class JpaPurchaseService {
             else if(lspchd.getPurchaseQty() < 0){
 			    throw new IllegalArgumentException("purchaseQty must bigger than 0..");
             }
-            lspchbList.add(lspchb);
+//            lspchbList.add(lspchb);
             jpaLspchdRepository.save(lspchd);
             jpaLsdpspRepository.save(lsdpsp);
         }
+        List<Lspchb> lspchbList = jpaLspchbRepository.findByPurchaseNo(purchaseNo);
+        LocalDateTime doomDay = LocalDateTime.parse(StringFactory.getDoomDay(), DateTimeFormatter.ofPattern(StringFactory.getDateFormat()));
+        lspchbList = lspchbList.stream().filter(x->x.getEffEndDt().compareTo(doomDay)==0).collect(Collectors.toList());
+
         Lspchm lspchm = lsdpspList.get(0).getLspchd().getLspchm();
         Lspchm newLspchm = this.changePurchaseStatusOfLspchm(lspchm, lspchbList);
         this.updateLspchsStatus(lspchm, newLspchm.getPurchaseStatus());
@@ -695,7 +714,7 @@ public class JpaPurchaseService {
      */
     private Lspchb updateLspchbdStatus(Lspchb lspchb, String status){
         Lspchb newLspchb = new Lspchb(lspchb);
-        lspchb.setEffEndDt(new Date());
+        lspchb.setEffEndDt(LocalDateTime.now());
         newLspchb.setPurchaseStatus(status);
         jpaLspchbRepository.save(newLspchb);
 
@@ -723,14 +742,19 @@ public class JpaPurchaseService {
      */
     private Lspchm changePurchaseStatusOfLspchm(Lspchm lspchm, List<Lspchb> lspchbList) {
         Lspchm newLspchm = new Lspchm(lspchm);
-        newLspchm.setPurchaseStatus(StringFactory.getGbFour());
-        for(Lspchb lspchb : lspchbList){
-            if(lspchb.getPurchaseStatus().equals(StringFactory.getGbThree())){
-                newLspchm.setPurchaseStatus(StringFactory.getGbThree());
-                jpaLspchmRepository.save(newLspchm);
-                break;
+        if(lspchbList.stream().filter(x->StringFactory.getGbFour().equals(x.getPurchaseStatus())).collect(Collectors.toList()).size() == lspchbList.size()){
+            newLspchm.setPurchaseStatus(StringFactory.getGbFour());
+        }
+        else{
+            for(Lspchb lspchb : lspchbList){
+                if(lspchb.getPurchaseStatus().equals(StringFactory.getGbThree())){
+                    newLspchm.setPurchaseStatus(StringFactory.getGbThree());
+    //                jpaLspchmRepository.save(newLspchm);
+                    break;
+                }
             }
         }
+        jpaLspchmRepository.save(newLspchm);
         return newLspchm;
     }
 

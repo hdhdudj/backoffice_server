@@ -91,7 +91,7 @@ public class JpaDepositService {
         // 4. lsdpds 저장 (입고 디테일 이력)
         this.saveLsdpds(lsdpsdList, depositListWithPurchaseInfoData);
         // 5. lsdpsp의 입고예정과 실제 입고량을 비교해 부분입고인지 완전입고인지 여부로 lspchm,b,s의 purchaseStatus 변경
-        jpaPurchaseService.changePurchaseStatus(lsdpspList);
+        jpaPurchaseService.changePurchaseStatus(depositListWithPurchaseInfoData.getPurchaseNo(), lsdpspList);
         // 8. tbOrderdetail 주문상태 변경 (lspchm.dealtypeCd = 01(주문발주) 일 때)
         this.changeStatusCdOfTbOrderDetail(lsdpspList);
         return lsdpsm.getDepositNo();
@@ -431,7 +431,7 @@ public class JpaDepositService {
         List<Lsdpsp> lsdpspList = new ArrayList<>();
         List<DepositListWithPurchaseInfoData.Deposit> depositList = new ArrayList<>();
         for(DepositListWithPurchaseInfoData.Deposit deposit : depositListWithPurchaseInfoData.getDeposits()){
-            Lsdpsp lsdpsp = jpaLsdpspRepository.findByDepositPlanId(deposit.getDepositPlanId());
+            Lsdpsp lsdpsp = this.getLsdpspWithLspchm(deposit.getDepositPlanId());//jpaLsdpspRepository.findByDepositPlanId(deposit.getDepositPlanId());
             Long purchasePlanQty = lsdpsp.getPurchasePlanQty() == null? 0l : lsdpsp.getPurchasePlanQty();
             Long purchaseTakeQty = lsdpsp.getPurchaseTakeQty() == null? 0l : lsdpsp.getPurchaseTakeQty();;
             Long availableQty = purchasePlanQty - purchaseTakeQty;
@@ -474,6 +474,16 @@ public class JpaDepositService {
         depositListWithPurchaseInfoData.setDeposits(depositList);
         return lsdpspList;
     }
+
+    private Lsdpsp getLsdpspWithLspchm(String depositPlanId){
+        TypedQuery<Lsdpsp> query = em.createQuery("select p from Lsdpsp p " +
+                "join fetch p.lspchd d " +
+                "join fetch d.lspchm m " +
+                "where p.depositPlanId=?1",Lsdpsp.class);
+        query.setParameter(1,depositPlanId);
+        return query.getSingleResult();
+    }
+
 
     /**
      * 부분입고인 경우 lsdpsp의 내역이 입고만큼만 처리되고 나머지 수량은 신규로 생성시켜주는 함수

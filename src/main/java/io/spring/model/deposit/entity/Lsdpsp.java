@@ -109,7 +109,7 @@ public class Lsdpsp extends CommonProps implements Serializable {
     private Long purchaseTakeQty;
     private String assortId;
     private String itemId;
-    private String planStatus;
+    private String planStatus; // 01:입고전 03:부분입고 04:입고완료 05:취소
     private String orderId;
     private String orderSeq;
     private String purchaseNo;

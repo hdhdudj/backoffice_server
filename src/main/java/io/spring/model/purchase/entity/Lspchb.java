@@ -11,6 +11,8 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 @Entity
@@ -27,7 +29,7 @@ public class Lspchb extends CommonProps {
 ////        this.cancelGb = StringFactory.getNinetyNine();
 //    }
     public Lspchb(Lspchb lspchb){
-        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
+        this.effEndDt = LocalDateTime.parse(StringFactory.getDoomDay(), DateTimeFormatter.ofPattern(StringFactory.getDateFormat()));
         this.purchaseNo = lspchb.getPurchaseNo();
         this.purchaseSeq = lspchb.getPurchaseSeq();
         this.purchaseStatus = lspchb.getPurchaseStatus();
@@ -35,7 +37,7 @@ public class Lspchb extends CommonProps {
 //        this.cancelGb = StringFactory.getNinetyNine(); // 99 하드코딩
     }
     public Lspchb(Lspchd lspchd, String regId){
-        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
+        this.effEndDt = LocalDateTime.parse(StringFactory.getDoomDay(), DateTimeFormatter.ofPattern(StringFactory.getDateFormat()));
         this.purchaseNo = lspchd.getPurchaseNo();
         this.purchaseSeq = lspchd.getPurchaseSeq();
         this.purchaseStatus = StringFactory.getGbOne(); // 01 하드코딩
@@ -51,10 +53,10 @@ public class Lspchb extends CommonProps {
     private String purchaseNo;
     private String purchaseSeq;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date effEndDt;
+    private LocalDateTime effEndDt;
     @CreationTimestamp
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date effStaDt;
+    private LocalDateTime effStaDt;
     private String purchaseStatus;
     private String cancelGb; //= StringFactory.getStrEleven(); // 11 하드코딩
     private Long purchaseQty;

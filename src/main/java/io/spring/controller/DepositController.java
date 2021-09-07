@@ -44,7 +44,7 @@ public class DepositController {
 
 
     /**
-     * 입고 - 발주선택창 : 발주일과 구매처를 보내고 조회를 누르면 그에 맞는 발주 data를 보내줌.
+     * 입고 - 발주선택창 (입고처리 -> 발주조회 > 조회) : 발주일과 구매처를 보내고 조회를 누르면 그에 맞는 발주 data를 보내줌.
      */
     @GetMapping(path = "/purchase/items")
     public ResponseEntity getChoosePurchaseModalList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
