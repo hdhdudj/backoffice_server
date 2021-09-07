@@ -41,21 +41,21 @@ public class Lsdpsm extends CommonProps {
 		this.finishYymm = LocalDateTime.parse(StringFactory.getDoomDay(),
 				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         this.depositType = StringFactory.getGbOne(); // 01 하드코딩
-        this.depositVendorId = depositInsertRequestData.getDepositVendorId();
+        this.ownerId = depositInsertRequestData.getOwnerId();
     }
 
     public Lsdpsm(String depositNo, DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
-        this.vendorId = depositListWithPurchaseInfoData.getPurchaseVendorId();
+        this.vendorId = depositListWithPurchaseInfoData.getOwnerId();
         this.depositNo = depositNo;
 		this.depositDt = LocalDateTime.parse(depositListWithPurchaseInfoData.getDepositDt(),
 				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));// new Date();
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
         this.depositGb = StringFactory.getGbOne(); // 01 하드코딩
-        this.vendorId = depositListWithPurchaseInfoData.getPurchaseVendorId();
 		this.finishYymm = LocalDateTime.parse(StringFactory.getDoomDay(),
 				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // 9999-12-31 하드코딩
         this.depositType = StringFactory.getGbOne(); // 01 하드코딩
         this.storeCd = depositListWithPurchaseInfoData.getStorageId();
+        this.ownerId = depositListWithPurchaseInfoData.getOwnerId();
         this.setRegId(depositListWithPurchaseInfoData.getRegId());
 //        this.depositVendorId = deposit.
     }
