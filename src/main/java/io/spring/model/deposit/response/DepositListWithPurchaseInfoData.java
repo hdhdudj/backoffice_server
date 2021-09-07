@@ -20,13 +20,16 @@ import lombok.Setter;
 public class DepositListWithPurchaseInfoData {
     public DepositListWithPurchaseInfoData(Lspchm lspchm, List<DepositListWithPurchaseInfoData.Deposit> deposits){
         this.purchaseNo = lspchm.getPurchaseNo();
-        this.purchaseVendorId = lspchm.getVendorId();
+//        this.purchaseVendorId = lspchm.getVendorId();
+        this.ownerId = lspchm.getVendorId();
+
         this.depositDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
         this.storageId = lspchm.getStoreCd();
         this.deposits = deposits;
     }
     private String purchaseNo;
-    private String purchaseVendorId;
+//    private String purchaseVendorId;: ownerId로 변경됨
+    private String ownerId;
 //    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
 //    @JsonSerialize(using = LocalDateTimeSerializer.class)
 

@@ -15,7 +15,8 @@ public class DepositInsertRequestData {
     private LocalDateTime depositDt;
     private String storageId;
     private String depositStatus;
-    private String depositVendorId;
+//    private String depositVendorId; : ownerId로 변경됨
+    private String ownerId;
     private List<Item> items;
 
     @Getter

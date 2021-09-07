@@ -50,7 +50,7 @@ public class Utilities {
      * @param length
      * @return String
      */
-    public static String getStringNo(char alphabet, String calcNeedStringNumber, int length){ // 들어온 string의 숫자는 정수여야 함
+    public static String getStringNo(Character alphabet, String calcNeedStringNumber, int length){ // 들어온 string의 숫자는 정수여야 함
         if(calcNeedStringNumber == null){
             return null;
         }
@@ -61,7 +61,9 @@ public class Utilities {
         catch(Exception e){
             log.debug(e.getMessage());
         }
-        calcRes = alphabet + calcRes;
+        if(alphabet != null){
+            calcRes = alphabet + calcRes;
+        }
         return calcRes;
     }
 

@@ -71,7 +71,7 @@ public class Lsdpsm extends CommonProps {
     private LocalDateTime finishYymm;
     private String depositType;
     private String storeCd;
-    private String depositVendorId;
+    private String ownerId;
 
     // 연관 관계
     @ManyToOne(fetch = FetchType.LAZY)

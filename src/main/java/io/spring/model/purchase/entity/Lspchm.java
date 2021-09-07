@@ -45,7 +45,7 @@ public class Lspchm extends CommonProps {
         this.newDisPrice = this.disPrice;
         // this.purchaseGb = StringFactory.getGbOne(); // "01" : 일반발주
         this.purchaseGb = purchaseInsertRequestData.getPurchaseGb();
-        this.purchaseVendorId = purchaseInsertRequestData.getPurchaseVendorId();
+        this.ownerId = purchaseInsertRequestData.getOwnerId();
         this.storeCd = purchaseInsertRequestData.getStoreCd(); // "00001"
         this.oStoreCd = purchaseInsertRequestData.getOStoreCd();
         this.terms = purchaseInsertRequestData.getTerms();
@@ -75,7 +75,7 @@ public class Lspchm extends CommonProps {
         this.newDisPrice = this.disPrice;
 		// this.purchaseGb = StringFactory.getGbOne(); // "01" : 일반발주
 		this.purchaseGb = purchaseInsertRequestData.getPurchaseGb();
-        this.purchaseVendorId = purchaseInsertRequestData.getPurchaseVendorId();
+        this.ownerId = purchaseInsertRequestData.getOwnerId();
         this.storeCd = purchaseInsertRequestData.getStorageId(); // "00001"
         this.oStoreCd = purchaseInsertRequestData.getOStorageId();
         this.terms = purchaseInsertRequestData.getTerms();
@@ -178,7 +178,8 @@ public class Lspchm extends CommonProps {
     private Float newDisPrice;
     private String cardId;
     private String purchaseGb;
-    private String purchaseVendorId;
+//    private String purchaseVendorId; : ownerId로 변경됨
+    private String ownerId;
     private String affilVdId;
     private String storeCd;
     private String oStoreCd;

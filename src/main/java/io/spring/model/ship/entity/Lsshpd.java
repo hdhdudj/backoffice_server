@@ -33,7 +33,7 @@ public class Lsshpd extends CommonProps {
         this.shipSeq = shipSeq;
         this.assortId = tbOrderDetail.getAssortId();
         this.itemId = tbOrderDetail.getItemId();
-        this.shipVendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
+        this.ownerId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
         this.shipIndicateQty = 1l;
         this.shipQty = 0l;
 //        this.vendorDealCd = lsdpsp.getDealtypeCd(); 바깥에서 set
@@ -42,7 +42,7 @@ public class Lsshpd extends CommonProps {
         this.orderSeq = tbOrderDetail.getOrderSeq();
         this.shipGb = StringFactory.getGbTwo(); // 01 출고 02 이동
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
-        this.vendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
+        this.channelId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
         this.rackNumber = null;
         this.customsTax = 0f;
         this.excAppDt = ititmc.getEffEndDt();
@@ -62,14 +62,14 @@ public class Lsshpd extends CommonProps {
         this.shipSeq = shipSeq;
         this.assortId = goods.getAssortId();
         this.itemId = goods.getItemId();
-        this.shipVendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
+        this.ownerId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
 //        this.shipIndicateQty = 1l; : 바깥에서 set
         this.shipQty = 0l;
         this.vendorDealCd = StringFactory.getGbTwo(); // 01 : 주문, 02 : 상품, 03 : 입고예정 (02 하드코딩)
         this.vatGb = StringFactory.getGbOne(); // 01 하드코딩
         this.shipGb = StringFactory.getGbTwo(); // 01 출고 02 이동
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
-        this.vendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
+        this.channelId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
         this.rackNumber = null;
         this.customsTax = 0f;
         this.excAppDt = ititmc.getEffStaDt(); // ititmc의 effEndDt를 lsshpd.excAppDt로
@@ -91,7 +91,8 @@ public class Lsshpd extends CommonProps {
     private String shipSeq;
     private String assortId;
     private String itemId;
-    private String shipVendorId;
+//    private String shipVendorId : ownerId로 변경됨
+    private String ownerId;
     private Long shipIndicateQty;
     private Long shipQty;
     private String vendorDealCd;
@@ -100,7 +101,8 @@ public class Lsshpd extends CommonProps {
     private String orderSeq;
     private String shipGb;
     private String siteGb;
-    private String vendorId;
+//    private String vendorId; : channelId로 변경됨
+    private String channelId;
     private String rackNumber;
     private Float customsTax;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")

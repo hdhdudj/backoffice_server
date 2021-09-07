@@ -24,37 +24,24 @@ public class Itasrn extends CommonProps {
     private final static Logger logger = LoggerFactory.getLogger(Itasrn.class);
     public Itasrn(Itasrn itasrn){
         this.historyGb = itasrn.getHistoryGb();
-        this.vendorId = itasrn.getVendorId();
+        this.ownerId = itasrn.getOwnerId();
         this.assortId = itasrn.getAssortId();
         this.localSale = itasrn.getLocalSale();
         this.shortageYn = itasrn.getShortageYn();
-        try
-        {
-            this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
-        }
-        catch (Exception e){
-            logger.debug(e.getMessage());
-        }
+        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
     }
     public Itasrn(GoodsInsertRequestData goodsInsertRequestData){
-        this.historyGb = "01"; // default 값
-        this.vendorId = "000001";
-        
+        this.historyGb = StringFactory.getGbOne(); // default 값 (01)
+        this.ownerId = Utilities.getStringNo(null,StringFactory.getStrOne(),6); // 000001 하드코딩
         this.assortId = goodsInsertRequestData.getAssortId();
         this.localSale = goodsInsertRequestData.getLocalSale();
-        try
-        {
-            this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
-        }
-        catch (Exception e){
-            logger.debug(e.getMessage());
-        }
+        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seq;
     private String historyGb;
-    private String vendorId;
+    private String ownerId;
     private String assortId;
     @CreationTimestamp
     private Date effStaDt;

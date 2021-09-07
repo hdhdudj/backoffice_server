@@ -26,7 +26,4 @@ public class Cmvdmr extends CommonProps {
     private String delivery;
     private String payment;
     private String carrier;
-
-//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "itasrt")
-//    private List<Itasrt> itasrt;
 }

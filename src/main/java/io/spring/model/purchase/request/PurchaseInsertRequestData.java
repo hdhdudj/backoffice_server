@@ -73,7 +73,8 @@ public class PurchaseInsertRequestData {
     private Float disPrice;
     private Float newDisPrice;
     private String purchaseGb;
-    private String purchaseVendorId;
+//    private String purchaseVendorId; : ownerId로 변경됨
+    private String ownerId;
     private String storageId;
     @JsonProperty("oStorageId")
     private String oStorageId;

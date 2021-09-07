@@ -1,6 +1,7 @@
 package io.spring.model.goods.entity;
 
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.goods.idclass.ItitmtId;
@@ -75,6 +76,7 @@ public class Ititmt extends CommonProps {
     private Long tempIndicateQty;
     private Long tempQty;
     private Float stockAmt;
-    private String vendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
+    private String vendorId = Utilities.getStringNo(null,StringFactory.getStrOne(),6); // 000001 하드코딩
+    private String ownerId;
     private String siteGb = StringFactory.getGbOne(); // 01 하드코딩
 }

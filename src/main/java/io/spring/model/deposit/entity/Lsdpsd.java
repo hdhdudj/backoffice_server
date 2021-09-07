@@ -49,7 +49,7 @@ public class Lsdpsd extends CommonProps implements Serializable {
 				DateTimeFormatter.ofPattern(StringFactory.getDateFormat())); // 9999-12-31 하드코딩
         this.depositType = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01' 입고
         this.siteGb = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
-        this.vendorId = depositInsertRequestData.getDepositVendorId();//StringUtils.leftPad("1", 6, '0'); // 000001 하드코딩
+        this.ownerId = depositInsertRequestData.getOwnerId();//StringUtils.leftPad("1", 6, '0'); // 000001 하드코딩
         this.inputNo = item.getPurchaseNo();
         this.inputSeq = item.getPurchaseSeq();
     }
@@ -70,7 +70,7 @@ public class Lsdpsd extends CommonProps implements Serializable {
 				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // 9999-12-31 하드코딩
         this.depositType = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01' 입고
         this.siteGb = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
-        this.vendorId = depositListWithPurchaseInfoData.getPurchaseVendorId();//StringUtils.leftPad("1", 6, '0'); // 000001 하드코딩
+        this.ownerId = depositListWithPurchaseInfoData.getOwnerId();//StringUtils.leftPad("1", 6, '0'); // 000001 하드코딩
         this.inputNo = deposit.getPurchaseNo();
         this.inputSeq = deposit.getPurchaseSeq();
     }
@@ -92,7 +92,7 @@ public class Lsdpsd extends CommonProps implements Serializable {
     private LocalDateTime finishYymm;
     private String depositType;
     private String siteGb;
-    private String vendorId;
+    private String ownerId;
     private String sStorageCd;
     private String minDepositNo;
     private String minDepositSeq;

@@ -44,7 +44,7 @@ public class Itasrt extends CommonProps {
 		this.brandId = goodsInsertRequestData.getBrandId();
 		this.dispCategoryId = goodsInsertRequestData.getDispCategoryId();
 		this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
-		this.asVendorId = goodsInsertRequestData.getAsVendorId();
+		this.ownerId = goodsInsertRequestData.getAsVendorId();
 		this.manufactureNm = goodsInsertRequestData.getManufactureNm();
 		this.deliPrice = goodsInsertRequestData.getDeliPrice();
 		this.localPrice = goodsInsertRequestData.getLocalPrice();
@@ -147,7 +147,7 @@ public class Itasrt extends CommonProps {
 	private String srhExpYn;
 	private String nonsaleYn;
 	private String siteGb;
-	private String asVendorId;
+	private String ownerId;
 	private String deliNrgGb;
 	private String manufactureNm;
 	private String delayRewardYn;

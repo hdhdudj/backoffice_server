@@ -40,7 +40,7 @@ public class Lspchd extends CommonProps {
         this.mailsendYn = lspchd.getMailsendYn();
         this.memo = lspchd.getMemo();
         this.siteGb = lspchd.getSiteGb();
-        this.vendorId = lspchd.getVendorId();
+        this.ownerId = lspchd.getOwnerId();
         this.raNo = lspchd.getRaNo();
         this.itemAmt = lspchd.getItemAmt();
         this.newItemAmt = lspchd.getNewItemAmt();
@@ -78,7 +78,7 @@ public class Lspchd extends CommonProps {
         this.purchaseItemAmt = lsdpsd.getExtraCost();
         this.itemGrade = lsdpsd.getItemGrade();
         this.siteGb = lsdpsd.getSiteGb();
-        this.vendorId = lsdpsd.getVendorId();
+        this.ownerId = lsdpsd.getOwnerId();
         this.siteOrderNo = tbOrderDetail.getChannelOrderNo();
         this.orderId = tbOrderDetail.getOrderId();
         this.orderSeq = tbOrderDetail.getOrderSeq();
@@ -98,7 +98,7 @@ public class Lspchd extends CommonProps {
 //        this.purchaseItemAmt = lsdpsd.getExtraCost();
         this.itemGrade = StringFactory.getStrEleven(); // 11 하드코딩
 //        this.siteGb = lsdpsd.getSiteGb();
-        this.vendorId = lsshpd.getVendorId();
+        this.ownerId = lsshpd.getOwnerId();
         super.setRegId(regId);
         super.setUpdId(regId);
     }
@@ -117,7 +117,8 @@ public class Lspchd extends CommonProps {
     private String mailsendYn;
     private String memo;
     private String siteGb;
-    private String vendorId;
+//    private String vendorId; : ownerId로 변경됨
+    private String ownerId;
     private String raNo;
     private Float itemAmt;
     private Float newItemAmt;
