@@ -84,20 +84,20 @@
     	<![CDATA[
 	
 				select
-					bbb.vendor_id purchaseVendorId,
+					bbb.owner_id purchaseVendorId,
 					bbb.vd_nm purchaseVendorName,
 					sum(bbb.qty) purchaseVendorQty
 				from
 					(
 					select
-						aaaa.vendor_id ,
+						aaaa.owner_id ,
 						aaaa.vd_nm ,
 						sum(aaaa.qty) qty 
 					from
 						(
 						select
-							ifnull(bbb.vendor_id, '000000')vendor_id ,
-							ifnull((select bb.vd_nm from cmvdmr bb where bb.vendor_id = bbb.vendor_id), '거래처없음') vd_nm ,
+							ifnull(bbb.owner_id, '000000') owner_id ,
+							ifnull((select bb.vd_nm from cmvdmr bb where bb.id = bbb.owner_id), '거래처없음') vd_nm ,
 							aaa.*
 						from
 							(
@@ -115,17 +115,17 @@
 							and aaa.assort_id = bbb.assort_id
 							 ) aaaa
 					group by
-						aaaa.vendor_id ,
+						aaaa.owner_id ,
 						aaaa.vd_nm
 				union ALL
 					select
-						cc.vendor_id,
+						cc.id,
 						cc.vd_nm ,
 						0 qty 
 					from
 						cmvdmr cc ) bbb
 				group by
-					bbb.vendor_id ,
+					bbb.owner_id ,
 					bbb.vd_nm
 
 	
