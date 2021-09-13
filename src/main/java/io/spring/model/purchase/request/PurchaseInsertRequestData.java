@@ -49,6 +49,7 @@ public class PurchaseInsertRequestData {
     // 여러 테이블에서 쓰는 변수
     private String purchaseId; // lspchm, lspchs
     private String purchaseStatus; // lspchm, lspchs, lspchb
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date effEndDt; // lspchm, lspchs
     private String siteGb; // lspchm, ititmt
     private String vendorId; // lspchm, ititmt
@@ -87,6 +88,7 @@ public class PurchaseInsertRequestData {
 	private List<Items> items;
 
     // lspchs
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date effStaDt;
 
     // lspchd
@@ -103,6 +105,7 @@ public class PurchaseInsertRequestData {
 
     // lsdpsp
     private String depositPlanId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date smReservationDt;
     private Long purchasePlanQty;
     private Long purchaseTakeQty;

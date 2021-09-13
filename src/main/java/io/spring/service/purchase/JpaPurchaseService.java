@@ -228,7 +228,7 @@ public class JpaPurchaseService {
         for (int i = 0; i < itemList.size(); i++) {
             PurchaseInsertRequestData.Items item = itemList.get(i);
             Lspchd lspchd = lspchdList.get(i);
-            Date doomDate = Utilities.getStringToDate(StringFactory.getDoomDay());
+            LocalDateTime doomDate = Utilities.dateToLocalDateTime(Utilities.getStringToDate(StringFactory.getDoomDay()));
             Lspchb lspchb = jpaLspchbRepository.findByPurchaseNoAndPurchaseSeqAndEffEndDt(lspchd.getPurchaseNo(), lspchd.getPurchaseSeq(), doomDate);
             if(lspchb == null){ // insert
                 lspchb = new Lspchb(lspchd, null);

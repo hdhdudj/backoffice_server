@@ -6,7 +6,7 @@
         select a.purchase_no purchaseNo,
                b.purchase_seq purchaseSeq,
                a.purchase_vendor_id purchaseVendorId,
-               ifnull((select bb.vd_nm from cmvdmr bb where bb.vendor_id = a.purchase_vendor_id), '거래처없음') purchaseVendorNm ,
+               ifnull((select bb.vd_nm from cmvdmr bb where bb.id = a.purchase_vendor_id), '거래처없음') purchaseVendorNm ,
 				a.store_cd storeCd,
 				(select bb.storage_nm from cmstgm bb where bb.storage_id = a.store_cd) storageNm,
 				a.dealtype_cd dealtypeCd, 
@@ -140,7 +140,7 @@
 		,aaa.purchase_status  purchaseStatus
 		,aaa.purchase_gb  purchaseGb
 		,aaa.purchase_vendor_id purchaseVendorId
-		,ifnull((select bb.vd_nm from cmvdmr bb where bb.vendor_id = aaa.purchase_vendor_id), '거래처없음') purchaseVendorNm  
+		,ifnull((select bb.vd_nm from cmvdmr bb where bb.id = aaa.purchase_vendor_id), '거래처없음') purchaseVendorNm
 		,aaa.store_cd storeCd
 		,(select bb.storage_nm from cmstgm bb where bb.storage_id = aaa.store_cd) storageNm 
 		,aaa.terms terms
@@ -232,7 +232,7 @@
 					(
 					select
 						ifnull(bbb.vendor_id, '000000') vendor_id ,
-						ifnull((select bb.vd_nm from cmvdmr bb where bb.vendor_id = bbb.vendor_id), '거래처없음') vd_nm ,
+						ifnull((select bb.vd_nm from cmvdmr bb where bb.id = bbb.vendor_id), '거래처없음') vd_nm ,
 						bbb.assort_nm ,
 						bbb.md_rrp ,
 						bbb.buy_supply_discount ,
