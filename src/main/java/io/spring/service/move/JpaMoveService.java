@@ -92,6 +92,8 @@ public class JpaMoveService {
         LocalDateTime end = endDt.atTime(23,59,59);
         TypedQuery<TbOrderDetail> query = em.createQuery("select to from TbOrderDetail to " +
                 "join fetch to.lspchd pd " +
+                "join fetch pd.lsdpsd sd " +
+                "join fetch sd.lsdpsm sm " +
                 "join fetch to.itasrt i " +
                 "where " +
                 "to.regDt between ?1 and ?2 " +
