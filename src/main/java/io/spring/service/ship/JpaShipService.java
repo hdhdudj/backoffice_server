@@ -254,7 +254,7 @@ public class JpaShipService {
                         "and (?3 is null or trim(?3)='' or td.assortId=?3) " +
                         "and (?4 is null or trim(?4)='' or lsd.shipId=?4) " +
                         "and (?5 is null or trim(?5)='' or it.assortNm like concat('%', ?5, '%')) " +
-                        "and (?6 is null or trim(?6)='' or lsd.vendorId=?6)"
+                        "and (?6 is null or trim(?6)='' or lsd.ownerId=?6)"
                 ,Lsshpd.class);
         query.setParameter(1, start).setParameter(2, end)
                 .setParameter(3,assortId).setParameter(4,shipId)

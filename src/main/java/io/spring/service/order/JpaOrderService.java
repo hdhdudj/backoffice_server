@@ -65,10 +65,10 @@ public class JpaOrderService {
         }
         String assortGb = tbOrderDetail.getAssortGb();
         if(assortGb.equals(StringFactory.getGbOne())){ // assortGb == '01' : 직구
-            changeOrderStatusWhenDirect(tbOrderDetail);
+            this.changeOrderStatusWhenDirect(tbOrderDetail);
         }
         else if(assortGb.equals(StringFactory.getGbTwo())){ // assortGb == '02' : 수입
-            changeOrderStatusWhenImport(tbOrderDetail);
+            this.changeOrderStatusWhenImport(tbOrderDetail);
         }
     }
     
