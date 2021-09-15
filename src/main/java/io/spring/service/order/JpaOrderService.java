@@ -117,7 +117,7 @@ public class JpaOrderService {
         else{
             statusCd = StringFactory.getStrB01(); // 발주대기 : B01
         }
-        updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), statusCd);
+        this.updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), statusCd);
 //        List<TbOrderDetail> tbOrderDetailsC04 = jpaTbOrderDetailRepository.findAll().stream()
 //                .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList()); // 주문코드가 CO4인 애들의 list
 //        long sumOfTbOrderDetailsC04 = tbOrderDetailsC04.stream().map(x -> x.getQty()).reduce((a,b) -> a+b).get(); // C04인 애들의 sum(qty)
@@ -164,7 +164,10 @@ public class JpaOrderService {
      */
     private void changeOrderStatusWhenImport(TbOrderDetail tbOrderDetail) {
         Itasrt itasrt = jpaItasrtRepository.findById(tbOrderDetail.getAssortId()).orElseGet(() -> null);
-
+        if(itasrt == null){
+            log.debug("해당 상품 정보가 존재하지 않습니다.");
+            return;
+        }
         String assortId = tbOrderDetail.getAssortId();
         String itemId = tbOrderDetail.getItemId();
 		String domesticStorageId = tbOrderDetail.getStorageId(); // 주문자 현지(국내?) 창고 id (국내창고)
@@ -278,7 +281,7 @@ public class JpaOrderService {
 //        else {
 //            statusCd = StringFactory.getStrB01(); // 발주대기 : B01
 //        }
-        updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), statusCd);
+        this.updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), statusCd);
     }
 
     /**
@@ -329,6 +332,8 @@ public class JpaOrderService {
      * @param orderSeq
      * @param statusCd
      */
+
+
 	public void updateOrderStatusCd(String orderId, String orderSeq, String statusCd) {
 
 		TbOrderDetail tod = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
@@ -348,11 +353,16 @@ public class JpaOrderService {
 
 		TbOrderHistory toh = new TbOrderHistory(orderId, orderSeq, statusCd, "001", newEffEndDate,
 				Utilities.getStringToDate(StringFactory.getDoomDay()));
+        // 임시 코드
+        toh.setRegId("1");
+        toh.setUpdId("1");
 
 		tohs.add(toh);
 
+        System.out.println(tod);
+        TbOrderDetail t = jpaTbOrderDetailRepository.save(tod);
 
-		jpaTbOrderDetailRepository.save(tod);
+        System.out.println(t);
 
         jpaTbOrderHistoryRepository.saveAll(tohs);
 	}
@@ -362,6 +372,11 @@ public class JpaOrderService {
 		
 
 	}
+
+
+    public TbOrderDetail getOrderDetail(String orderId,String orderSeq){
+        return jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId,orderSeq);
+    }
 
 	@Transactional
 	public void saveOrderStock(OrderStockMngInsertRequestData req) {

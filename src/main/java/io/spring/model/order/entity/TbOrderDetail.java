@@ -17,6 +17,7 @@ import javax.persistence.*;
 @Table(name="tb_order_detail")
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @IdClass(TbOrderDetailId.class)
 @EqualsAndHashCode(exclude = {"ititmm"}, callSuper = false)

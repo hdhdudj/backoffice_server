@@ -5,6 +5,7 @@ import io.spring.dao.order.MyBatisOrderDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.order.entity.OrderStock;
+import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.request.OrderStockMngInsertRequestData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.order.JpaOrderService;
@@ -160,7 +161,19 @@ public class OrderController {
 	public ResponseEntity changeOrderStatus(@RequestParam String orderId, @RequestParam String orderSeq){
 		log.debug("changeOrderStatus 실행.");
 		jpaOrderService.changeOrderStatus(orderId, orderSeq);
+
+
+		TbOrderDetail t = jpaOrderService.getOrderDetail(orderId, orderSeq);
+
+		System.out.println("--------------------------------------------------------------------------------------------");
+
+		System.out.println(t);
+
+
 		ApiResponseMessage res = null;
 		return ResponseEntity.ok(res);
 	}
+
+
+
 }
