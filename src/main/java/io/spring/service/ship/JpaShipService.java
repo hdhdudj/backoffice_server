@@ -73,15 +73,16 @@ public class JpaShipService {
             ShipIndicateSaveListResponseData.Ship ship = new ShipIndicateSaveListResponseData.Ship(tbOrderDetail);
             ship.setAvailableQty(availableQty);
             shipList.add(ship);
-            List<Itvari> itvariList = tbOrderDetail.getItasrt().getItvariList();
-            if(itvariList.size() > 0){
-                Itvari itvari1 = itvariList.get(0);
-                ship.setOptionNm1(itvari1.getOptionNm());
-            }
-            if(itvariList.size() > 1){
-                Itvari itvari2 = itvariList.get(1);
-                ship.setOptionNm2(itvari2.getOptionNm());
-            }
+            Utilities.setOptionNames(ship, tbOrderDetail.getItasrt().getItvariList());
+//            List<Itvari> itvariList = tbOrderDetail.getItasrt().getItvariList();
+//            if(itvariList.size() > 0){
+//                Itvari itvari1 = itvariList.get(0);
+//                ship.setOptionNm1(itvari1.getOptionNm());
+//            }
+//            if(itvariList.size() > 1){
+//                Itvari itvari2 = itvariList.get(1);
+//                ship.setOptionNm2(itvari2.getOptionNm());
+//            }
         }
         ShipIndicateSaveListResponseData shipIndicateSaveListResponseData = new ShipIndicateSaveListResponseData(startDt, endDt, assortId, assortNm, purchaseVendorId);
         shipIndicateSaveListResponseData.setShips(shipList);
@@ -95,8 +96,10 @@ public class JpaShipService {
         long maxShipIndicateQty = -1;
         for(Ititmc ititmc : ititmcList){
             long shipIndicateQty = ititmc.getShipIndicateQty() == null ? 0l : ititmc.getShipIndicateQty();
-            if(shipIndicateQty > maxShipIndicateQty){
-                maxShipIndicateQty = shipIndicateQty;
+            long qty = ititmc.getQty() == null ? 0l : ititmc.getQty();
+            long availableQty = qty - shipIndicateQty;
+            if(availableQty > maxShipIndicateQty){
+                maxShipIndicateQty = availableQty;
             }
         }
         return maxShipIndicateQty;
@@ -125,7 +128,7 @@ public class JpaShipService {
     }
 
     /**
-     * 출고지시 수량 입력 후 저장하는 함수
+     * 출고지시 저장 : 수량 입력 후 저장하는 함수
      */
     @Transactional
     public List<String> saveShipIndicate(ShipIndicateSaveListData shipIndicateSaveListData) {
@@ -149,7 +152,7 @@ public class JpaShipService {
 
             List<Ititmc> ititmcList = jpaItitmcRepository.findByAssortIdAndItemIdOrderByEffEndDtAsc(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
             // 1. 재고에서 출고 차감 계산
-            ititmcList = this.calcItitmcQties(ititmcList, ship.getQty()); // 주문량만큼 출고차감 (하나의 ititmc에서 모두 차감하므로 ititmcList에 값이 있다면 한 개만 들어있어야 함)
+            ititmcList = this.calcItitmcQties(ititmcList, ship.getAvailableQty()); // 주문량만큼 출고차감 (하나의 ititmc에서 모두 차감하므로 ititmcList에 값이 있다면 한 개만 들어있어야 함)
             if(ititmcList.size()==0){
                 log.debug("출고지시량 이상의 출고가능량을 가진 재고 세트가 없습니다.");
                 continue;
@@ -195,28 +198,24 @@ public class JpaShipService {
      * ShipIndicateSaveData 객체로 lsshpm,s,d 생성
      */
     private String makeShipData(Ititmc ititmc, ShipIndicateSaveListData.Ship ship, TbOrderDetail tbOrderDetail, String shipStatus) {
-        String shipId = getShipId();
+        String shipId = this.getShipId();
 
-        for (int i = 0; i < ship.getQty(); i++) {
-            Itasrt itasrt = tbOrderDetail.getItasrt();
-            if(i==0){
-                // lsshpm 저장
-                Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail);
-                lsshpm.setShipStatus(shipStatus); // 01 : 이동지시or출고지시, 04 : 출고
-                lsshpm.setDeliId(tbOrderDetail.getTbOrderMaster().getDeliId());
-                // lsshps 저장
-                Lsshps lsshps = new Lsshps(lsshpm);
-                jpaLsshpsRepository.save(lsshps);
-                jpaLsshpmRepository.save(lsshpm);
-            }
-            // lsshpd 저장
-            String shipSeq = StringUtils.leftPad(Integer.toString(i + 1), 4,'0');
-            Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc, itasrt);
+        Itasrt itasrt = tbOrderDetail.getItasrt();
+        // lsshpm 저장
+        Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail);
+        lsshpm.setShipStatus(shipStatus); // 01 : 이동지시or출고지시, 04 : 출고
+        lsshpm.setDeliId(tbOrderDetail.getTbOrderMaster().getDeliId());
+        // lsshps 저장
+        Lsshps lsshps = new Lsshps(lsshpm);
+        jpaLsshpsRepository.save(lsshps);
+        jpaLsshpmRepository.save(lsshpm);
+        // lsshpd 저장
+        String shipSeq = StringUtils.leftPad(Integer.toString(1), 4,'0');
+        Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc, itasrt);
 //            lsshpd.setLocalPrice(tbOrderDetail.getLspchd());
-            lsshpd.setVendorDealCd(StringFactory.getGbOne()); // 01 : 주문, 02 : 상품, 03 : 입고예정
-            lsshpd.setShipIndicateQty(1l);
-            jpaLsshpdRepository.save(lsshpd);
-        }
+        lsshpd.setVendorDealCd(StringFactory.getGbOne()); // 01 : 주문, 02 : 상품, 03 : 입고예정
+        lsshpd.setShipIndicateQty(ship.getAvailableQty());
+        jpaLsshpdRepository.save(lsshpd);
         return shipId;
     }
 
@@ -240,10 +239,10 @@ public class JpaShipService {
     public ShipIndicateListData getShipList(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
                                             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
                                             String shipId, String assortId, String assortNm,
-                                            String vendorId, String statusCd) {
+                                            String channelId, String statusCd) {
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
-        ShipIndicateListData shipIndicateListData = new ShipIndicateListData(start.toLocalDate(),end.toLocalDate(),shipId,assortId,assortNm,vendorId);
+        ShipIndicateListData shipIndicateListData = new ShipIndicateListData(start.toLocalDate(),end.toLocalDate(),shipId,assortId,assortNm,channelId);
 //        start = startDt == null? Utilities.strToLocalDate(StringFactory.getStartDay()) : startDt;
 //        end = endDt == null? Utilities.strToLocalDate(StringFactory.getStartDay()) : endDt.plusDays(1);
         TypedQuery<Lsshpd> query = em.createQuery("select lsd from Lsshpd lsd " +
@@ -258,7 +257,7 @@ public class JpaShipService {
                 ,Lsshpd.class);
         query.setParameter(1, start).setParameter(2, end)
                 .setParameter(3,assortId).setParameter(4,shipId)
-                .setParameter(5,assortNm).setParameter(6,vendorId);
+                .setParameter(5,assortNm).setParameter(6,channelId);
         List<Lsshpd> lsshpdList = query.getResultList();
         // 출고지시리스트 : C04, 출고처리리스트 : D01, 출고리스트 statusCd = D02인 애들만 남기기
         lsshpdList = lsshpdList.stream().filter(x->x.getTbOrderDetail().getStatusCd().equals(statusCd)).collect(Collectors.toList());
@@ -267,17 +266,18 @@ public class JpaShipService {
             Lsshpm lsshpm = lsshpd.getLsshpm();
             ShipIndicateListData.Ship ship = new ShipIndicateListData.Ship(lsshpd.getTbOrderDetail(), lsshpm, lsshpd);
             // option set
-            List<Itvari> itvariList = lsshpd.getTbOrderDetail().getItasrt().getItvariList();
-            if(itvariList.size() > 0){
-                Itvari itvari1 = itvariList.get(0);
-                ship.setOptionNm1(itvari1.getOptionNm());
-            }
-            if(itvariList.size() > 1){
-                Itvari itvari2 = itvariList.get(1);
-                ship.setOptionNm2(itvari2.getOptionNm());
-            }
+            Utilities.setOptionNames(ship, lsshpd.getTbOrderDetail().getItasrt().getItvariList());
+//            List<Itvari> itvariList = lsshpd.getTbOrderDetail().getItasrt().getItvariList();
+//            if(itvariList.size() > 0){
+//                Itvari itvari1 = itvariList.get(0);
+//                ship.setOptionNm1(itvari1.getOptionNm());
+//            }
+//            if(itvariList.size() > 1){
+//                Itvari itvari2 = itvariList.get(1);
+//                ship.setOptionNm2(itvari2.getOptionNm());
+//            }
             // 출고지시 qty 설정 == 1l
-            ship.setQty(1l);
+            ship.setQty(lsshpd.getShipIndicateQty());
             shipList.add(ship);
         }
         shipIndicateListData.setShips(shipList);
@@ -322,7 +322,10 @@ public class JpaShipService {
         // 1. ititmc의 두 qty에서 처리된 양만큼 빼기
         List<Lsshpd> lsshpdList = new ArrayList<>();
         for(ShipSaveListData.Ship ship : shipSaveListData.getShips()){
-            Lsshpd lsshpd = jpaLsshpdRepository.findByShipIdAndShipSeq(ship.getShipId(), ship.getShipSeq());
+            Lsshpd lsshpd = em.createQuery("select ld from Lsshpd ld join fetch ld.tbOrderDetail to where ld.shipId=?1 and ld.shipSeq=?2",Lsshpd.class)
+                    .setParameter(1,ship.getShipId())
+                    .setParameter(2, ship.getShipSeq()).getSingleResult();//jpaLsshpdRepository.findByShipIdAndShipSeq(ship.getShipId(), ship.getShipSeq());
+
             // 수량 완전입고로 변경
             lsshpd.setShipQty(lsshpd.getShipIndicateQty());
             Lsshpm lsshpm = lsshpd.getLsshpm();

@@ -1,6 +1,11 @@
 package io.spring.model.ship.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.order.entity.TbMember;
@@ -45,7 +50,7 @@ public class ShipIndicateSaveListData {
             TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
             Itasrt itasrt = tbOrderDetail.getItasrt();
             TbMember tbMember = tbOrderMaster.getTbMember();
-            this.orderDt = (tbOrderDetail.getTbOrderMaster().getOrderDate());
+            this.orderDt = Utilities.localDateTimeToDate(tbOrderDetail.getTbOrderMaster().getOrderDate());
             this.orderId = tbOrderDetail.getOrderId();
             this.orderSeq = tbOrderDetail.getOrderSeq();
             this.orderKey = Utilities.addDashInMiddle(this.orderId, this.orderSeq);
@@ -60,7 +65,7 @@ public class ShipIndicateSaveListData {
             // optionNm1, optionNm2는 외부에서 set
         }
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-        private LocalDateTime orderDt;
+        private Date orderDt;
         private String orderId;
         private String orderSeq;
         private String orderKey;
@@ -73,6 +78,7 @@ public class ShipIndicateSaveListData {
         private String assortNm;
         private String optionNm1;
         private String optionNm2;
+        private Long availableQty;
         private Long qty;
     }
 }

@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.SetOptionInterface;
+import io.spring.model.order.entity.TbMember;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
@@ -27,13 +29,13 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShipIndicateListData {
-    public ShipIndicateListData(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String vendorId){
+    public ShipIndicateListData(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String channelId){
         this.startDt = startDt;
         this.endDt = endDt;
         this.shipId = shipId;
         this.assortId = assortId;
         this.assortNm = assortNm;
-        this.vendorId = vendorId;
+        this.channelId = channelId;
     }
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -46,14 +48,15 @@ public class ShipIndicateListData {
     private String shipId;
     private String assortId;
     private String assortNm;
-    private String vendorId;
+    private String channelId;
     private List<Ship> ships;
 
     @Getter
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class Ship{
+    public static class Ship implements SetOptionInterface {
         public Ship(TbOrderDetail tbOrderDetail, Lsshpm lsshpm, Lsshpd lsshpd){
+            TbMember tbMember = tbOrderDetail.getTbOrderMaster().getTbMember();
             this.shipIndDt = java.sql.Timestamp.valueOf(lsshpm.getReceiptDt());
             this.shipId = lsshpd.getShipId();
             this.shipSeq = lsshpd.getShipSeq();
@@ -62,7 +65,7 @@ public class ShipIndicateListData {
             this.deliMethod = tbOrderDetail.getDeliMethod();
             this.assortId = tbOrderDetail.getAssortId();
             this.itemId = tbOrderDetail.getItemId();
-            this.custNm = tbOrderDetail.getTbOrderMaster().getTbMember().getCustNm();
+            this.custNm = tbMember==null? null : tbMember.getCustNm();
             this.assortNm = tbOrderDetail.getGoodsNm();
             this.blNo = lsshpm.getBlNo(); // 트래킹 번호
             this.shipDt = Utilities.removeTAndTransToStr(lsshpm.getApplyDay());

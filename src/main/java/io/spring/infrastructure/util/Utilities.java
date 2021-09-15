@@ -133,7 +133,7 @@ public class Utilities {
      */
     public static String removeTAndTransToStr(LocalDateTime localDateTime){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.KOREA);
-        String strDate = localDateTime.format(formatter).toString();
+        String strDate = localDateTime.format(formatter);
         return strDate.replace('T', ' ');
     }
 

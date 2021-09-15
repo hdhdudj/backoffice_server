@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.SetOptionInterface;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.order.entity.TbMember;
 import io.spring.model.order.entity.TbOrderDetail;
@@ -48,20 +49,20 @@ public class ShipIndicateSaveListResponseData {
     @Getter
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class Ship{
+    public static class Ship implements SetOptionInterface {
         public Ship(TbOrderDetail tbOrderDetail) {
         TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
         Itasrt itasrt = tbOrderDetail.getItasrt();
         TbMember tbMember = tbOrderMaster.getTbMember();
         this.orderDt = Utilities.removeTAndTransToStr(tbOrderDetail.getTbOrderMaster().getOrderDate());
-        this.orderId = tbOrderDetail.getOrderId();
-        this.orderSeq = tbOrderDetail.getOrderSeq();
         this.orderKey = Utilities.addDashInMiddle(orderId,orderSeq);
         this.assortGb = itasrt.getAssortGb();
-        this.deliMethod = tbOrderDetail.getDeliMethod();
-        this.assortId = tbOrderDetail.getAssortId();
-        this.itemId = tbOrderDetail.getItemId();
-        this.custNm = tbMember.getCustNm();
+        this.orderId = tbOrderDetail == null? null:tbOrderDetail.getOrderId();
+        this.orderSeq = tbOrderDetail == null? null:tbOrderDetail.getOrderSeq();
+        this.deliMethod = tbOrderDetail == null? null:tbOrderDetail.getDeliMethod();
+        this.assortId = tbOrderDetail == null? null:tbOrderDetail.getAssortId();
+        this.itemId = tbOrderDetail == null? null:tbOrderDetail.getItemId();
+        this.custNm = tbMember == null? null:tbMember.getCustNm();
         this.assortNm = itasrt.getAssortNm();
 //        this.availableQty =
         this.qty = 0l;

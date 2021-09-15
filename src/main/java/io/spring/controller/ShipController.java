@@ -58,10 +58,10 @@ public class ShipController {
                                       @RequestParam @Nullable String shipId,
                                        @RequestParam @Nullable String assortId,
                                        @RequestParam @Nullable String assortNm,
-                                       @RequestParam @Nullable String vendorId){
+                                       @RequestParam @Nullable String channelId){
 //        Date start = java.sql.Timestamp.valueOf(startDt.atStartOfDay());
 //        Date end = java.sql.Timestamp.valueOf(endDt.atTime(23,59,59));
-        ShipIndicateListData shipIndicateListData = jpaShipService.getShipList(startDt, endDt, shipId, assortId, assortNm, vendorId, StringFactory.getStrC04());
+        ShipIndicateListData shipIndicateListData = jpaShipService.getShipList(startDt, endDt, shipId, assortId, assortNm, channelId, StringFactory.getStrD01());
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
         return ResponseEntity.ok(res);
     }
