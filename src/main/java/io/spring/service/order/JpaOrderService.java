@@ -339,11 +339,9 @@ public class JpaOrderService {
 		TbOrderDetail tod = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
         Date date = Utilities.getStringToDate(StringFactory.getDoomDay());
 		List<TbOrderHistory> tohs = jpaTbOrderHistoryRepository.findByOrderIdAndOrderSeqAndEffEndDt(orderId, orderSeq, date);
-		
 
 		tod.setStatusCd(statusCd);
-		 
-		 
+
 		Date newEffEndDate = new Date();
 
 		for (int i = 0; i < tohs.size(); i++) {
@@ -359,11 +357,9 @@ public class JpaOrderService {
 
 		tohs.add(toh);
 
-        System.out.println(tod);
+//        System.out.println(tod);
         TbOrderDetail t = jpaTbOrderDetailRepository.save(tod);
-
-        System.out.println(t);
-
+//        System.out.println(t);
         jpaTbOrderHistoryRepository.saveAll(tohs);
 	}
 
