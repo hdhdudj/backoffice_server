@@ -38,6 +38,7 @@ public class PurchaseSelectListResponseData {
         this.depositStoreId = lspchm.getStoreCd();
         this.ownerId = lspchm.getOwnerId();
         this.purchaseGb = lspchm.getPurchaseGb();
+//        this.dealtypeCd = lspchm.getDealtypeCd();
     }
     // 발주리스트 화면
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -64,6 +65,7 @@ public class PurchaseSelectListResponseData {
 //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private String DepositDt;
     private String depositStoreId;
+//    private String dealtypeCd; // 01 : 상품발주, 02 : 주문발주, 03 : 입고예정 주문발주
 
     // 화면 공통요소
 //    private String purchaseVendorId; : ownerId로 수정
@@ -82,6 +84,7 @@ public class PurchaseSelectListResponseData {
             this.purchaseNo = lspchm.getPurchaseNo();
             this.ownerId = lspchm.getOwnerId();
             this.purchaseGb = lspchm.getPurchaseGb();
+            this.dealtypeCd = lspchm.getDealtypeCd();
 
             this.purchaseSeq = lsdpsp.getPurchaseSeq();
             this.assortId = lsdpsp.getAssortId();

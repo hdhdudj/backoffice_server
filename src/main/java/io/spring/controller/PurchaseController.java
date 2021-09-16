@@ -104,7 +104,12 @@ public class PurchaseController {
         return ResponseEntity.ok(res);
     }
 
-	@PostMapping(path = "") // create
+    /**
+     * 발주(주문), 발주(상품) 저장 공통
+     * @param purchaseInsertRequestData
+     * @return
+     */
+	@PostMapping(path = "") // create 
     public ResponseEntity savePurchaseJpa(@RequestBody PurchaseInsertRequestData purchaseInsertRequestData){
         log.debug("insert purchase by jpa");
 

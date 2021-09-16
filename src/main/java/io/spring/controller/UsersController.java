@@ -108,7 +108,7 @@ public class UsersController {
 
 			return ResponseEntity.ok(new ApiResponseMessage<Map<String, Object>>("SUCCES", "", o));
 		} else {
-			bindingResult.rejectValue("password", "INVALID", "invalid email or password");
+			bindingResult.rejectValue("message", "INVALID", "invalid email or password");
 			throw new InvalidRequestException(bindingResult);
 		}
 	}
@@ -156,6 +156,7 @@ class LoginParam {
 	private String email;
 	@NotBlank(message = "can't be empty")
 	private String password;
+	private String message;
 }
 
 @Getter
