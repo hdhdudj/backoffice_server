@@ -86,7 +86,6 @@ public class OrderController {
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate orderEndDt) {
 		LocalDateTime from = orderFromDt.atStartOfDay();
 		LocalDateTime end = orderEndDt.atTime(23,59,59);
-		
 
 		/*
 		 * 
