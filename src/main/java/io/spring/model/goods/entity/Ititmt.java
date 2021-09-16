@@ -30,6 +30,7 @@ public class Ititmt extends CommonProps {
     public Ititmt(ItitmtId ititmtId){
         this.storageId = ititmtId.getStorageId();
         this.assortId = ititmtId.getAssortId();
+        this.stockGb = StringFactory.getGbOne(); // 01 하드코딩
         this.itemId = ititmtId.getItemId();
         this.itemGrade = ititmtId.getItemGrade();
         this.effEndDt = ititmtId.getEffEndDt();

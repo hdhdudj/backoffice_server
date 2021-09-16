@@ -1,6 +1,7 @@
 package io.spring.model.move.response;
 
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.SetOptionInterface;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import lombok.AccessLevel;
@@ -32,7 +33,7 @@ public class GoodsModalListResponseData {
     @Getter
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class Goods{
+    public static class Goods implements SetOptionInterface {
         public Goods(Ititmc ititmc, Itasrt itasrt){
             this.storageId = ititmc.getStorageId();
             this.assortId = ititmc.getAssortId();

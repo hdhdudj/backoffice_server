@@ -80,6 +80,7 @@ public class JpaDepositService {
         // 0. lsdpsp, ititmc, ititmt의 수량 관련값 변경
         List<Lsdpsp> lsdpspList = this.updateDepositQty(depositListWithPurchaseInfoData);
         if(lsdpspList.size() == 0){
+            log.debug("입고 데이터를 저장할 수 없습니다.");
             return null;
         }
         // 1. lsdpsm 저장

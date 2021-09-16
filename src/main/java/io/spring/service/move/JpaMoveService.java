@@ -69,16 +69,17 @@ public class JpaMoveService {
         List<OrderMoveListResponseData> orderMoveListDataListResponse = new ArrayList<>();
         for(TbOrderDetail tbOrderDetail : tbOrderDetailList){
             OrderMoveListResponseData orderMoveListResponseData = new OrderMoveListResponseData(tbOrderDetail);
+            Utilities.setOptionNames(orderMoveListResponseData, tbOrderDetail.getItasrt().getItvariList());
+//            List<Itvari> itvariList = tbOrderDetail.getItasrt().getItvariList();
+//            if(itvariList.size() > 0){
+//                Itvari itvari1 = itvariList.get(0);
+//                orderMoveListResponseData.setOptionNm1(itvari1.getOptionNm());
+//            }
+//            if(itvariList.size() > 1){
+//                Itvari itvari2 = itvariList.get(1);
+//                orderMoveListResponseData.setOptionNm2(itvari2.getOptionNm());
+//            }
             orderMoveListDataListResponse.add(orderMoveListResponseData);
-            List<Itvari> itvariList = tbOrderDetail.getItasrt().getItvariList();
-            if(itvariList.size() > 0){
-                Itvari itvari1 = itvariList.get(0);
-                orderMoveListResponseData.setOptionNm1(itvari1.getOptionNm());
-            }
-            if(itvariList.size() > 1){
-                Itvari itvari2 = itvariList.get(1);
-                orderMoveListResponseData.setOptionNm2(itvari2.getOptionNm());
-            }
         }
         return orderMoveListDataListResponse;
     }
@@ -242,7 +243,7 @@ public class JpaMoveService {
     }
 
     /**
-     * 상품 선택창 : 입고처리 상품추가 모달에서 상품을 선택하고 확인을 눌렀을 때 리스트를 반환
+     * 상품 선택창 : 상품이동지시 상품추가 모달에서 상품을 선택하고 확인을 눌렀을 때 리스트를 반환
      */
     public GoodsModalListResponseData getGoodsList(String storageId, String purchaseVendorId, String assortId, String assortNm) {
         List<Ititmc> ititmcList = this.getItitmc(storageId, purchaseVendorId, assortId, assortNm);
@@ -252,21 +253,22 @@ public class JpaMoveService {
             Itasrt itasrt = ititmc.getItasrt();
             GoodsModalListResponseData.Goods goods = new GoodsModalListResponseData.Goods(ititmc, itasrt);
             IfBrand ifBrand = jpaIfBrandRepository.findByChannelGbAndChannelBrandId(StringFactory.getGbOne(), itasrt.getBrandId()); // 채널은 01 하드코딩
-            List<Itvari> itvariList = itasrt.getItvariList();
             List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository.findByAssortIdAndItemId(ititmc.getAssortId(),ititmc.getItemId())
                     .stream().filter(x->x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList());
             long qtyOfC01 = tbOrderDetailList.size();
             goods.setOrderQty(qtyOfC01);
             goods.setAvailableQty(goods.getAvailableQty() - qtyOfC01);
 //            goods.setStoreCd(goodsModalListResponseData.getStoreCd());
-            if(itvariList.size() > 0){
-                Itvari itvari1 = itvariList.get(0);
-                goods.setOptionNm1(itvari1.getOptionNm());
-            }
-            if(itvariList.size() > 1){
-                Itvari itvari2 = itvariList.get(1);
-                goods.setOptionNm2(itvari2.getOptionNm());
-            }
+            Utilities.setOptionNames(goods, itasrt.getItvariList());
+//            List<Itvari> itvariList = itasrt.getItvariList();
+//            if(itvariList.size() > 0){
+//                Itvari itvari1 = itvariList.get(0);
+//                goods.setOptionNm1(itvari1.getOptionNm());
+//            }
+//            if(itvariList.size() > 1){
+//                Itvari itvari2 = itvariList.get(1);
+//                goods.setOptionNm2(itvari2.getOptionNm());
+//            }
             if(ifBrand != null){
                 goods.setBrandNm(ifBrand.getBrandNm());
             }
@@ -385,7 +387,7 @@ public class JpaMoveService {
             String shipSeq = StringFactory.getFourStartCd(); // 0001 하드코딩 //StringUtils.leftPad(Integer.toString(index),4,'0');
             // 1-2. Lsshpd 생성
             Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, ititmc, goods, regId);
-            lsshpd.setOStorageId(goodsMoveSaveData.getOStorageId());
+            lsshpd.setOStorageId(goodsMoveSaveData.getStorageId());
             lsshpd.setShipIndicateQty(moveQty);
             lsshpm.setChannelId(goods.getChannelId()); // vendorId는 바깥에서 set
             jpaLsshpdRepository.save(lsshpd);
@@ -556,9 +558,15 @@ public class JpaMoveService {
             Lsshpd lsshpd = jpaLsshpdRepository.findByShipId(shipId).get(0);
             Lsshpm lsshpm = lsshpd.getLsshpm();
             // ititmc.shipIndicateQty, ititmc.shipQty 차감
+            long shipIndQty = lsshpd.getShipIndicateQty();
             List<Ititmc> ititmcList = jpaItitmcRepository.findByAssortIdAndItemIdAndEffEndDtOrderByEffEndDtAsc(lsshpd.getAssortId(), lsshpd.getItemId(), lsshpd.getExcAppDt());
-            if(this.subItitmcQties(ititmcList, lsshpd.getShipIndicateQty()).size() == 0){
+            if(this.subItitmcQties(ititmcList, shipIndQty).size() == 0){
                 continue;
+            }
+            // ititmc 새로 생성 (이동인 경우만)
+            if(lsshpm.getShipStatus().equals(StringFactory.getGbFour())){ // shipStatus => 01 : 일반 출고, 04 : 이동
+                Ititmc ititmc = new Ititmc(lsshpd.getOStorageId(), lsshpd.getAssortId(), lsshpd.getItemId(), lsshpd.getLocalPrice(), shipIndQty);
+                jpaItitmcRepository.save(ititmc);
             }
             if(lsshpm == null){
                 log.debug("there's no data(lsshpm) of shipId : " + shipId);

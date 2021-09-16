@@ -38,6 +38,17 @@ public class Ititmc extends CommonProps {
         this.stockGb = StringFactory.getGbOne(); // 01 하드코딩
         this.stockAmt = deposit.getPurchaseCost();
     }
+    public Ititmc(String storageId, String assortId, String itemId, Float localPrice, Long qty){
+        this.storageId = storageId;
+        this.assortId = assortId;
+        this.itemId = itemId;
+        this.effEndDt = LocalDateTime.now();
+        this.effStaDt = effEndDt;
+        this.stockGb = StringFactory.getGbOne(); // 01 하드코딩
+        this.stockAmt = localPrice;
+        this.qty = qty;
+        this.shipIndicateQty =0l;
+    }
     @Id
     private String storageId;
     @Id

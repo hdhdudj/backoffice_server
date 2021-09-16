@@ -4,6 +4,7 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.deposit.JpaLsdpspRepository;
+import io.spring.jparepos.goods.JpaItasrtRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.order.JpaTbOrderHistoryRepository;
@@ -53,6 +54,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class JpaPurchaseService {
+    private final JpaItasrtRepository jpaItasrtRepository;
     private final JpaLspchmRepository jpaLspchmRepository;
     private final JpaLsdpspRepository jpaLsdpspRepository;
     private final JpaLspchbRepository jpaLspchbRepository;
@@ -123,7 +125,6 @@ public class JpaPurchaseService {
             lspchm = new Lspchm(purchaseInsertRequestData);
 
 			lspchm.setPurchaseStatus(StringFactory.getGbOne()); // 01 하드코딩
-
         }
         else { // update
             lspchm.setPurchaseDt(Utilities.dateToLocalDateTime(purchaseInsertRequestData.getPurchaseDt()));
@@ -306,6 +307,7 @@ public class JpaPurchaseService {
 
                 ititmt = new Ititmt(ititmtId);
 
+                ititmt.setStockAmt(items.getPurchaseUnitAmt());
                 ititmt.setTempQty(items.getPurchaseQty());
                 ititmt.setTempIndicateQty(0l);
 

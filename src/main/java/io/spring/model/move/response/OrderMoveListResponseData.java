@@ -1,6 +1,7 @@
 package io.spring.model.move.response;
 
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.SetOptionInterface;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.entity.Lspchd;
@@ -15,7 +16,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrderMoveListResponseData {
+public class OrderMoveListResponseData implements SetOptionInterface {
     public OrderMoveListResponseData(TbOrderDetail tbOrderDetail){
         Lspchd lspchd = tbOrderDetail.getLspchd();
         this.depositNo = lspchd.getDepositNo();
