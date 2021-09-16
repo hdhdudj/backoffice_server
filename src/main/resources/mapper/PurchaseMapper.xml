@@ -5,8 +5,9 @@
         <![CDATA[
         select a.purchase_no purchaseNo,
                b.purchase_seq purchaseSeq,
-               a.purchase_vendor_id purchaseVendorId,
-               ifnull((select bb.vd_nm from cmvdmr bb where bb.id = a.purchase_vendor_id), '거래처없음') purchaseVendorNm ,
+               a.vendor_id purchaseVendorId,
+               a.vendor_id vendorId,
+               ifnull((select bb.vd_nm from cmvdmr bb where bb.id = a.vendor_id), '거래처없음') purchaseVendorNm ,
 				a.store_cd storeCd,
 				(select bb.storage_nm from cmstgm bb where bb.storage_id = a.store_cd) storageNm,
 				a.dealtype_cd dealtypeCd, 
@@ -49,7 +50,7 @@
         ]]>
         <if test='purchaseVendorId != null'>
 			 <![CDATA[		
-          and a.purchase_vendor_id = #{purchaseVendorId}
+          and a.vendor_id = #{purchaseVendorId}
            ]]>
 			</if>
         <if test='dealtypeCd != null'>
@@ -84,20 +85,20 @@
     	<![CDATA[
 	
 				select
-					bbb.owner_id purchaseVendorId,
+					bbb.vendor_id purchaseVendorId,
 					bbb.vd_nm purchaseVendorName,
 					sum(bbb.qty) purchaseVendorQty
 				from
 					(
 					select
-						aaaa.owner_id ,
+						aaaa.vendor_id  /*vendor_id*/,
 						aaaa.vd_nm ,
 						sum(aaaa.qty) qty 
 					from
 						(
 						select
-							ifnull(bbb.owner_id, '000000') owner_id ,
-							ifnull((select bb.vd_nm from cmvdmr bb where bb.id = bbb.owner_id), '거래처없음') vd_nm ,
+							ifnull(bbb.vendor_id, '000000') vendor_id ,
+							ifnull((select bb.vd_nm from cmvdmr bb where bb.id = bbb.vendor_id), '거래처없음') vd_nm ,
 							aaa.*
 						from
 							(
@@ -115,17 +116,18 @@
 							and aaa.assort_id = bbb.assort_id
 							 ) aaaa
 					group by
-						aaaa.owner_id ,
+						aaaa.vendor_id ,
 						aaaa.vd_nm
 				union ALL
 					select
-						cc.id,
+						cc.id as vendor_id/*vendor_id*/,
 						cc.vd_nm ,
 						0 qty 
 					from
-						cmvdmr cc ) bbb
+						cmvdmr cc 
+						where cc.vendor_type='01') bbb
 				group by
-					bbb.owner_id ,
+					bbb.vendor_id ,
 					bbb.vd_nm
 
 	
@@ -139,8 +141,8 @@
 		,aaa.purchase_dt  purchaseDt
 		,aaa.purchase_status  purchaseStatus
 		,aaa.purchase_gb  purchaseGb
-		,aaa.purchase_vendor_id purchaseVendorId
-		,ifnull((select bb.vd_nm from cmvdmr bb where bb.id = aaa.purchase_vendor_id), '거래처없음') purchaseVendorNm
+		,aaa.vendor_id purchaseVendorId
+		,ifnull((select bb.vd_nm from cmvdmr bb where bb.id = aaa.vendor_id), '거래처없음') purchaseVendorNm
 		,aaa.store_cd storeCd
 		,(select bb.storage_nm from cmstgm bb where bb.storage_id = aaa.store_cd) storageNm 
 		,aaa.terms terms
