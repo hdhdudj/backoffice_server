@@ -21,6 +21,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -77,8 +79,15 @@ public class DepositController {
     @PostMapping(path="")
     public ResponseEntity createDepositListJpa(@RequestBody DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
         log.debug("입고처리 호출");
-        String depositNo = jpaDepositService.sequenceCreateDeposit(depositListWithPurchaseInfoData);
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), depositNo);
+        List<String> messageList = new ArrayList<>();
+        boolean flag = jpaDepositService.sequenceCreateDeposit(depositListWithPurchaseInfoData, messageList);
+        ApiResponseMessage res = null;
+        if(flag){
+            res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), messageList.get(0));
+        }
+        else{
+            res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), messageList);
+        }
         return ResponseEntity.ok(res);
     }
 

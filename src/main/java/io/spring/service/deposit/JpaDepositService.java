@@ -76,12 +76,12 @@ public class JpaDepositService {
      * 입고처리 화면에서 발주조회 후 입고 데이터 저장
      */
     @Transactional
-	public String sequenceCreateDeposit(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
+	public boolean sequenceCreateDeposit(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData, List<String> messageList) {
         // 0. lsdpsp, ititmc, ititmt의 수량 관련값 변경
-        List<Lsdpsp> lsdpspList = this.updateDepositQty(depositListWithPurchaseInfoData);
+        List<Lsdpsp> lsdpspList = this.updateDepositQty(depositListWithPurchaseInfoData, messageList);
         if(lsdpspList.size() == 0){
             log.debug("입고 데이터를 저장할 수 없습니다.");
-            return null;
+            return false;
         }
         // 1. lsdpsm 저장
         Lsdpsm lsdpsm = this.insertLsdpsm(depositListWithPurchaseInfoData);
@@ -95,7 +95,8 @@ public class JpaDepositService {
         jpaPurchaseService.changePurchaseStatus(depositListWithPurchaseInfoData.getPurchaseNo(), lsdpspList);
         // 8. tbOrderdetail 주문상태 변경 (lspchm.dealtypeCd = 01(주문발주) 일 때)
         this.changeStatusCdOfTbOrderDetail(lsdpspList);
-        return lsdpsm.getDepositNo();
+        messageList.add(lsdpsm.getDepositNo());
+        return true;
     }
 
     /**
@@ -427,7 +428,7 @@ public class JpaDepositService {
     /**
      * 입고 처리가능수량을 변경했을 때 수정하는 함수
      */
-    private List<Lsdpsp> updateDepositQty(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
+    private List<Lsdpsp> updateDepositQty(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData, List<String> messageList) {
         String storageId = depositListWithPurchaseInfoData.getStorageId();
         List<Lsdpsp> lsdpspList = new ArrayList<>();
         List<DepositListWithPurchaseInfoData.Deposit> depositList = new ArrayList<>();
@@ -443,7 +444,8 @@ public class JpaDepositService {
             boolean notGoodsPurchaseAndAvailableQty = availableQty >= deposit.getDepositQty() && !StringFactory.getGbOne().equals(dealtypeCd); // 입고가능수량 >= 입력값 && 주문발주 아님
             boolean orderPurchaseAndCompleteDeposit = isCompleteDeposit && StringFactory.getGbOne().equals(dealtypeCd);
             if(deposit.getDepositQty() == 0){
-                log.debug("지정 입고수량이 0입니다. 입고수량은 0을 초과해야 합니다.");
+                log.debug(StringFactory.getStrDepositQtyZero());
+                messageList.add(StringFactory.getStrDepositQtyZero());
                 continue;
             }
             if(notGoodsPurchaseAndAvailableQty || orderPurchaseAndCompleteDeposit){ // '주문발주가 아니고 부분입고or완전입고' or '주문발주이고 완전입고'
@@ -451,11 +453,13 @@ public class JpaDepositService {
                 jpaLsdpspRepository.save(lsdpsp);
             }
             else if(availableQty != deposit.getDepositQty() && dealtypeCd.equals(StringFactory.getGbOne())){ // 주문발주인데 부분입고
-                log.debug("This purchase.dealtypeCd is 01, but this isn't complete deposit.");
+                log.debug(StringFactory.getStrNotCompleteDeposit());
+                messageList.add(StringFactory.getStrNotCompleteDeposit());
                 continue;
             }
             else{
-                log.debug("input qty is bigger than available qty.");
+                log.debug(StringFactory.getStrInputQtyBig());
+                messageList.add(StringFactory.getStrInputQtyBig());
                 continue;
             }
             Lspchm lspchm = lsdpsp.getLspchd().getLspchm();

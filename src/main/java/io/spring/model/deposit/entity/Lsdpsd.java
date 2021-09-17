@@ -96,7 +96,9 @@ public class Lsdpsd extends CommonProps implements Serializable {
     private String sStorageCd;
     private String minDepositNo;
     private String minDepositSeq;
+    @Column(name = "inputNo")
     private String inputNo;
+    @Column(name = "inputSeq")
     private String inputSeq;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime excAppDt;
@@ -108,11 +110,11 @@ public class Lsdpsd extends CommonProps implements Serializable {
     private Lsdpsm lsdpsm;
 
     // 연관 관계 lspchd
-    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumns({
             @JoinColumn(name = "inputNo", referencedColumnName="purchaseNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
             @JoinColumn(name = "inputSeq", referencedColumnName="purchaseSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
     })
+    @OneToOne(fetch = FetchType.LAZY)
     private Lspchd lspchd;
 
     // 연관 관계 lsdpds

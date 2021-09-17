@@ -72,15 +72,6 @@ public class JpaMoveService {
         for(TbOrderDetail tbOrderDetail : tbOrderDetailList){
             OrderMoveListResponseData orderMoveListResponseData = new OrderMoveListResponseData(tbOrderDetail);
             Utilities.setOptionNames(orderMoveListResponseData, tbOrderDetail.getItasrt().getItvariList());
-//            List<Itvari> itvariList = tbOrderDetail.getItasrt().getItvariList();
-//            if(itvariList.size() > 0){
-//                Itvari itvari1 = itvariList.get(0);
-//                orderMoveListResponseData.setOptionNm1(itvari1.getOptionNm());
-//            }
-//            if(itvariList.size() > 1){
-//                Itvari itvari2 = itvariList.get(1);
-//                orderMoveListResponseData.setOptionNm2(itvari2.getOptionNm());
-//            }
             orderMoveListDataListResponse.add(orderMoveListResponseData);
         }
         return orderMoveListDataListResponse;
@@ -104,11 +95,12 @@ public class JpaMoveService {
                 "and (?4 is null or trim(?4)='' or to.assortId=?4) " +
                 "and (?5 is null or trim(?5)='' or to.itemId=?5) " +
                 "and (?6 is null or trim(?6)='' or to.deliMethod=?6) " +
-                "and (?7 is null or trim(?7)='' or i.assortNm like concat('%',?7,'%'))"
+//                "and (?7 is null or trim(?7)='' or i.assortNm like concat('%',?7,'%')) " +
+                "and to.statusCd = 'C04'"
         , TbOrderDetail.class);
         query.setParameter(1, start).setParameter(2, end).setParameter(3,storageId)
-                .setParameter(4,assortId).setParameter(5,itemId).setParameter(6,deliMethod)
-                .setParameter(7,assortNm);
+                .setParameter(4,assortId).setParameter(5,itemId).setParameter(6,deliMethod);
+                //.setParameter(7,assortNm);
         List<TbOrderDetail> tbOrderDetailList = query.getResultList();
         return tbOrderDetailList;
     }

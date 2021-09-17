@@ -17,6 +17,7 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
@@ -25,7 +26,7 @@ import java.util.List;
 @Table(name="lspchd")
 @IdClass(value = LspchdId.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Lspchd extends CommonProps {
+public class Lspchd extends CommonProps implements Serializable {
     public Lspchd(Lspchd lspchd, String purchaseSeq){
         this.purchaseNo = lspchd.getPurchaseNo();
         this.purchaseSeq = purchaseSeq;
@@ -168,15 +169,17 @@ public class Lspchd extends CommonProps {
     })
     private List<Lsdpsp> lsdpsp;
 
+    // lsdpsd 연관관계
     @JoinColumns({
-            @JoinColumn(name = "depositNo", referencedColumnName = "depositNo", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
-            @JoinColumn(name = "depositSeq", referencedColumnName = "depositSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
+            @JoinColumn(name = "purchaseNo", referencedColumnName = "inputNo", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
+            @JoinColumn(name = "purchaseSeq", referencedColumnName = "inputSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
     })
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "lspchd")
     @JsonIgnore
     @NotFound(action = NotFoundAction.IGNORE)
-    private Lsdpsd lsdpsd; // lsdpsd 연관관계
+    private Lsdpsd lsdpsd;
 
+    // tbOrderDetail 연관관계
     @JoinColumns({
             @JoinColumn(name = "orderId", referencedColumnName = "orderId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
             @JoinColumn(name = "orderSeq", referencedColumnName = "orderSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
@@ -184,5 +187,5 @@ public class Lspchd extends CommonProps {
     @OneToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @NotFound(action = NotFoundAction.IGNORE)
-    private TbOrderDetail tbOrderDetail; // tbOrderDetail 연관관계
+    private TbOrderDetail tbOrderDetail;
 }
