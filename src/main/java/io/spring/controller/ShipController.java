@@ -33,8 +33,8 @@ public class ShipController {
                                            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable LocalDate endDt,
                                            @RequestParam @Nullable String assortId,
                                            @RequestParam @Nullable String assortNm,
-                                           @RequestParam @Nullable String vendorId){
-        ShipIndicateSaveListResponseData shipIndicateSaveListResponseData = jpaShipService.getOrderSaveList(startDt, endDt, assortId, assortNm, vendorId);
+                                           @RequestParam @Nullable String channelId){
+        ShipIndicateSaveListResponseData shipIndicateSaveListResponseData = jpaShipService.getOrderSaveList(startDt, endDt, assortId, assortNm, channelId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateSaveListResponseData);
         return ResponseEntity.ok(res);
     }
@@ -85,8 +85,8 @@ public class ShipController {
                                              @RequestParam @Nullable String shipId,
                                              @RequestParam @Nullable String assortId,
                                              @RequestParam @Nullable String assortNm,
-                                             @RequestParam @Nullable String vendorId){
-        ShipIndicateListData shipIndicateListData = jpaShipService.getShipList(startDt, endDt, shipId, assortId, assortNm, vendorId, StringFactory.getStrD01());
+                                             @RequestParam @Nullable String channelId){
+        ShipIndicateListData shipIndicateListData = jpaShipService.getShipList(startDt, endDt, shipId, assortId, assortNm, channelId, StringFactory.getStrD01());
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
         return ResponseEntity.ok(res);
     }
@@ -110,8 +110,8 @@ public class ShipController {
                                              @RequestParam @Nullable String shipId,
                                              @RequestParam @Nullable String assortId,
                                              @RequestParam @Nullable String assortNm,
-                                             @RequestParam @Nullable String vendorId){
-        ShipIndicateListData shipIndicateListData = jpaShipService.getShipList(startDt, endDt, shipId, assortId, assortNm, vendorId, StringFactory.getStrD02());
+                                             @RequestParam @Nullable String channelId){
+        ShipIndicateListData shipIndicateListData = jpaShipService.getShipList(startDt, endDt, shipId, assortId, assortNm, channelId, StringFactory.getStrD02());
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
         return ResponseEntity.ok(res);
     }
