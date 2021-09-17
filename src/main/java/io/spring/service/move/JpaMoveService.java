@@ -405,13 +405,13 @@ public class JpaMoveService {
 //            List<Lsdpsp> lsdpspList = new ArrayList<>();
 //            lsdpspList.add(lsdpsp);
 
-            // 3. ititmt 수량 변경
-            Ititmc ititmc1 = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(lsshpd.getAssortId(),lsshpd.getItemId(),lsshpm.getStorageId(),
-                    StringFactory.getStrEleven(), Utilities.dateToLocalDateTime(goods.getDepositDt())); // ititmc의 생성 시각과 수정해야 할 ititmt의 수정 시각이 같음.
-            Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndUpdDt(lsshpd.getAssortId(), lsshpd.getItemId(),
-                    lsshpd.getOStorageId(),StringFactory.getStrEleven(),ititmc1.getRegDt());
-            ititmt.setTempIndicateQty(moveQty);
-            jpaItitmtRepository.save(ititmt);
+//            // 3. ititmt 수량 변경
+//            Ititmc ititmc1 = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(lsshpd.getAssortId(),lsshpd.getItemId(),lsshpm.getStorageId(),
+//                    StringFactory.getStrEleven(), Utilities.dateToLocalDateTime(goods.getDepositDt())); // ititmc의 생성 시각과 수정해야 할 ititmt의 수정 시각이 같음.
+//            Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndUpdDt(lsshpd.getAssortId(), lsshpd.getItemId(),
+//                    lsshpd.getOStorageId(),StringFactory.getStrEleven(),ititmc1.getRegDt());
+//            ititmt.setTempIndicateQty(moveQty);
+//            jpaItitmtRepository.save(ititmt);
         }
 
         return shipIdList;
@@ -570,20 +570,20 @@ public class JpaMoveService {
             if(this.subItitmcQties(ititmcList, shipIndQty).size() == 0){
                 continue;
             }
-            //
-            // ititmt 수치 변경 (해외창고 입고시 생성된 ititmt의 tempIndicateQty와 tempQty에서 이동된 숫자만큼 차감, 국내창고 입고시 생성된 ititmt의 tempQty = 0)
-            Ititmt ititmt1 = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndUpdDt(lsshpd.getAssortId(), lsshpd.getItemId(), lsshpd.getOStorageId(),
-                    StringFactory.getStrEleven(), lsshpm.getUpdDt()); // 해외창고 입고시 생성된 ititmt
-            ititmt1.setTempIndicateQty(ititmt1.getTempIndicateQty() - shipIndQty);
-            ititmt1.setTempQty(ititmt1.getTempQty() - shipIndQty);
-            Ititmt ititmt2 = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndRegDt(lsshpd.getAssortId(), lsshpd.getItemId(), lsshpm.getOStorageId(),
-                    StringFactory.getStrEleven(), lsshpm.getRegDt()); // 국내창고 입고시 생성된 ititmt
-            ititmt2.setTempQty(ititmt2.getTempQty() - shipIndQty);
-            // ititmc 새로 생성 (이동인 경우만)
-            if(lsshpm.getShipStatus().equals(StringFactory.getGbFour())){ // shipStatus => 01 : 일반 출고, 04 : 이동
-                Ititmc ititmc = new Ititmc(lsshpd.getOStorageId(), lsshpd.getAssortId(), lsshpd.getItemId(), lsshpd.getLocalPrice(), shipIndQty);
-                jpaItitmcRepository.save(ititmc);
-            }
+//            //
+//            // ititmt 수치 변경 (해외창고 입고시 생성된 ititmt의 tempIndicateQty와 tempQty에서 이동된 숫자만큼 차감, 국내창고 입고시 생성된 ititmt의 tempQty = 0)
+//            Ititmt ititmt1 = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndUpdDt(lsshpd.getAssortId(), lsshpd.getItemId(), lsshpd.getOStorageId(),
+//                    StringFactory.getStrEleven(), lsshpm.getUpdDt()); // 해외창고 입고시 생성된 ititmt
+//            ititmt1.setTempIndicateQty(ititmt1.getTempIndicateQty() - shipIndQty);
+//            ititmt1.setTempQty(ititmt1.getTempQty() - shipIndQty);
+//            Ititmt ititmt2 = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndRegDt(lsshpd.getAssortId(), lsshpd.getItemId(), lsshpm.getOStorageId(),
+//                    StringFactory.getStrEleven(), lsshpm.getRegDt()); // 국내창고 입고시 생성된 ititmt
+//            ititmt2.setTempQty(ititmt2.getTempQty() - shipIndQty);
+//            // ititmc 새로 생성 (이동인 경우만)
+//            if(lsshpm.getShipStatus().equals(StringFactory.getGbFour())){ // shipStatus => 01 : 일반 출고, 04 : 이동
+//                Ititmc ititmc = new Ititmc(lsshpd.getOStorageId(), lsshpd.getAssortId(), lsshpd.getItemId(), lsshpd.getLocalPrice(), shipIndQty);
+//                jpaItitmcRepository.save(ititmc);
+//            }
             if(lsshpm == null){
                 log.debug("there's no data(lsshpm) of shipId : " + shipId);
                 continue;
