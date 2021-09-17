@@ -5,6 +5,8 @@ import io.spring.model.purchase.entity.Lspchd;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 public interface JpaLsdpspRepository extends JpaRepository<Lsdpsp, String> {

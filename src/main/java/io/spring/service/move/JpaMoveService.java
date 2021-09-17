@@ -3,17 +3,17 @@ package io.spring.service.move;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
+import io.spring.jparepos.deposit.JpaLsdpspRepository;
 import io.spring.jparepos.goods.JpaIfBrandRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
+import io.spring.jparepos.goods.JpaItitmtRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
 import io.spring.model.deposit.entity.Lsdpsd;
-import io.spring.model.goods.entity.IfBrand;
-import io.spring.model.goods.entity.Itasrt;
-import io.spring.model.goods.entity.Ititmc;
-import io.spring.model.goods.entity.Itvari;
+import io.spring.model.deposit.entity.Lsdpsp;
+import io.spring.model.goods.entity.*;
 import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.move.request.MoveListSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
@@ -45,7 +45,9 @@ public class JpaMoveService {
     private final JpaIfBrandRepository jpaIfBrandRepository;
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
     private final JpaItitmcRepository jpaItitmcRepository;
+    private final JpaItitmtRepository jpaItitmtRepository;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
+    private final JpaLsdpspRepository jpaLsdpspRepository;
     private final JpaLsshpmRepository jpaLsshpmRepository;
     private final JpaLsshpdRepository jpaLsshpdRepository;
     private final JpaLsshpsRepository jpaLsshpsRepository;
@@ -403,8 +405,12 @@ public class JpaMoveService {
 //            List<Lsdpsp> lsdpspList = new ArrayList<>();
 //            lsdpspList.add(lsdpsp);
 
-            // 3. purchaseStatus 변경
-//            jpaPurchaseService.changePurchaseStatus(lsdpspList);
+            // 3. ititmt 수량 변경
+            Ititmc ititmc1 = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(lsshpd.getAssortId(),lsshpd.getItemId(),lsshpm.getStorageId(),
+                    StringFactory.getStrEleven(), Utilities.dateToLocalDateTime(goods.getDepositDt()));
+            Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndUpdDt(lsshpd.getAssortId(), lsshpd.getItemId(), ititmc1.getRegDt());
+            ititmt.setTempIndicateQty(moveQty);
+            jpaItitmtRepository.save(ititmt);
         }
 
         return shipIdList;
@@ -563,6 +569,9 @@ public class JpaMoveService {
             if(this.subItitmcQties(ititmcList, shipIndQty).size() == 0){
                 continue;
             }
+            //
+            // ititmt 수치 변경 (tempIndicateQty와 tempQty에서 이동된 숫자만큼 차감
+//            Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(lsshpd.getAssortId(), lsshpd.getItemId(), lsshpd.getOStorageId(), StringFactory.getStrEleven(), lsshpd.);
             // ititmc 새로 생성 (이동인 경우만)
             if(lsshpm.getShipStatus().equals(StringFactory.getGbFour())){ // shipStatus => 01 : 일반 출고, 04 : 이동
                 Ititmc ititmc = new Ititmc(lsshpd.getOStorageId(), lsshpd.getAssortId(), lsshpd.getItemId(), lsshpd.getLocalPrice(), shipIndQty);

@@ -1,6 +1,7 @@
 package io.spring.jparepos.goods;
 
 import io.spring.model.goods.entity.Ititmc;
+import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.idclass.ItitmcId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,4 +23,6 @@ public interface JpaItitmcRepository extends JpaRepository<Ititmc, ItitmcId> {
     Ititmc findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(String assortId, String itemId, String storageId, String itemGrade, LocalDateTime effStaDt);
 
     List<Ititmc> findByAssortIdAndItemIdAndEffEndDtOrderByEffEndDtAsc(String assortId, String itemId, LocalDateTime excAppDt);
+
+    Ititmc findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(String assortId, String itemId, String storageId, String itemGrade, LocalDateTime dateToLocalDateTime);
 }
