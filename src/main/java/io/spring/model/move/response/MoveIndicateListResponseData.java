@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.SetOptionInterface;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.ship.entity.Lsshpd;
@@ -47,7 +48,7 @@ public class MoveIndicateListResponseData {
     @Getter
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class Move {
+    public static class Move implements SetOptionInterface {
         public Move(Lsshpd lsshpd){
             TbOrderDetail tbOrderDetail = lsshpd.getTbOrderDetail();
             Itasrt itasrt = lsshpd.getItasrt();
