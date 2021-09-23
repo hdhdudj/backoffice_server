@@ -533,9 +533,9 @@ public class JpaDepositService {
         else {
             ititmt.setTempQty(ititmt.getTempQty() - deposit.getDepositQty());
         }
-        if(dealTypeCd.equals(StringFactory.getGbOne())){ // 주문발주일 때
-            ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() - deposit.getDepositQty());
-        }
+//        if(dealTypeCd.equals(StringFactory.getGbOne())){ // 주문발주일 때
+//            ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() - deposit.getDepositQty());
+//        }
         jpaItitmtRepository.save(ititmt);
         return ititmt;
     }
