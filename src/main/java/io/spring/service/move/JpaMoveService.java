@@ -86,21 +86,22 @@ public class JpaMoveService {
         LocalDateTime end = endDt.atTime(23,59,59);
         TypedQuery<TbOrderDetail> query = em.createQuery("select to from TbOrderDetail to " +
                 "join fetch to.lspchd pd " +
+                "join fetch pd.lspchm pm " +
                 "join fetch pd.lsdpsd sd " +
                 "join fetch sd.lsdpsm sm " +
                 "join fetch to.itasrt i " +
                 "where " +
                 "to.regDt between ?1 and ?2 " +
-                "and (?3 is null or trim(?3)='' or to.storageId=?3) " +
+                "and (?3 is null or trim(?3)='' or pm.storeCd=?3) " +
                 "and (?4 is null or trim(?4)='' or to.assortId=?4) " +
                 "and (?5 is null or trim(?5)='' or to.itemId=?5) " +
                 "and (?6 is null or trim(?6)='' or to.deliMethod=?6) " +
-//                "and (?7 is null or trim(?7)='' or i.assortNm like concat('%',?7,'%')) " +
-                "and to.statusCd = 'C04'"
+                "and (?7 is null or trim(?7)='' or i.assortNm like concat('%',?7,'%')) " +
+                "and to.statusCd = ?8"
         , TbOrderDetail.class);
         query.setParameter(1, start).setParameter(2, end).setParameter(3,storageId)
-                .setParameter(4,assortId).setParameter(5,itemId).setParameter(6,deliMethod);
-                //.setParameter(7,assortNm);
+                .setParameter(4,assortId).setParameter(5,itemId).setParameter(6,deliMethod)
+                .setParameter(7,assortNm).setParameter(8,StringFactory.getStrC01());
         List<TbOrderDetail> tbOrderDetailList = query.getResultList();
         return tbOrderDetailList;
     }

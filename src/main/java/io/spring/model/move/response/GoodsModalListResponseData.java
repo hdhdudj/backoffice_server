@@ -39,7 +39,7 @@ public class GoodsModalListResponseData {
             this.assortId = ititmc.getAssortId();
             this.itemId = ititmc.getItemId();
             this.assortNm = itasrt.getAssortNm();
-            this.vendorId = itasrt.getVendorId();
+            this.channelId = itasrt.getVendorId();
             this.goodsKey = Utilities.addDashInMiddle(this.assortId, this.itemId);
             this.depositDt = Utilities.removeTAndTransToStr(ititmc.getEffStaDt());
 //            this.brandNm = itasrt.getIfBrand().getBrandNm(); 바깥에서 set
@@ -58,7 +58,7 @@ public class GoodsModalListResponseData {
         private String brandNm;
         private String optionNm1;
         private String optionNm2;
-        private String vendorId;
+        private String channelId;
         private Long qty;
         private Long orderQty;
         private Long availableQty;
