@@ -117,11 +117,12 @@ public class JpaShipService {
                 "where to.orderDate between ?1 and ?2 " +
                 "and (?3 is null or trim(?3)='' or td.assortId=?3) "+
                 "and (?4 is null or trim(?4)='' or it.vendorId=?4) "+
-                "and (?5 is null or trim(?5)='' or it.assortNm like concat('%', ?5, '%'))"
+                "and (?5 is null or trim(?5)='' or it.assortNm like concat('%', ?5, '%')) " +
+                "and td.statusCd=?6"
                 , TbOrderDetail.class);
         query.setParameter(1,start).setParameter(2,end)
         .setParameter(3,assortId).setParameter(4,vendorId)
-        .setParameter(5,assortNm);
+        .setParameter(5,assortNm).setParameter(6,StringFactory.getStrC04());
         List<TbOrderDetail> tbOrderDetailList = query.getResultList();
 
         return tbOrderDetailList;
