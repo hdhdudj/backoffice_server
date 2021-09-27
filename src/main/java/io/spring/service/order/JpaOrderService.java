@@ -332,8 +332,6 @@ public class JpaOrderService {
      * @param orderSeq
      * @param statusCd
      */
-
-
 	public void updateOrderStatusCd(String orderId, String orderSeq, String statusCd) {
 
 		TbOrderDetail tod = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
