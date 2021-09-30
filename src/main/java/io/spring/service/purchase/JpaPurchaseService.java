@@ -546,6 +546,10 @@ public class JpaPurchaseService {
     private void updateOrderStatusCd(String orderId, String orderSeq, String statusCd) {
 
 		TbOrderDetail tod = tbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
+        if(tod == null){
+            log.debug("해당 주문이 존재하지 않습니다. - JpaPurchaseService.updateOrderStatusCd");
+            return;
+        }
         Date date = Utilities.getStringToDate(StringFactory.getDoomDay());
         List<TbOrderHistory> tohs = tbOrderHistoryrRepository.findByOrderIdAndOrderSeqAndEffEndDt(orderId, orderSeq, date);
 

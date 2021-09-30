@@ -474,7 +474,7 @@ public class JpaDepositService {
 			LocalDateTime localDateTime = LocalDateTime.parse(depositListWithPurchaseInfoData.getDepositDt(),
 					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-			this.saveItitmc(localDateTime, storageId, deposit);
+			this.saveItitmc(depositListWithPurchaseInfoData, localDateTime, storageId, deposit);
         }
         depositListWithPurchaseInfoData.setDeposits(depositList);
         return lsdpspList;
@@ -514,9 +514,10 @@ public class JpaDepositService {
         return lsdpsp;
     }
 
-    private Ititmc saveItitmc(LocalDateTime depositDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit) {
+    private Ititmc saveItitmc(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData, LocalDateTime depositDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit) {
         Ititmc ititmc = new Ititmc(storageId, depositDt, deposit);
 //        ititmc.setShipIndicateQty(deposit.getDepositQty());
+        ititmc.setOwnerId(depositListWithPurchaseInfoData.getOwnerId());
         ititmc.setQty(deposit.getDepositQty());
         jpaItitmcRepository.save(ititmc);
         return ititmc;

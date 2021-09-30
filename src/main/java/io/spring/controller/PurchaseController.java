@@ -48,6 +48,11 @@ public class PurchaseController {
 
 	}
 
+    /**
+     * 발주등록(주문)에서 구매처를 선택했을 때 해당하는 주문을 뿌려주는 api
+     * @param vendorId
+     * @return
+     */
 	@GetMapping(path = "/vendors/{vendorId}")
 	public ResponseEntity getOrderListByPurchaseVendorItem(@PathVariable("vendorId") String vendorId) {
 
