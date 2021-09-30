@@ -104,11 +104,12 @@ public class JpaPurchaseService {
      */
     private void changeStatusCdOfTbOrderDetail(List<Lspchd> lspchdList) {
         for(Lspchd lspchd : lspchdList){
-            TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(lspchd.getOrderId(),lspchd.getOrderSeq());
-            if(tbOrderDetail != null){ // 01 : 주문이동, 02 : 상품이동
-                tbOrderDetail.setStatusCd(StringFactory.getStrB02());
-                jpaTbOrderDetailRepository.save(tbOrderDetail);
-            }
+//            TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(lspchd.getOrderId(),lspchd.getOrderSeq());
+//            if(tbOrderDetail != null){ // 01 : 주문이동, 02 : 상품이동
+//                tbOrderDetail.setStatusCd(StringFactory.getStrB02());
+                this.updateOrderStatusCd(lspchd.getOrderId(),lspchd.getOrderSeq(), StringFactory.getStrB02());
+//                jpaTbOrderDetailRepository.save(tbOrderDetail);
+//            }
         }
     }
 
