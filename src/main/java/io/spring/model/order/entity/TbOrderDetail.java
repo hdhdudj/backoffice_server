@@ -94,6 +94,13 @@ public class TbOrderDetail extends CommonProps
     private String lastCategoryId;
     private String storageId;
 
+    // 21-09-28 새로 생긴 컬럼
+    private String optionTextInfo;
+    private String listImageData;
+    private Float optionPrice;
+    private Float optionTextPrice;
+    private String deliveryInfo;
+
     @JoinColumns(
     {
         @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),

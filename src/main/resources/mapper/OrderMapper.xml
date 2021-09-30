@@ -5,7 +5,7 @@
     <select id="selectOrderListByCondition" resultType="HashMap">
     	
     	<![CDATA[
-select dd.*, cc.cust_nm cust_nm, cc.cust_tel cust_tel
+select ee.*, channel_gb, cc.cust_nm cust_nm, cc.cust_tel cust_tel
 from (select aa.channel_gb channel_gb,
              aa.order_date,
              aa.order_id,
@@ -15,14 +15,22 @@ from (select aa.channel_gb channel_gb,
              bb.goods_nm,
              bb.option_info,
              bb.qty,
-             bb.sale_price,
-             bb.deli_price,
              bb.dc_sum_price,
-             (bb.sale_price + bb.deli_price - bb.dc_sum_price) total_price
+             bb.pay_gb,
+             dd.total_goods_price,
+             dd.total_delivery_charge,
+             cc.channel_order_status,
+             (bb.sale_price + bb.deli_price - bb.dc_sum_price) total_price,
+             bb.channel_order_no,
       from tb_order_master aa,
-           tb_order_detail bb
+           tb_order_detail bb,
+           if_order_detail cc,
+      	   if_order_master dd,
       where 1 = 1
         and aa.order_id = bb.order_id
+        and bb.channel_order_no = cc.channel_order_no
+        and bb.channel_order_seq = cc.channel_order_seq
+        and aa.channel_order_no = dd.channel_order_no
         and aa.order_date between #{orderFromDt} and #{orderEndDt}
         and aa.channel_gb like CONCAT(#{channelGb}, '%')
     ]]>
@@ -42,7 +50,7 @@ from (select aa.channel_gb channel_gb,
 			]]>
 		</if>
 		<![CDATA[
-		) dd
+		) ee
          left join tb_member cc
                    on cc.cust_id = dd.cust_id;
 		]]>

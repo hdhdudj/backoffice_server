@@ -42,7 +42,9 @@ public class TbOrderMaster extends CommonProps {
     private String channelOrderNo;
     private String custPcode;
     private String orderMemo;
-
+    
+    // 21-09-28 추가된 컬럼
+    private String payGb; // 결제방법
 
     @JoinColumn(name = "custId", referencedColumnName = "custId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
     @ManyToOne(fetch = FetchType.LAZY)
