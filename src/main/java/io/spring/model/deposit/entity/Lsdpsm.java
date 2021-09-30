@@ -37,11 +37,11 @@ public class Lsdpsm extends CommonProps {
         this.storeCd = depositInsertRequestData.getStorageId();
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
         this.depositGb = StringFactory.getGbOne(); // 01 하드코딩
-        this.vendorId = StringUtils.leftPad("1",6,'0');
+        this.vendorId = depositInsertRequestData.getVendorId();//StringUtils.leftPad("1",6,'0'); // 발주등록(주문) 화면의 '구매처'
 		this.finishYymm = LocalDateTime.parse(StringFactory.getDoomDay(),
 				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         this.depositType = StringFactory.getGbOne(); // 01 하드코딩
-        this.ownerId = depositInsertRequestData.getOwnerId();
+        this.ownerId = StringUtils.leftPad("1",6,'0');//depositInsertRequestData.getOwnerId();
     }
 
     public Lsdpsm(String depositNo, DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
