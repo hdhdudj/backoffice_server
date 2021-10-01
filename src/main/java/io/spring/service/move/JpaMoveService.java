@@ -8,6 +8,7 @@ import io.spring.jparepos.goods.JpaIfBrandRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
+import io.spring.jparepos.purchase.JpaLspchdRepository;
 import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
@@ -19,6 +20,7 @@ import io.spring.model.move.request.MoveListSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
 import io.spring.model.move.response.*;
 import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import io.spring.model.ship.entity.Lsshps;
@@ -47,6 +49,7 @@ public class JpaMoveService {
     private final JpaItitmcRepository jpaItitmcRepository;
     private final JpaItitmtRepository jpaItitmtRepository;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
+    private final JpaLspchdRepository jpaLspchdRepository;
     private final JpaLsdpspRepository jpaLsdpspRepository;
     private final JpaLsshpmRepository jpaLsshpmRepository;
     private final JpaLsshpdRepository jpaLsshpdRepository;
@@ -70,11 +73,23 @@ public class JpaMoveService {
 //        List<Lsdpsd> lsdpsdList = this.getLsdpsd(startDt, endDt, storageId, assortId, assortNm, itemId, deliMethod);
         List<OrderMoveListResponseData> orderMoveListDataListResponse = new ArrayList<>();
         for(TbOrderDetail tbOrderDetail : tbOrderDetailList){
-            OrderMoveListResponseData orderMoveListResponseData = new OrderMoveListResponseData(tbOrderDetail);
+            Lspchd lspchd = this.getLsdpsdTbOrderDetailLspchd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq());
+            OrderMoveListResponseData orderMoveListResponseData = new OrderMoveListResponseData(lspchd);
             Utilities.setOptionNames(orderMoveListResponseData, tbOrderDetail.getItasrt().getItvariList());
             orderMoveListDataListResponse.add(orderMoveListResponseData);
         }
         return orderMoveListDataListResponse;
+    }
+
+    // lspchd에 tbOrderDetail과 itasrt를 엮어 가져오는 쿼리
+    private Lspchd getLsdpsdTbOrderDetailLspchd(String orderId, String orderSeq) {
+        TypedQuery<Lspchd> query = em.createQuery("select lspchd from Lspchd lspchd " +
+                "join fetch lspchd.tbOrderDetail td " +
+                "join fetch td.itasrt it " +
+                "where lspchd.orderId=?1 and lspchd.orderSeq=?2", Lspchd.class);
+        query.setParameter(1,orderId).setParameter(2,orderSeq);
+        Lspchd lspchd = query.getSingleResult();
+        return lspchd;
     }
 
     /**

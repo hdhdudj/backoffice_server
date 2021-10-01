@@ -64,8 +64,9 @@ public class JpaShipService {
     public ShipIndicateSaveListResponseData getOrderSaveList(LocalDate startDt, LocalDate endDt, String assortId, String assortNm, String purchaseVendorId) {
         List<ShipIndicateSaveListResponseData.Ship> shipList = new ArrayList<>();
         List<TbOrderDetail> tbOrderDetailList = this.getOrdersByCondition(startDt, endDt, assortId, assortNm, purchaseVendorId);
-        // tbOrderDetailList 중 statusCd가 C04인 애들만 남겨두기
-        tbOrderDetailList = tbOrderDetailList.stream().filter(x->x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList());
+//        tbOrderDetailList = tbOrderDetailList.stream().filter(x->
+//            x.getStatusCd().equals(StringFactory.getStrC04()) || (x.getStatusCd().equals(StringFactory.getStrC01()) && x.getAssortGb().equals(StringFactory.getGbOne()))
+//        ).collect(Collectors.toList());
         for(TbOrderDetail tbOrderDetail : tbOrderDetailList){
             List<Ititmc> ititmcList = jpaItitmcRepository.findByAssortIdAndItemIdOrderByEffEndDtAsc(tbOrderDetail.getAssortId(),tbOrderDetail.getItemId());
             long availableQty = this.calcMaxAvailableQty(ititmcList);
@@ -111,6 +112,7 @@ public class JpaShipService {
     private List<TbOrderDetail> getOrdersByCondition(LocalDate startDt, LocalDate endDt, String assortId, String assortNm, String vendorId) {
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
+        // tbOrderDetailList 중 statusCd가 C04인 애들 or statusCd가 C01이면서 assortGb가 01인 애만 가져오기
         TypedQuery<TbOrderDetail> query = em.createQuery("select td from TbOrderDetail td " +
                 "join fetch td.tbOrderMaster to " +
                 "join fetch td.itasrt it " +
@@ -123,6 +125,7 @@ public class JpaShipService {
         query.setParameter(1,start).setParameter(2,end)
         .setParameter(3,assortId).setParameter(4,vendorId)
         .setParameter(5,assortNm).setParameter(6,StringFactory.getStrC04());
+//        .setParameter(7,StringFactory.getStrC01()).setParameter(8,StringFactory.getGbOne());
         List<TbOrderDetail> tbOrderDetailList = query.getResultList();
 
         return tbOrderDetailList;

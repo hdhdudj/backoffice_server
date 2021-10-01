@@ -17,8 +17,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderMoveListResponseData implements SetOptionInterface {
-    public OrderMoveListResponseData(TbOrderDetail tbOrderDetail){
-        Lspchd lspchd = tbOrderDetail.getLspchd();
+    public OrderMoveListResponseData(Lspchd lspchd){
+        TbOrderDetail tbOrderDetail = lspchd.getTbOrderDetail();
         this.depositNo = lspchd.getDepositNo();
         this.depositSeq = lspchd.getDepositSeq();
         this.depositKey = Utilities.addDashInMiddle(depositNo,depositSeq);

@@ -8,6 +8,7 @@ import io.spring.jparepos.goods.JpaItasrtRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
+import io.spring.jparepos.purchase.JpaLspchdRepository;
 import io.spring.jparepos.purchase.JpaLspchmRepository;
 import io.spring.model.deposit.entity.*;
 import io.spring.model.deposit.request.DepositInsertRequestData;
@@ -52,7 +53,7 @@ public class JpaDepositService {
     private final JpaItasrtRepository jpaItasrtRepository;
     private final JpaItitmcRepository jpaItitmcRepository;
     private final JpaItitmtRepository jpaItitmtRepository;
-    private final JpaLspchmRepository jpaLspchmRepository;
+    private final JpaLspchdRepository jpaLspchdRepository;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
 
@@ -178,6 +179,12 @@ public class JpaDepositService {
             Lsdpsd lsdpsd = new Lsdpsd(depositListWithPurchaseInfoData, lsdpsm, depositSeq, deposit);
             lsdpsdList.add(lsdpsd);
             jpaLsdpsdRepository.save(lsdpsd);
+
+            Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(lsdpsd.getInputNo(), lsdpsd.getInputSeq());
+            lspchd.setDepositNo(lsdpsd.getDepositNo());
+            lspchd.setDepositSeq(lsdpsd.getDepositSeq());
+            jpaLspchdRepository.save(lspchd);
+            
             index++;
         }
         return lsdpsdList;

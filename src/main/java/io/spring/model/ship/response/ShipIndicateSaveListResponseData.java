@@ -55,10 +55,10 @@ public class ShipIndicateSaveListResponseData {
         Itasrt itasrt = tbOrderDetail.getItasrt();
         TbMember tbMember = tbOrderMaster.getTbMember();
         this.orderDt = Utilities.removeTAndTransToStr(tbOrderDetail.getTbOrderMaster().getOrderDate());
-        this.orderKey = Utilities.addDashInMiddle(orderId,orderSeq);
         this.assortGb = itasrt.getAssortGb();
         this.orderId = tbOrderDetail == null? null:tbOrderDetail.getOrderId();
         this.orderSeq = tbOrderDetail == null? null:tbOrderDetail.getOrderSeq();
+        this.orderKey = Utilities.addDashInMiddle(orderId,orderSeq);
         this.deliMethod = tbOrderDetail == null? null:tbOrderDetail.getDeliMethod();
         this.assortId = tbOrderDetail == null? null:tbOrderDetail.getAssortId();
         this.itemId = tbOrderDetail == null? null:tbOrderDetail.getItemId();
