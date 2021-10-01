@@ -367,7 +367,6 @@ public class JpaOrderService {
 
 	}
 
-
     public TbOrderDetail getOrderDetail(String orderId,String orderSeq){
         return jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId,orderSeq);
     }

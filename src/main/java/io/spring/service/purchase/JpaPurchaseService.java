@@ -269,11 +269,11 @@ public class JpaPurchaseService {
 
 			String purchaseStatus = purchaseInsertRequestData.getPurchaseStatus();
 
-			if (purchaseGb.equals("01")) {
-				if (dealTypeCd != null && dealTypeCd.equals("01") && purchaseStatus.equals("01")) { // 주문발주면서 발주상태라면
-					updateOrderStatusCd(item.getOrderId(), item.getOrderSeq(), StringFactory.getStrB01());
-				}
-			}
+//			if (purchaseGb.equals("01")) {
+//				if (dealTypeCd != null && dealTypeCd.equals("01") && purchaseStatus.equals("01")) { // 주문발주면서 발주상태라면
+//					updateOrderStatusCd(item.getOrderId(), item.getOrderSeq(), StringFactory.getStrB01());
+//				}
+//			}
 
         }
         return lspchbList;
