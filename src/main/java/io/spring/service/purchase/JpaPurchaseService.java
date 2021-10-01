@@ -27,6 +27,7 @@ import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.entity.Lspchm;
 import io.spring.model.purchase.entity.Lspchs;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
+import io.spring.model.purchase.request.PurchaseUpdateRequestData;
 import io.spring.model.purchase.response.PurchaseSelectDetailResponseData;
 import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.model.ship.entity.Lsshpd;
@@ -113,8 +114,24 @@ public class JpaPurchaseService {
         }
     }
 
-    public void updatePurchaseSquence(String purchaseNo, PurchaseInsertRequestData purchaseInsertRequestData) {
-
+    public String updatePurchaseSquence(String purchaseNo, PurchaseUpdateRequestData purchaseUpdateRequestData) {
+        Lspchm lspchm = jpaLspchmRepository.findByPurchaseNo(purchaseNo).orElseGet(()->null);
+        if(lspchm == null){
+            log.debug("update할 lspchm이 존재하지 않습니다. purcahseNo : " + purchaseNo);
+            return null;
+        }
+        lspchm.setPurchaseStatus(purchaseUpdateRequestData.getPurchaseStatus());
+        lspchm.setVendorId(purchaseUpdateRequestData.getVendorId());
+        lspchm.setPurchaseDt(Utilities.dateToLocalDateTime(purchaseUpdateRequestData.getPurchaseDt()));
+        lspchm.setStoreCd(purchaseUpdateRequestData.getStorageId());
+        lspchm.setSiteOrderNo(purchaseUpdateRequestData.getSiteOrderNo());
+        lspchm.setTerms(purchaseUpdateRequestData.getTerms());
+        lspchm.setDelivery(purchaseUpdateRequestData.getDelivery());
+        lspchm.setPayment(purchaseUpdateRequestData.getPayment());
+        lspchm.setCarrier(purchaseUpdateRequestData.getCarrier());
+        lspchm.setUpdId(purchaseUpdateRequestData.getUserId());
+        jpaLspchmRepository.save(lspchm);
+        return purchaseNo;
     }
 
     private Lspchm saveLspchm(PurchaseInsertRequestData purchaseInsertRequestData, List<Lspchd> lspchdList) {

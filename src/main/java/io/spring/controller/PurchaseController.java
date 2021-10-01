@@ -130,14 +130,14 @@ public class PurchaseController {
     }
 
     @PostMapping(path = "/{purchaseNo}/update") // update
-    public ResponseEntity savePurchaseJpa(@PathVariable String purchaseNo, @RequestBody PurchaseInsertRequestData purchaseInsertRequestData){
+    public ResponseEntity savePurchaseJpa(@PathVariable String purchaseNo, @RequestBody PurchaseUpdateRequestData purchaseUpdateRequestData){
         log.debug("update purchase by jpa");
 
-        jpaPurchaseService.updatePurchaseSquence(purchaseNo, purchaseInsertRequestData);
+        String purchaseNo2 = jpaPurchaseService.updatePurchaseSquence(purchaseNo, purchaseUpdateRequestData);
 
         // jpaOrderService.updateStatusCd("O2106100714498480", "0001", "B02");
 
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), purchaseNo);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), purchaseNo2);
         if(res == null){
             return null;
         }
