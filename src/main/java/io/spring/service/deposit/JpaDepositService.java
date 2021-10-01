@@ -517,7 +517,8 @@ public class JpaDepositService {
     private Ititmc saveItitmc(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData, LocalDateTime depositDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit) {
         Ititmc ititmc = new Ititmc(storageId, depositDt, deposit);
 //        ititmc.setShipIndicateQty(deposit.getDepositQty());
-        ititmc.setOwnerId(depositListWithPurchaseInfoData.getOwnerId());
+        Itasrt itasrt = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());
+        ititmc.setOwnerId(itasrt.getOwnerId());
         ititmc.setQty(deposit.getDepositQty());
         jpaItitmcRepository.save(ititmc);
         return ititmc;
