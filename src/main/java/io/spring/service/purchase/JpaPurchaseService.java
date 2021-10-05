@@ -1,5 +1,22 @@
 package io.spring.service.purchase;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
@@ -16,7 +33,10 @@ import io.spring.jparepos.purchase.JpaLspchsRepository;
 import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.deposit.response.PurchaseListInDepositModalData;
-import io.spring.model.goods.entity.*;
+import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.goods.entity.Ititmm;
+import io.spring.model.goods.entity.Ititmt;
+import io.spring.model.goods.entity.Itvari;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.move.request.OrderMoveSaveData;
 import io.spring.model.order.entity.TbOrderDetail;
@@ -35,18 +55,6 @@ import io.spring.model.ship.entity.Lsshpm;
 import io.spring.service.common.JpaCommonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.tomcat.jni.Local;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -320,17 +328,31 @@ public class JpaPurchaseService {
             Ititmt ititmt = jpaItitmtRepository.findById(ititmtId).orElseGet(() -> null);
             if(ititmt == null) { // insert
 
+				Itasrt itasrt = jpaItasrtRepository.findByAssortId(items.getAssortId());
+
                 ititmt = new Ititmt(ititmtId);
 
                 ititmt.setStockAmt(items.getPurchaseUnitAmt());
                 ititmt.setTempQty(items.getPurchaseQty());
                 ititmt.setTempIndicateQty(0l);
 
+				boolean x = purchaseInsertRequestData.getDealtypeCd().equals(StringFactory.getGbOne()); // 주문발주인가?
+				boolean y = purchaseInsertRequestData.getDealtypeCd().equals(StringFactory.getGbThree()); // 입고예정
+								
+				System.out.println(ititmt.getTempIndicateQty());
+				// 주문발주인가?
+				if (x || y) { // 일반발주면서 주문발주거나 입고예정 주문발주일 때 (01: 주문발주 02:상품발주 03:입고예정 주문발주)
+					ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() + items.getPurchaseQty());
+				}
+				System.out.println(ititmt.getTempIndicateQty());
+
+				ititmt.setVendorId(purchaseInsertRequestData.getVendorId());
+				ititmt.setOwnerId(itasrt.getOwnerId());
+				ititmt.setSiteGb(purchaseInsertRequestData.getSiteGb());
+
                 ititmt.setRegId(purchaseInsertRequestData.getUserId());
                 ititmt.setUpdId(purchaseInsertRequestData.getUserId());
-            }
-
-            else { // update
+			} else { // update
                 boolean x = purchaseInsertRequestData.getDealtypeCd().equals(StringFactory.getGbOne()); // 주문발주인가?
                 boolean y = purchaseInsertRequestData.getDealtypeCd().equals(StringFactory.getGbThree()); // 입고예정 주문발주인가?
                 if (x || y) { // 일반발주면서 주문발주거나 입고예정 주문발주일 때 (01: 주문발주 02:상품발주 03:입고예정 주문발주)
@@ -338,13 +360,18 @@ public class JpaPurchaseService {
                 }
 
                 ititmt.setTempQty(ititmt.getTempQty() + items.getPurchaseQty());
-                ititmt.setStockGb(purchaseInsertRequestData.getStockGb());
-                ititmt.setStockAmt(purchaseInsertRequestData.getStockAmt());
-                ititmt.setVendorId(purchaseInsertRequestData.getVendorId());
-                ititmt.setSiteGb(purchaseInsertRequestData.getSiteGb());
+				// ititmt.setStockGb(purchaseInsertRequestData.getStockGb()); //처음에 만들어지기떄문에 수정할
+				// 필요없음
+				// ititmt.setStockAmt(purchaseInsertRequestData.getStockAmt()); //처음에 만들어지기떄문에
+				// 수정할 필요없음
+				// ititmt.setVendorId(purchaseInsertRequestData.getVendorId()); //처음에 만들어지기떄문에
+				// 수정할 필요없음
+				// ititmt.setSiteGb(purchaseInsertRequestData.getSiteGb()); //처음에 만들어지기떄문에 수정할
+				// 필요없음
 
                 ititmt.setUpdId(purchaseInsertRequestData.getUserId());
             }
+
             jpaItitmtRepository.save(ititmt);
             ititmtList.add(ititmt);
         }

@@ -1,5 +1,13 @@
 package io.spring.model.goods.entity;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
@@ -11,14 +19,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Getter
@@ -35,6 +35,8 @@ public class Ititmt extends CommonProps {
         this.itemGrade = ititmtId.getItemGrade();
         this.effEndDt = ititmtId.getEffEndDt();
         this.effStaDt = ititmtId.getEffStaDt();
+		this.tempIndicateQty = 0L;
+		this.tempQty = 0L;
     }
     public Ititmt(Date purchaseDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit) {
         this.storageId = storageId;
