@@ -1,7 +1,18 @@
 package io.spring.model.purchase.entity;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
@@ -12,11 +23,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
 
 @Slf4j
 @Entity
@@ -32,7 +38,7 @@ public class Lspchm extends CommonProps {
 //        this.purchaseStatus = purchaseInsertRequestData.getPurchaseStatus(); // 01 : 발주, 03 : 부분입고, 04 : 완전입고, 05 : 취소
         this.purchaseRemark = purchaseInsertRequestData.getPurchaseRemark();
         this.siteGb = StringFactory.getGbOne(); // "01" 하드코딩
-        this.vendorId = StringFactory.getFourStartCd(); // "0001" 하드코딩
+		this.vendorId = purchaseInsertRequestData.getVendorId(); // "0001" 하드코딩
         this.siteOrderNo = purchaseInsertRequestData.getSiteOrderNo();
         this.siteTrackNo = purchaseInsertRequestData.getSiteTrackNo();
         this.localPrice = purchaseInsertRequestData.getLocalPrice();
@@ -62,7 +68,7 @@ public class Lspchm extends CommonProps {
         this.purchaseStatus = purchaseInsertRequestData.getPurchaseStatus(); // 01 : 발주, 05 : 취소
         this.purchaseRemark = purchaseInsertRequestData.getPurchaseRemark();
         this.siteGb = StringFactory.getGbOne(); // "01" 하드코딩
-        this.vendorId = StringFactory.getFourStartCd(); // "0001" 하드코딩
+		this.vendorId = purchaseInsertRequestData.getVendorId();
         this.siteOrderNo = purchaseInsertRequestData.getSiteOrderNo();
         this.siteTrackNo = purchaseInsertRequestData.getSiteTrackNo();
         this.localPrice = purchaseInsertRequestData.getLocalPrice();
