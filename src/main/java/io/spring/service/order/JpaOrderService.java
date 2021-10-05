@@ -6,13 +6,11 @@ import io.spring.jparepos.goods.JpaItasrtRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.goods.JpaItitmmRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
-import io.spring.jparepos.order.JpaOrderStockRepository;
-import io.spring.jparepos.order.JpaTbOrderDetailRepository;
-import io.spring.jparepos.order.JpaTbOrderHistoryRepository;
-import io.spring.jparepos.order.JpaTbOrderMasterRepository;
+import io.spring.jparepos.order.*;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
+import io.spring.model.order.entity.OrderLog;
 import io.spring.model.order.entity.OrderStock;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
@@ -42,6 +40,7 @@ public class JpaOrderService {
     private final JpaTbOrderHistoryRepository jpaTbOrderHistoryRepository;
     private final JpaPurchaseService jpaPurchaseService;
 	private final JpaOrderStockRepository jpaOrderStockRepository;
+    private final JpaOrderLogRepository jpaOrderLogRepository;
 
     private final EntityManager em;
 
@@ -53,23 +52,45 @@ public class JpaOrderService {
                 em.createQuery("select td from TbOrderDetail td " +
                                 "join fetch td.tbOrderMaster tm " +
                                 "left join fetch td.ititmm it " +
+                                "left join fetch it.itasrt itasrt " +
                                 "where td.orderId = ?1" +
                                 "and td.orderSeq = ?2 "
                         , TbOrderDetail.class);
         query.setParameter(1, orderId).setParameter(2, orderSeq);
         TbOrderDetail tbOrderDetail = query.getSingleResult();
-//        TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
         if(tbOrderDetail == null){
             log.debug("There is no TbOrderDetail of " + orderId + " and " + orderSeq);
             return;
         }
+        else if(tbOrderDetail.getItitmm() == null){
+            log.debug("There is no ititmm of orderId : " + orderId + " and orderSeq : " + orderSeq);
+            return;
+        }
+        else if(tbOrderDetail.getItitmm().getItasrt() == null){
+            log.debug("There is no itasrt of orderId : " + orderId + " and orderSeq : " + orderSeq);
+            return;
+        }
+        Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
+        String prevStatus = tbOrderDetail.getStatusCd();
+//        TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
         String assortGb = tbOrderDetail.getAssortGb();
-        if(assortGb.equals(StringFactory.getGbOne())){ // assortGb == '01' : 직구
+        if(itasrt.getAssortGb().equals(StringFactory.getGbOne())){ // assortGb == '01' : 직구
             this.changeOrderStatusWhenDirect(tbOrderDetail);
         }
-        else if(assortGb.equals(StringFactory.getGbTwo())){ // assortGb == '02' : 수입
+        else if(itasrt.getAssortGb().equals(StringFactory.getGbTwo())){ // assortGb == '02' : 수입
             this.changeOrderStatusWhenImport(tbOrderDetail);
         }
+
+        this.saveOrderLog(prevStatus, tbOrderDetail);
+    }
+
+    /**
+     * tbOrderDetail.statusCd가 변동될 때마다 로그를 기록함.
+     */
+    private void saveOrderLog(String prevStatus, TbOrderDetail tbOrderDetail) {
+        OrderLog orderLog = new OrderLog(tbOrderDetail);
+        orderLog.setPrevStatus(prevStatus);
+        jpaOrderLogRepository.save(orderLog);
     }
     
     /**

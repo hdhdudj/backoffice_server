@@ -15,6 +15,8 @@ public class StringFactory {
     @Getter
     private final static String threeStartCd = "001";
     @Getter
+    private final static String threeTwoCd = "002";
+    @Getter
     private final static String fourStartCd = "0001";
     @Getter
     private final static String fiveStartCd = "00001";
