@@ -73,11 +73,11 @@ public class JpaOrderService {
         Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
         String prevStatus = tbOrderDetail.getStatusCd();
 //        TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
-        String assortGb = tbOrderDetail.getAssortGb();
-        if(itasrt.getAssortGb().equals(StringFactory.getGbOne())){ // assortGb == '01' : 직구
+        String assortGb = itasrt.getAssortGb();
+        if(StringFactory.getGbOne().equals(assortGb)){ // assortGb == '01' : 직구
             this.changeOrderStatusWhenDirect(tbOrderDetail);
         }
-        else if(itasrt.getAssortGb().equals(StringFactory.getGbTwo())){ // assortGb == '02' : 수입
+        else if(StringFactory.getGbTwo().equals(assortGb)){ // assortGb == '02' : 수입
             this.changeOrderStatusWhenImport(tbOrderDetail);
         }
 
