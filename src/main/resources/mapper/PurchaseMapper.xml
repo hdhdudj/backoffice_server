@@ -244,6 +244,7 @@
 				select
 					bbb1.order_id orderId,
 					bbb1.order_seq orderSeq,
+					concat(bbb1.order_id,'-',bbb1.order_seq) orderCd,
 					bbb1.vendor_id vendorId,
 					bbb1.vd_nm vdNm, 
 					bbb1.assort_id assortId,
