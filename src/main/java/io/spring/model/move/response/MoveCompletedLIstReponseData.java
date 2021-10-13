@@ -1,8 +1,13 @@
 package io.spring.model.move.response;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
@@ -10,9 +15,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * 이동리스트 조회용 DTO
@@ -70,6 +72,7 @@ public class MoveCompletedLIstReponseData {
         private String shipKey;
         private String trackNo; // lsshpm.blNo
         private String storageId;
+		@JsonProperty("oStorageId")
         private String oStorageId;
         private String shipGb;
         private String deliMethod;

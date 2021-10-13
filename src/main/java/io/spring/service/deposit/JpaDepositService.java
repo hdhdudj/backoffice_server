@@ -1,16 +1,37 @@
 package io.spring.service.deposit;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
-import io.spring.jparepos.deposit.*;
+import io.spring.jparepos.deposit.JpaLsdpdsRepository;
+import io.spring.jparepos.deposit.JpaLsdpsdRepository;
+import io.spring.jparepos.deposit.JpaLsdpsmRepository;
+import io.spring.jparepos.deposit.JpaLsdpspRepository;
+import io.spring.jparepos.deposit.JpaLsdpssRepository;
 import io.spring.jparepos.goods.JpaItasrtRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.purchase.JpaLspchdRepository;
-import io.spring.jparepos.purchase.JpaLspchmRepository;
-import io.spring.model.deposit.entity.*;
+import io.spring.model.deposit.entity.Lsdpds;
+import io.spring.model.deposit.entity.Lsdpsd;
+import io.spring.model.deposit.entity.Lsdpsm;
+import io.spring.model.deposit.entity.Lsdpsp;
+import io.spring.model.deposit.entity.Lsdpss;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.deposit.response.DepositSelectDetailResponseData;
@@ -26,18 +47,6 @@ import io.spring.service.order.JpaOrderService;
 import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 //import org.flywaydb.core.internal.util.StringUtils;
 
@@ -523,7 +532,8 @@ public class JpaDepositService {
 
     private Ititmc saveItitmc(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData, LocalDateTime depositDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit) {
         Ititmc ititmc = new Ititmc(storageId, depositDt, deposit);
-//        ititmc.setShipIndicateQty(deposit.getDepositQty());
+		ititmc.setShipIndicateQty(0L);
+//		ititmc.setShipIndicateQty(0);
         Itasrt itasrt = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());
         ititmc.setOwnerId(itasrt.getOwnerId());
         ititmc.setQty(deposit.getDepositQty());

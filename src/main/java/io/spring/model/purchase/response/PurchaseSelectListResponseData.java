@@ -1,10 +1,15 @@
 package io.spring.model.purchase.response;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
@@ -17,10 +22,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,6 +32,7 @@ public class PurchaseSelectListResponseData {
         this.assortId = (String) param.get(StringFactory.getStrAssortId());
         this.purchasStatus = (String) param.get(StringFactory.getStrPurchaseStatus());
         this.purchaseGb = (String)param.get(StringFactory.getStrPurchaseGb());
+
     }
     public PurchaseSelectListResponseData(Lspchm lspchm){
         this.purchaseNo = lspchm.getPurchaseNo();
@@ -38,6 +40,7 @@ public class PurchaseSelectListResponseData {
         this.depositStoreId = lspchm.getStoreCd();
         this.ownerId = lspchm.getOwnerId();
         this.purchaseGb = lspchm.getPurchaseGb();
+		this.vendorId = lspchm.getVendorId();
 //        this.dealtypeCd = lspchm.getDealtypeCd();
     }
     // 발주리스트 화면
@@ -70,6 +73,8 @@ public class PurchaseSelectListResponseData {
     // 화면 공통요소
 //    private String purchaseVendorId; : ownerId로 수정
     private String ownerId;
+
+	private String vendorId;
 
     private List<Purchase> purchaseList;
 

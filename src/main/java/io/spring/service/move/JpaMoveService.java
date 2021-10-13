@@ -1,5 +1,23 @@
 package io.spring.service.move;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
@@ -13,12 +31,20 @@ import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
 import io.spring.model.deposit.entity.Lsdpsd;
-import io.spring.model.deposit.entity.Lsdpsp;
-import io.spring.model.goods.entity.*;
+import io.spring.model.goods.entity.IfBrand;
+import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.goods.entity.Ititmc;
+import io.spring.model.goods.entity.Itvari;
 import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.move.request.MoveListSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
-import io.spring.model.move.response.*;
+import io.spring.model.move.response.GoodsModalListResponseData;
+import io.spring.model.move.response.MoveCompletedLIstReponseData;
+import io.spring.model.move.response.MoveIndicateDetailResponseData;
+import io.spring.model.move.response.MoveIndicateListResponseData;
+import io.spring.model.move.response.MoveListResponseData;
+import io.spring.model.move.response.MovedDetailResponseData;
+import io.spring.model.move.response.OrderMoveListResponseData;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.ship.entity.Lsshpd;
@@ -27,17 +53,6 @@ import io.spring.model.ship.entity.Lsshps;
 import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -237,6 +252,13 @@ public class JpaMoveService {
 //            Lsdpsp lsdpsp = lsdpsd.getLspchd().getLsdpsp().get(i);
             // lsshpm 저장
             Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail);
+
+			// ostorageId 가 갈곳 to
+			// storageId 가 나오는곳 from
+
+			lsshpm.setStorageId(storageId);
+			lsshpm.setOStorageId(tbOrderDetail.getStorageId());
+
             lsshpm.setShipStatus(shipStatus); // 01 : 이동지시, 04 : 출고
             // lsshps 저장
             Lsshps lsshps = new Lsshps(lsshpm);
@@ -617,7 +639,9 @@ public class JpaMoveService {
      * @return 이동지시리스트를 가진 DTO
      */
     public MoveIndicateListResponseData getMoveIndicateList(LocalDate startDt, LocalDate endDt, String storageId, String oStorageId, String assortId, String assortNm) {
+
         List<Lsshpd> lsshpdList = this.getLsshpdMoveIndList(startDt, endDt, storageId, oStorageId, assortId, assortNm);
+
         MoveIndicateListResponseData moveIndicateListResponseData = new MoveIndicateListResponseData(startDt, endDt, storageId, oStorageId, assortId, assortNm);
         List<MoveIndicateListResponseData.Move> moveList = new ArrayList<>();
         for(Lsshpd lsshpd : lsshpdList){
@@ -639,6 +663,7 @@ public class JpaMoveService {
      * 조건에 맞는 lsshpd 리스트를 반환하는 함수
     */
     private List<Lsshpd> getLsshpdMoveIndList(LocalDate startDt, LocalDate endDt, String storageId, String oStorageId, String assortId, String assortNm) {
+
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
         TypedQuery<Lsshpd> query = em.createQuery("select ld from Lsshpd ld " +
@@ -646,14 +671,18 @@ public class JpaMoveService {
                         "left join fetch ld.tbOrderDetail td " +
                         "join fetch ld.itasrt it " +
                         "where ld.regDt between ?1 and ?2 " +
-                        "and (?3 is null or trim(?3)='' or lm.storageId=?3) " +
-                        "and (?4 is null or trim(?4)='' or ld.assortId=?4) " +
-                        "and (?5 is null or trim(?5)='' or it.assortNm like concat('%',?5,'%')) " +
-                        "and (?6 is null or trim(?6)='' or ld.oStorageId=?6)"
+				"and  lm.shipStatus ='01' " // 지시상태만 조회
+				+ "and (?3 is null or trim(?3)='' or lm.storageId=?3) "
+				+ "and (?4 is null or trim(?4)='' or ld.assortId=?4) "
+				+ "and (?5 is null or trim(?5)='' or it.assortNm like concat('%',?5,'%')) "
+				+ "and (?6 is null or trim(?6)='' or ld.oStorageId=?6)"
                 ,Lsshpd.class);
-        query.setParameter(1,start).setParameter(2,end).setParameter(3,storageId)
+		query.setParameter(1, start).setParameter(2, end).setParameter(3, storageId)
         .setParameter(4,assortId).setParameter(5,assortNm).setParameter(6,oStorageId);
         List<Lsshpd> lsshpdList = query.getResultList();
+
+		System.out.println(lsshpdList);
+
         return lsshpdList;
     }
 
@@ -758,6 +787,9 @@ public class JpaMoveService {
                 .setParameter(4,assortId).setParameter(5,assortNm)
                 .setParameter(6,storageId).setParameter(7,deliMethod);
         List<Lsshpd> lsshpdList = query.getResultList();
+        
+
+        
         return lsshpdList;
     }
 

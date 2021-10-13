@@ -1,9 +1,13 @@
 package io.spring.model.move.response;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
@@ -14,9 +18,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * 이동지시리스트(상품, 주문) 조회 DTO
@@ -78,6 +79,7 @@ public class MoveIndicateListResponseData {
         private String moveIndGb;
         private String deliMethod;
         private String storageId;
+		@JsonProperty("oStorageId")
         private String oStorageId;
         private String moveIndDt;
         private String orderId;

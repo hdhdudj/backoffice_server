@@ -1,5 +1,10 @@
 package io.spring.model.move.response;
 
+import java.time.LocalDate;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
@@ -7,9 +12,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * 이동내역 조회 DTO
@@ -22,6 +24,7 @@ public class MovedDetailResponseData {
         this.shipId = shipId;
     }
     private String shipId;
+	@JsonProperty("oStorageId")
     private String oStorageId;
     private String storageId;
     private LocalDate startDt;
@@ -29,6 +32,7 @@ public class MovedDetailResponseData {
     private String shipGb;
     private String blNo;
     private List<Move> moves;
+
     @Getter
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
