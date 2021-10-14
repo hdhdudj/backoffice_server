@@ -3,7 +3,6 @@ package io.spring.controller;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +28,7 @@ import io.spring.model.move.response.MoveListResponseData;
 import io.spring.model.move.response.MovedDetailResponseData;
 import io.spring.model.move.response.OrderMoveListResponseData;
 import io.spring.service.move.JpaMoveService;
+import io.spring.service.move.MyBatisMoveService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,6 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MoveController {
     private final JpaMoveService jpaMoveService;
+	private final MyBatisMoveService myBatisMoveService;
 
     /**
      * 주문이동지시 화면에서 검색시 가져오는 주문 list를 return
@@ -50,16 +51,35 @@ public class MoveController {
                                            @RequestParam @Nullable String assortNm,
                                            @RequestParam @Nullable String itemId,
                                            @RequestParam @Nullable String deliMethod){
-        Map<String, Object> map = new HashMap<>();
-        map.put("startDt", startDt);
-        map.put("endDt", endDt);
-        map.put("storageId", storageId);
-        map.put("assortId", assortId);
-        map.put("assortNm", assortNm);
-        map.put("itemId", itemId);
-        map.put("deliMethod", deliMethod);
+		HashMap<String, Object> map = new HashMap<>();
 
-        List<OrderMoveListResponseData> orderMoveListResponseData = jpaMoveService.getOrderMoveList(map);
+		if (startDt != null) {
+			map.put("startDt", startDt);
+		}
+		if (endDt != null) {
+			map.put("endDt", endDt);
+		}
+		if (storageId != null && !storageId.equals("")) {
+			map.put("storageId", storageId);
+		}
+		if (assortId != null && !assortId.equals("")) {
+			map.put("assortId", assortId);
+		}
+		if (assortNm != null) {
+			map.put("assortNm", assortNm);
+		}
+		if (deliMethod != null) {
+			map.put("deliMethod", deliMethod);
+		}
+
+		/*
+		 * map.put("endDt", endDt); map.put("storageId", storageId); map.put("assortId",
+		 * assortId); map.put("assortNm", assortNm); map.put("itemId", itemId);
+		 * map.put("deliMethod", deliMethod);
+		 */
+
+
+        List<OrderMoveListResponseData> orderMoveListResponseData = myBatisMoveService.getOrderMoveList(map);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), orderMoveListResponseData);
         return ResponseEntity.ok(res);
     }

@@ -1,24 +1,30 @@
 package io.spring.model.deposit.entity;
 
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.entity.Lspchd;
-import io.spring.model.purchase.entity.Lspchm;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.Date;
 
 @Slf4j
 @Entity
@@ -87,6 +93,7 @@ public class Lsdpsp extends CommonProps implements Serializable {
      * 상품이동지시 저장 -> 발주 data 생성시
      */
     public Lsdpsp(String depositPlanId, Lspchd lspchd, String regId) {
+		this.smReservationDt = Utilities.getStringToDate(StringFactory.getDoomDay());
         this.depositPlanId = depositPlanId;
         this.purchasePlanQty = lspchd.getPurchaseQty();
         this.purchaseTakeQty = 0l;
@@ -97,6 +104,7 @@ public class Lsdpsp extends CommonProps implements Serializable {
         this.purchaseSeq = lspchd.getPurchaseSeq();
         this.purchaseGb = StringFactory.getGbTwo(); // 01 : 일반발주, 02 : 이동요청. 02 하드코딩
         this.dealtypeCd = StringFactory.getGbTwo(); // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정 주문발주. 02 하드코딩
+		this.claimItemYn = StringFactory.getGbTwo(); // 02
         super.setRegId(regId);
         super.setUpdId(regId);
     }

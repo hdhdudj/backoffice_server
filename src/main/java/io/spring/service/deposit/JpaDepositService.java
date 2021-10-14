@@ -190,8 +190,8 @@ public class JpaDepositService {
             jpaLsdpsdRepository.save(lsdpsd);
 
             Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(lsdpsd.getInputNo(), lsdpsd.getInputSeq());
-            lspchd.setDepositNo(lsdpsd.getDepositNo());
-            lspchd.setDepositSeq(lsdpsd.getDepositSeq());
+			// lspchd.setDepositNo(lsdpsd.getDepositNo());
+			// lspchd.setDepositSeq(lsdpsd.getDepositSeq());
             jpaLspchdRepository.save(lspchd);
             
             index++;
@@ -473,11 +473,13 @@ public class JpaDepositService {
                 messageList.add(StringFactory.getStrNotCompleteDeposit());
                 continue;
             }
+
             else{
                 log.debug(StringFactory.getStrInputQtyBig());
                 messageList.add(StringFactory.getStrInputQtyBig());
                 continue;
             }
+
             Lspchm lspchm = lsdpsp.getLspchd().getLspchm();
             LocalDateTime purchaseDt = lspchm.getPurchaseDt();
             lsdpsp = this.changeLsdpspStatus(lsdpsp, isCompleteDeposit);
@@ -552,9 +554,15 @@ public class JpaDepositService {
         else {
             ititmt.setTempQty(ititmt.getTempQty() - deposit.getDepositQty());
         }
-//        if(dealTypeCd.equals(StringFactory.getGbOne())){ // 주문발주일 때
-//            ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() - deposit.getDepositQty());
-//        }
+
+		if (!dealTypeCd.equals(StringFactory.getGbTwo())) { // 주문발주일 때
+			if (ititmt.getTempIndicateQty() - deposit.getDepositQty() > 0) {
+				ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() - deposit.getDepositQty());
+			} else {
+				ititmt.setTempIndicateQty(0L);
+			}
+
+		}
         jpaItitmtRepository.save(ititmt);
         return ititmt;
     }

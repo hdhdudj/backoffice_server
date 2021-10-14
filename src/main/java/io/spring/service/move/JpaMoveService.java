@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,8 @@ import io.spring.jparepos.goods.JpaIfBrandRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
+import io.spring.jparepos.order.JpaTbOrderHistoryRepository;
+import io.spring.jparepos.order.JpaTbOrderMasterRepository;
 import io.spring.jparepos.purchase.JpaLspchdRepository;
 import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
@@ -46,6 +49,7 @@ import io.spring.model.move.response.MoveListResponseData;
 import io.spring.model.move.response.MovedDetailResponseData;
 import io.spring.model.move.response.OrderMoveListResponseData;
 import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.order.entity.TbOrderHistory;
 import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
@@ -70,6 +74,10 @@ public class JpaMoveService {
     private final JpaLsshpdRepository jpaLsshpdRepository;
     private final JpaLsshpsRepository jpaLsshpsRepository;
     private final JpaPurchaseService jpaPurchaseService;
+
+	private final JpaTbOrderMasterRepository tbOrderMasterRepository;
+	private final JpaTbOrderDetailRepository tbOrderDetailRepository;
+	private final JpaTbOrderHistoryRepository tbOrderHistoryrRepository;
 
     private final EntityManager em;
 
@@ -175,8 +183,17 @@ public class JpaMoveService {
         }
         List<String> newShipIdList = new ArrayList<>();
         List<Lsdpsd> lsdpsdList = new ArrayList<>();
+		List<HashMap<String, Object>> orderList = new ArrayList<>();
+
         // 1. 출고 data 생성
         for(OrderMoveSaveData.Move move : moveList){
+
+			HashMap<String, Object> m = new HashMap<String, Object>();
+			m.put("order_id", move.getOrderId());
+			m.put("order_seq", move.getOrderSeq());
+
+			orderList.add(m);
+
             List<String> shipIdList = this.saveOrderMoveSaveData(lsdpsdList, move);
             if(shipIdList.size() > 0){
                 shipIdList.stream().forEach(x->newShipIdList.add(x));
@@ -184,6 +201,11 @@ public class JpaMoveService {
         }
         // 2. 발주 data 생성
         jpaPurchaseService.makePurchaseDataFromOrderMoveSave(lsdpsdList, moveList);
+
+		this.changeStatusCdOfTbOrderDetail(orderList, "C02");
+
+		// moveList
+
         return newShipIdList;
     }
 
@@ -247,7 +269,8 @@ public class JpaMoveService {
         jpaItitmcRepository.save(ititmc);
 //        TbOrderMaster tbOrderMaster = lsdpsd.getLspchd().getLsdpsp().get(0).getTbOrderDetail().getTbOrderMaster();
 
-        for (int i = 0; i < qty; i++) {
+		// 구매수량하나씩 이동처리하지않고 row단위로 처리
+		// for (int i = 0; i < qty; i++) { //수량1개씩처리하던 for문 주석처리
             String shipId = getShipId();
 //            Lsdpsp lsdpsp = lsdpsd.getLspchd().getLsdpsp().get(i);
             // lsshpm 저장
@@ -267,10 +290,10 @@ public class JpaMoveService {
             // lsshpd 저장
             String shipSeq = StringFactory.getFourStartCd(); // 0001 하드코딩 //StringUtils.leftPad(Integer.toString(i + 1), 4,'0');
             Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc, itasrt);
-            lsshpd.setShipIndicateQty(1l);
+			lsshpd.setShipIndicateQty(qty);
             jpaLsshpdRepository.save(lsshpd);
             shipIdList.add(shipId);
-        }
+			// } //수량1개씩처리하던 for문 주석처리
         return shipIdList;
     }
 
@@ -586,6 +609,9 @@ public class JpaMoveService {
     public List<String> changeShipStatus(MoveListSaveData moveListSaveData) {
         List<String> newShipIdList = new ArrayList<>();
         List<String> shipIdList = new ArrayList<>();
+
+		List<HashMap<String, Object>> orderList = new ArrayList<>();
+
         List<MoveListSaveData.Move> moveList = moveListSaveData.getMoves();
         moveList.stream().forEach(x->shipIdList.add(x.getShipId()));
         Set<String> shipNoSet = new HashSet(shipIdList);
@@ -593,6 +619,11 @@ public class JpaMoveService {
         // lss- 변경
         for(String shipId : shipNoSet){
             Lsshpd lsshpd = jpaLsshpdRepository.findByShipId(shipId).get(0);
+
+			HashMap<String, Object> m = new HashMap<String, Object>();
+			m.put("order_id", lsshpd.getOrderId());
+			m.put("order_seq", lsshpd.getOrderSeq());
+
             Lsshpm lsshpm = lsshpd.getLsshpm();
             // ititmc.shipIndicateQty, ititmc.shipQty 차감
             long shipIndQty = lsshpd.getShipIndicateQty();
@@ -625,7 +656,14 @@ public class JpaMoveService {
                 newShipIdList.add(lsshpm.getShipId());
             }
             this.updateLssSeries(lsshpd);
+
+			orderList.add(m);
+
         }
+
+		// 주문상태변경
+		this.changeStatusCdOfTbOrderDetail(orderList, "C03");
+
         return newShipIdList;
     }
 
@@ -950,4 +988,48 @@ public class JpaMoveService {
         shipId = Utilities.getStringNo('L',shipId,9);
         return shipId;
     }
+
+	/**
+	 * 이동지시 또는 이동처리 후 주문상태변경
+	 */
+	private void changeStatusCdOfTbOrderDetail(List<HashMap<String, Object>> list, String statusCd) {
+		for (HashMap<String, Object> o : list) {
+//            TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(lspchd.getOrderId(),lspchd.getOrderSeq());
+//            if(tbOrderDetail != null){ // 01 : 주문이동, 02 : 상품이동
+//                tbOrderDetail.setStatusCd(StringFactory.getStrB02());
+			this.updateOrderStatusCd(o.get("order_id").toString(), o.get("order_seq").toString(), statusCd);
+//                jpaTbOrderDetailRepository.save(tbOrderDetail);
+//            }
+		}
+	}
+
+	private void updateOrderStatusCd(String orderId, String orderSeq, String statusCd) {
+
+		TbOrderDetail tod = tbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
+		if (tod == null) {
+			log.debug("해당 주문이 존재하지 않습니다. - JpaPurchaseService.updateOrderStatusCd");
+			return;
+		}
+		Date date = Utilities.getStringToDate(StringFactory.getDoomDay());
+		List<TbOrderHistory> tohs = tbOrderHistoryrRepository.findByOrderIdAndOrderSeqAndEffEndDt(orderId, orderSeq,
+				date);
+
+		tod.setStatusCd(statusCd);
+
+		Date newEffEndDate = new Date();
+
+		for (int i = 0; i < tohs.size(); i++) {
+			tohs.get(i).setEffEndDt(newEffEndDate);
+			tohs.get(i).setLastYn("002");
+		}
+
+		TbOrderHistory toh = new TbOrderHistory(orderId, orderSeq, statusCd, "001", newEffEndDate,
+				Utilities.getStringToDate(StringFactory.getDoomDay()));
+
+		tohs.add(toh);
+
+		tbOrderDetailRepository.save(tod);
+
+		tbOrderHistoryrRepository.saveAll(tohs);
+	}
 }

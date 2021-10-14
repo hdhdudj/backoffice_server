@@ -1,6 +1,26 @@
 package io.spring.model.purchase.entity;
 
+import java.io.Serializable;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.entity.Lsdpsd;
@@ -13,12 +33,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.List;
 
 @Entity
 @Getter
@@ -80,11 +94,11 @@ public class Lspchd extends CommonProps implements Serializable {
         this.itemGrade = lsdpsd.getItemGrade();
         this.siteGb = lsdpsd.getSiteGb();
         this.ownerId = lsdpsd.getOwnerId();
-        this.siteOrderNo = tbOrderDetail.getChannelOrderNo();
+		// this.siteOrderNo = tbOrderDetail.getChannelOrderNo();
         this.orderId = tbOrderDetail.getOrderId();
         this.orderSeq = tbOrderDetail.getOrderSeq();
-        this.depositNo = lsdpsd.getDepositNo();
-        this.depositSeq = lsdpsd.getDepositSeq();
+		// this.depositNo = lsdpsd.getDepositNo();
+		// this.depositSeq = lsdpsd.getDepositSeq();
     }
     /**
      * 상품이동지시 저장시 실행되는 생성자
@@ -133,8 +147,12 @@ public class Lspchd extends CommonProps implements Serializable {
     private String orderId;
     @Column(name = "orderSeq")
     private String orderSeq;
+
+	// todo:2021-10-14 depositNo 와 depositSeq 는 부분입고떄문에 들어가면 안될듯.반대로 lsdpsd의
+	// inputNo,inputSeq에서 관리해야함.
     private String depositNo;
     private String depositSeq;
+
     private String setShipId;
     private String setShipSeq;
     private String siteOrderNo;
@@ -170,22 +188,22 @@ public class Lspchd extends CommonProps implements Serializable {
     private List<Lsdpsp> lsdpsp;
 
     // lsdpsd 연관관계
+
     @JoinColumns({
             @JoinColumn(name = "purchaseNo", referencedColumnName = "inputNo", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
             @JoinColumn(name = "purchaseSeq", referencedColumnName = "inputSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
     })
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "lspchd")
+	@OneToOne(fetch = FetchType.LAZY, mappedBy = "lspchd")
     @JsonIgnore
     @NotFound(action = NotFoundAction.IGNORE)
-    private Lsdpsd lsdpsd;
+	private Lsdpsd lsdpsd;
 
     // tbOrderDetail 연관관계
-    @JoinColumns({
-            @JoinColumn(name = "orderId", referencedColumnName = "orderId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
-            @JoinColumn(name = "orderSeq", referencedColumnName = "orderSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
-    })
-    @OneToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
-    @NotFound(action = NotFoundAction.IGNORE)
-    private TbOrderDetail tbOrderDetail;
+	@JoinColumns({
+			@JoinColumn(name = "orderId", referencedColumnName = "orderId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
+			@JoinColumn(name = "orderSeq", referencedColumnName = "orderSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")) })
+	@OneToOne(fetch = FetchType.LAZY)
+	@JsonIgnore
+	@NotFound(action = NotFoundAction.IGNORE)
+	private TbOrderDetail tbOrderDetail;
 }
