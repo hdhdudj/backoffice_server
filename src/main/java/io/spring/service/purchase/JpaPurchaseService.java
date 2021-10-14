@@ -446,7 +446,8 @@ public class JpaPurchaseService {
         LocalDateTime end = endDt.atTime(23,59,59);
         TypedQuery<Lspchm> query = em.createQuery("select m from Lspchm m" +
                 " where m.purchaseDt between ?1 and ?2" +
-                " and (?3 is null or trim(?3)='' or m.ownerId=?3) " +
+				" and (?3 is null or trim(?3)='' or m.vendorId=?3) "
+				+
                 "and m.purchaseStatus in :statusArr", Lspchm.class);
         List<String> statusArr = Arrays.asList(StringFactory.getGbOne(), StringFactory.getGbThree()); // 01:발주 03:부분입고 04:완전입고 05:취소  A1:송금완료 A2:거래처선금입금 A3:거래처잔금입금
         query.setParameter(1,start).setParameter(2,end).setParameter(3,purchaseVendorId)
