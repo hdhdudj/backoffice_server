@@ -485,12 +485,14 @@ public class JpaDepositService {
             lsdpsp = this.changeLsdpspStatus(lsdpsp, isCompleteDeposit);
             lsdpspList.add(lsdpsp);
             depositList.add(deposit);
+
             this.saveItitmt(purchaseDt, storageId, deposit, dealtypeCd);
 
 			// System.out.println(depositListWithPurchaseInfoData.getDepositDt());
 
 			LocalDateTime localDateTime = LocalDateTime.parse(depositListWithPurchaseInfoData.getDepositDt(),
 					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
 
 			this.saveItitmc(depositListWithPurchaseInfoData, localDateTime, storageId, deposit);
         }

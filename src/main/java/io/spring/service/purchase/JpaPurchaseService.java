@@ -855,7 +855,8 @@ public class JpaPurchaseService {
 			// lsdpsp insert
 			String depositPlanId = this.getDepositPlanId();
 			// todo: 2021-10-14 작업자 입력받아야함.
-			Lsdpsp lsdpsp = new Lsdpsp(depositPlanId, lspchd, "1");
+			// 주문이동지시 처리를 위한내용임.
+			Lsdpsp lsdpsp = new Lsdpsp(depositPlanId, lspchd, "1", "01");
 			lsdpsp.setLspchd(lspchd);
 			jpaLsdpspRepository.save(lsdpsp);
 

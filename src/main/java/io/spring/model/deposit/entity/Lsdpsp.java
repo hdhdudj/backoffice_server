@@ -109,6 +109,35 @@ public class Lsdpsp extends CommonProps implements Serializable {
         super.setUpdId(regId);
     }
 
+	/**
+	 * 주문이동지시 저장 -> 발주 data 생성시
+	 *
+	 */
+
+	public Lsdpsp(String depositPlanId, Lspchd lspchd, String regId, String gb) {
+
+		this.smReservationDt = Utilities.getStringToDate(StringFactory.getDoomDay());
+		this.depositPlanId = depositPlanId;
+		this.purchasePlanQty = lspchd.getPurchaseQty();
+		this.purchaseTakeQty = 0l;
+		this.assortId = lspchd.getAssortId();
+		this.itemId = lspchd.getItemId();
+		this.planStatus = StringFactory.getGbOne(); // 01 : 입고전, 03 : 부분입고, 04 : 입고완료, 05 : 취소. 01 하드코딩
+		this.purchaseNo = lspchd.getPurchaseNo();
+		this.purchaseSeq = lspchd.getPurchaseSeq();
+		this.purchaseGb = StringFactory.getGbTwo(); // 01 : 일반발주, 02 : 이동요청. 02 하드코딩
+		if (purchaseGb.equals("01")) {
+			this.dealtypeCd = StringFactory.getGbOne(); // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정 주문발주. 02 하드코딩
+
+		} else {
+			this.dealtypeCd = StringFactory.getGbTwo(); // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정 주문발주. 02 하드코딩
+		}
+
+		this.claimItemYn = StringFactory.getGbTwo(); // 02
+		super.setRegId(regId);
+		super.setUpdId(regId);
+	}
+
     @Id
     private String depositPlanId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
