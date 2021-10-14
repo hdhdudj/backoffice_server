@@ -87,6 +87,9 @@ public class JpaDepositService {
      */
     @Transactional
 	public boolean sequenceCreateDeposit(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData, List<String> messageList) {
+
+		// todo": 주문발주의 경우 처리전에 주문의 상태를 먼저 확인해야함.
+
         // 0. lsdpsp, ititmc, ititmt의 수량 관련값 변경
         List<Lsdpsp> lsdpspList = this.updateDepositQty(depositListWithPurchaseInfoData, messageList);
         if(lsdpspList.size() == 0){
