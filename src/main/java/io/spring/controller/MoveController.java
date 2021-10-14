@@ -1,6 +1,7 @@
 package io.spring.controller;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -54,21 +55,27 @@ public class MoveController {
 		HashMap<String, Object> map = new HashMap<>();
 
 		if (startDt != null) {
-			map.put("startDt", startDt);
+
+			LocalDateTime start = startDt.atStartOfDay();
+
+			map.put("startDt", start);
 		}
 		if (endDt != null) {
-			map.put("endDt", endDt);
+
+			LocalDateTime end = endDt.atTime(23, 59, 59);
+			map.put("endDt", end);
 		}
+
 		if (storageId != null && !storageId.equals("")) {
 			map.put("storageId", storageId);
 		}
 		if (assortId != null && !assortId.equals("")) {
 			map.put("assortId", assortId);
 		}
-		if (assortNm != null) {
+		if (assortNm != null && !assortNm.equals("")) {
 			map.put("assortNm", assortNm);
 		}
-		if (deliMethod != null) {
+		if (deliMethod != null && !deliMethod.equals("")) {
 			map.put("deliMethod", deliMethod);
 		}
 
