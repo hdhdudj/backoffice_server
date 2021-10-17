@@ -22,9 +22,12 @@ import org.springframework.stereotype.Service;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
+import io.spring.jparepos.deposit.JpaLsdpsmRepository;
 import io.spring.jparepos.deposit.JpaLsdpspRepository;
 import io.spring.jparepos.goods.JpaIfBrandRepository;
+import io.spring.jparepos.goods.JpaItasrtRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
+import io.spring.jparepos.goods.JpaItitmmRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.order.JpaTbOrderHistoryRepository;
@@ -34,9 +37,11 @@ import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
 import io.spring.model.deposit.entity.Lsdpsd;
+import io.spring.model.deposit.entity.Lsdpsm;
 import io.spring.model.goods.entity.IfBrand;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
+import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.goods.entity.Itvari;
 import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.move.request.MoveListSaveData;
@@ -67,14 +72,21 @@ public class JpaMoveService {
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
     private final JpaItitmcRepository jpaItitmcRepository;
     private final JpaItitmtRepository jpaItitmtRepository;
+
+	private final JpaItitmmRepository jpaItitmmRepository;
+
+	private final JpaItasrtRepository jpaItasrtRepository;
+
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
     private final JpaLspchdRepository jpaLspchdRepository;
     private final JpaLsdpspRepository jpaLsdpspRepository;
     private final JpaLsshpmRepository jpaLsshpmRepository;
     private final JpaLsshpdRepository jpaLsshpdRepository;
     private final JpaLsshpsRepository jpaLsshpsRepository;
-    private final JpaPurchaseService jpaPurchaseService;
 
+	private final JpaLsdpsmRepository jpaLsdpsmRepository;
+
+    private final JpaPurchaseService jpaPurchaseService;
 	private final JpaTbOrderMasterRepository tbOrderMasterRepository;
 	private final JpaTbOrderDetailRepository tbOrderDetailRepository;
 	private final JpaTbOrderHistoryRepository tbOrderHistoryrRepository;
@@ -123,7 +135,6 @@ public class JpaMoveService {
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
         TypedQuery<TbOrderDetail> query = em.createQuery("select to from TbOrderDetail to " +
-                "join fetch to.lspchd pd " +
                 "join fetch pd.lspchm pm " +
                 "join fetch pd.lsdpsd sd " +
                 "join fetch sd.lsdpsm sm " +
@@ -171,6 +182,8 @@ public class JpaMoveService {
         return lsdpsdList;
     }
 
+
+
     /**
      * 주문 이동지시 저장 함수
      */
@@ -209,6 +222,55 @@ public class JpaMoveService {
         return newShipIdList;
     }
 
+	/**
+     * 주문 이동지시 저장 함수
+     */
+	public List<String> saveOrderMoveByDeposit(Lsdpsd lsdpsd) {
+    	
+    
+    	
+        //List<OrderMoveSaveData.Move> moveList = orderMoveSaveData.getMoves();
+		if (lsdpsd == null) {
+            log.debug("input data is empty.");
+            return null;
+        }
+
+        List<String> newShipIdList = new ArrayList<>();
+       // List<Lsdpsd> lsdpsdList = new ArrayList<>();
+		List<HashMap<String, Object>> orderList = new ArrayList<>();
+
+
+		String aaa = lsdpsd.getAssortId();
+		HashMap<String, Object> m = new HashMap<String, Object>();
+		m.put("order_id", lsdpsd.getOrderId());
+		m.put("order_seq", lsdpsd.getOrderSeq());
+		orderList.add(m);
+
+		// 입고건중에 주문번호가 있는것만 처리함.
+		// 입고건에 대해 이동지시를 먼저 만들어놓은후 상태를 수정하는 방법으로 처리
+
+		if (lsdpsd.getOrderId() != null) {
+
+			List<String> shipIdList = this.saveOrderMoveSaveDataByDeposit(lsdpsd);
+			if (shipIdList.size() > 0) {
+				shipIdList.stream().forEach(x -> newShipIdList.add(x));
+			}
+		}
+		
+
+
+        // 2. 발주 data 생성
+		// 이동처리할떄 발주하는걸로 아예 로직변경
+		// jpaPurchaseService.makePurchaseDataFromOrderMoveSaveByDeposit(lsdpsdList,
+		// moveList);
+
+		// this.changeStatusCdOfTbOrderDetail(orderList, "C02");
+
+		// moveList
+
+        return newShipIdList;
+    }
+
     /**
      * OrderMoveSaveData객체로 lsshpm,s,d 생성
      * lsdpsm,d,s,b, lsdpsp, ititmt(발주데이터) 생성
@@ -224,6 +286,23 @@ public class JpaMoveService {
 //        this.updateQty(orderMoveSaveData);
         return shipIdList;
     }
+
+	/**
+	 * OrderMoveSaveData객체로 lsshpm,s,d 생성 lsdpsm,d,s,b, lsdpsp, ititmt(발주데이터) 생성
+	 * tbOrderDetail를 변경
+	 */
+	private List<String> saveOrderMoveSaveDataByDeposit(Lsdpsd lsdpsd) {
+		// Lsdpsd lsdpsd = this.getLsdpsdByDepositNoAndDepositSeq(move);
+		TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(lsdpsd.getOrderId(),
+				lsdpsd.getOrderSeq());
+		List<String> shipIdList = this.makeOrderShipData(lsdpsd, tbOrderDetail, lsdpsd.getDepositQty(),
+				StringFactory.getGbOne());
+//		if (shipIdList.size() > 0) {
+		// lsdpsdList.add(lsdpsd);
+		// }
+//        this.updateQty(orderMoveSaveData);
+		return shipIdList;
+	}
 
     /**
      * depositNo와 depositSeq로 Lsdpsd를 가져오는 함수
@@ -249,12 +328,21 @@ public class JpaMoveService {
      * 주문이동 저장, 출고 관련 data 생성 함수 (lsshpm,d,s)
      */
     private List<String> makeOrderShipData(Lsdpsd lsdpsd, TbOrderDetail tbOrderDetail, long qty, String shipStatus) {
+
+
         List<String> shipIdList = new ArrayList<>();
 
-        Itasrt itasrt = lsdpsd.getItasrt();
-        List<Ititmc> ititmcList = lsdpsd.getItitmm().getItitmc();
-        LocalDateTime depositDt = lsdpsd.getLsdpsm().getDepositDt();
-        String storageId = lsdpsd.getLsdpsm().getStoreCd();
+
+		Itasrt itasrt = jpaItasrtRepository.findByAssortId(lsdpsd.getAssortId());
+
+		Ititmm ititmm = jpaItitmmRepository.findByAssortIdAndItemId(lsdpsd.getAssortId(), lsdpsd.getItemId());
+
+		List<Ititmc> ititmcList = ititmm.getItitmc();
+
+		Lsdpsm lsdpsm = jpaLsdpsmRepository.findById(lsdpsd.getDepositNo()).orElse(null);
+		
+		LocalDateTime depositDt = lsdpsm.getDepositDt();
+		String storageId = lsdpsm.getStoreCd();
         String itemGrade = lsdpsd.getItemGrade();
         ititmcList = ititmcList.stream().filter(x -> x.getEffEndDt().equals(depositDt)
                 && x.getStorageId().equals(storageId)
