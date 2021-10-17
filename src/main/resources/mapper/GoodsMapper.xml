@@ -244,9 +244,9 @@
 				and i.assort_nm like CONCAT( '%',  #{assortNm}, '%') 
 			 ]]>
 			</if>		
-			<if test='purchaseVendorId != null'>
+			<if test='vendorId != null'>
 			 <![CDATA[		
-					and i.vendor_id =#{purchaseVendorId} 
+					and i.vendor_id =#{vendorId} 
 			 ]]>
 			</if>		
 			<if test='brandId != null'>
