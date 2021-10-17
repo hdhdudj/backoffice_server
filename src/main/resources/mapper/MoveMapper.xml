@@ -7,12 +7,12 @@
     
     <select id="getOrderMoveList" parameterType="java.util.HashMap"  resultType="HashMap">
     	 <![CDATA[	
-select ld.deposit_no depositNo 
-,ld.deposit_seq depositSeq
-,concat(ld.deposit_no ,'-',ld.deposit_seq) depositKey
+select ld.ship_id depositNo 
+,ld.ship_seq depositSeq
+,concat(ld.ship_id ,'-',ld.ship_seq) depositKey
 ,ld.assort_id assortId
 ,ld.item_id  itemId
-,lm.deposit_dt depositDt 
+,lm.receipt_dt depositDt 
 ,tod.order_id orderId 
 ,tod.order_seq orderSeq
 ,concat(tod.order_id  ,'-',tod.order_seq) orderKey
@@ -34,27 +34,21 @@ where b2.assort_id=tod.assort_id
   And  b2.assort_id = b1.assort_id
   and b2.variation_gb2 = b1.variation_gb
   and  b2.variation_seq2=b1.seq) optionNm2
-from lsdpsm lm
-,lsdpsd ld
+from lsshpm lm
+,lsshpd ld
 ,itasrt it
-,lspchd pd
-,lspchm pm
 ,tb_order_detail tod 
 where 1=1
-and lm.deposit_dt between #{startDt} and  #{endDt}
-and lm.deposit_no = ld.deposit_no 
+and lm.receipt_dt between #{startDt} and  #{endDt}
+and lm.ship_id = ld.ship_id 
 and ld.assort_id = it.assort_id 
-and ld.input_no =pd.purchase_no 
-and ld.input_seq =pd.purchase_seq
-and pd.purchase_no =pm.purchase_no 
-and pm.purchase_gb='01'
-and pd.order_id = tod.order_id 
-and pd.order_seq = tod.order_seq
+and ld.order_id = tod.order_id 
+and ld.order_seq = tod.order_seq
 and tod.status_cd ='C01'
     	 ]]>
     	 <if test='storageId != null'>
 			 <![CDATA[
-			 and lm.store_cd =#{storageId}	
+			 and lm.storage_id =#{storageId}	
 			 ]]>
 			</if>
 <if test='assortId != null'>

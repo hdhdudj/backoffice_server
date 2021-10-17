@@ -1,6 +1,22 @@
 package io.spring.model.ship.entity;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
@@ -13,13 +29,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.List;
 
 @Entity
 @Getter
@@ -39,7 +48,8 @@ public class Lsshpm extends CommonProps {
         this.shipItemCnt = null;
         this.receiptDt = LocalDateTime.now(); // 출고지시 일자
         this.storageId = itasrt.getStorageId();
-        this.instructDt = new Date(); // 패킹일자 //Utilities.getStringToDate(StringFactory.getDoomDay());
+		this.instructDt = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());// 패킹일자
+																					// //Utilities.getStringToDate(StringFactory.getDoomDay());
         this.applyDay = LocalDateTime.parse(StringFactory.getDoomDay(), DateTimeFormatter.ofPattern(StringFactory.getDateFormat())); // 출고처리 일자
         this.masterShipGb = StringFactory.getGbOne(); // 01 하드코딩
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
@@ -69,7 +79,8 @@ public class Lsshpm extends CommonProps {
         this.storageId = goodsMoveSaveData.getStorageId();
         this.oStorageId = goodsMoveSaveData.getOStorageId();
         this.receiptDt = LocalDateTime.now();
-        this.instructDt = new Date();//Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
+		this.instructDt = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());// Utilities.getStringToDate(StringFactory.getDoomDay());
+																					// // 9999-12-31 하드코딩
         this.applyDay = Utilities.strToLocalDateTime(StringFactory.getDoomDayT()); // 9999-12-31 하드코딩
         this.masterShipGb = StringFactory.getGbOne(); // 01 하드코딩
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
@@ -107,7 +118,7 @@ public class Lsshpm extends CommonProps {
     private String storageId;
     private String oStorageId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date instructDt;
+	private LocalDateTime instructDt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime applyDay;
     private String masterShipGb;
