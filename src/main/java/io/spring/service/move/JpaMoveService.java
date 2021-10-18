@@ -766,7 +766,7 @@ public class JpaMoveService {
      */
     public MoveIndicateListResponseData getMoveIndicateList(LocalDate startDt, LocalDate endDt, String storageId, String oStorageId, String assortId, String assortNm) {
 
-        List<Lsshpd> lsshpdList = this.getLsshpdMoveIndList(startDt, endDt, storageId, oStorageId, assortId, assortNm);
+        List<Lsshpd> lsshpdList = this.getLsshpmMoveIndList(startDt, endDt, storageId, oStorageId, assortId, assortNm);
 
         MoveIndicateListResponseData moveIndicateListResponseData = new MoveIndicateListResponseData(startDt, endDt, storageId, oStorageId, assortId, assortNm);
         List<MoveIndicateListResponseData.Move> moveList = new ArrayList<>();
@@ -786,9 +786,9 @@ public class JpaMoveService {
     }
 
     /**
-     * 조건에 맞는 lsshpd 리스트를 반환하는 함수
+     * 조건에 맞는 lsshpm 리스트를 반환하는 함수
     */
-    private Lsshpm getLsshpdMoveIndList(LocalDate startDt, LocalDate endDt, String storageId, String oStorageId, String assortId, String assortNm) {
+    private List<Lsshpm> getLsshpmMoveIndList(LocalDate startDt, LocalDate endDt, String storageId, String oStorageId, String assortId, String assortNm) {
 
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
@@ -807,9 +807,9 @@ public class JpaMoveService {
 //                .setParameter(3, storageId)
 //        .setParameter(4,assortId).setParameter(5,assortNm).setParameter(6,oStorageId);
 //        List<Lsshpd> lsshpdList = query.getResultList();
-        Lsshpm lsshpm = query.getSingleResult();
+        List<Lsshpm> lsshpmList = query.getResultList();
 
-        return lsshpm;
+        return lsshpmList;
     }
 
     /**
