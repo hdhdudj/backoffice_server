@@ -788,28 +788,28 @@ public class JpaMoveService {
     /**
      * 조건에 맞는 lsshpd 리스트를 반환하는 함수
     */
-    private List<Lsshpd> getLsshpdMoveIndList(LocalDate startDt, LocalDate endDt, String storageId, String oStorageId, String assortId, String assortNm) {
+    private Lsshpm getLsshpdMoveIndList(LocalDate startDt, LocalDate endDt, String storageId, String oStorageId, String assortId, String assortNm) {
 
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
-        TypedQuery<Lsshpd> query = em.createQuery("select ld from Lsshpd ld " +
-                        "join fetch ld.lsshpm lm " +
+        TypedQuery<Lsshpm> query = em.createQuery("select lm from Lsshpm lm " +
+                        "join fetch lm.lsshpdList ld " +
                         "left join fetch ld.tbOrderDetail td " +
                         "join fetch ld.itasrt it " +
-                        "where ld.regDt between ?1 and ?2 " +
-				"and  lm.shipStatus ='01' " // 지시상태만 조회
-				+ "and (?3 is null or trim(?3)='' or lm.storageId=?3) "
-				+ "and (?4 is null or trim(?4)='' or ld.assortId=?4) "
-				+ "and (?5 is null or trim(?5)='' or it.assortNm like concat('%',?5,'%')) "
-				+ "and (?6 is null or trim(?6)='' or ld.oStorageId=?6)"
-                ,Lsshpd.class);
-		query.setParameter(1, start).setParameter(2, end).setParameter(3, storageId)
-        .setParameter(4,assortId).setParameter(5,assortNm).setParameter(6,oStorageId);
-        List<Lsshpd> lsshpdList = query.getResultList();
+                        "where lm.instructDt between ?1 and ?2 " +
+				"and  lm.shipStatus ='02'" // 지시상태만 조회
+//				+ "and (?3 is null or trim(?3)='' or lm.storageId=?3) "
+//				+ "and (?4 is null or trim(?4)='' or ld.assortId=?4) "
+//				+ "and (?5 is null or trim(?5)='' or it.assortNm like concat('%',?5,'%')) "
+//				+ "and (?6 is null or trim(?6)='' or ld.oStorageId=?6)"
+                ,Lsshpm.class);
+		query.setParameter(1, start).setParameter(2, end);
+//                .setParameter(3, storageId)
+//        .setParameter(4,assortId).setParameter(5,assortNm).setParameter(6,oStorageId);
+//        List<Lsshpd> lsshpdList = query.getResultList();
+        Lsshpm lsshpm = query.getSingleResult();
 
-		System.out.println(lsshpdList);
-
-        return lsshpdList;
+        return lsshpm;
     }
 
     /**
