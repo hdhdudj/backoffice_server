@@ -727,10 +727,18 @@ public class JpaMoveService {
 			m.put("order_id", lsshpd.getOrderId());
 			m.put("order_seq", lsshpd.getOrderSeq());
 
-            Lsshpm lsshpm = lsshpd.getLsshpm();
+			Lsshpm lsshpm = jpaLsshpmRepository.findByShipId(lsshpd.getShipId());
             // ititmc.shipIndicateQty, ititmc.shipQty 차감
             long shipIndQty = lsshpd.getShipIndicateQty();
-            List<Ititmc> ititmcList = jpaItitmcRepository.findByAssortIdAndItemIdAndEffEndDtOrderByEffEndDtAsc(lsshpd.getAssortId(), lsshpd.getItemId(), lsshpd.getExcAppDt());
+			// List<Ititmc> ititmcList =
+			// jpaItitmcRepository.findByAssortIdAndItemIdAndEffEndDtOrderByEffEndDtAsc(lsshpd.getAssortId(),
+			// lsshpd.getItemId(), lsshpd.getExcAppDt());
+			// List<Ititmc> ititmcList =
+			// jpaItitmcRepository.findByAssortIdAndItemIdAndEffEndDtOrderByEffEndDtAsc(lsshpd.getAssortId(),
+			// lsshpd.getItemId(), lsshpd.getExcAppDt());
+			List<Ititmc> ititmcList = jpaItitmcRepository
+					.findByAssortIdAndItemIdAndEffEndDtAndStorageIdOrderByEffEndDtAsc(
+					lsshpd.getAssortId(), lsshpd.getItemId(), lsshpd.getExcAppDt(), lsshpm.getStorageId());
             if(this.subItitmcQties(ititmcList, shipIndQty).size() == 0){
                 continue;
             }

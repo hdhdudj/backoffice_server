@@ -1,5 +1,21 @@
 package io.spring.controller;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
@@ -8,15 +24,9 @@ import io.spring.model.ship.response.ShipIndicateListData;
 import io.spring.model.ship.response.ShipIndicateSaveListResponseData;
 import io.spring.model.ship.response.ShipItemListData;
 import io.spring.service.ship.JpaShipService;
+import io.spring.service.ship.MyBatisShipService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/ship")
@@ -24,6 +34,7 @@ import java.util.List;
 @Slf4j
 public class ShipController {
     private final JpaShipService jpaShipService;
+	private final MyBatisShipService myBatisShipService;
 
     /**
      * 출고지시 화면 : 출고지시 저장 화면에서 저장하기 위한 리스트를 조건 검색으로 불러오는 api (주문번호 기준으로 불러옴)
@@ -33,8 +44,43 @@ public class ShipController {
                                            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable LocalDate endDt,
                                            @RequestParam @Nullable String assortId,
                                            @RequestParam @Nullable String assortNm,
+			@RequestParam @Nullable String storageId,
                                            @RequestParam @Nullable String channelId){
-        ShipIndicateSaveListResponseData shipIndicateSaveListResponseData = jpaShipService.getOrderSaveList(startDt, endDt, assortId, assortNm, channelId);
+
+		HashMap<String, Object> map = new HashMap<>();
+
+		if (startDt != null) {
+
+			LocalDateTime start = startDt.atStartOfDay();
+
+			map.put("startDt", start);
+		}
+		if (endDt != null) {
+
+			LocalDateTime end = endDt.atTime(23, 59, 59);
+			map.put("endDt", end);
+		}
+
+		if (assortId != null && !assortId.equals("")) {
+			map.put("assortId", assortId);
+		}
+		if (assortNm != null && !assortNm.equals("")) {
+			map.put("assortNm", assortNm);
+		}
+		if (storageId != null && !storageId.equals("")) {
+			map.put("storageId", storageId);
+		}
+		if (channelId != null && !channelId.equals("")) {
+			map.put("channelId", channelId);
+		}
+
+		List<ShipIndicateSaveListResponseData.Ship> l = myBatisShipService.getOrderShipList(map);
+		
+		ShipIndicateSaveListResponseData shipIndicateSaveListResponseData = new ShipIndicateSaveListResponseData(
+				startDt, endDt, assortId, assortNm, channelId);
+		shipIndicateSaveListResponseData.setShips(l);
+
+
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateSaveListResponseData);
         return ResponseEntity.ok(res);
     }

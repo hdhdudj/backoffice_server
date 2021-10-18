@@ -194,7 +194,10 @@ public class JpaShipService {
 			}
 
 			List<Ititmc> ititmcList = jpaItitmcRepository
-					.findByAssortIdAndItemIdOrderByEffEndDtAsc(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
+					// .findByAssortIdAndItemIdOrderByEffEndDtAsc(tbOrderDetail.getAssortId(),
+					// tbOrderDetail.getItemId());
+					.findByAssortIdAndItemIdAndStorageIdOrderByEffEndDtAsc(tbOrderDetail.getAssortId(),
+							tbOrderDetail.getItemId(), lsdpsd.getLsdpsm().getStoreCd());
 			// 1. 재고에서 출고 차감 계산
 			ititmcList = this.calcItitmcQties(ititmcList, lsdpsd.getDepositQty()); // 주문량만큼 출고차감 (하나의 ititmc에서 모두 차감하므로
 																					// ititmcList에 값이 있다면 한 개만 들어있어야 함)
@@ -297,6 +300,9 @@ public class JpaShipService {
 		Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail);
 		lsshpm.setShipStatus(shipStatus); // 01 : 이동지시or출고지시, 04 : 출고
 		lsshpm.setDeliId(tbOrderDetail.getTbOrderMaster().getDeliId());
+		// lsshpm.setOStorageId(tbOrderDetail.getStorageId());
+		lsshpm.setStorageId(lsdpsd.getLsdpsm().getStoreCd());
+
 		// lsshps 저장
 		Lsshps lsshps = new Lsshps(lsshpm);
 		jpaLsshpsRepository.save(lsshps);
@@ -427,7 +433,8 @@ public class JpaShipService {
             lsshpdList.add(lsshpd);
             // 2. 해당 tbOrderDetail statusCd 변경
             TbOrderDetail tbOrderDetail = lsshpd.getTbOrderDetail();
-            List<Ititmc> ititmcList = jpaItitmcRepository.findByAssortIdAndItemIdOrderByEffEndDtAsc(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
+			List<Ititmc> ititmcList = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdOrderByEffEndDtAsc(
+					tbOrderDetail.getAssortId(), tbOrderDetail.getItemId(), lsshpm.getStorageId());
             // 재고에서 출고 차감 계산
             ititmcList = jpaMoveService.subItitmcQties(ititmcList, ship.getQty()); // 주문량만큼 출고차감 (하나의 ititmc에서 모두 차감하므로 ititmcList에 값이 있다면 한 개만 들어있어야 함)
             if(ititmcList.size()==0){
