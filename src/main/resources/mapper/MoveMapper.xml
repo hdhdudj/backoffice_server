@@ -7,12 +7,12 @@
     
     <select id="getOrderMoveList" parameterType="java.util.HashMap"  resultType="HashMap">
     	 <![CDATA[	
-select ld.ship_id depositNo 
-,ld.ship_seq depositSeq
-,concat(ld.ship_id ,'-',ld.ship_seq) depositKey
+select ld.ship_id shipId 
+,ld.ship_seq shipSeq
+,concat(ld.ship_id ,'-',ld.ship_seq) shipKey
 ,ld.assort_id assortId
 ,ld.item_id  itemId
-,lm.receipt_dt depositDt 
+,lm.receipt_dt receiptDt 
 ,tod.order_id orderId 
 ,tod.order_seq orderSeq
 ,concat(tod.order_id  ,'-',tod.order_seq) orderKey

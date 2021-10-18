@@ -82,24 +82,46 @@ public class Lspchd extends CommonProps implements Serializable {
     /**
      * 주문이동지시 저장시 실행되는 생성자
      */
-    public Lspchd(String purchaseNo, String purchaseSeq, Lsdpsd lsdpsd,
+	public Lspchd(String purchaseNo, String purchaseSeq, Lsdpsd lsdpsd,
                   TbOrderDetail tbOrderDetail){
         this.purchaseNo = purchaseNo;
         this.purchaseSeq = purchaseSeq;
-        this.assortId = lsdpsd.getAssortId();
-        this.itemId = lsdpsd.getItemId();
+		this.assortId = lsdpsd.getAssortId();
+		this.itemId = lsdpsd.getItemId();
         this.purchaseQty = tbOrderDetail.getQty();
-        this.purchaseUnitAmt = lsdpsd.getExtraUnitcost();
-        this.purchaseItemAmt = lsdpsd.getExtraCost();
-        this.itemGrade = lsdpsd.getItemGrade();
-        this.siteGb = lsdpsd.getSiteGb();
-        this.ownerId = lsdpsd.getOwnerId();
+		this.purchaseUnitAmt = lsdpsd.getExtraUnitcost();
+		this.purchaseItemAmt = lsdpsd.getExtraCost();
+		this.itemGrade = lsdpsd.getItemGrade();
+		this.siteGb = lsdpsd.getSiteGb();
+		this.ownerId = lsdpsd.getOwnerId();
 		// this.siteOrderNo = tbOrderDetail.getChannelOrderNo();
         this.orderId = tbOrderDetail.getOrderId();
         this.orderSeq = tbOrderDetail.getOrderSeq();
 		// this.depositNo = lsdpsd.getDepositNo();
 		// this.depositSeq = lsdpsd.getDepositSeq();
     }
+
+	/**
+	 * 주문이동지시2 저장시 실행되는 생성자
+	 */
+	public Lspchd(String purchaseNo, String purchaseSeq, Lsshpd lsshpd, TbOrderDetail tbOrderDetail) {
+		this.purchaseNo = purchaseNo;
+		this.purchaseSeq = purchaseSeq;
+		this.assortId = lsshpd.getAssortId();
+		this.itemId = lsshpd.getItemId();
+		this.purchaseQty = tbOrderDetail.getQty();
+		this.purchaseUnitAmt = lsshpd.getSaleCost();// lsdpsd.getExtraUnitcost();
+		this.purchaseItemAmt = lsshpd.getSaleCost() * lsshpd.getShipIndicateQty();// lsdpsd.getExtraCost();
+		this.itemGrade = "11";
+		this.siteGb = lsshpd.getSiteGb();
+		this.ownerId = lsshpd.getOwnerId();
+		// this.siteOrderNo = tbOrderDetail.getChannelOrderNo();
+		this.orderId = tbOrderDetail.getOrderId();
+		this.orderSeq = tbOrderDetail.getOrderSeq();
+		// this.depositNo = lsdpsd.getDepositNo();
+		// this.depositSeq = lsdpsd.getDepositSeq();
+	}
+
     /**
      * 상품이동지시 저장시 실행되는 생성자
      */

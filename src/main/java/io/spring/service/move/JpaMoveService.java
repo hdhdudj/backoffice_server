@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -52,7 +51,6 @@ import io.spring.model.move.response.MoveIndicateDetailResponseData;
 import io.spring.model.move.response.MoveIndicateListResponseData;
 import io.spring.model.move.response.MoveListResponseData;
 import io.spring.model.move.response.MovedDetailResponseData;
-import io.spring.model.move.response.OrderMoveListResponseData;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
 import io.spring.model.purchase.entity.Lspchd;
@@ -94,27 +92,27 @@ public class JpaMoveService {
     private final EntityManager em;
 
     /**
-     * 주문 이동지시 대상 리스트 가져오는 함수
-     */
-    public List<OrderMoveListResponseData> getOrderMoveList(Map<String, Object> map) {
-        LocalDate startDt = (LocalDate)map.get(StringFactory.getStrStartDt());
-        LocalDate endDt = (LocalDate)map.get(StringFactory.getStrEndDt());
-        String storageId = (String)map.get(StringFactory.getStrStorageId());
-        String assortId = (String)map.get(StringFactory.getStrAssortId());
-        String assortNm = (String)map.get(StringFactory.getStrAssortNm());
-        String itemId = (String)map.get(StringFactory.getStrItemId());
-        String deliMethod = (String)map.get(StringFactory.getStrDeliMethod());
-        List<TbOrderDetail> tbOrderDetailList = this.getTbOrderDetail(startDt, endDt, storageId, assortId, assortNm, itemId, deliMethod);
-//        List<Lsdpsd> lsdpsdList = this.getLsdpsd(startDt, endDt, storageId, assortId, assortNm, itemId, deliMethod);
-        List<OrderMoveListResponseData> orderMoveListDataListResponse = new ArrayList<>();
-        for(TbOrderDetail tbOrderDetail : tbOrderDetailList){
-            Lspchd lspchd = this.getLsdpsdTbOrderDetailLspchd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq());
-            OrderMoveListResponseData orderMoveListResponseData = new OrderMoveListResponseData(lspchd);
-            Utilities.setOptionNames(orderMoveListResponseData, tbOrderDetail.getItasrt().getItvariList());
-            orderMoveListDataListResponse.add(orderMoveListResponseData);
-        }
-        return orderMoveListDataListResponse;
-    }
+	 * 주문 이동지시 대상 리스트 가져오는 함수 2021-10-18 사용 안함 jb
+	 */
+//    public List<OrderMoveListResponseData> getOrderMoveList(Map<String, Object> map) {
+//        LocalDate startDt = (LocalDate)map.get(StringFactory.getStrStartDt());
+//        LocalDate endDt = (LocalDate)map.get(StringFactory.getStrEndDt());
+//        String storageId = (String)map.get(StringFactory.getStrStorageId());
+//        String assortId = (String)map.get(StringFactory.getStrAssortId());
+//        String assortNm = (String)map.get(StringFactory.getStrAssortNm());
+//        String itemId = (String)map.get(StringFactory.getStrItemId());
+//        String deliMethod = (String)map.get(StringFactory.getStrDeliMethod());
+//        List<TbOrderDetail> tbOrderDetailList = this.getTbOrderDetail(startDt, endDt, storageId, assortId, assortNm, itemId, deliMethod);
+////        List<Lsdpsd> lsdpsdList = this.getLsdpsd(startDt, endDt, storageId, assortId, assortNm, itemId, deliMethod);
+//        List<OrderMoveListResponseData> orderMoveListDataListResponse = new ArrayList<>();
+//        for(TbOrderDetail tbOrderDetail : tbOrderDetailList){
+//            Lspchd lspchd = this.getLsdpsdTbOrderDetailLspchd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq());
+//            OrderMoveListResponseData orderMoveListResponseData = new OrderMoveListResponseData(lspchd);
+//            Utilities.setOptionNames(orderMoveListResponseData, tbOrderDetail.getItasrt().getItvariList());
+//            orderMoveListDataListResponse.add(orderMoveListResponseData);
+//        }
+//        return orderMoveListDataListResponse;
+//    }
 
     // lspchd에 tbOrderDetail과 itasrt를 엮어 가져오는 쿼리
     private Lspchd getLsdpsdTbOrderDetailLspchd(String orderId, String orderSeq) {
@@ -195,7 +193,7 @@ public class JpaMoveService {
             return null;
         }
         List<String> newShipIdList = new ArrayList<>();
-        List<Lsdpsd> lsdpsdList = new ArrayList<>();
+//        List<Lsdpsd> lsdpsdList = new ArrayList<>();
 		List<HashMap<String, Object>> orderList = new ArrayList<>();
 
         // 1. 출고 data 생성
@@ -207,13 +205,14 @@ public class JpaMoveService {
 
 			orderList.add(m);
 
-            List<String> shipIdList = this.saveOrderMoveSaveData(lsdpsdList, move);
+			List<String> shipIdList = this.saveOrderMoveSaveData(move);
             if(shipIdList.size() > 0){
                 shipIdList.stream().forEach(x->newShipIdList.add(x));
             }
         }
         // 2. 발주 data 생성
-        jpaPurchaseService.makePurchaseDataFromOrderMoveSave(lsdpsdList, moveList);
+		// jpaPurchaseService.makePurchaseDataFromOrderMoveSave(lsdpsdList, moveList);
+		// 이동처리를 할떄 생성함..2021-10-18
 
 		this.changeStatusCdOfTbOrderDetail(orderList, "C02");
 
@@ -276,15 +275,29 @@ public class JpaMoveService {
      * lsdpsm,d,s,b, lsdpsp, ititmt(발주데이터) 생성
      * tbOrderDetail를 변경
      */
-    private List<String> saveOrderMoveSaveData(List<Lsdpsd> lsdpsdList, OrderMoveSaveData.Move move) {
-        Lsdpsd lsdpsd = this.getLsdpsdByDepositNoAndDepositSeq(move);
-        TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(move.getOrderId(),move.getOrderSeq());
-        List<String> shipIdList = this.makeOrderShipData(lsdpsd, tbOrderDetail, move.getQty(), StringFactory.getGbOne());
-        if(shipIdList.size() > 0){
-            lsdpsdList.add(lsdpsd);
-        }
+	private List<String> saveOrderMoveSaveData(OrderMoveSaveData.Move move) {
+
+		List<String> ret = new ArrayList<String>();
+
+		Lsshpm lsshpm = jpaLsshpmRepository.findById(move.getShipId()).orElse(null);
+		Lsshpd lsshdd = jpaLsshpdRepository.findByShipIdAndShipSeq(move.getShipId(), move.getShipSeq());
+
+		lsshpm.setInstructDt(LocalDateTime.now());
+		lsshpm.setShipStatus("02");
+
+		Lsshps lsshps = new Lsshps(lsshpm);
+		this.updateLsshps(lsshps);
+
+		ret.add(move.getShipId());
+
+//		Lsdpsd lsdpsd = this.getLsdpsdByDepositNoAndDepositSeq(move);
+//        TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(move.getOrderId(),move.getOrderSeq());
+//        List<String> shipIdList = this.makeOrderShipData(lsdpsd, tbOrderDetail, move.getQty(), StringFactory.getGbOne());
+//        if(shipIdList.size() > 0){
+//            lsdpsdList.add(lsdpsd);
+//        }
 //        this.updateQty(orderMoveSaveData);
-        return shipIdList;
+		return ret;
     }
 
 	/**
@@ -305,24 +318,24 @@ public class JpaMoveService {
 	}
 
     /**
-     * depositNo와 depositSeq로 Lsdpsd를 가져오는 함수
-     */
-    private Lsdpsd getLsdpsdByDepositNoAndDepositSeq(OrderMoveSaveData.Move move) {
-        TypedQuery<Lsdpsd> query = em.createQuery("select d from Lsdpsd d " +
-//                "join fetch d.lsdpsp lp " +
-//                "join fetch d.lsdpsm lm " +
-//                "join fetch d.ititmm tm " +
-//                "join fetch d.itasrt it " +
-//                "join fetch tm.ititmc ic " +
-//                "join fetch lp.tbOrderDetail t " +
-                        "where " +
-                        "d.depositNo=?1 and d.depositSeq=?2"
-                , Lsdpsd.class);
-        query.setParameter(1, move.getDepositNo())
-                .setParameter(2, move.getDepositSeq());
-        Lsdpsd lsdpsd = query.getSingleResult();
-        return lsdpsd;
-    }
+	 * depositNo와 depositSeq로 Lsdpsd를 가져오는 함수 2021-10-18 jb 사용안함
+	 */
+//    private Lsdpsd getLsdpsdByDepositNoAndDepositSeq(OrderMoveSaveData.Move move) {
+//        TypedQuery<Lsdpsd> query = em.createQuery("select d from Lsdpsd d " +
+////                "join fetch d.lsdpsp lp " +
+////                "join fetch d.lsdpsm lm " +
+////                "join fetch d.ititmm tm " +
+////                "join fetch d.itasrt it " +
+////                "join fetch tm.ititmc ic " +
+////                "join fetch lp.tbOrderDetail t " +
+//                        "where " +
+//                        "d.depositNo=?1 and d.depositSeq=?2"
+//                , Lsdpsd.class);
+//        query.setParameter(1, move.getDepositNo())
+//                .setParameter(2, move.getDepositSeq());
+//        Lsdpsd lsdpsd = query.getSingleResult();
+//        return lsdpsd;
+//    }
 
     /**
      * 주문이동 저장, 출고 관련 data 생성 함수 (lsshpm,d,s)
@@ -704,6 +717,8 @@ public class JpaMoveService {
         moveList.stream().forEach(x->shipIdList.add(x.getShipId()));
         Set<String> shipNoSet = new HashSet(shipIdList);
 
+		List<Lsshpd> l2 = new ArrayList<Lsshpd>();
+
         // lss- 변경
         for(String shipId : shipNoSet){
             Lsshpd lsshpd = jpaLsshpdRepository.findByShipId(shipId).get(0);
@@ -745,12 +760,16 @@ public class JpaMoveService {
             }
             this.updateLssSeries(lsshpd);
 
+			l2.add(lsshpd);
+
 			orderList.add(m);
 
         }
 
 		// 주문상태변경
 		this.changeStatusCdOfTbOrderDetail(orderList, "C03");
+
+		jpaPurchaseService.makePurchaseDataFromOrderMoveSave2(l2);
 
         return newShipIdList;
     }
@@ -792,12 +811,11 @@ public class JpaMoveService {
 
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
-        TypedQuery<Lsshpd> query = em.createQuery("select ld from Lsshpd ld " +
-                        "join fetch ld.lsshpm lm " +
+		TypedQuery<Lsshpd> query = em.createQuery("select l from Lsshpm lm " + "join fetch lm.lsshpd ld "
+				+
                         "left join fetch ld.tbOrderDetail td " +
                         "join fetch ld.itasrt it " +
-                        "where ld.regDt between ?1 and ?2 " +
-				"and  lm.shipStatus ='01' " // 지시상태만 조회
+				"where lm.instructDt between ?1 and ?2 " + "and  lm.shipStatus ='02' " // 지시상태만 조회
 				+ "and (?3 is null or trim(?3)='' or lm.storageId=?3) "
 				+ "and (?4 is null or trim(?4)='' or ld.assortId=?4) "
 				+ "and (?5 is null or trim(?5)='' or it.assortNm like concat('%',?5,'%')) "
@@ -1039,6 +1057,8 @@ public class JpaMoveService {
         jpaLsshpsRepository.save(lsshps);
         jpaLsshpsRepository.save(newLsshps);
     }
+
+
 
 
     /**

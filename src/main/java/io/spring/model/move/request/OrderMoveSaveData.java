@@ -1,16 +1,17 @@
 package io.spring.model.move.request;
 
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
 
 /**
  * 주문이동지시 저장 DTO
@@ -54,14 +55,16 @@ public class OrderMoveSaveData {
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Move{
-        // lsdpsd
-        private String depositNo;
-        private String depositSeq;
+
+		// lsshpd
+		private String shipId;
+		private String shipSeq;
         private String assortId;
         private String itemId;
-        // lsdpsm
+		// lsshpm
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-        private Date depositDt;
+		private Date receiptDt;
+
         // tbOrderDetail
         private String orderId;
         private String orderSeq;
