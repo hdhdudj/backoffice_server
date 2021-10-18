@@ -64,7 +64,7 @@ public class MoveIndicateListResponseData {
             this.orderKey = orderId != null? Utilities.addDashInMiddle(orderId,orderSeq):null;
             this.storageId = lsshpd.getLsshpm().getStorageId();
             this.oStorageId = lsshpd.getOStorageId();
-            this.moveIndDt = Utilities.removeTAndTransToStr(lsshpd.getRegDt());
+			this.moveIndDt = Utilities.removeTAndTransToStr(lsshpd.getLsshpm().getInstructDt());
             this.assortId = lsshpd.getAssortId();
             this.itemId = lsshpd.getItemId();
             this.goodsKey = Utilities.addDashInMiddle(assortId,itemId);
