@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="io.spring.infrastructure.mybatis.mapper.MoveMapper">
+<mapper namespace="io.spring.infrastructure.mybatis.mapper.ShipMapper">
 
 
 
     
-    <select id="getOrderMoveList" parameterType="java.util.HashMap"  resultType="HashMap">
+    <select id="getOrderShipList" parameterType="java.util.HashMap"  resultType="HashMap">
     	 <![CDATA[	
 select ld.ship_id shipId 
 ,ld.ship_seq shipSeq
@@ -13,6 +13,7 @@ select ld.ship_id shipId
 ,ld.assort_id assortId
 ,ld.item_id  itemId
 ,lm.receipt_dt receiptDt 
+,tom.order_date orderDt
 ,tod.order_id orderId 
 ,tod.order_seq orderSeq
 ,concat(tod.order_id  ,'-',tod.order_seq) orderKey
@@ -20,6 +21,7 @@ select ld.ship_id shipId
 ,tod.qty qty 
 ,tod.storage_id orderStorageId
 ,it.assort_nm  assortNm
+,it.assort_gb assortGb
 , (select b1.option_nm
 from ititmm b2, itvari b1
 where b2.assort_id=tod.assort_id
@@ -37,7 +39,8 @@ where b2.assort_id=tod.assort_id
 from lsshpm lm
 ,lsshpd ld
 ,itasrt it
-,tb_order_detail tod 
+,tb_order_detail tod
+,tb_order_master tom  
 where 1=1
 and lm.receipt_dt between #{startDt} and  #{endDt}
 and lm.ship_status='01'
@@ -45,7 +48,8 @@ and lm.ship_id = ld.ship_id
 and ld.assort_id = it.assort_id 
 and ld.order_id = tod.order_id 
 and ld.order_seq = tod.order_seq
-and tod.status_cd ='C01'
+and tod.status_cd ='C04'
+and tod.order_id = tom.order_id
     	 ]]>
     	 <if test='storageId != null'>
 			 <![CDATA[
@@ -65,12 +69,7 @@ and tod.status_cd ='C01'
 			</if>		
 			
 			
-				<if test='deliMethod != null'>
-			 <![CDATA[		
-		 		and tod.deli_method =#{deliMethod}	
-			 ]]>
-			</if>	
-			
+		
 			
 					
     </select>
