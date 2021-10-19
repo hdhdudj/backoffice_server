@@ -36,6 +36,7 @@ where b2.assort_id=tod.assort_id
   And  b2.assort_id = b1.assort_id
   and b2.variation_gb2 = b1.variation_gb
   and  b2.variation_seq2=b1.seq) optionNm2
+  ,lm.storage_id storageId
 from lsshpm lm
 ,lsshpd ld
 ,itasrt it
