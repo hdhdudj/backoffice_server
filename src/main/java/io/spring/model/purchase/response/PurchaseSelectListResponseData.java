@@ -34,6 +34,7 @@ public class PurchaseSelectListResponseData {
         this.purchaseGb = (String)param.get(StringFactory.getStrPurchaseGb());
 
     }
+
     public PurchaseSelectListResponseData(Lspchm lspchm){
         this.purchaseNo = lspchm.getPurchaseNo();
         this.purchaseDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
@@ -87,7 +88,7 @@ public class PurchaseSelectListResponseData {
          */
         public Purchase(Lspchm lspchm, Lsdpsp lsdpsp, Itasrt itasrt){
             this.purchaseNo = lspchm.getPurchaseNo();
-            this.ownerId = lspchm.getOwnerId();
+			this.vendorId = lspchm.getVendorId();
             this.purchaseGb = lspchm.getPurchaseGb();
             this.dealtypeCd = lspchm.getDealtypeCd();
 
@@ -107,7 +108,7 @@ public class PurchaseSelectListResponseData {
             this.dealtypeCd = lspchm.getDealtypeCd();
             this.purchaseSeq = lspchd.getPurchaseSeq();
             this.purchaseKey = Utilities.addDashInMiddle(purchaseNo, purchaseSeq);
-            this.ownerId = lspchm.getOwnerId();
+			this.vendorId = lspchm.getVendorId();
             this.purchaseGb = lspchm.getPurchaseGb();
             this.assortId = lspchd.getAssortId();
             this.itemId = lspchd.getItemId();
@@ -140,7 +141,7 @@ public class PurchaseSelectListResponseData {
         private String purchaseStatus; // 발주상태 - 01 : 발주, 03 : 부분입고, 04 : 완전입고, 05 : 취소
         private String dealtypeCd; // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정
 //        private String purchaseVendorId; // 구매처 : ownerId로 수정
-        private String ownerId;
+		private String vendorId;
         private String orderId; // 주문번호
         private String orderSeq; // 주문순번
         private Float purchaseUnitAmt; // 개당금액

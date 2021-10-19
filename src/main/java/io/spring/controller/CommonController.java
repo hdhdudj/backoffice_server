@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -86,6 +87,95 @@ public class CommonController {
 			res = new ApiResponseMessage<List<HashMap<String, Object>>>("SUCCESS", "", r);
 		} else {
 			res = new ApiResponseMessage<List<HashMap<String, Object>>>("ERROR", "ERROR", null);
+		}
+
+		return ResponseEntity.ok(res);
+	}
+
+	@GetMapping(path = "/storages")
+	public ResponseEntity getStorages(@RequestParam @Nullable String storageType,
+			@RequestParam @Nullable String storageId) {
+//public ResponseEntity selectBrandSearchList() {
+
+		HashMap<String, Object> map = new HashMap<>();
+
+		HashMap<String, Object> c2 = new HashMap<String, Object>();
+
+		if (storageId != null && !storageId.equals("")) {
+			map.put("storageId", storageId);
+		}
+
+		if (storageType != null && !storageType.equals("")) {
+			map.put("storageType", storageType);
+		}
+
+
+		List<HashMap<String, Object>> l = myBatisCommonService.getCommonStorage(map);
+
+		for (HashMap<String, Object> o2 : l) {
+			c2.put(o2.get("value").toString(), o2.get("label").toString());
+		}
+
+		HashMap<String, Object> m = new HashMap<String, Object>();
+
+		if (l.size() > 0) {
+			m.put("Storages", l);
+		}
+
+		m.put("storagesGridKey", c2);
+
+		ApiResponseMessage res = null;
+
+		if (m.size() > 0) {
+			res = new ApiResponseMessage<HashMap<String, Object>>("SUCCESS", "", m);
+		} else {
+			res = new ApiResponseMessage<HashMap<String, Object>>("ERROR", "ERROR", null);
+		}
+
+		return ResponseEntity.ok(res);
+	}
+
+	@GetMapping(path = "/vendors")
+	public ResponseEntity getVendors() {
+//public ResponseEntity selectBrandSearchList() {
+
+		HashMap<String, Object> p1 = new HashMap<String, Object>();
+		HashMap<String, Object> p2 = new HashMap<String, Object>();
+
+		HashMap<String, Object> c1 = new HashMap<String, Object>();
+		HashMap<String, Object> c2 = new HashMap<String, Object>();
+
+		List<HashMap<String, Object>> r = myBatisCommonService.getCommonPurchaseVendor(p1);
+
+		// List<HashMap<String, Object>> l = myBatisCommonService.getCommonStorage(p2);
+
+		for (HashMap<String, Object> o1 : r) {
+			c1.put(o1.get("value").toString(), o1.get("label").toString());
+		}
+
+		// for (HashMap<String, Object> o2 : l) {
+		// c2.put(o2.get("value").toString(), o2.get("label").toString());
+		// }
+
+		HashMap<String, Object> m = new HashMap<String, Object>();
+
+		if (r.size() > 0) {
+			m.put("PurchaseVendors", r);
+		}
+
+		// if (l.size() > 0) {
+		// m.put("Storages", l);
+		// }
+
+		m.put("purchaseVendorsGridKey", c1);
+		// m.put("storagesGridKey", c2);
+
+		ApiResponseMessage res = null;
+
+		if (m.size() > 0) {
+			res = new ApiResponseMessage<HashMap<String, Object>>("SUCCESS", "", m);
+		} else {
+			res = new ApiResponseMessage<HashMap<String, Object>>("ERROR", "ERROR", null);
 		}
 
 		return ResponseEntity.ok(res);

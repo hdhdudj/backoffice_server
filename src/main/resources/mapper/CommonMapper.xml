@@ -63,9 +63,17 @@
 			select storage_id as value,storage_nm as label
 				from cmstgm
 				where 1=1
-				
-    	]]>
-		
+					]]>
+				 <if test='storageType != null'>
+			 		<![CDATA[
+			 		and storage_type =#{storageType}	
+			 	]]>
+				</if>
+					 <if test='storageId != null'>
+			 		<![CDATA[
+			 		and storage_id =#{storageId}	
+			 	]]>
+				</if>
 	</select>    
 	
 
