@@ -48,11 +48,12 @@ public class JpaOrderService {
     @Transactional
     public void changeOrderStatus(String orderId, String orderSeq) {
         // orderId, orderSeq로 해당하는 TbOrderDetail 찾아오기
+        log.debug("in changeOrderStatus ; orderId : " + orderId + ", orderSeq : " + orderSeq);
         TypedQuery<TbOrderDetail> query =
                 em.createQuery("select td from TbOrderDetail td " +
                                 "join fetch td.tbOrderMaster tm " +
                                 "left join fetch td.ititmm it " +
-                                "left join fetch it.itasrt itasrt " +
+                                "left join fetch td.itasrt itasrt " +
                                 "where td.orderId = ?1" +
                                 "and td.orderSeq = ?2 "
                         , TbOrderDetail.class);
@@ -66,11 +67,11 @@ public class JpaOrderService {
             log.debug("There is no ititmm of orderId : " + orderId + " and orderSeq : " + orderSeq);
             return;
         }
-        else if(tbOrderDetail.getItitmm().getItasrt() == null){
+        else if(tbOrderDetail.getItasrt() == null){
             log.debug("There is no itasrt of orderId : " + orderId + " and orderSeq : " + orderSeq);
             return;
         }
-        Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
+        Itasrt itasrt = tbOrderDetail.getItasrt();
         String prevStatus = tbOrderDetail.getStatusCd();
 //        TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
         String assortGb = itasrt.getAssortGb();
@@ -79,6 +80,10 @@ public class JpaOrderService {
         }
         else if(StringFactory.getGbTwo().equals(assortGb)){ // assortGb == '02' : 수입
             this.changeOrderStatusWhenImport(tbOrderDetail);
+        }
+        else{
+            log.debug("assortGb가 존재하지 않습니다. 직구 or 수입?");
+            return;
         }
 
         this.saveOrderLog(prevStatus, tbOrderDetail);
@@ -104,8 +109,9 @@ public class JpaOrderService {
         String itemId = tbOrderDetail.getItemId();
         String domesticStorageId = tbOrderDetail.getStorageId(); // 주문자 현지(국내?) 창고 id (국내창고)
 
-        List<TbOrderDetail> tbOrderDetailsC04 = jpaTbOrderDetailRepository.findAll().stream()
-                .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList()); // 주문코드가 CO4(국내입고완료)인 애들의 list
+        TypedQuery<TbOrderDetail> q = em.createQuery("select t from TbOrderDetail t where t.statusCd=?1", TbOrderDetail.class).setParameter(1,StringFactory.getStrC04());
+        List<TbOrderDetail> tbOrderDetailsC04 = q.getResultList();//jpaTbOrderDetailRepository.findAll().stream()
+//                .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList()); // 주문코드가 CO4(국내입고완료)인 애들의 list
         List<TbOrderDetail> domTbOrderDetailsC04 = tbOrderDetailsC04.stream().filter(x -> x.getStorageId().equals(domesticStorageId)).collect(Collectors.toList());
         long sumOfDomTbOrderDetailsC04 = domTbOrderDetailsC04.stream().map(x -> {if(x.getQty() == null){return 0l;}else {return x.getQty();}}).reduce((a,b) -> a+b).orElseGet(()->0l); // C04고 국내창고인 애들의 sum(domQty)
         // 국내창고 ititmc 불러오기
@@ -194,10 +200,12 @@ public class JpaOrderService {
 		String domesticStorageId = tbOrderDetail.getStorageId(); // 주문자 현지(국내?) 창고 id (국내창고)
         String overseaStorageId = itasrt.getStorageId(); // 물건의 산지(?) 창고 id (해외창고)
 
-        List<TbOrderDetail> tbOrderDetailsC01 = jpaTbOrderDetailRepository.findAll().stream()
-                .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList()); // 주문코드가 CO1(해외입고완료)인 애들의 list
-        List<TbOrderDetail> tbOrderDetailsC04 = jpaTbOrderDetailRepository.findAll().stream()
-                .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList()); // 주문코드가 CO4(국내입고완료)인 애들의 list
+//        List<TbOrderDetail> tbOrderDetailsC01 = jpaTbOrderDetailRepository.findAll().stream()
+//                .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList()); // 주문코드가 CO1(해외입고완료)인 애들의 list
+        TypedQuery<TbOrderDetail> q = em.createQuery("select t from TbOrderDetail t where t.statusCd=?1", TbOrderDetail.class).setParameter(1,StringFactory.getStrC04());
+        List<TbOrderDetail> tbOrderDetailsC04 = q.getResultList();
+//                jpaTbOrderDetailRepository.findAll().stream()
+//                .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList()); // 주문코드가 CO4(국내입고완료)인 애들의 list
 //        List<TbOrderDetail> ovrsTbOrderDetailsC01 = tbOrderDetailsC01.stream().filter(x -> x.getStorageId().equals(overseaStorageId)).collect(Collectors.toList());
         List<TbOrderDetail> domTbOrderDetailsC04 = tbOrderDetailsC04.stream().filter(x -> x.getStorageId().equals(domesticStorageId)).collect(Collectors.toList());
 //        long sumOfTbOrderDetailsC01 = tbOrderDetailsC01.stream().map(x -> {if(x.getQty() == null){return 0l;}else {return x.getQty();}}).reduce((a,b) -> a+b).orElseGet(()->0l); // C01인 애들의 sum(domQty) (창고 id는 불요)
