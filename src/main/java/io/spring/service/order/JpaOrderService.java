@@ -2,18 +2,13 @@ package io.spring.service.order;
 
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
-import io.spring.jparepos.goods.JpaItasrtRepository;
-import io.spring.jparepos.goods.JpaItitmcRepository;
-import io.spring.jparepos.goods.JpaItitmmRepository;
-import io.spring.jparepos.goods.JpaItitmtRepository;
+import io.spring.jparepos.goods.*;
 import io.spring.jparepos.order.*;
+import io.spring.model.goods.entity.IfGoodsMaster;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
-import io.spring.model.order.entity.OrderLog;
-import io.spring.model.order.entity.OrderStock;
-import io.spring.model.order.entity.TbOrderDetail;
-import io.spring.model.order.entity.TbOrderHistory;
+import io.spring.model.order.entity.*;
 import io.spring.model.order.request.OrderStockMngInsertRequestData;
 import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +30,8 @@ public class JpaOrderService {
     private final JpaItitmtRepository jpaItitmtRepository;
     private final JpaItitmcRepository jpaItitmcRepository;
     private final JpaItasrtRepository jpaItasrtRepository;
+    private final JpaIfGoodsMasterRepository jpaIfGoodsMasterRepository;
+    private final JpaIfOrderDetailRepository jpaIfOrderDetailRepository;
     private final JpaTbOrderMasterRepository jpaTbOrderMasterRepository;
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
     private final JpaTbOrderHistoryRepository jpaTbOrderHistoryRepository;
@@ -75,18 +72,33 @@ public class JpaOrderService {
         String prevStatus = tbOrderDetail.getStatusCd();
 //        TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
         String assortGb = itasrt.getAssortGb();
+
+        if(assortGb == null){ // add_goods인 경우 자체 assortGb가 존재하지 않아, 부모 상품의 것을 따른다.
+            itasrt = this.getParentAssortGb(orderId, orderSeq, itasrt);
+        }
+
         if(StringFactory.getGbOne().equals(assortGb)){ // assortGb == '01' : 직구
             this.changeOrderStatusWhenDirect(tbOrderDetail);
         }
         else if(StringFactory.getGbTwo().equals(assortGb)){ // assortGb == '02' : 수입
             this.changeOrderStatusWhenImport(tbOrderDetail);
         }
-        else{
-            log.debug("assortGb가 존재하지 않습니다. 직구 or 수입?");
-            return;
-        }
 
         this.saveOrderLog(prevStatus, tbOrderDetail);
+    }
+
+    /**
+     * add_goods의 itasrt와 주문key를 받아 add_goods의 assortGb를 부모의 것으로 설정해주는 함수
+     */
+    private Itasrt getParentAssortGb(String orderId, String orderSeq, Itasrt itasrt) {
+        TypedQuery<Itasrt> q = em.createQuery("select i from Itasrt i, TbOrderDetail td, IfOrderDetail id, IfGoodsMaster im " +
+                "where td.channelOrderNo=id.channelOrderNo and td.channelOrderSeq=id.channelOrderSeq " +
+                "and id.channelParentGoodsNo=im.goodsNo " +
+                "and im.assortId=i.assortId " +
+                "and td.orderId=?1 and td.orderSeq=?2",Itasrt.class).setParameter(1,orderId).setParameter(2,orderSeq);
+        Itasrt parentItasrt = q.getSingleResult();
+        itasrt.setAssortGb(parentItasrt.getAssortGb());
+        return itasrt;
     }
 
     /**
