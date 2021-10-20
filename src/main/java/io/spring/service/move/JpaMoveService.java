@@ -547,6 +547,10 @@ public class JpaMoveService {
             String shipId = this.getShipId();
 			Lsshpm lsshpm = new Lsshpm("04", shipId, goodsMoveSaveData);
             purchaseDt = lsshpm.getReceiptDt();
+
+			lsshpm.setInstructDt(LocalDateTime.now()); // 이동지시일자 셋팅
+			lsshpm.setShipStatus("02"); // 이동지시상태로 변경 01 은 이동지시접수
+
             // 1-1. ititmc 값 변경
             if(lsshpm != null){
                 ititmc.setShipIndicateQty(shipIndicateQty + moveQty);

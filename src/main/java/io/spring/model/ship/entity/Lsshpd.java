@@ -1,7 +1,24 @@
 package io.spring.model.ship.entity;
 
+import java.time.LocalDateTime;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.entity.Itasrt;
@@ -13,12 +30,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -71,7 +82,7 @@ public class Lsshpd extends CommonProps {
         this.customsTax = 0f;
         this.excAppDt = ititmc.getEffStaDt(); // ititmc의 effEndDt를 lsshpd.excAppDt로
 //        this.orderDiscount = tbOrderDetail.getSalePrice();
-//        this.saleCost = ititmc.getStockAmt();
+		this.saleCost = goods.getCost();
         this.localPrice = goods.getCost();
         this.localDeliFee = 0f;
         this.localTax = 0f;

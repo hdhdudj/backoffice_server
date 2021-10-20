@@ -116,6 +116,9 @@ public class Lsdpsp extends CommonProps implements Serializable {
 
 	public Lsdpsp(String depositPlanId, Lspchd lspchd, String regId, String gb) {
 
+		// gb 01 주문발주
+		// 02 상품발주
+
 		this.smReservationDt = Utilities.getStringToDate(StringFactory.getDoomDay());
 		this.depositPlanId = depositPlanId;
 		this.purchasePlanQty = lspchd.getPurchaseQty();
@@ -128,9 +131,9 @@ public class Lsdpsp extends CommonProps implements Serializable {
 		this.purchaseGb = StringFactory.getGbTwo(); // 01 : 일반발주, 02 : 이동요청. 02 하드코딩
 
 		if (gb.equals("01")) {
-			this.dealtypeCd = StringFactory.getGbOne(); // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정 주문발주. 02 하드코딩
+			this.dealtypeCd = StringFactory.getGbOne(); // 01 : 주문발주, 02 : 상품발주
 		} else {
-			this.dealtypeCd = StringFactory.getGbTwo(); // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정 주문발주. 02 하드코딩
+			this.dealtypeCd = StringFactory.getGbTwo(); // 01 : 주문발주, 02 : 상품발주
 		}
 
 

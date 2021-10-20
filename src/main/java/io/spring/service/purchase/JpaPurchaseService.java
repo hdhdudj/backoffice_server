@@ -856,15 +856,18 @@ public class JpaPurchaseService {
 			// lspchm.setSiteOrderNo(tbOrderMaster.getChannelOrderNo());
 			// lspchm.setPurchaseGb(StringFactory.getGbTwo()); // 이동지시의 경우 02 로 처리
 
+			String OStorageId = "";
+
 			// lspchm insert
 			if (lsshpm.getShipOrderGb().equals("01")) {
 				// 주문이동지시
-				lspchm.setStoreCd(tbOrderDetail.getStorageId());  //도착지
+				OStorageId = tbOrderDetail.getStorageId();
 			} else if (lsshpm.getShipOrderGb().equals("02")) {
 				// 상품이동지시
-				lspchm.setStoreCd(lsshpm.getOStorageId());
+				OStorageId = lsshpm.getOStorageId();
 			}
 
+			lspchm.setStoreCd(OStorageId); // 도착지
 			lspchm.setOStoreCd(lsshpm.getStorageId()); //출발지
 
 			// lsdpsd.getLsdpsm().getStoreCd();
@@ -894,17 +897,27 @@ public class JpaPurchaseService {
 			jpaLspchdRepository.save(lspchd);
 			jpaLspchbRepository.save(lspchb);
 
+//orderGoodsType 01 주문 02 상품
+
 			// lsdpsp insert
 			String depositPlanId = this.getDepositPlanId();
 			// todo: 2021-10-14 작업자 입력받아야함.
 			// 주문이동지시 처리를 위한내용임.
-			Lsdpsp lsdpsp = new Lsdpsp(depositPlanId, lspchd, "1", "01");
+			Lsdpsp lsdpsp = new Lsdpsp(depositPlanId, lspchd, "1", orderGoodsType);
 			// lsdpsp.setLspchd(lspchd);
 			jpaLsdpspRepository.save(lsdpsp);
 
+			if (lsshpm.getShipOrderGb().equals("01")) {
+				// 주문이동지시
+				lspchm.setStoreCd(tbOrderDetail.getStorageId()); // 도착지
+			} else if (lsshpm.getShipOrderGb().equals("02")) {
+				// 상품이동지시
+				lspchm.setStoreCd(lsshpm.getOStorageId());
+			}
+
 			// ititmt qty update
 			Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(
-					lspchd.getAssortId(), lspchd.getItemId(), tbOrderDetail.getStorageId(),
+					lspchd.getAssortId(), lspchd.getItemId(), OStorageId,
 					StringFactory.getStrEleven(), LocalDateTime.now());
 			if (ititmt == null) {
 				ititmt = new Ititmt(lspchm, lspchd, "1");
@@ -912,8 +925,10 @@ public class JpaPurchaseService {
 				ititmt.setTempQty(ititmt.getTempQty() + lspchd.getPurchaseQty());
 			}
 
-			ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() + lspchd.getPurchaseQty());
-
+			if (lsshpm.getShipOrderGb().equals("01")) {
+				// 주문이동지시 에서는 헤당이동지시 수량의 꼬리표를 부착.다른주문건에서 재고를 차감하지 못하게함.
+				ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() + lspchd.getPurchaseQty());
+			}
 			jpaItitmtRepository.save(ititmt);
 
 		}
