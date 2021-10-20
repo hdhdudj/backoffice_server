@@ -757,7 +757,8 @@ public class JpaPurchaseService {
         LocalDateTime doomDay = LocalDateTime.parse(StringFactory.getDoomDay(), DateTimeFormatter.ofPattern(StringFactory.getDateFormat()));
         lspchbList = lspchbList.stream().filter(x->x.getEffEndDt().compareTo(doomDay)==0).collect(Collectors.toList());
 
-        Lspchm lspchm = lsdpspList.get(0).getLspchd().getLspchm();
+//        Lspchm lspchm = lsdpspList.get(0).getLspchd().getLspchm();
+		Lspchm lspchm = jpaLspchmRepository.findById(purchaseNo).orElse(null);
         Lspchm newLspchm = this.changePurchaseStatusOfLspchm(lspchm, lspchbList);
         this.updateLspchsStatus(lspchm, newLspchm.getPurchaseStatus());
         return lspchm;
