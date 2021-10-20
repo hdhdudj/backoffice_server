@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -29,13 +30,14 @@ import lombok.extern.slf4j.Slf4j;
 @Table(name="lspchm")
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lspchm extends CommonProps {
     public Lspchm(Lspchm purchaseInsertRequestData){
         this.purchaseNo = purchaseInsertRequestData.getPurchaseNo();
         this.purchaseDt = purchaseInsertRequestData.getPurchaseDt();
         this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
-//        this.purchaseStatus = purchaseInsertRequestData.getPurchaseStatus(); // 01 : 발주, 03 : 부분입고, 04 : 완전입고, 05 : 취소
+		this.purchaseStatus = purchaseInsertRequestData.getPurchaseStatus(); // 01 : 발주, 03 : 부분입고, 04 : 완전입고, 05 : 취소
         this.purchaseRemark = purchaseInsertRequestData.getPurchaseRemark();
         this.siteGb = StringFactory.getGbOne(); // "01" 하드코딩
 		this.vendorId = purchaseInsertRequestData.getVendorId(); // "0001" 하드코딩

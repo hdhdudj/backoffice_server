@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -759,6 +760,7 @@ public class JpaPurchaseService {
 
 //        Lspchm lspchm = lsdpspList.get(0).getLspchd().getLspchm();
 		Lspchm lspchm = jpaLspchmRepository.findById(purchaseNo).orElse(null);
+
         Lspchm newLspchm = this.changePurchaseStatusOfLspchm(lspchm, lspchbList);
         this.updateLspchsStatus(lspchm, newLspchm.getPurchaseStatus());
         return lspchm;
@@ -796,21 +798,41 @@ public class JpaPurchaseService {
      * 해당 purchaseNo의 b가 모두 완전입고면 m도 완전입고, 하나라도 부분입고면 m은 부분입고.
      */
     private Lspchm changePurchaseStatusOfLspchm(Lspchm lspchm, List<Lspchb> lspchbList) {
-        Lspchm newLspchm = new Lspchm(lspchm);
-        if(lspchbList.stream().filter(x->StringFactory.getGbFour().equals(x.getPurchaseStatus())).collect(Collectors.toList()).size() == lspchbList.size()){
-            newLspchm.setPurchaseStatus(StringFactory.getGbFour());
-        }
-        else{
-            for(Lspchb lspchb : lspchbList){
-                if(lspchb.getPurchaseStatus().equals(StringFactory.getGbThree())){
-                    newLspchm.setPurchaseStatus(StringFactory.getGbThree());
-    //                jpaLspchmRepository.save(newLspchm);
-                    break;
-                }
-            }
-        }
-        jpaLspchmRepository.save(newLspchm);
-        return newLspchm;
+//        Lspchm newLspchm = new Lspchm(lspchm);
+
+		System.out.println("lspchbList ==> " + lspchbList.size());
+
+		// x -> x.getPurchaseStatus().equals("04")
+		Stream<Lspchb> l04 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("04"));
+		Stream<Lspchb> l01 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("01"));
+		
+		String purchaseStatus = "";
+		if (lspchbList.size() == l04.count()) {
+			purchaseStatus = "04";
+		} else if (lspchbList.size() == l01.count()) {
+			purchaseStatus = "01";
+		} else {
+			purchaseStatus = "03";
+		}
+		/*
+		 * if(lspchbList.stream().filter(x->StringFactory.getGbFour().equals(x.
+		 * getPurchaseStatus())).collect(Collectors.toList()).size() ==
+		 * lspchbList.size()){ lspchm.setPurchaseStatus(StringFactory.getGbFour());
+		 * System.out.println("changePurchaseStatusOfLspchm" +
+		 * StringFactory.getGbFour()); } else{ for(Lspchb lspchb : lspchbList){
+		 * if(lspchb.getPurchaseStatus().equals(StringFactory.getGbThree())){
+		 * lspchm.setPurchaseStatus(StringFactory.getGbThree());
+		 * System.out.println("changePurchaseStatusOfLspchm" +
+		 * StringFactory.getGbThree()); // jpaLspchmRepository.save(newLspchm); break; }
+		 * } }
+		 */
+
+		lspchm.setPurchaseStatus(purchaseStatus);
+
+		System.out.println("lspchm ==> " + lspchm);
+
+		jpaLspchmRepository.save(lspchm);
+		return lspchm;
     }
 
 	/**
