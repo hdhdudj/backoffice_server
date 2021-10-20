@@ -98,7 +98,7 @@ public class Lspchm extends CommonProps {
     /**
      * 주문이동지시 저장시 실행되는 생성자
      */
-    public Lspchm(String purchaseNo) {
+	public Lspchm(String orderGoodsType, String purchaseNo) {
         this.purchaseNo = purchaseNo;
         this.purchaseDt = LocalDateTime.now();
         this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
@@ -115,7 +115,21 @@ public class Lspchm extends CommonProps {
 //        this.localTax : ?
 //        this.disPrice : ?
         this.newDisPrice = this.disPrice;
-        this.purchaseGb = StringFactory.getGbTwo(); // 01 : 일반발주, 02 : 이동요청 (02 하드코딩)
+
+		if (orderGoodsType.equals("01")) {
+			// 주문이동지시
+			this.purchaseGb = StringFactory.getGbTwo(); // 01 : 일반발주, 02 : 이동요청 (02 하드코딩)
+			this.dealtypeCd = "01";
+		} else if (orderGoodsType.equals("02")) {
+			// 상품이동지시
+			this.purchaseGb = StringFactory.getGbTwo(); // 01 : 일반발주, 02 : 이동요청 (02 하드코딩)
+			this.dealtypeCd = "02";
+		} else if (orderGoodsType.equals("03")) {
+			// 상품이동지시
+			this.purchaseGb = StringFactory.getGbTwo(); // 01 : 일반발주, 02 : 이동요청 (02 하드코딩)
+			this.dealtypeCd = "03";
+		}
+
 //        this.purchaseVendorId : ?
 //        this.storeCd : 바깥 set
 //        this.oStoreCd : 바깥 set (itasrt의 창고id)
@@ -124,7 +138,7 @@ public class Lspchm extends CommonProps {
 //        this.payment : ?
 //        this.carrier : ?
 
-//        this.dealtypeCd = StringFactory.getGbOne(); // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정 주문발주 (01 하드코딩) 바깥에서 set
+
     }
 
     /**

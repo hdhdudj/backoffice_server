@@ -85,7 +85,9 @@ public class Lsdpsd extends CommonProps implements Serializable {
 				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // 9999-12-31 하드코딩
         this.depositType = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01' 입고
         this.siteGb = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
-        this.ownerId = depositListWithPurchaseInfoData.getOwnerId();//StringUtils.leftPad("1", 6, '0'); // 000001 하드코딩
+		// this.ownerId =
+		// depositListWithPurchaseInfoData.getOwnerId();//StringUtils.leftPad("1", 6,
+		// '0'); // 000001 하드코딩
         this.inputNo = deposit.getPurchaseNo();
         this.inputSeq = deposit.getPurchaseSeq();
     }

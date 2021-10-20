@@ -280,7 +280,7 @@ public class JpaShipService {
 
         Itasrt itasrt = tbOrderDetail.getItasrt();
         // lsshpm 저장
-        Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail);
+		Lsshpm lsshpm = new Lsshpm("01", shipId, itasrt, tbOrderDetail);
         lsshpm.setShipStatus(shipStatus); // 01 : 이동지시or출고지시, 04 : 출고
         lsshpm.setDeliId(tbOrderDetail.getTbOrderMaster().getDeliId());
         // lsshps 저장
@@ -307,9 +307,14 @@ public class JpaShipService {
 
 		Itasrt itasrt = tbOrderDetail.getItasrt();
 		// lsshpm 저장
-		Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail);
+		Lsshpm lsshpm = new Lsshpm("01", shipId, itasrt, tbOrderDetail);
+
 		lsshpm.setShipStatus(shipStatus); // 01 : 이동지시or출고지시, 04 : 출고
 		lsshpm.setDeliId(tbOrderDetail.getTbOrderMaster().getDeliId());
+
+		lsshpm.setShipOrderGb("01");
+		lsshpm.setMasterShipGb("01");
+
 		// lsshpm.setOStorageId(tbOrderDetail.getStorageId());
 
 		Lsdpsm lsdpsm = jpaLsdpsmRepository.findById(lsdpsd.getDepositNo()).orElse(null);

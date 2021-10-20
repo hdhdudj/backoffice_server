@@ -39,7 +39,7 @@ public class Lsshpm extends CommonProps {
     /**
      * 주문이동지시 저장, 출고 시 실행되는 생성자
      */
-    public Lsshpm(String shipId, Itasrt itasrt, TbOrderDetail tbOrderDetail){
+	public Lsshpm(String shipGb, String shipId, Itasrt itasrt, TbOrderDetail tbOrderDetail) {
         this.shipId = shipId;
         this.shipOrderGb = StringFactory.getGbOne(); // 01 하드코딩
         this.shipTimes = 1l;
@@ -51,26 +51,49 @@ public class Lsshpm extends CommonProps {
 		this.instructDt = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());// 패킹일자
 																					// //Utilities.getStringToDate(StringFactory.getDoomDay());
         this.applyDay = LocalDateTime.parse(StringFactory.getDoomDay(), DateTimeFormatter.ofPattern(StringFactory.getDateFormat())); // 출고처리 일자
-        this.masterShipGb = StringFactory.getGbOne(); // 01 하드코딩
+		// this.masterShipGb = StringFactory.getGbOne(); // 01 하드코딩
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
         this.channelId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
+
         this.delMethod = tbOrderDetail.getDeliMethod();
+
         this.rematGb = StringFactory.getGbOne(); // 01 하드코딩
-        this.shipGb = StringFactory.getGbTwo(); // 02 하드코딩 (01 : 출고, 02 : 이동)
+
+
+		if (shipGb.equals("01")) {
+			// 출고일 경우 현재는 주문출고만 있음
+			this.shipGb = StringFactory.getGbOne(); // 02 하드코딩 (01 : 출고, 02 : 이동)
+			this.masterShipGb = "01"; // 01 출고 03 주문이동지시 04싱픔이동지시
+			this.shipOrderGb = "01"; // 01 주문 02 상품
+		} else if (shipGb.equals("03")) {
+			// 주문이동지시
+			this.shipGb = StringFactory.getGbTwo(); // 02 하드코딩 (01 : 출고, 02 : 이동)
+			this.masterShipGb = "03"; // 01 출고 03 주문이동지시 04싱픔이동지시
+			this.shipOrderGb = "01"; // 01 주문 02 상품
+
+		} else if (shipGb.equals("04")) {
+			// 주문이동지시
+			this.shipGb = StringFactory.getGbTwo(); // 02 하드코딩 (01 : 출고, 02 : 이동)
+			this.masterShipGb = "04"; // 01 출고 03 주문이동지시 04싱픔이동지시
+			this.shipOrderGb = "01"; // 01 주문 02 상품
+
+		}
+
+
 //        this.itemGrade = ititmc.getItemGrade(); //: 11로 고정. 이동지시와 출고에서는 11(정상품)만 다룸.
         this.deliCompanyCd = null;
         this.orderId = tbOrderDetail.getOrderId();
 
-        this.shipGb = StringFactory.getGbThree(); // 01:일반출고 03:주문이동지시 04:상품이동지시
-        this.masterShipGb = StringFactory.getGbThree(); // 01:일반출고 03:주문이동지시 04:상품이동지시
+		// this.shipGb = StringFactory.getGbThree(); // 01:일반출고 03:주문이동지시 04:상품이동지시
+		// this.masterShipGb = StringFactory.getGbThree(); // 01:일반출고 03:주문이동지시
+		// 04:상품이동지시
     }
 
     /**
      * 상품이동지시 저장시 실행되는 생성자
      */
-    public Lsshpm(String shipId, GoodsMoveSaveData goodsMoveSaveData){
+	public Lsshpm(String shipGb, String shipId, GoodsMoveSaveData goodsMoveSaveData) {
         this.shipId = shipId;
-        this.shipOrderGb = StringFactory.getGbOne(); // 01 하드코딩
         this.shipTimes = 1l;
         this.shipStatus = StringFactory.getGbOne(); // 01 : 출고지시, 04 : 출고 (04 하드코딩)
         this.deliId = null; // 이동지시 : null, 출고지시 : tbOrderDetail.deliId
@@ -82,17 +105,31 @@ public class Lsshpm extends CommonProps {
 		this.instructDt = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());// Utilities.getStringToDate(StringFactory.getDoomDay());
 																					// // 9999-12-31 하드코딩
         this.applyDay = Utilities.strToLocalDateTime(StringFactory.getDoomDayT()); // 9999-12-31 하드코딩
-        this.masterShipGb = StringFactory.getGbOne(); // 01 하드코딩
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
 //        this.vendorId = StringUtils.leftPad(StringFactory.getStrOne(),6,'0'); // 000001 하드코딩
         this.delMethod = goodsMoveSaveData.getDeliMethod();
         this.rematGb = StringFactory.getGbOne(); // 01 하드코딩
-        this.shipGb = StringFactory.getGbTwo(); // 02 하드코딩 (01 : 출고, 02 : 이동)
 //        this.itemGrade : 11로 고정. 해당 객체에서는 정상품만 다룸.
         this.deliCompanyCd = null;
 
-        this.shipGb = StringFactory.getGbFour(); // 01:일반출고 03:주문이동지시 04:상품이동지시
-        this.masterShipGb = StringFactory.getGbFour(); // 01:일반출고 03:주문이동지시 04:상품이동지시
+		if (shipGb.equals("01")) {
+			// 출고일 경우 현재는 주문출고만 있음
+			this.shipGb = StringFactory.getGbOne(); // 02 하드코딩 (01 : 출고, 02 : 이동)
+			this.masterShipGb = "01"; // 01 출고 03 주문이동지시 04싱픔이동지시
+			this.shipOrderGb = "01"; // 01 주문 02 상품
+		} else if (shipGb.equals("03")) {
+			// 주문이동지시
+			this.shipGb = StringFactory.getGbTwo(); // 02 하드코딩 (01 : 출고, 02 : 이동)
+			this.masterShipGb = "03"; // 01 출고 03 주문이동지시 04싱픔이동지시
+			this.shipOrderGb = "01"; // 01 주문 02 상품
+
+		} else if (shipGb.equals("04")) {
+			// 주문이동지시
+			this.shipGb = StringFactory.getGbTwo(); // 02 하드코딩 (01 : 출고, 02 : 이동)
+			this.masterShipGb = "04"; // 01 출고 03 주문이동지시 04싱픔이동지시
+			this.shipOrderGb = "02"; // 01 주문 02 상품
+
+		}
 
         super.setRegId(goodsMoveSaveData.getUserId());
         super.setUpdId(goodsMoveSaveData.getUserId());

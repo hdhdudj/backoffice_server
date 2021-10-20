@@ -109,15 +109,18 @@ public class Lspchd extends CommonProps implements Serializable {
 		this.purchaseSeq = purchaseSeq;
 		this.assortId = lsshpd.getAssortId();
 		this.itemId = lsshpd.getItemId();
-		this.purchaseQty = tbOrderDetail.getQty();
+		this.purchaseQty = lsshpd.getShipIndicateQty();
 		this.purchaseUnitAmt = lsshpd.getSaleCost();// lsdpsd.getExtraUnitcost();
 		this.purchaseItemAmt = lsshpd.getSaleCost() * lsshpd.getShipIndicateQty();// lsdpsd.getExtraCost();
 		this.itemGrade = "11";
 		this.siteGb = lsshpd.getSiteGb();
 		this.ownerId = lsshpd.getOwnerId();
 		// this.siteOrderNo = tbOrderDetail.getChannelOrderNo();
-		this.orderId = tbOrderDetail.getOrderId();
-		this.orderSeq = tbOrderDetail.getOrderSeq();
+		if (tbOrderDetail != null) {
+			this.orderId = tbOrderDetail.getOrderId();
+			this.orderSeq = tbOrderDetail.getOrderSeq();
+
+		}
 		// this.depositNo = lsdpsd.getDepositNo();
 		// this.depositSeq = lsdpsd.getDepositSeq();
 	}

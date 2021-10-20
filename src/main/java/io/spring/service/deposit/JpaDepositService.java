@@ -395,7 +395,8 @@ public class JpaDepositService {
      * assortId가 null이거나 ""면 검색 조건에 미포함
      * assortNm은 like 검색
      */
-    public DepositSelectListResponseData getList(String purchaseVendorId, String assortId, String assortNm, LocalDate startDt, LocalDate endDt) {
+	public DepositSelectListResponseData getList(String vendorId, String assortId, String assortNm, LocalDate startDt,
+			LocalDate endDt) {
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
         List<DepositSelectListResponseData.Deposit> depositList = new ArrayList<>();
@@ -415,12 +416,12 @@ public class JpaDepositService {
                         "order by ld.depositNo asc, ld.depositSeq asc",
                 Lsdpsd.class);
         query.setParameter(1, start).setParameter(2, end).setParameter(3, assortId)
-        .setParameter(4, assortNm).setParameter(5, purchaseVendorId);
+				.setParameter(4, assortNm).setParameter(5, vendorId);
 //        query.setParameter(4, param.get("assortId"));
         List<Lsdpsd> resultList = query.getResultList();
         for(Lsdpsd lsdpsd : resultList){
             DepositSelectListResponseData.Deposit deposit = new DepositSelectListResponseData.Deposit(lsdpsd);
-            deposit.setPurchaseVendorId(lsdpsd.getLsdpsm().getVendorId());
+			deposit.setVendorId(lsdpsd.getLsdpsm().getVendorId());
             deposit.setVdNm(lsdpsd.getLsdpsm().getCmvdmr() == null? "":lsdpsd.getLsdpsm().getCmvdmr().getVdNm());
             Itasrt itasrt = lsdpsd.getItasrt();
             deposit.setAssortNm(itasrt.getAssortNm());
@@ -431,7 +432,8 @@ public class JpaDepositService {
             //
             depositList.add(deposit);
         }
-        DepositSelectListResponseData depositSelectListResponseData = new DepositSelectListResponseData(startDt, endDt, assortId, assortNm, purchaseVendorId);
+		DepositSelectListResponseData depositSelectListResponseData = new DepositSelectListResponseData(startDt, endDt,
+				assortId, assortNm, vendorId);
         depositSelectListResponseData.setDepositList(depositList);
         return depositSelectListResponseData;
     }
@@ -561,6 +563,9 @@ public class JpaDepositService {
 
     private Ititmc saveItitmc(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData, LocalDateTime depositDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit) {
         Ititmc ititmc = new Ititmc(storageId, depositDt, deposit);
+
+		ititmc.setVendorId(depositListWithPurchaseInfoData.getVendorId());
+
 		ititmc.setShipIndicateQty(0L);
 //		ititmc.setShipIndicateQty(0);
         Itasrt itasrt = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());

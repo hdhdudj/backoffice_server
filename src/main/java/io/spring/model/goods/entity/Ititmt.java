@@ -9,7 +9,6 @@ import javax.persistence.IdClass;
 import javax.persistence.Table;
 
 import io.spring.infrastructure.util.StringFactory;
-import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.goods.idclass.ItitmtId;
@@ -60,6 +59,7 @@ public class Ititmt extends CommonProps {
         this.tempIndicateQty = 0l;
         this.tempQty = lspchd.getPurchaseQty();
         this.stockAmt = lspchd.getPurchaseUnitAmt();
+		this.vendorId = lspchm.getVendorId();
         super.setRegId(regId);
         super.setUpdId(regId);
     }
@@ -79,7 +79,7 @@ public class Ititmt extends CommonProps {
     private Long tempIndicateQty;
     private Long tempQty;
     private Float stockAmt;
-    private String vendorId = Utilities.getStringNo(null,StringFactory.getStrOne(),6); // 000001 하드코딩
+	private String vendorId; // 000001 하드코딩
     private String ownerId;
-    private String siteGb = StringFactory.getGbOne(); // 01 하드코딩
+	private String siteGb; // 01 하드코딩
 }

@@ -375,7 +375,7 @@ public class JpaMoveService {
             String shipId = getShipId();
 //            Lsdpsp lsdpsp = lsdpsd.getLspchd().getLsdpsp().get(i);
             // lsshpm 저장
-            Lsshpm lsshpm = new Lsshpm(shipId, itasrt, tbOrderDetail);
+			Lsshpm lsshpm = new Lsshpm("03", shipId, itasrt, tbOrderDetail);
 
 			// ostorageId 가 갈곳 to
 			// storageId 가 나오는곳 from
@@ -505,6 +505,9 @@ public class JpaMoveService {
      */
     @Transactional
     public List<String> saveGoodsMove(GoodsMoveSaveData goodsMoveSaveData) {
+
+		// 상품이동지시 수정해야함,
+
         List<String> shipIdList = new ArrayList<>();
 
         String regId = null;
@@ -517,9 +520,19 @@ public class JpaMoveService {
             // 1. 출고 data 생성
             Ititmc ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(goods.getAssortId(), goods.getItemId(),
                     goods.getStorageId(), StringFactory.getStrEleven(), Utilities.dateToLocalDateTime(goods.getDepositDt()));
-            List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository.findByAssortIdAndItemId(ititmc.getAssortId(),ititmc.getItemId())
-                .stream().filter(x->x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList());
-            long qtyOfC01 = tbOrderDetailList.size();
+
+			// 상품이동지시할떄 주문건의 수량을 뺴기위해서 넣은 로직인데 이동지시를 그전에 만드는걸로 로직을 변경하여 제외
+			// List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository
+			// .findByAssortIdAndItemId(ititmc.getAssortId(), ititmc.getItemId()).stream()
+			// .filter(x ->
+			// x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList());
+
+			// System.out.println(goods);
+
+			// System.out.println(tbOrderDetailList);
+
+			// long qtyOfC01 = tbOrderDetailList.size();
+			long qtyOfC01 = 0;
             long qty = ititmc.getQty() == null? 0l:ititmc.getQty();
             long shipIndicateQty = ititmc.getShipIndicateQty() == null? 0l:ititmc.getShipIndicateQty();
             if(goods.getMoveQty() > qty - shipIndicateQty - qtyOfC01){
@@ -532,7 +545,7 @@ public class JpaMoveService {
             }
             // 1-0. Lsshpm 생성
             String shipId = this.getShipId();
-            Lsshpm lsshpm = new Lsshpm(shipId, goodsMoveSaveData);
+			Lsshpm lsshpm = new Lsshpm("04", shipId, goodsMoveSaveData);
             purchaseDt = lsshpm.getReceiptDt();
             // 1-1. ititmc 값 변경
             if(lsshpm != null){
@@ -554,8 +567,10 @@ public class JpaMoveService {
 
             shipIdList.add(shipId);
 
-            // 2. 발주 data 생성
-            jpaPurchaseService.makePurchaseDataFromGoodsMoveSave(regId, purchaseDt, lsshpm, lsshpd);
+			// 2. 발주 data 생성 이동 //발주데이타는 이동처리에서 만드므로 처리안함.
+			// jpaPurchaseService.makePurchaseDataFromGoodsMoveSave(regId, purchaseDt,
+			// lsshpm, lsshpd);
+
 //            List<Lsdpsp> lsdpspList = new ArrayList<>();
 //            lsdpspList.add(lsdpsp);
 
@@ -708,6 +723,9 @@ public class JpaMoveService {
      */
     @Transactional
     public List<String> changeShipStatus(MoveListSaveData moveListSaveData) {
+
+		// todo : 이동처리후 발주 생성.주문이동지시는 주문상태변경 ,상품이동지시는 주문없음.발주시에도 주문없이 만들어지도록
+
         List<String> newShipIdList = new ArrayList<>();
         List<String> shipIdList = new ArrayList<>();
 
@@ -723,11 +741,10 @@ public class JpaMoveService {
         for(String shipId : shipNoSet){
             Lsshpd lsshpd = jpaLsshpdRepository.findByShipId(shipId).get(0);
 
-			HashMap<String, Object> m = new HashMap<String, Object>();
-			m.put("order_id", lsshpd.getOrderId());
-			m.put("order_seq", lsshpd.getOrderSeq());
+
 
 			Lsshpm lsshpm = jpaLsshpmRepository.findByShipId(lsshpd.getShipId());
+
             // ititmc.shipIndicateQty, ititmc.shipQty 차감
             long shipIndQty = lsshpd.getShipIndicateQty();
 			// List<Ititmc> ititmcList =
@@ -770,7 +787,13 @@ public class JpaMoveService {
 
 			l2.add(lsshpd);
 
-			orderList.add(m);
+			if (lsshpm.getShipOrderGb().equals("01")) {
+				HashMap<String, Object> m = new HashMap<String, Object>();
+				m.put("order_id", lsshpd.getOrderId());
+				m.put("order_seq", lsshpd.getOrderSeq());
+				orderList.add(m);
+
+			}
 
         }
 
