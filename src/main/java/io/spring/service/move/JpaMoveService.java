@@ -409,11 +409,15 @@ public class JpaMoveService {
             Itasrt itasrt = ititmc.getItasrt();
             GoodsModalListResponseData.Goods goods = new GoodsModalListResponseData.Goods(ititmc, itasrt);
             IfBrand ifBrand = jpaIfBrandRepository.findByChannelGbAndChannelBrandId(StringFactory.getGbOne(), itasrt.getBrandId()); // 채널은 01 하드코딩
-            List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository.findByAssortIdAndItemId(ititmc.getAssortId(),ititmc.getItemId())
-                    .stream().filter(x->x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList());
-            long qtyOfC01 = tbOrderDetailList.size();
-            goods.setOrderQty(qtyOfC01);
-            goods.setAvailableQty(goods.getAvailableQty() - qtyOfC01);
+
+			// 주문관련 이동지시나 출고지시할떄 indicateqty 에 이미 적용이 되어있으므로 밑에 로직 삭제
+
+//            List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository.findByAssortIdAndItemId(ititmc.getAssortId(),ititmc.getItemId())
+			// .stream().filter(x->x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList());
+			// long qtyOfC01 = tbOrderDetailList.size();
+
+			goods.setOrderQty(0L);
+			goods.setAvailableQty(goods.getAvailableQty());
 //            goods.setStoreCd(goodsModalListResponseData.getStoreCd());
             Utilities.setOptionNames(goods, itasrt.getItvariList());
 //            List<Itvari> itvariList = itasrt.getItvariList();
