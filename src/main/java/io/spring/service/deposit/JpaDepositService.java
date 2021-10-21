@@ -399,7 +399,7 @@ public class JpaDepositService {
      * assortNm은 like 검색
      */
 	public DepositSelectListResponseData getList(String vendorId, String assortId, String assortNm, LocalDate startDt,
-			LocalDate endDt) {
+			LocalDate endDt, String storageId) {
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
         List<DepositSelectListResponseData.Deposit> depositList = new ArrayList<>();
@@ -416,10 +416,11 @@ public class JpaDepositService {
                         "and (?3 is null or trim(?3)='' or it.assortId=?3) " +
                         "and (?4 is null or trim(?4)='' or it.assortNm like concat('%', ?4, '%')) " +
                         "and (?5 is null or trim(?5)='' or lm.vendorId=?5) " +
+				"and (?6 is null or trim(?6)='' or lm.storeCd=?6) " +
                         "order by ld.depositNo asc, ld.depositSeq asc",
                 Lsdpsd.class);
         query.setParameter(1, start).setParameter(2, end).setParameter(3, assortId)
-				.setParameter(4, assortNm).setParameter(5, vendorId);
+				.setParameter(4, assortNm).setParameter(5, vendorId).setParameter(6, storageId);
 //        query.setParameter(4, param.get("assortId"));
         List<Lsdpsd> resultList = query.getResultList();
         for(Lsdpsd lsdpsd : resultList){
