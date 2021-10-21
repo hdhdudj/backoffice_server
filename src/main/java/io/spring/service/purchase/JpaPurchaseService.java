@@ -632,9 +632,9 @@ public class JpaPurchaseService {
     public boolean makePurchaseData(TbOrderDetail tbOrderDetail) {
         // 1. lsdpsp 찾아오기 (d 딸려옴, d에 따라 b도 딸려옴)
         List<Lsdpsp> lsdpspList = jpaLsdpspRepository.findByAssortIdAndItemId(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
-        // 2. dealTypeCd = 02, purchaseGb = 01인 애들을 필터
+        // 2. dealTypeCd = 02 (상품발주), purchaseGb = 01(일반발주) 인 애들을 필터
         lsdpspList = lsdpspList.stream().filter(x->x.getDealtypeCd().equals(StringFactory.getGbTwo())&&x.getPurchaseGb().equals(StringFactory.getGbOne())).collect(Collectors.toList());
-        // 3. lspchb 중 purchaseStatus가 01인 애들만 남기기
+        // 3. lspchb 중 purchaseStatus가 01(발주)인 애들만 남기기
         List<Lsdpsp> lsdpspList1 = new ArrayList<>();
         for(Lsdpsp lsdpsp : lsdpspList){
             List<Lspchb> lspchbList = lsdpsp.getLspchd().getLspchb();
