@@ -212,16 +212,17 @@ public class Lspchd extends CommonProps implements Serializable {
     })
     private List<Lsdpsp> lsdpsp;
 
+	// lsdpsd 와 일대다의 관계인데 entity 설정에 오류가 남..그래서 주석처리
     // lsdpsd 연관관계
+//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "lspchd")
+//    @JoinColumns({
+//            @JoinColumn(name = "purchaseNo", referencedColumnName = "inputNo", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
+//            @JoinColumn(name = "purchaseSeq", referencedColumnName = "inputSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
+//    })
 
-    @JoinColumns({
-            @JoinColumn(name = "purchaseNo", referencedColumnName = "inputNo", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
-            @JoinColumn(name = "purchaseSeq", referencedColumnName = "inputSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
-    })
-	@OneToOne(fetch = FetchType.LAZY, mappedBy = "lspchd")
-    @JsonIgnore
-    @NotFound(action = NotFoundAction.IGNORE)
-	private Lsdpsd lsdpsd;
+//    @JsonIgnore
+//    @NotFound(action = NotFoundAction.IGNORE)
+//	private List<Lsdpsd> lsdpsd;
 
     // tbOrderDetail 연관관계
 	@JoinColumns({
