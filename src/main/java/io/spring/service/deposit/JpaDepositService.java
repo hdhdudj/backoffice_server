@@ -143,7 +143,10 @@ public class JpaDepositService {
                 Lspchm lspchm = lspchd.getLspchm();
                 TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId,orderSeq);
                 String statusCd;
-                if(tbOrderDetail.getAssortGb().equals(StringFactory.getGbOne())){ // 직구
+
+				Itasrt itasrt = jpaItasrtRepository.findByAssortId(lsdpsp.getAssortId());
+
+				if (itasrt.getAssortGb().equals(StringFactory.getGbOne())) { // 직구
                     statusCd = StringFactory.getStrC04();
                 }
                 else{ //if(tbOrderDetail.getAssortGb().equals(StringFactory.getGbTwo())){ // 수입
@@ -632,7 +635,10 @@ public class JpaDepositService {
 					TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId,
 							orderSeq);
 					String statusCd;
-					if (tbOrderDetail.getAssortGb().equals(StringFactory.getGbOne())) { // 직구
+					
+					Itasrt itasrt = jpaItasrtRepository.findByAssortId(lsdpsd.getAssortId());
+					
+					if (itasrt.getAssortGb().equals(StringFactory.getGbOne())) { // 직구
 
 						// 입고창고와 주문의 창고가 같은경우 출고지시
 						List<String> r = jpaShipService.saveShipIndicateByDeposit(lsdpsd);
