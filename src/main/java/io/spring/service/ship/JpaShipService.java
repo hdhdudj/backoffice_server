@@ -309,7 +309,7 @@ public class JpaShipService {
 		// lsshpm 저장
 		Lsshpm lsshpm = new Lsshpm("01", shipId, itasrt, tbOrderDetail);
 
-		lsshpm.setShipStatus(shipStatus); // 01 : 이동지시or출고지시, 04 : 출고
+		lsshpm.setShipStatus(shipStatus); // 01 : 이동지시or출고지시, 02 : 이동지시or출고지시 접수, 04 : 출고
 		lsshpm.setDeliId(tbOrderDetail.getTbOrderMaster().getDeliId());
 
 		lsshpm.setShipOrderGb("01");

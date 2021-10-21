@@ -444,9 +444,9 @@ public class JpaPurchaseService {
      * 입고 - 발주선택창 (입고처리 -> 발주조회 > 조회) : 조건을 넣고 조회했을 때 동작하는 함수 (Lspchm 기준의 list를 가져옴)
      */
 	public PurchaseListInDepositModalData getPurchaseMasterList(LocalDate startDt, LocalDate endDt,
-			String purchaseVendorId, String storageId) {
+			String vendorId, String storageId) {
 		PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData(startDt,
-				endDt, purchaseVendorId, storageId);
+				endDt, vendorId, storageId);
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
         TypedQuery<Lspchm> query = em.createQuery("select m from Lspchm m" +
@@ -456,7 +456,7 @@ public class JpaPurchaseService {
 				+
                 "and m.purchaseStatus in :statusArr", Lspchm.class);
         List<String> statusArr = Arrays.asList(StringFactory.getGbOne(), StringFactory.getGbThree()); // 01:발주 03:부분입고 04:완전입고 05:취소  A1:송금완료 A2:거래처선금입금 A3:거래처잔금입금
-		query.setParameter(1, start).setParameter(2, end).setParameter(3, purchaseVendorId).setParameter(4, storageId)
+		query.setParameter(1, start).setParameter(2, end).setParameter(3, vendorId).setParameter(4, storageId)
                 .setParameter("statusArr",statusArr);
         List<Lspchm> lspchmList = query.getResultList();
         List<PurchaseListInDepositModalData.Purchase> purchaseList = new ArrayList<>();
@@ -864,7 +864,7 @@ public class JpaPurchaseService {
 			String orderGoodsType = "";
 
 			// lspchm insert
-			if (lsshpm.getShipOrderGb().equals("01")) {
+			if (lsshpm.getShipOrderGb().equals("01")) { // 01 : 주문, 02 : 상품
 				// 주문이동지시
 				orderGoodsType = "01";
 			} else if (lsshpm.getShipOrderGb().equals("02")) {
