@@ -137,10 +137,10 @@ public class DepositController {
                                          @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable LocalDate endDt,
                                          @RequestParam @Nullable String assortId,
                                          @RequestParam @Nullable String assortNm,
-			@RequestParam @Nullable String vendorId) {
+			@RequestParam @Nullable String vendorId, @RequestParam @Nullable String storageId) {
 
 		DepositSelectListResponseData depositSelectListResponseData = jpaDepositService.getList(vendorId, assortId,
-				assortNm, startDt, endDt);
+				assortNm, startDt, endDt, storageId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositSelectListResponseData);
         return ResponseEntity.ok(res);
     }
