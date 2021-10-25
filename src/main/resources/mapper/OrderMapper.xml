@@ -267,4 +267,62 @@ from (select aa.channel_gb channel_gb,
 	
 	</select>	
 	
+	<select id="getOrderDetailList" parameterType="java.util.HashMap"  resultType="HashMap">
+	<![CDATA[
+	
+select aa.channel_gb channelGb
+		,aa.order_date orderDate
+		,bb.order_id orderId
+		,bb.order_seq orderSeq
+		,concat(bb.order_id,'-',bb.order_seq) orderKey
+		,bb.status_cd statusCd
+		,cc.cust_nm custNm
+		,bb.assort_id assortId
+		,bb.item_id  itemId
+		,bb.goods_nm goodsNm
+ ,  (select b1.option_nm
+                from ititmm b2, itvari b1
+                where b2.assort_id=bb.assort_id
+                  And b2.item_id= bb.item_id
+                  And  b2.assort_id = b1.assort_id
+                  and b2.variation_gb1 = b1.variation_gb
+                  and  b2.variation_seq1=b1.seq) optionNm1
+           ,    (select b1.option_nm
+                from ititmm b2, itvari b1
+                where b2.assort_id=bb.assort_id
+                  And b2.item_id= bb.item_id
+                  And  b2.assort_id = b1.assort_id
+                  and b2.variation_gb2 = b1.variation_gb
+                  and  b2.variation_seq2=b1.seq) optionNm2	
+                  	,bb.option_info optionInfo
+		,bb.qty qty
+		,bb.sale_price salePrice
+		,bb.deli_price deliPrice
+		,bb.dc_sum_price dcSumPrice
+		,(bb.sale_price + bb.deli_price - bb.dc_sum_price) totalPrice 
+		,bb.list_image_data listImageData
+		from tb_order_master aa
+		,tb_order_detail bb
+		,tb_member cc
+		where 1=1
+		and aa.order_id = bb.order_id
+		and aa.cust_id = cc.cust_id
+		and aa.order_date between #{startDt} and  #{endDt}
+		
+
+		]]>
+	<if test='statusCd != null'>
+			<![CDATA[
+				and bb.status_cd =#{statusCd}
+			]]>
+		</if>		
+	<if test='orderId != null'>
+			<![CDATA[
+				and aa.order_id =#{orderId}
+			]]>
+		</if>
+	
+	</select>	
+	
+	
 </mapper>
