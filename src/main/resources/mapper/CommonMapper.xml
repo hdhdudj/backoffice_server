@@ -76,6 +76,26 @@
 				</if>
 	</select>    
 	
+	
+	<select id="getCommonOrderStatus" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    	<![CDATA[
+			select cd_minor  as value
+			,cd_fname as label
+				from cmcode
+				where 1=1
+					]]>
+				 <if test='cdMajor != null'>
+			 		<![CDATA[
+			 		and cd_major =#{cdMajor}	
+			 	]]>
+				</if>
+					 <if test='cdMinor != null'>
+			 		<![CDATA[
+			 		and cd_minor =#{cdMinor}	
+			 	]]>
+				</if>
+	</select>    
+	
 
 
 </mapper>

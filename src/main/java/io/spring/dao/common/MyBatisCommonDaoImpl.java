@@ -55,4 +55,9 @@ public class MyBatisCommonDaoImpl implements MyBatisCommonDao {
 	
 	
 
+	@Override
+	public List<HashMap<String, Object>> getCommonOrderStatus(HashMap<String, Object> param) {
+		// TODO Auto-generated method stub
+		return commonMapper.getCommonOrderStatus(param);
+	}
 }

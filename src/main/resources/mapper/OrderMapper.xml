@@ -208,6 +208,7 @@ from (select aa.channel_gb channel_gb,
 		where tom.order_id =#{orderId}
 		and tom.cust_id  = tm.cust_id 
 		and tom.deli_id  = tma.deli_id 
+		and tom.order_status not like 'f%'
 		
 			
 	
@@ -222,7 +223,7 @@ from (select aa.channel_gb channel_gb,
 		
  select tod.order_id orderId
  ,tod.order_seq  orderSeq
- ,concat(tod.order_seq,'-',tod.order_seq) orderKey
+ ,concat(tod.order_id,'-',tod.order_seq) orderKey
  ,tod.channel_order_no   channelOrderNo
  ,tod.channel_order_seq  channelOrderSeq
  ,tod.status_cd  statusCd
@@ -256,9 +257,8 @@ from (select aa.channel_gb channel_gb,
  ,tod.deli_method  deliMethod
  ,tod.list_image_data  listImageData
  from tb_order_detail tod 
-, itasrt i
  where  tod.order_id  = #{orderId}
- and tod.assort_id =i.assort_id 
+
 		
 			
 	
