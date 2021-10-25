@@ -231,10 +231,12 @@ public class JpaOrderService {
 
     /**
      * Ititmt list를 loop 돌면서 qty 관련 계산
+     * 10-21 수정 : 해당 주문 이상의 숫자를 가진 ititmt가 존재해야 함.
      */
     private String loopItitmt(List<Ititmt> ititmtList, TbOrderDetail tbOrderDetail, DirectOrImport di) {
         boolean isStockCandidateExist = false;
         long orderQty = tbOrderDetail.getQty();
+        boolean isBigOneExist = false; // 해당 주문 qty 이상의 숫자를 가진 ititmt가 존재하는가?
         for(Ititmt ititmt : ititmtList){
             if(ititmt.getTempQty() >= orderQty + ititmt.getTempIndicateQty()){
                 ititmt.setTempIndicateQty(orderQty + ititmt.getTempIndicateQty());
@@ -260,6 +262,7 @@ public class JpaOrderService {
      */
     private boolean loopItitmc(List<Ititmc> ititmcList, TbOrderDetail tbOrderDetail){
         long orderQty = tbOrderDetail.getQty();
+        boolean isBigOneExist = false;
         for(Ititmc ititmc : ititmcList){
             if(ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()){
                 ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
