@@ -27,4 +27,19 @@ public class MyBatisOrderDaoImpl implements MyBatisOrderDao {
 		return orderMapper.getOrderMasterList(param);
 	}
 
+//	HashMap<String, Object> getOrderMaster(HashMap<String, Object> param);
+
+//	List<HashMap<String, Object>> getOrderDetail(HashMap<String, Object> param);
+
+	@Override
+	public HashMap<String, Object> getOrderMaster(HashMap<String, Object> param) {
+		return orderMapper.getOrderMaster(param);
+	}
+
+	@Override
+	public List<HashMap<String, Object>> getOrderDetail(HashMap<String, Object> param) {
+		return orderMapper.getOrderDetail(param);
+	}
+
 }
+

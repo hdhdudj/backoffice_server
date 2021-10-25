@@ -14,4 +14,8 @@ public interface MyBatisOrderDao {
 
 	List<HashMap<String, Object>> getOrderMasterList(HashMap<String, Object> param);
 
+	HashMap<String, Object> getOrderMaster(HashMap<String, Object> param);
+
+	List<HashMap<String, Object>> getOrderDetail(HashMap<String, Object> param);
+
 }

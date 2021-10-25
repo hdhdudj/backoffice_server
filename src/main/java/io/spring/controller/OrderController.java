@@ -9,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +24,7 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.order.entity.OrderStock;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.request.OrderStockMngInsertRequestData;
+import io.spring.model.order.response.OrderDetailResponseData;
 import io.spring.model.order.response.OrderMasterListResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.order.JpaOrderService;
@@ -222,6 +224,24 @@ public class OrderController {
 		
 
 		List<OrderMasterListResponseData> r = myBatisOrderService.getOrderMasterList(map);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
+		return ResponseEntity.ok(res);
+
+	}
+
+	@GetMapping(path = "/items/{orderId}")
+	public ResponseEntity getOrder(@PathVariable String orderId) {
+
+		System.out.println("getOrder");
+
+		HashMap<String, Object> map = new HashMap<>();
+
+		map.put("orderId", orderId);
+
+		OrderDetailResponseData r = myBatisOrderService.getOrderDetail(map);
+
+		// List<OrderMasterListResponseData> r = myBatisOrderService.get(map);
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
 		return ResponseEntity.ok(res);

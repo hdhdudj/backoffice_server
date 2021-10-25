@@ -173,5 +173,98 @@ from (select aa.channel_gb channel_gb,
 	
 	</select>
 	
-
+	
+	
+	<select id="getOrderMaster" parameterType="java.util.HashMap"  resultType="HashMap">
+	<![CDATA[
+			
+		select 
+		tom.channel_gb channelGb
+		,tom.order_id orderId
+		,tom.order_date orderDate
+		,tom.channel_order_no channelOrderNo
+		,tom.cust_id custId
+		,tm.cust_nm  custNm
+		,tm.cust_tel  custTel
+		,tm.cust_hp custHp
+		,tm.cust_zipcode  custZipcode
+		,tm.cust_addr1  custAddr1
+		,tm.cust_addr2 custAddr2
+		,tma.deli_nm  deliNm
+		,tma.deli_tel  deliTel
+		,tma.deli_hp  deliHp
+		,tma.deli_zipcode  deliZipcode
+		,tma.deli_addr1  deliAddr1
+		,tma.deli_addr2 deliAddr2
+		,tom.pay_gb  payGb
+		,tom.order_amt  orderAmt
+		,tom.total_goods_price   totalGoodsPrice
+		,tom.total_delivery_charge   totalDeliveryCharge
+		,0.0 totalDiscountPrice
+		,0.0 totalUseMileage
+		from tb_order_master tom
+		,tb_member tm 
+		,tb_member_address tma 
+		where tom.order_id =#{orderId}
+		and tom.cust_id  = tm.cust_id 
+		and tom.deli_id  = tma.deli_id 
+		
+			
+	
+		]]>
+	
+	
+	</select>
+	
+<select id="getOrderDetail" parameterType="java.util.HashMap"  resultType="HashMap">
+	<![CDATA[
+			
+		
+ select tod.order_id orderId
+ ,tod.order_seq  orderSeq
+ ,concat(tod.order_seq,'-',tod.order_seq) orderKey
+ ,tod.channel_order_no   channelOrderNo
+ ,tod.channel_order_seq  channelOrderSeq
+ ,tod.status_cd  statusCd
+ ,tod.assort_id  assortId
+ ,tod.item_id itemId
+ ,tod.goods_nm  goodsNm
+ ,tod.option_info optionInfo
+  ,  (select b1.option_nm
+                from ititmm b2, itvari b1
+                where b2.assort_id=tod.assort_id
+                  And b2.item_id= tod.item_id
+                  And  b2.assort_id = b1.assort_id
+                  and b2.variation_gb1 = b1.variation_gb
+                  and  b2.variation_seq1=b1.seq) optionNm1
+           ,    (select b1.option_nm
+                from ititmm b2, itvari b1
+                where b2.assort_id=tod.assort_id
+                  And b2.item_id= tod.item_id
+                  And  b2.assort_id = b1.assort_id
+                  and b2.variation_gb2 = b1.variation_gb
+                  and  b2.variation_seq2=b1.seq) optionNm2
+ ,tod.qty qty 
+ ,tod.sale_price  salePrice
+ ,tod.delivery_info  deliveryInfo
+ ,case 
+ when tod.scm_no = 64 then '공급사' 
+ when tod.scm_no = 63 then '공급사'
+ else '본사'
+ end scmType
+ ,tod.deli_price deliPrice
+ ,tod.deli_method  deliMethod
+ ,tod.list_image_data  listImageData
+ from tb_order_detail tod 
+, itasrt i
+ where  tod.order_id  = #{orderId}
+ and tod.assort_id =i.assort_id 
+		
+			
+	
+		]]>
+	
+	
+	</select>	
+	
 </mapper>
