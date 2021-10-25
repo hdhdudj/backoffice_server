@@ -118,14 +118,12 @@ public class JpaOrderService {
     private void changeOrderStatusWhenDirect(TbOrderDetail tbOrderDetail) {
         String assortId = tbOrderDetail.getAssortId();
         String itemId = tbOrderDetail.getItemId();
-        String domesticStorageId = tbOrderDetail.getStorageId(); // 주문자 현지(국내?) 창고 id (국내창고)
+        String goodsStorageId = "000002";//tbOrderDetail.getStorageId(); // 물건이 도착하는 창고 id (해외창고. 직구이므로 국내창고 거치지 않음)
 
-        TypedQuery<TbOrderDetail> q = em.createQuery("select t from TbOrderDetail t where t.statusCd=?1", TbOrderDetail.class).setParameter(1,StringFactory.getStrC04());
-//                .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList()); // 주문코드가 CO4(국내입고완료)인 애들의 list
         // 국내창고 ititmc 불러오기
-        List<Ititmc> domItitmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGrade(assortId, itemId, domesticStorageId, StringFactory.getStrEleven());
+        List<Ititmc> domItitmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGrade(assortId, itemId, goodsStorageId, StringFactory.getStrEleven());
         // 국내창고 ititmt 불러오기
-        List<Ititmt> domItitmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGrade(assortId, itemId, domesticStorageId, StringFactory.getStrEleven());
+        List<Ititmt> domItitmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGrade(assortId, itemId, goodsStorageId, StringFactory.getStrEleven());
 
         long sumOfDomQty = this.getSumOfItitmcQty(ItitmcQty.QTY,domItitmc);
         long sumOfDomShipIndQty = this.getSumOfItitmcQty(ItitmcQty.SHIPINDQTY,domItitmc);
@@ -244,7 +242,11 @@ public class JpaOrderService {
                 break;
             }
         }
-        if(isStockCandidateExist){
+        if(isStockCandidateExist && di.equals(DirectOrImport.direct)){ // 직구
+            jpaPurchaseService.makePurchaseDataByOrder(tbOrderDetail, di);
+            return StringFactory.getStrC04(); // 국내(현지)입고완료 : C04
+        }
+        else if(isStockCandidateExist && di.equals(DirectOrImport.imports)){ // 수입
             jpaPurchaseService.makePurchaseDataByOrder(tbOrderDetail, di);
             return StringFactory.getStrC03(); // 이동지시완료 : C03
         }
