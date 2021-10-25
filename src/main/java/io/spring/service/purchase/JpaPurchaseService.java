@@ -95,7 +95,7 @@ public class JpaPurchaseService {
         // lsdpsp (입고 예정)
         List<Lsdpsp> lsdpsp = this.saveLsdpsp(purchaseInsertRequestData);
         // ititmt (예정 재고)
-        List<Ititmt> ititmt = this.saveItitmt(purchaseInsertRequestData);
+        List<Ititmt> ititmt = this.saveItitmt(purchaseInsertRequestData, lspchm);
         // tbOrderDetail 상태변경
         this.changeStatusCdOfTbOrderDetail(lspchdList);
 
@@ -120,10 +120,18 @@ public class JpaPurchaseService {
     }
 
     private Lspchm saveLspchm(PurchaseInsertRequestData purchaseInsertRequestData, List<Lspchd> lspchdList) {
+        if(lspchdList.size() == 0){
+            log.debug("저장할 발주 목록이 존재하지 않습니다.");
+            return null;
+        }
         Lspchm lspchm = jpaLspchmRepository.findByPurchaseNo(purchaseInsertRequestData.getPurchaseId()).orElseGet(() -> null);
         if(lspchm == null){ // insert
             lspchm = new Lspchm(purchaseInsertRequestData);
-
+            /// 임시
+            Lspchd lspchd = lspchdList.get(0);
+            Itasrt itasrt = jpaItasrtRepository.findByAssortId(lspchd.getAssortId());
+            lspchm.setStoreCd(itasrt.getStorageId());
+            ///
 			lspchm.setPurchaseStatus(StringFactory.getGbOne()); // 01 하드코딩
         }
         else { // update
@@ -297,7 +305,7 @@ public class JpaPurchaseService {
         return lsdpspList;
     }
 
-    private List<Ititmt> saveItitmt(PurchaseInsertRequestData purchaseInsertRequestData) {
+    private List<Ititmt> saveItitmt(PurchaseInsertRequestData purchaseInsertRequestData, Lspchm lspchm) {
         List<Ititmt> ititmtList = new ArrayList<>();
 
         for(PurchaseInsertRequestData.Items items : purchaseInsertRequestData.getItems()){
@@ -307,6 +315,7 @@ public class JpaPurchaseService {
 
                 ititmt = new Ititmt(ititmtId);
 
+                ititmt.setStorageId(lspchm.getStoreCd());
                 ititmt.setStockAmt(items.getPurchaseUnitAmt());
                 ititmt.setTempQty(items.getPurchaseQty());
                 ititmt.setTempIndicateQty(0l);

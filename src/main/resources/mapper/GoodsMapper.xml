@@ -220,6 +220,7 @@
 			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq1 and iv.variation_gb='01' and del_yn='02' ) optionNm1
 			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq2 and iv.variation_gb='02' and del_yn='02' ) optionNm2			 
 			 ,i.brand_id as brandId
+			 ,i.storage_id as storageId
 			 ,ib.brand_nm as brandNm
 			 ,i.disp_category_id as dispCategoryId
  			 ,ic.category_nm as categoryNm
