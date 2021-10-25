@@ -18,5 +18,7 @@ public interface CommonMapper {
 
 	List<HashMap<String, Object>> getCommonStorage(HashMap<String, Object> param);
 
+	List<HashMap<String, Object>> getCommonOrderStatus(HashMap<String, Object> param);
+
 
 }

@@ -135,6 +135,48 @@ public class CommonController {
 		return ResponseEntity.ok(res);
 	}
 
+	@GetMapping(path = "/order_status")
+	public ResponseEntity getOrderStatus(@RequestParam String cdMajor,
+			@RequestParam @Nullable String cdMinor) {
+
+		HashMap<String, Object> map = new HashMap<>();
+
+		HashMap<String, Object> c2 = new HashMap<String, Object>();
+
+		if (cdMajor != null && !cdMajor.equals("")) {
+			map.put("cdMajor", cdMajor);
+		}
+
+		if (cdMinor != null && !cdMinor.equals("")) {
+			map.put("cdMinor", cdMinor);
+		}
+
+		List<HashMap<String, Object>> l = myBatisCommonService.getCommonOrderStatus(map);
+
+		for (HashMap<String, Object> o2 : l) {
+			c2.put(o2.get("value").toString(), o2.get("label").toString());
+		}
+
+		HashMap<String, Object> m = new HashMap<String, Object>();
+
+		if (l.size() > 0) {
+			m.put("OrderStatus", l);
+		}
+
+		m.put("OrderStatusGridKey", c2);
+
+		ApiResponseMessage res = null;
+
+		if (m.size() > 0) {
+			res = new ApiResponseMessage<HashMap<String, Object>>("SUCCESS", "", m);
+		} else {
+			res = new ApiResponseMessage<HashMap<String, Object>>("ERROR", "ERROR", null);
+		}
+
+		return ResponseEntity.ok(res);
+
+	}
+
 	@GetMapping(path = "/vendors")
 	public ResponseEntity getVendors() {
 //public ResponseEntity selectBrandSearchList() {
