@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.spring.infrastructure.mybatis.mapper.OrderMapper">
 
-    <select id="selectOrderListByCondition" resultType="HashMap">
-    	
-    	<![CDATA[
+	<select id="selectOrderListByCondition" resultType="HashMap">
+
+		<![CDATA[
 select dd.*, cc.cust_nm cust_nm, cc.cust_tel cust_tel
 from (select aa.channel_gb channel_gb,
              aa.order_date,
@@ -18,6 +18,7 @@ from (select aa.channel_gb channel_gb,
              bb.sale_price,
              bb.deli_price,
              bb.dc_sum_price,
+             aa.order_status,
              (bb.sale_price + bb.deli_price - bb.dc_sum_price) total_price
       from tb_order_master aa,
            tb_order_detail bb
@@ -61,7 +62,7 @@ from (select aa.channel_gb channel_gb,
 				and cc.cust_hp = #{custHp}
 			]]>
 		</if>
-    </select>
+	</select>
 
 	<select id="selectOrderListByConditionOriginal" resultType="HashMap">
 
@@ -122,5 +123,55 @@ from (select aa.channel_gb channel_gb,
 		</if>
 
 	</select>
+	
+	<select id="getOrderMasterList" parameterType="java.util.HashMap"  resultType="HashMap">
+	<![CDATA[
+		select tom.channel_gb channelGb
+		,tom.order_date orderDate
+		,tom.order_id orderId
+		,case 
+		when SUBSTR(order_status FROM 1 FOR 1) in ('s','d','g','p') then
+			'결제완료'
+		when SUBSTR(order_status FROM 1 FOR 1) ='o' then
+		'결제전'	
+		else
+		'결제실패 및 취소'
+		end payStatus
+		,(select iom.channel_order_no from if_order_master iom where iom.order_id = tom.order_id ) channelOrderNo 
+		 ,tm.cust_id custId 
+		 ,tm.cust_nm custNm
+		,(select tod2.goods_nm from tb_order_detail tod2 where tod2.order_id = tom.order_id and tod2.order_seq='0001') goodsNm 
+		,tom.total_goods_price  totalGoodsPrice
+		,tom.total_delivery_charge  totalDeliveryCharge
+		,tom.total_goods_price +  tom.total_delivery_charge totalPrice
+		,tom.order_amt orderAmt
+		,tom.pay_gb payGb
+		,tom.pay_dt payDt
+		from tb_order_master tom 
+		 LEFT OUTER JOIN tb_member AS tm    -- A_TABLE 기준
+		              ON tom.cust_id = tm.cust_id
+		where  1=1
+		and tom.order_date between #{startDt} and  #{endDt}
+	]]>
+	<if test='orderId != null'>
+			<![CDATA[
+				and tom.order_id =#{orderId}
+			]]>
+		</if>
+	
+	<if test='custNm != null'>
+			<![CDATA[
+				and tm.cust_nm like CONCAT(#{custNm},'%' )
+			]]>
+		</if>
+		<if test='custHp != null'>
+			<![CDATA[
+				and tm.cust_hp = #{custHp}
+			]]>
+		</if>	
+	
+	
+	</select>
+	
 
 </mapper>

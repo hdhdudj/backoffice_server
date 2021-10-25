@@ -1,5 +1,24 @@
 package io.spring.controller;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
@@ -13,18 +32,6 @@ import io.spring.service.common.MyBatisCommonService;
 import io.spring.service.goods.JpaGoodsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -157,7 +164,7 @@ public class GoodsController {
 	// 상품리스트조회(ititmm)
 	@GetMapping(path = "/goods-item-fullcategory")
 	public ResponseEntity getGoodsItemWithCategory(@RequestParam(required = false) String assortId,
-			@RequestParam(required = false) String assortNm, @RequestParam(required = false) String purchaseVendorId,
+			@RequestParam(required = false) String assortNm, @RequestParam(required = false) String vendorId,
 			@RequestParam(required = false) String brandId, @RequestParam(required = false) String category) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 
@@ -169,8 +176,8 @@ public class GoodsController {
 			param.put("assortNm", assortNm);
 		}
 
-		if (purchaseVendorId != null) {
-			param.put("purchaseVendorId", purchaseVendorId);
+		if (vendorId != null) {
+			param.put("vendorId", vendorId);
 		}
 
 		if (brandId != null) {
@@ -192,8 +199,8 @@ public class GoodsController {
 	@GetMapping(path="/getgoodslistmybatis")
 	public ResponseEntity getGoodsList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate regDtBegin,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate regDtEnd,
-			@RequestParam String shortageYn) {
-		log.debug("get goods list data");
+			@RequestParam String shortageYn, @RequestParam @Nullable String assortId, @RequestParam @Nullable String assortNm) {
+		log.debug("/goods/getgoodslistmybatis");
 
 		LocalDateTime begin = regDtBegin.atStartOfDay();
 		LocalDateTime end = regDtEnd.atTime(23,59,59);
@@ -203,6 +210,8 @@ public class GoodsController {
 		param.put("shortageYn", shortageYn);
 		param.put("regDtBegin", begin);
 		param.put("regDtEnd", end);
+		param.put("assortId", assortId);
+		param.put("assortNm", assortNm);
 
 		List<HashMap<String, Object>> responseData = goodsRepository.getGoodsList(param);
 		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);

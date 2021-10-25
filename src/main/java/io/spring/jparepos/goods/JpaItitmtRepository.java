@@ -13,4 +13,8 @@ public interface JpaItitmtRepository extends JpaRepository<Ititmt, ItitmtId> {
     List<Ititmt> findByAssortIdAndItemIdAndStorageIdAndItemGrade(String assortId, String itemId, String domesticStorageId, String itemGrade);
 
     Ititmt findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(String assortId, String itemId, String storageId, String itemGrade, LocalDateTime purchaseDt);
+
+//    Ititmt findByAssortIdAndItemIdAndStorageIdAndItemGradeAndUpdDt(String assortId, String itemId, String storageId, String itemGrade, LocalDateTime updDt);
+
+//    Ititmt findByAssortIdAndItemIdAndStorageIdAndItemGradeAndRegDt(String assortId, String itemId, String oStorageId, String strEleven, LocalDateTime updDt);
 }

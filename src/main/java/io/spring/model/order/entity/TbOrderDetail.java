@@ -1,18 +1,31 @@
 package io.spring.model.order.entity;
 
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.order.idclass.TbOrderDetailId;
-import io.spring.model.purchase.entity.Lspchd;
-import lombok.*;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-
-import javax.persistence.*;
-import java.io.Serializable;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name="tb_order_detail")
@@ -94,6 +107,13 @@ public class TbOrderDetail extends CommonProps
     private String lastCategoryId;
     private String storageId;
 
+    // 21-09-28 새로 생긴 컬럼
+    private String optionTextInfo;
+    private String listImageData;
+    private Float optionPrice;
+    private Float optionTextPrice;
+    private String deliveryInfo;
+
     @JoinColumns(
     {
         @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
@@ -115,13 +135,21 @@ public class TbOrderDetail extends CommonProps
     @JsonIgnore
     @NotFound(action = NotFoundAction.IGNORE)
     private Itasrt itasrt; // itasrt 연관관계
+	/*
+	 * @JoinColumns({
+	 * 
+	 * @JoinColumn(name = "orderId", referencedColumnName = "orderId", insertable =
+	 * false, updatable = false, foreignKey = @ForeignKey(name = "none")),
+	 * 
+	 * @JoinColumn(name = "orderSeq", referencedColumnName = "orderSeq", insertable
+	 * = false, updatable = false, foreignKey = @ForeignKey(name = "none")) })
+	 * 
+	 * @OneToMany(fetch = FetchType.LAZY, mappedBy = "tbOrderDetail")
+	 * 
+	 * @JsonIgnore
+	 * 
+	 * @NotFound(action = NotFoundAction.IGNORE) private List<Lspchd> lspchd; //
+	 * lspchd 연관관계
+	 */
 
-    @JoinColumns({
-        @JoinColumn(name = "orderId", referencedColumnName = "orderId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
-        @JoinColumn(name = "orderSeq", referencedColumnName = "orderSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
-    })
-    @OneToOne(fetch = FetchType.LAZY,mappedBy = "tbOrderDetail")
-    @JsonIgnore
-    @NotFound(action = NotFoundAction.IGNORE)
-    private Lspchd lspchd; // lspchd 연관관계
 }

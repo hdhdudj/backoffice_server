@@ -17,6 +17,7 @@ public class DepositInsertRequestData {
     private String depositStatus;
 //    private String depositVendorId; : ownerId로 변경됨
     private String ownerId;
+    private String vendorId;
     private List<Item> items;
 
     @Getter

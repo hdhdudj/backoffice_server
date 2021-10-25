@@ -1,10 +1,14 @@
 package io.spring.model.deposit.response;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
 import io.spring.model.deposit.entity.Lsdpsd;
@@ -12,9 +16,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * 입고 - 입고리스트 : 입고 리스트 DTO
@@ -28,7 +29,7 @@ public class DepositSelectListResponseData {
         this.endDt = endDt;
         this.assortId = assortId;
         this.assortNm = assortNm;
-        this.purchaseVendorId = purchaseVendorId;
+		this.vendorId = purchaseVendorId;
     }
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -40,7 +41,7 @@ public class DepositSelectListResponseData {
     private LocalDate endDt;
     private String assortId;
     private String assortNm;
-    private String purchaseVendorId;
+	private String vendorId;
     private List<Deposit> depositList;
 
     @Getter
@@ -69,7 +70,7 @@ public class DepositSelectListResponseData {
         private String goodsKey;
         private String depositNo;
         private String depositSeq;
-        private String purchaseVendorId;
+		private String vendorId;
         private String vdNm;
         private String assortNm;
         private String optionNm1;

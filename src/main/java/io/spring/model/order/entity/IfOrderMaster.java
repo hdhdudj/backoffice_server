@@ -48,6 +48,21 @@ public class IfOrderMaster {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date orderDate;
 
+    // 21-09-28 추가된 컬럼
+    private Float totalGoodsPrice;
+    private Float totalDeliveryCharge;
+    private Float totalGoodsDcPrice;
+    private Float totalMemberDcPrice;
+    private Float totalMemberOverlapDcPrice;
+    private Float totalCouponGoodsDcPrice;
+    private Float totalCouponOrderDcPrice;
+    private Float totalCouponDeliveryDcPrice;
+    private Float totalMileage;
+    private Float totalGoodsMileage;
+    private Float totalMemberMileage;
+    private Float totalCouponGoodsMileage;
+    private Float totalCouponOrderMileage;
+
     @Override
     public String toString(){
         return "ifNo : " + ifNo + ", channelOrderNo : " + channelOrderNo + ", ifStatus : " + ifStatus;

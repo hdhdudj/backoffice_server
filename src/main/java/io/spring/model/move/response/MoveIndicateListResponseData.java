@@ -1,11 +1,16 @@
 package io.spring.model.move.response;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.SetOptionInterface;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.ship.entity.Lsshpd;
@@ -13,9 +18,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * 이동지시리스트(상품, 주문) 조회 DTO
@@ -47,7 +49,7 @@ public class MoveIndicateListResponseData {
     @Getter
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class Move {
+    public static class Move implements SetOptionInterface {
         public Move(Lsshpd lsshpd){
             TbOrderDetail tbOrderDetail = lsshpd.getTbOrderDetail();
             Itasrt itasrt = lsshpd.getItasrt();
@@ -62,7 +64,7 @@ public class MoveIndicateListResponseData {
             this.orderKey = orderId != null? Utilities.addDashInMiddle(orderId,orderSeq):null;
             this.storageId = lsshpd.getLsshpm().getStorageId();
             this.oStorageId = lsshpd.getOStorageId();
-            this.moveIndDt = Utilities.removeTAndTransToStr(lsshpd.getRegDt());
+			this.moveIndDt = Utilities.removeTAndTransToStr(lsshpd.getLsshpm().getInstructDt());
             this.assortId = lsshpd.getAssortId();
             this.itemId = lsshpd.getItemId();
             this.goodsKey = Utilities.addDashInMiddle(assortId,itemId);
@@ -77,6 +79,7 @@ public class MoveIndicateListResponseData {
         private String moveIndGb;
         private String deliMethod;
         private String storageId;
+		@JsonProperty("oStorageId")
         private String oStorageId;
         private String moveIndDt;
         private String orderId;

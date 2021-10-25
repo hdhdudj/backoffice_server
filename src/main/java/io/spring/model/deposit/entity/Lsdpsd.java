@@ -1,6 +1,27 @@
 package io.spring.model.deposit.entity;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.idclass.LsdpsdId;
@@ -13,20 +34,14 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-
-import javax.persistence.*;
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
+import lombok.ToString;
 
 //import org.flywaydb.core.internal.util.StringUtils;
 
 @Entity
 @Getter
 @Setter
+@ToString
 @Table(name="lsdpsd")
 @IdClass(LsdpsdId.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -70,7 +85,9 @@ public class Lsdpsd extends CommonProps implements Serializable {
 				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // 9999-12-31 하드코딩
         this.depositType = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01' 입고
         this.siteGb = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
-        this.ownerId = depositListWithPurchaseInfoData.getOwnerId();//StringUtils.leftPad("1", 6, '0'); // 000001 하드코딩
+		// this.ownerId =
+		// depositListWithPurchaseInfoData.getOwnerId();//StringUtils.leftPad("1", 6,
+		// '0'); // 000001 하드코딩
         this.inputNo = deposit.getPurchaseNo();
         this.inputSeq = deposit.getPurchaseSeq();
     }
@@ -96,11 +113,15 @@ public class Lsdpsd extends CommonProps implements Serializable {
     private String sStorageCd;
     private String minDepositNo;
     private String minDepositSeq;
+    @Column(name = "inputNo")
     private String inputNo;
+    @Column(name = "inputSeq")
     private String inputSeq;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime excAppDt;
 
+	private String orderId;
+	private String orderSeq;
 
     // 연관 관계 lsdpsm
     @ManyToOne(fetch = FetchType.LAZY)
@@ -108,11 +129,11 @@ public class Lsdpsd extends CommonProps implements Serializable {
     private Lsdpsm lsdpsm;
 
     // 연관 관계 lspchd
-    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumns({
             @JoinColumn(name = "inputNo", referencedColumnName="purchaseNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
             @JoinColumn(name = "inputSeq", referencedColumnName="purchaseSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
     })
+    @OneToOne(fetch = FetchType.LAZY)
     private Lspchd lspchd;
 
     // 연관 관계 lsdpds

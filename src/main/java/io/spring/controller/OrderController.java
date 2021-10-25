@@ -1,5 +1,21 @@
 package io.spring.controller;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.order.MyBatisOrderDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
@@ -7,18 +23,12 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.order.entity.OrderStock;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.request.OrderStockMngInsertRequestData;
+import io.spring.model.order.response.OrderMasterListResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.order.JpaOrderService;
+import io.spring.service.order.MyBatisOrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -28,8 +38,11 @@ public class OrderController {
 	private final MyBatisOrderDao myBatisOrderDao;
 	private final MyBatisCommonDao myBatisCommonDao;
 
+	private final MyBatisOrderService myBatisOrderService;
+
 	private final JpaCommonService jpaCommonService;
 	private final JpaOrderService jpaOrderService;
+
 
 //	@Autowired
 //	public OrderController(MyBatisOrderDao myBatisOrderDao, MyBatisCommonDao myBatisCommonDao,
@@ -174,5 +187,45 @@ public class OrderController {
 	}
 
 
+	@GetMapping(path = "/items")
+	public ResponseEntity getOrderList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+			  @RequestParam @Nullable String orderId,
+			  @RequestParam @Nullable String custNm,
+			  @RequestParam @Nullable String custHp) {
+
+		System.out.println("getOrderList");
+
+		HashMap<String, Object> map = new HashMap<>();
+
+		if (startDt != null) {
+
+			LocalDateTime start = startDt.atStartOfDay();
+
+			map.put("startDt", start);
+		}
+		if (endDt != null) {
+
+			LocalDateTime end = endDt.atTime(23, 59, 59);
+			map.put("endDt", end);
+		}
+
+		if (orderId != null && !orderId.equals("")) {
+			map.put("orderId", orderId);
+		}
+		if (custNm != null && !custNm.equals("")) {
+			map.put("custNm", custNm);
+		}
+		if (custHp != null && !custHp.equals("")) {
+			map.put("custHp", custHp);
+		}
+		
+
+		List<OrderMasterListResponseData> r = myBatisOrderService.getOrderMasterList(map);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
+		return ResponseEntity.ok(res);
+
+	}
 
 }

@@ -142,7 +142,17 @@
 		LEFT JOIN itcatg ic ON i.disp_category_id = ic.category_id
 		where 	1=1
 		  and i.reg_Dt between #{regDtBegin} and  #{regDtEnd}
-		  and i.shortage_yn =#{shortageYn};
+		  and i.shortage_yn =#{shortageYn}
+		<if test='assortId != null'>
+			<![CDATA[
+			and i.assort_id = #{assortId}
+			]]>
+		</if>
+		<if test='assortNm != null'>
+			<![CDATA[
+			and i.assort_nm like concat('%',#{assortNm},'%')
+			]]>
+		</if>
 	</select>	
 
 
@@ -245,9 +255,9 @@
 				and i.assort_nm like CONCAT( '%',  #{assortNm}, '%') 
 			 ]]>
 			</if>		
-			<if test='purchaseVendorId != null'>
+			<if test='vendorId != null'>
 			 <![CDATA[		
-					and i.vendor_id =#{purchaseVendorId} 
+					and i.vendor_id =#{vendorId} 
 			 ]]>
 			</if>		
 			<if test='brandId != null'>

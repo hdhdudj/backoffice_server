@@ -21,7 +21,7 @@ public class DepositListWithPurchaseInfoData {
     public DepositListWithPurchaseInfoData(Lspchm lspchm, List<DepositListWithPurchaseInfoData.Deposit> deposits){
         this.purchaseNo = lspchm.getPurchaseNo();
 //        this.purchaseVendorId = lspchm.getVendorId();
-        this.ownerId = lspchm.getVendorId();
+		this.vendorId = lspchm.getVendorId();
 
         this.depositDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
         this.storageId = lspchm.getStoreCd();
@@ -29,7 +29,7 @@ public class DepositListWithPurchaseInfoData {
     }
     private String purchaseNo;
 //    private String purchaseVendorId;: ownerId로 변경됨
-    private String ownerId;
+	private String vendorId;
 //    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
 //    @JsonSerialize(using = LocalDateTimeSerializer.class)
 

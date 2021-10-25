@@ -1,6 +1,26 @@
 package io.spring.model.purchase.entity;
 
+import java.io.Serializable;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.entity.Lsdpsd;
@@ -13,11 +33,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-
-import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Getter
@@ -25,7 +40,7 @@ import java.util.List;
 @Table(name="lspchd")
 @IdClass(value = LspchdId.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Lspchd extends CommonProps {
+public class Lspchd extends CommonProps implements Serializable {
     public Lspchd(Lspchd lspchd, String purchaseSeq){
         this.purchaseNo = lspchd.getPurchaseNo();
         this.purchaseSeq = purchaseSeq;
@@ -67,24 +82,49 @@ public class Lspchd extends CommonProps {
     /**
      * 주문이동지시 저장시 실행되는 생성자
      */
-    public Lspchd(String purchaseNo, String purchaseSeq, Lsdpsd lsdpsd,
+	public Lspchd(String purchaseNo, String purchaseSeq, Lsdpsd lsdpsd,
                   TbOrderDetail tbOrderDetail){
         this.purchaseNo = purchaseNo;
         this.purchaseSeq = purchaseSeq;
-        this.assortId = lsdpsd.getAssortId();
-        this.itemId = lsdpsd.getItemId();
+		this.assortId = lsdpsd.getAssortId();
+		this.itemId = lsdpsd.getItemId();
         this.purchaseQty = tbOrderDetail.getQty();
-        this.purchaseUnitAmt = lsdpsd.getExtraUnitcost();
-        this.purchaseItemAmt = lsdpsd.getExtraCost();
-        this.itemGrade = lsdpsd.getItemGrade();
-        this.siteGb = lsdpsd.getSiteGb();
-        this.ownerId = lsdpsd.getOwnerId();
-        this.siteOrderNo = tbOrderDetail.getChannelOrderNo();
+		this.purchaseUnitAmt = lsdpsd.getExtraUnitcost();
+		this.purchaseItemAmt = lsdpsd.getExtraCost();
+		this.itemGrade = lsdpsd.getItemGrade();
+		this.siteGb = lsdpsd.getSiteGb();
+		this.ownerId = lsdpsd.getOwnerId();
+		// this.siteOrderNo = tbOrderDetail.getChannelOrderNo();
         this.orderId = tbOrderDetail.getOrderId();
         this.orderSeq = tbOrderDetail.getOrderSeq();
-        this.depositNo = lsdpsd.getDepositNo();
-        this.depositSeq = lsdpsd.getDepositSeq();
+		// this.depositNo = lsdpsd.getDepositNo();
+		// this.depositSeq = lsdpsd.getDepositSeq();
     }
+
+	/**
+	 * 주문이동지시2 저장시 실행되는 생성자
+	 */
+	public Lspchd(String purchaseNo, String purchaseSeq, Lsshpd lsshpd, TbOrderDetail tbOrderDetail) {
+		this.purchaseNo = purchaseNo;
+		this.purchaseSeq = purchaseSeq;
+		this.assortId = lsshpd.getAssortId();
+		this.itemId = lsshpd.getItemId();
+		this.purchaseQty = lsshpd.getShipIndicateQty();
+		this.purchaseUnitAmt = lsshpd.getSaleCost();// lsdpsd.getExtraUnitcost();
+		this.purchaseItemAmt = lsshpd.getSaleCost() * lsshpd.getShipIndicateQty();// lsdpsd.getExtraCost();
+		this.itemGrade = "11";
+		this.siteGb = lsshpd.getSiteGb();
+		this.ownerId = lsshpd.getOwnerId();
+		// this.siteOrderNo = tbOrderDetail.getChannelOrderNo();
+		if (tbOrderDetail != null) {
+			this.orderId = tbOrderDetail.getOrderId();
+			this.orderSeq = tbOrderDetail.getOrderSeq();
+
+		}
+		// this.depositNo = lsdpsd.getDepositNo();
+		// this.depositSeq = lsdpsd.getDepositSeq();
+	}
+
     /**
      * 상품이동지시 저장시 실행되는 생성자
      */
@@ -132,8 +172,12 @@ public class Lspchd extends CommonProps {
     private String orderId;
     @Column(name = "orderSeq")
     private String orderSeq;
+
+	// todo:2021-10-14 depositNo 와 depositSeq 는 부분입고떄문에 들어가면 안될듯.반대로 lsdpsd의
+	// inputNo,inputSeq에서 관리해야함.
     private String depositNo;
     private String depositSeq;
+
     private String setShipId;
     private String setShipSeq;
     private String siteOrderNo;
@@ -168,21 +212,24 @@ public class Lspchd extends CommonProps {
     })
     private List<Lsdpsp> lsdpsp;
 
-    @JoinColumns({
-            @JoinColumn(name = "depositNo", referencedColumnName = "depositNo", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
-            @JoinColumn(name = "depositSeq", referencedColumnName = "depositSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
-    })
-    @OneToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
-    @NotFound(action = NotFoundAction.IGNORE)
-    private Lsdpsd lsdpsd; // lsdpsd 연관관계
+	// lsdpsd 와 일대다의 관계인데 entity 설정에 오류가 남..그래서 주석처리
+    // lsdpsd 연관관계
+//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "lspchd")
+//    @JoinColumns({
+//            @JoinColumn(name = "purchaseNo", referencedColumnName = "inputNo", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
+//            @JoinColumn(name = "purchaseSeq", referencedColumnName = "inputSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
+//    })
 
-    @JoinColumns({
-            @JoinColumn(name = "orderId", referencedColumnName = "orderId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
-            @JoinColumn(name = "orderSeq", referencedColumnName = "orderSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
-    })
-    @OneToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
-    @NotFound(action = NotFoundAction.IGNORE)
-    private TbOrderDetail tbOrderDetail; // tbOrderDetail 연관관계
+//    @JsonIgnore
+//    @NotFound(action = NotFoundAction.IGNORE)
+//	private List<Lsdpsd> lsdpsd;
+
+    // tbOrderDetail 연관관계
+	@JoinColumns({
+			@JoinColumn(name = "orderId", referencedColumnName = "orderId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
+			@JoinColumn(name = "orderSeq", referencedColumnName = "orderSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")) })
+	@OneToOne(fetch = FetchType.LAZY)
+	@JsonIgnore
+	@NotFound(action = NotFoundAction.IGNORE)
+	private TbOrderDetail tbOrderDetail;
 }

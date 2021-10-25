@@ -97,15 +97,38 @@
 					from
 						(
 						select
-							ifnull(bbb.vendor_id, '000000') vendor_id ,
-							ifnull((select bb.vd_nm from cmvdmr bb where bb.id = bbb.vendor_id), '거래처없음') vd_nm ,
+						
+						case
+						when aaa.order_vendor_id <> '000000' then
+							ifnull(aaa.order_vendor_id, '000000')
+						else
+							ifnull(bbb.vendor_id, '000000') 
+						end vendor_id,
+						case
+						when aaa.order_vendor_id <> '000000' then
+							ifnull((select bb.vd_nm from cmvdmr bb where bb.id = aaa.order_vendor_id), '거래처없음')
+						else
+							ifnull((select bb.vd_nm from cmvdmr bb where bb.id = bbb.vendor_id), '거래처없음')
+							 
+						end vd_nm,						
 							aaa.*
 						from
 							(
 							select
 								tod.assort_id ,
 								tod.item_id ,
-								tod.qty 
+								tod.qty ,
+								case 
+								when tod.order_seq <> tod.parent_order_seq then
+									(select eee.vendor_id from tb_order_detail vvv, itasrt eee
+									where vvv.order_id = tod.order_id
+									and vvv.order_seq = tod.parent_order_seq
+									and vvv.assort_id = eee.assort_id
+									)
+									
+								else 
+									'000000'
+								end order_vendor_id
 							from
 								tb_order_detail tod
 							where
@@ -221,6 +244,7 @@
 				select
 					bbb1.order_id orderId,
 					bbb1.order_seq orderSeq,
+					concat(bbb1.order_id,'-',bbb1.order_seq) orderCd,
 					bbb1.vendor_id vendorId,
 					bbb1.vd_nm vdNm, 
 					bbb1.assort_id assortId,
@@ -233,8 +257,21 @@
 				from
 					(
 					select
-						ifnull(bbb.vendor_id, '000000') vendor_id ,
-						ifnull((select bb.vd_nm from cmvdmr bb where bb.id = bbb.vendor_id), '거래처없음') vd_nm ,
+					
+					
+						case
+						when aaa.order_vendor_id <> '000000' then
+							ifnull(aaa.order_vendor_id, '000000')
+						else
+							ifnull(bbb.vendor_id, '000000') 
+						end vendor_id,
+						case
+						when aaa.order_vendor_id <> '000000' then
+							ifnull((select bb.vd_nm from cmvdmr bb where bb.id = aaa.order_vendor_id), '거래처없음')
+						else
+							ifnull((select bb.vd_nm from cmvdmr bb where bb.id = bbb.vendor_id), '거래처없음')
+							 
+						end vd_nm,						
 						bbb.assort_nm ,
 						bbb.md_rrp ,
 						bbb.buy_supply_discount ,
@@ -266,7 +303,18 @@
 						tod.order_seq,
 							tod.assort_id ,
 							tod.item_id ,
-							tod.qty 
+							tod.qty ,
+							case 
+								when tod.order_seq <> tod.parent_order_seq then
+									(select eee.vendor_id from tb_order_detail vvv, itasrt eee
+									where vvv.order_id = tod.order_id
+									and vvv.order_seq = tod.parent_order_seq
+									and vvv.assort_id = eee.assort_id
+									)
+									
+								else 
+									'000000'
+								end order_vendor_id							
 						from
 							tb_order_detail tod
 						where
@@ -281,7 +329,7 @@
 						 ) bbb1
 				where
 					bbb1.vendor_id = #{vendorId}
-
+				order by orderId
 			]]>
 		
 		 		

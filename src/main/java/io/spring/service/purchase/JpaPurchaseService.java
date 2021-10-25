@@ -1,5 +1,23 @@
 package io.spring.service.purchase;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
@@ -13,7 +31,8 @@ import io.spring.jparepos.purchase.JpaLspchbRepository;
 import io.spring.jparepos.purchase.JpaLspchdRepository;
 import io.spring.jparepos.purchase.JpaLspchmRepository;
 import io.spring.jparepos.purchase.JpaLspchsRepository;
-import io.spring.model.deposit.entity.Lsdpsd;
+import io.spring.jparepos.ship.JpaLsshpdRepository;
+import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.deposit.response.PurchaseListInDepositModalData;
 import io.spring.model.goods.entity.Itasrt;
@@ -21,15 +40,14 @@ import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.entity.Itvari;
 import io.spring.model.goods.idclass.ItitmtId;
-import io.spring.model.move.request.OrderMoveSaveData;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
-import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.purchase.entity.Lspchb;
 import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.entity.Lspchm;
 import io.spring.model.purchase.entity.Lspchs;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
+import io.spring.model.purchase.request.PurchaseUpdateRequestData;
 import io.spring.model.purchase.response.PurchaseSelectDetailResponseData;
 import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.model.ship.entity.Lsshpd;
@@ -37,18 +55,6 @@ import io.spring.model.ship.entity.Lsshpm;
 import io.spring.service.common.JpaCommonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.tomcat.jni.Local;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -64,6 +70,9 @@ public class JpaPurchaseService {
     private final JpaCommonService jpaCommonService;
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
+
+	private final JpaLsshpmRepository jpaLsshpmRepository;
+	private final JpaLsshpdRepository jpaLsshpdRepository;
 
 	private final JpaTbOrderMasterRepository tbOrderMasterRepository;
 	private final JpaTbOrderDetailRepository tbOrderDetailRepository;
@@ -107,16 +116,33 @@ public class JpaPurchaseService {
      */
     private void changeStatusCdOfTbOrderDetail(List<Lspchd> lspchdList) {
         for(Lspchd lspchd : lspchdList){
-            TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(lspchd.getOrderId(),lspchd.getOrderSeq());
-            if(tbOrderDetail != null){ // 01 : 주문이동, 02 : 상품이동
-                tbOrderDetail.setStatusCd(StringFactory.getStrB02());
-                jpaTbOrderDetailRepository.save(tbOrderDetail);
-            }
+//            TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(lspchd.getOrderId(),lspchd.getOrderSeq());
+//            if(tbOrderDetail != null){ // 01 : 주문이동, 02 : 상품이동
+//                tbOrderDetail.setStatusCd(StringFactory.getStrB02());
+                this.updateOrderStatusCd(lspchd.getOrderId(),lspchd.getOrderSeq(), StringFactory.getStrB02());
+//                jpaTbOrderDetailRepository.save(tbOrderDetail);
+//            }
         }
     }
 
-    public void updatePurchaseSquence(String purchaseNo, PurchaseInsertRequestData purchaseInsertRequestData) {
-
+    public String updatePurchaseSquence(String purchaseNo, PurchaseUpdateRequestData purchaseUpdateRequestData) {
+        Lspchm lspchm = jpaLspchmRepository.findByPurchaseNo(purchaseNo).orElseGet(()->null);
+        if(lspchm == null){
+            log.debug("update할 lspchm이 존재하지 않습니다. purcahseNo : " + purchaseNo);
+            return null;
+        }
+        lspchm.setPurchaseStatus(purchaseUpdateRequestData.getPurchaseStatus());
+        lspchm.setVendorId(purchaseUpdateRequestData.getVendorId());
+        lspchm.setPurchaseDt(Utilities.dateToLocalDateTime(purchaseUpdateRequestData.getPurchaseDt()));
+        lspchm.setStoreCd(purchaseUpdateRequestData.getStorageId());
+        lspchm.setSiteOrderNo(purchaseUpdateRequestData.getSiteOrderNo());
+        lspchm.setTerms(purchaseUpdateRequestData.getTerms());
+        lspchm.setDelivery(purchaseUpdateRequestData.getDelivery());
+        lspchm.setPayment(purchaseUpdateRequestData.getPayment());
+        lspchm.setCarrier(purchaseUpdateRequestData.getCarrier());
+        lspchm.setUpdId(purchaseUpdateRequestData.getUserId());
+        jpaLspchmRepository.save(lspchm);
+        return purchaseNo;
     }
 
     private Lspchm saveLspchm(PurchaseInsertRequestData purchaseInsertRequestData, List<Lspchd> lspchdList) {
@@ -262,11 +288,11 @@ public class JpaPurchaseService {
 
 			String purchaseStatus = purchaseInsertRequestData.getPurchaseStatus();
 
-			if (purchaseGb.equals("01")) {
-				if (dealTypeCd != null && dealTypeCd.equals("01") && purchaseStatus.equals("01")) { // 주문발주면서 발주상태라면
-					updateOrderStatusCd(item.getOrderId(), item.getOrderSeq(), StringFactory.getStrB01());
-				}
-			}
+//			if (purchaseGb.equals("01")) {
+//				if (dealTypeCd != null && dealTypeCd.equals("01") && purchaseStatus.equals("01")) { // 주문발주면서 발주상태라면
+//					updateOrderStatusCd(item.getOrderId(), item.getOrderSeq(), StringFactory.getStrB01());
+//				}
+//			}
 
         }
         return lspchbList;
@@ -313,6 +339,8 @@ public class JpaPurchaseService {
             Ititmt ititmt = jpaItitmtRepository.findById(ititmtId).orElseGet(() -> null);
             if(ititmt == null) { // insert
 
+				Itasrt itasrt = jpaItasrtRepository.findByAssortId(items.getAssortId());
+
                 ititmt = new Ititmt(ititmtId);
 
                 ititmt.setStorageId(lspchm.getStoreCd());
@@ -320,11 +348,23 @@ public class JpaPurchaseService {
                 ititmt.setTempQty(items.getPurchaseQty());
                 ititmt.setTempIndicateQty(0l);
 
+				boolean x = purchaseInsertRequestData.getDealtypeCd().equals(StringFactory.getGbOne()); // 주문발주인가?
+				boolean y = purchaseInsertRequestData.getDealtypeCd().equals(StringFactory.getGbThree()); // 입고예정
+								
+				System.out.println(ititmt.getTempIndicateQty());
+				// 주문발주인가?
+				if (x || y) { // 일반발주면서 주문발주거나 입고예정 주문발주일 때 (01: 주문발주 02:상품발주 03:입고예정 주문발주)
+					ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() + items.getPurchaseQty());
+				}
+				System.out.println(ititmt.getTempIndicateQty());
+
+				ititmt.setVendorId(purchaseInsertRequestData.getVendorId());
+				ititmt.setOwnerId(itasrt.getOwnerId());
+				ititmt.setSiteGb(purchaseInsertRequestData.getSiteGb());
+
                 ititmt.setRegId(purchaseInsertRequestData.getUserId());
                 ititmt.setUpdId(purchaseInsertRequestData.getUserId());
-            }
-
-            else { // update
+			} else { // update
                 boolean x = purchaseInsertRequestData.getDealtypeCd().equals(StringFactory.getGbOne()); // 주문발주인가?
                 boolean y = purchaseInsertRequestData.getDealtypeCd().equals(StringFactory.getGbThree()); // 입고예정 주문발주인가?
                 if (x || y) { // 일반발주면서 주문발주거나 입고예정 주문발주일 때 (01: 주문발주 02:상품발주 03:입고예정 주문발주)
@@ -332,13 +372,18 @@ public class JpaPurchaseService {
                 }
 
                 ititmt.setTempQty(ititmt.getTempQty() + items.getPurchaseQty());
-                ititmt.setStockGb(purchaseInsertRequestData.getStockGb());
-                ititmt.setStockAmt(purchaseInsertRequestData.getStockAmt());
-                ititmt.setVendorId(purchaseInsertRequestData.getVendorId());
-                ititmt.setSiteGb(purchaseInsertRequestData.getSiteGb());
+				// ititmt.setStockGb(purchaseInsertRequestData.getStockGb()); //처음에 만들어지기떄문에 수정할
+				// 필요없음
+				// ititmt.setStockAmt(purchaseInsertRequestData.getStockAmt()); //처음에 만들어지기떄문에
+				// 수정할 필요없음
+				// ititmt.setVendorId(purchaseInsertRequestData.getVendorId()); //처음에 만들어지기떄문에
+				// 수정할 필요없음
+				// ititmt.setSiteGb(purchaseInsertRequestData.getSiteGb()); //처음에 만들어지기떄문에 수정할
+				// 필요없음
 
                 ititmt.setUpdId(purchaseInsertRequestData.getUserId());
             }
+
             jpaItitmtRepository.save(ititmt);
             ititmtList.add(ititmt);
         }
@@ -373,8 +418,8 @@ public class JpaPurchaseService {
             Itasrt itasrt = lspchd.getItitmm().getItasrt();
             PurchaseSelectDetailResponseData.Items item = new PurchaseSelectDetailResponseData.Items(lspchd, itasrt);
             Utilities.setOptionNames(item, itasrt.getItvariList()); // optionNm set
-            if(lspchd.getTbOrderDetail() != null){ // 주문발주인 경우
-                TbOrderDetail tbOrderDetail = lspchd.getTbOrderDetail();
+			if (lspchd.getTbOrderDetail() != null) { // 주문발주인 경우
+				TbOrderDetail tbOrderDetail = lspchd.getTbOrderDetail();
                 item.setOrderId(tbOrderDetail.getOrderId());
                 item.setOrderSeq(tbOrderDetail.getOrderSeq());
                 item.setDeliMethod(tbOrderDetail.getDeliMethod());
@@ -407,16 +452,20 @@ public class JpaPurchaseService {
     /**
      * 입고 - 발주선택창 (입고처리 -> 발주조회 > 조회) : 조건을 넣고 조회했을 때 동작하는 함수 (Lspchm 기준의 list를 가져옴)
      */
-    public PurchaseListInDepositModalData getPurchaseMasterList(LocalDate startDt, LocalDate endDt, String purchaseVendorId) {
-        PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData(startDt, endDt, purchaseVendorId);
+	public PurchaseListInDepositModalData getPurchaseMasterList(LocalDate startDt, LocalDate endDt,
+			String vendorId, String storageId) {
+		PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData(startDt,
+				endDt, vendorId, storageId);
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
         TypedQuery<Lspchm> query = em.createQuery("select m from Lspchm m" +
                 " where m.purchaseDt between ?1 and ?2" +
-                " and (?3 is null or trim(?3)='' or m.ownerId=?3) " +
+				" and (?3 is null or trim(?3)='' or m.vendorId=?3) "
+				+ " and (?4 is null or trim(?4)='' or m.storeCd=?4) "
+				+
                 "and m.purchaseStatus in :statusArr", Lspchm.class);
         List<String> statusArr = Arrays.asList(StringFactory.getGbOne(), StringFactory.getGbThree()); // 01:발주 03:부분입고 04:완전입고 05:취소  A1:송금완료 A2:거래처선금입금 A3:거래처잔금입금
-        query.setParameter(1,start).setParameter(2,end).setParameter(3,purchaseVendorId)
+		query.setParameter(1, start).setParameter(2, end).setParameter(3, vendorId).setParameter(4, storageId)
                 .setParameter("statusArr",statusArr);
         List<Lspchm> lspchmList = query.getResultList();
         List<PurchaseListInDepositModalData.Purchase> purchaseList = new ArrayList<>();
@@ -558,6 +607,10 @@ public class JpaPurchaseService {
     private void updateOrderStatusCd(String orderId, String orderSeq, String statusCd) {
 
 		TbOrderDetail tod = tbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
+        if(tod == null){
+            log.debug("해당 주문이 존재하지 않습니다. - JpaPurchaseService.updateOrderStatusCd");
+            return;
+        }
         Date date = Utilities.getStringToDate(StringFactory.getDoomDay());
         List<TbOrderHistory> tohs = tbOrderHistoryrRepository.findByOrderIdAndOrderSeqAndEffEndDt(orderId, orderSeq, date);
 
@@ -714,7 +767,9 @@ public class JpaPurchaseService {
         LocalDateTime doomDay = LocalDateTime.parse(StringFactory.getDoomDay(), DateTimeFormatter.ofPattern(StringFactory.getDateFormat()));
         lspchbList = lspchbList.stream().filter(x->x.getEffEndDt().compareTo(doomDay)==0).collect(Collectors.toList());
 
-        Lspchm lspchm = lsdpspList.get(0).getLspchd().getLspchm();
+//        Lspchm lspchm = lsdpspList.get(0).getLspchd().getLspchm();
+		Lspchm lspchm = jpaLspchmRepository.findById(purchaseNo).orElse(null);
+
         Lspchm newLspchm = this.changePurchaseStatusOfLspchm(lspchm, lspchbList);
         this.updateLspchsStatus(lspchm, newLspchm.getPurchaseStatus());
         return lspchm;
@@ -752,59 +807,239 @@ public class JpaPurchaseService {
      * 해당 purchaseNo의 b가 모두 완전입고면 m도 완전입고, 하나라도 부분입고면 m은 부분입고.
      */
     private Lspchm changePurchaseStatusOfLspchm(Lspchm lspchm, List<Lspchb> lspchbList) {
-        Lspchm newLspchm = new Lspchm(lspchm);
-        if(lspchbList.stream().filter(x->StringFactory.getGbFour().equals(x.getPurchaseStatus())).collect(Collectors.toList()).size() == lspchbList.size()){
-            newLspchm.setPurchaseStatus(StringFactory.getGbFour());
-        }
-        else{
-            for(Lspchb lspchb : lspchbList){
-                if(lspchb.getPurchaseStatus().equals(StringFactory.getGbThree())){
-                    newLspchm.setPurchaseStatus(StringFactory.getGbThree());
-    //                jpaLspchmRepository.save(newLspchm);
-                    break;
-                }
-            }
-        }
-        jpaLspchmRepository.save(newLspchm);
-        return newLspchm;
+//        Lspchm newLspchm = new Lspchm(lspchm);
+
+		System.out.println("lspchbList ==> " + lspchbList.size());
+
+		// x -> x.getPurchaseStatus().equals("04")
+		Stream<Lspchb> l04 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("04"));
+		Stream<Lspchb> l01 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("01"));
+		
+		String purchaseStatus = "";
+		if (lspchbList.size() == l04.count()) {
+			purchaseStatus = "04";
+		} else if (lspchbList.size() == l01.count()) {
+			purchaseStatus = "01";
+		} else {
+			purchaseStatus = "03";
+		}
+		/*
+		 * if(lspchbList.stream().filter(x->StringFactory.getGbFour().equals(x.
+		 * getPurchaseStatus())).collect(Collectors.toList()).size() ==
+		 * lspchbList.size()){ lspchm.setPurchaseStatus(StringFactory.getGbFour());
+		 * System.out.println("changePurchaseStatusOfLspchm" +
+		 * StringFactory.getGbFour()); } else{ for(Lspchb lspchb : lspchbList){
+		 * if(lspchb.getPurchaseStatus().equals(StringFactory.getGbThree())){
+		 * lspchm.setPurchaseStatus(StringFactory.getGbThree());
+		 * System.out.println("changePurchaseStatusOfLspchm" +
+		 * StringFactory.getGbThree()); // jpaLspchmRepository.save(newLspchm); break; }
+		 * } }
+		 */
+
+		lspchm.setPurchaseStatus(purchaseStatus);
+
+		System.out.println("lspchm ==> " + lspchm);
+
+		jpaLspchmRepository.save(lspchm);
+		return lspchm;
     }
+
+	/**
+	 * 주문이동 저장시 생성되는 발주 data를 만드는 함수
+	 */
+	public void makePurchaseDataFromOrderMoveSave2(List<Lsshpd> moveList) {
+
+		// 이동지시 구분에 따라 발주의 구분이 틀려짐.
+
+		// lspchm,s,d,b insert
+		for (int i = 0; i < moveList.size(); i++) {
+			Lsshpd move = moveList.get(i);
+
+		// 이동지시 개별발주도 생각해볼문제임.
+
+			Lsshpm lsshpm = jpaLsshpmRepository.findById(move.getShipId()).orElse(null);
+			Lsshpd lsshpd = move;
+
+		// Lsshpd lsshpd = jpaLsshpdRepository.findByShipIdAndShipSeq(move.getShipId(),
+		// move.getShipSeq());
+
+			String purchaseNo = this.getPurchaseNo();
+
+			// Lsdpsd itemLsdpsd = lsdpsdList.get(i);
+			TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(move.getOrderId(),
+					move.getOrderSeq());// itemLsdpsd.getLspchd().getTbOrderDetail();
+
+
+			String orderGoodsType = "";
+
+			// lspchm insert
+			if (lsshpm.getShipOrderGb().equals("01")) { // 01 : 주문, 02 : 상품
+				// 주문이동지시
+				orderGoodsType = "01";
+			} else if (lsshpm.getShipOrderGb().equals("02")) {
+				// 상품이동지시
+				orderGoodsType = "02";
+			}
+
+			Lspchm lspchm = new Lspchm(orderGoodsType, purchaseNo);
+
+			// lspchm.setDealtypeCd(StringFactory.getGbOne()); // 01 : 주문발주, 02 : 상품발주, 03 :
+			// 입고예정 주문발주 (01 하드코딩)
+			// lspchm.setSiteOrderNo(tbOrderMaster.getChannelOrderNo());
+			// lspchm.setPurchaseGb(StringFactory.getGbTwo()); // 이동지시의 경우 02 로 처리
+
+			String OStorageId = "";
+
+			// lspchm insert
+			if (lsshpm.getShipOrderGb().equals("01")) {
+				// 주문이동지시
+				OStorageId = tbOrderDetail.getStorageId();
+			} else if (lsshpm.getShipOrderGb().equals("02")) {
+				// 상품이동지시
+				OStorageId = lsshpm.getOStorageId();
+			}
+
+			lspchm.setStoreCd(OStorageId); // 도착지
+			lspchm.setOStoreCd(lsshpm.getStorageId()); //출발지
+
+			// lsdpsd.getLsdpsm().getStoreCd();
+
+			// lspchm의 purchaseRemark, siteOrderNo, storeCd, oStoreCd set 해주기
+//            lspchm.setPurchaseRemark(receiveLsdpsm.getRegId());
+
+			Lspchs lspchs = new Lspchs(lspchm, "1");
+
+			// String purchaseSeq = StringUtils.leftPad(Integer.toString(i + 1), 4, '0');
+
+			// 개별발주관련해서 생각해봐야함.
+			String purchaseSeq = StringUtils.leftPad(Integer.toString(1), 4, '0');
+
+			// todo 기존의 발주건을 조회할거라면 purchaseGb=02 인건이 대상이여야함.일단은 기존의 발주여부 확인부분제외
+
+			// if(jpaLspchdRepository.findByOrderIdAndOrderSeq(tbOrderDetail.getOrderId(),tbOrderDetail.getOrderSeq())
+			// != null){
+			// log.debug("이미 해당 주문에 대한 발주 데이터가 존재합니다!");
+			// return;
+			// }
+			Lspchd lspchd = new Lspchd(purchaseNo, purchaseSeq, lsshpd, tbOrderDetail);
+			Lspchb lspchb = new Lspchb(lspchd, "1");
+
+			jpaLspchmRepository.save(lspchm);
+			jpaLspchsRepository.save(lspchs);
+			jpaLspchdRepository.save(lspchd);
+			jpaLspchbRepository.save(lspchb);
+
+//orderGoodsType 01 주문 02 상품
+
+			// lsdpsp insert
+			String depositPlanId = this.getDepositPlanId();
+			// todo: 2021-10-14 작업자 입력받아야함.
+			// 주문이동지시 처리를 위한내용임.
+			Lsdpsp lsdpsp = new Lsdpsp(depositPlanId, lspchd, "1", orderGoodsType);
+			// lsdpsp.setLspchd(lspchd);
+			jpaLsdpspRepository.save(lsdpsp);
+
+			if (lsshpm.getShipOrderGb().equals("01")) {
+				// 주문이동지시
+				lspchm.setStoreCd(tbOrderDetail.getStorageId()); // 도착지
+			} else if (lsshpm.getShipOrderGb().equals("02")) {
+				// 상품이동지시
+				lspchm.setStoreCd(lsshpm.getOStorageId());
+			}
+
+			// ititmt qty update
+			Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(
+					lspchd.getAssortId(), lspchd.getItemId(), OStorageId,
+					StringFactory.getStrEleven(), LocalDateTime.now());
+			if (ititmt == null) {
+				ititmt = new Ititmt(lspchm, lspchd, "1");
+			} else {
+				ititmt.setTempQty(ititmt.getTempQty() + lspchd.getPurchaseQty());
+			}
+
+			if (lsshpm.getShipOrderGb().equals("01")) {
+				// 주문이동지시 에서는 헤당이동지시 수량의 꼬리표를 부착.다른주문건에서 재고를 차감하지 못하게함.
+				ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() + lspchd.getPurchaseQty());
+			}
+			jpaItitmtRepository.save(ititmt);
+
+		}
+	}
 
     /**
      * 주문이동 저장시 생성되는 발주 data를 만드는 함수
      */
-    public void makePurchaseDataFromOrderMoveSave(List<Lsdpsd> lsdpsdList, List<OrderMoveSaveData.Move> moveList) {
-        // lspchm,s,d,b insert
-        for (int i = 0; i < moveList.size() ; i++) {
-            OrderMoveSaveData.Move move = moveList.get(i);
-            String purchaseNo = this.getPurchaseNo();
-            Lsdpsd itemLsdpsd = lsdpsdList.get(i);
-            TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(move.getOrderId(),move.getOrderSeq());//itemLsdpsd.getLspchd().getTbOrderDetail();
-            TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
-
-            // lspchm insert
-            Lspchm lspchm = new Lspchm(purchaseNo);
-            lspchm.setDealtypeCd(StringFactory.getGbOne()); // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정 주문발주 (01 하드코딩)
-            lspchm.setSiteOrderNo(tbOrderMaster.getChannelOrderNo());
-            // lspchm의 purchaseRemark, siteOrderNo, storeCd, oStoreCd set 해주기
-//            lspchm.setPurchaseRemark(receiveLsdpsm.getRegId());
-
-            Lspchs lspchs = new Lspchs(lspchm, null);
-
-            String purchaseSeq = StringUtils.leftPad(Integer.toString(i+1),4,'0');
-            if(jpaLspchdRepository.findByOrderIdAndOrderSeq(tbOrderDetail.getOrderId(),tbOrderDetail.getOrderSeq()) != null){
-                log.debug("이미 해당 주문에 대한 발주 데이터가 존재합니다!");
-                return;
-            }
-            Lspchd lspchd = new Lspchd(purchaseNo, purchaseSeq,
-                    itemLsdpsd, tbOrderDetail);
-            Lspchb lspchb = new Lspchb(lspchd, null);
-
-            jpaLspchmRepository.save(lspchm);
-            jpaLspchsRepository.save(lspchs);
-            jpaLspchdRepository.save(lspchd);
-            jpaLspchbRepository.save(lspchb);
-        }
-    }
+	// 2021-10-18 사용안함 이후에 삭제해야함.
+	/*
+	 * public void makePurchaseDataFromOrderMoveSave(List<Lsdpsd> lsdpsdList,
+	 * List<OrderMoveSaveData.Move> moveList) {
+	 * 
+	 * // 2021-10-18 사용안함 이후에 삭제해야함.
+	 * 
+	 * // lspchm,s,d,b insert for (int i = 0; i < moveList.size() ; i++) {
+	 * OrderMoveSaveData.Move move = moveList.get(i);
+	 * 
+	 * String purchaseNo = this.getPurchaseNo(); Lsdpsd itemLsdpsd =
+	 * lsdpsdList.get(i); TbOrderDetail tbOrderDetail =
+	 * jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(move.getOrderId(),move.
+	 * getOrderSeq());//itemLsdpsd.getLspchd().getTbOrderDetail(); TbOrderMaster
+	 * tbOrderMaster = tbOrderDetail.getTbOrderMaster();
+	 * 
+	 * 
+	 * String orderGoodsType = "";
+	 * 
+	 * // lspchm insert if (lsshpm.getShipOrderGb().equals("01")) { // 주문이동지시
+	 * orderGoodsType = "01"; } else if (lsshpm.getShipOrderGb().equals("02")) { //
+	 * 상품이동지시 orderGoodsType = "02"; }
+	 * 
+	 * // lspchm insert Lspchm lspchm = new Lspchm(orderGoodsType,purchaseNo);
+	 * lspchm.setDealtypeCd(StringFactory.getGbOne()); // 01 : 주문발주, 02 : 상품발주, 03 :
+	 * 입고예정 주문발주 (01 하드코딩) //
+	 * lspchm.setSiteOrderNo(tbOrderMaster.getChannelOrderNo()); //
+	 * lspchm.setPurchaseGb(StringFactory.getGbTwo()); // 이동지시의 경우 02 로 처리
+	 * lspchm.setStoreCd(tbOrderDetail.getStorageId());
+	 * lspchm.setOStoreCd(itemLsdpsd.getLsdpsm().getStoreCd());
+	 * 
+	 * // lsdpsd.getLsdpsm().getStoreCd();
+	 * 
+	 * // lspchm의 purchaseRemark, siteOrderNo, storeCd, oStoreCd set 해주기 //
+	 * lspchm.setPurchaseRemark(receiveLsdpsm.getRegId());
+	 * 
+	 * Lspchs lspchs = new Lspchs(lspchm, null);
+	 * 
+	 * String purchaseSeq = StringUtils.leftPad(Integer.toString(i+1),4,'0');
+	 * 
+	 * // todo 기존의 발주건을 조회할거라면 purchaseGb=02 인건이 대상이여야함.일단은 기존의 발주여부 확인부분제외
+	 * 
+	 * //
+	 * if(jpaLspchdRepository.findByOrderIdAndOrderSeq(tbOrderDetail.getOrderId(),
+	 * tbOrderDetail.getOrderSeq()) // != null){ //
+	 * log.debug("이미 해당 주문에 대한 발주 데이터가 존재합니다!"); // return; // } Lspchd lspchd = new
+	 * Lspchd(purchaseNo, purchaseSeq, itemLsdpsd, tbOrderDetail); Lspchb lspchb =
+	 * new Lspchb(lspchd, null);
+	 * 
+	 * jpaLspchmRepository.save(lspchm); jpaLspchsRepository.save(lspchs);
+	 * jpaLspchdRepository.save(lspchd); jpaLspchbRepository.save(lspchb);
+	 * 
+	 * // lsdpsp insert String depositPlanId = this.getDepositPlanId(); // todo:
+	 * 2021-10-14 작업자 입력받아야함. // 주문이동지시 처리를 위한내용임. Lsdpsp lsdpsp = new
+	 * Lsdpsp(depositPlanId, lspchd, "1", "01"); // lsdpsp.setLspchd(lspchd);
+	 * jpaLsdpspRepository.save(lsdpsp);
+	 * 
+	 * // ititmt qty update Ititmt ititmt = jpaItitmtRepository.
+	 * findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(
+	 * lspchd.getAssortId(), lspchd.getItemId(), tbOrderDetail.getStorageId(),
+	 * StringFactory.getStrEleven(), LocalDateTime.now()); if (ititmt == null) {
+	 * ititmt = new Ititmt(lspchm, lspchd, "1"); } else {
+	 * ititmt.setTempQty(ititmt.getTempQty() + lspchd.getPurchaseQty()); }
+	 * 
+	 * ititmt.setTempIndicateQty(ititmt.getTempIndicateQty() +
+	 * lspchd.getPurchaseQty());
+	 * 
+	 * jpaItitmtRepository.save(ititmt);
+	 * 
+	 * } }
+	 */
 
 //    /**
 //     * 상품이동 저장시 생성되는 발주 data를 만드는 함수

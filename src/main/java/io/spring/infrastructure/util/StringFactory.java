@@ -15,6 +15,8 @@ public class StringFactory {
     @Getter
     private final static String threeStartCd = "001";
     @Getter
+    private final static String threeTwoCd = "002";
+    @Getter
     private final static String fourStartCd = "0001";
     @Getter
     private final static String fiveStartCd = "00001";
@@ -153,4 +155,12 @@ public class StringFactory {
     public final static String strShipSeqNum = "shipSeqNum";
     @Getter
     public final static String strDealtypeCd = "dealtypeCd";
+
+    // 에러 메시지
+    @Getter
+    public final static String strDepositQtyZero = "지정 입고수량이 0입니다. 입고수량은 0을 초과해야 합니다.";
+    @Getter
+    public final static String strNotCompleteDeposit = "This purchase.dealtypeCd is 01, but this isn't complete deposit.";
+    @Getter
+    public final static String strInputQtyBig = "input qty is bigger than available qty.";
 }

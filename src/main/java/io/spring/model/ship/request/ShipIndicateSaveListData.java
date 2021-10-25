@@ -1,11 +1,10 @@
 package io.spring.model.ship.request;
 
+import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.order.entity.TbMember;
@@ -15,10 +14,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
 
 /**
  * 출고 - 출고지시 : 출고지시 리스트(주문번호 기준) request DTO (출고지시 저장할 때 이용)
@@ -80,5 +75,9 @@ public class ShipIndicateSaveListData {
         private String optionNm2;
         private Long availableQty;
         private Long qty;
+		private String shipId;
+		private String shipSeq;
+		private String storageId;
+		private String receiptDt;
     }
 }

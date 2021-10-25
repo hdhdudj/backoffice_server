@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.spring.infrastructure.mybatis.mapper.MoveMapper">
+
+
+
+    
+    <select id="getOrderMoveList" parameterType="java.util.HashMap"  resultType="HashMap">
+    	 <![CDATA[	
+select ld.ship_id shipId 
+,ld.ship_seq shipSeq
+,concat(ld.ship_id ,'-',ld.ship_seq) shipKey
+,ld.assort_id assortId
+,ld.item_id  itemId
+,lm.receipt_dt receiptDt 
+,tod.order_id orderId 
+,tod.order_seq orderSeq
+,concat(tod.order_id  ,'-',tod.order_seq) orderKey
+,tod.deli_method  deliMethod
+,tod.qty qty 
+,tod.storage_id orderStorageId
+,it.assort_nm  assortNm
+, (select b1.option_nm
+from ititmm b2, itvari b1
+where b2.assort_id=tod.assort_id
+  And b2.item_id= tod.item_id
+  And  b2.assort_id = b1.assort_id
+  and b2.variation_gb1 = b1.variation_gb
+  and  b2.variation_seq1=b1.seq) optionNm1
+ , (select b1.option_nm
+from ititmm b2, itvari b1
+where b2.assort_id=tod.assort_id
+  And b2.item_id= tod.item_id
+  And  b2.assort_id = b1.assort_id
+  and b2.variation_gb2 = b1.variation_gb
+  and  b2.variation_seq2=b1.seq) optionNm2
+from lsshpm lm
+,lsshpd ld
+,itasrt it
+,tb_order_detail tod 
+where 1=1
+and lm.receipt_dt between #{startDt} and  #{endDt}
+and lm.ship_status='01'
+and lm.ship_id = ld.ship_id 
+and ld.assort_id = it.assort_id 
+and ld.order_id = tod.order_id 
+and ld.order_seq = tod.order_seq
+and tod.status_cd ='C01'
+    	 ]]>
+    	 <if test='storageId != null'>
+			 <![CDATA[
+			 and lm.storage_id =#{storageId}	
+			 ]]>
+			</if>
+<if test='assortId != null'>
+			 <![CDATA[
+			 and it.assort_id =#{assortId}	
+			 ]]>
+			</if>
+			
+	<if test='assortNm != null'>
+			 <![CDATA[		
+		and it.assort_nm like CONCAT( '%',  #{assortNm}, '%') 
+			 ]]>
+			</if>		
+			
+			
+				<if test='deliMethod != null'>
+			 <![CDATA[		
+		 		and tod.deli_method =#{deliMethod}	
+			 ]]>
+			</if>	
+			
+			
+					
+    </select>
+    
+    
+    
+
+</mapper>

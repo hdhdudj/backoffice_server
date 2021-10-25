@@ -41,8 +41,26 @@ public class IfOrderDetail {
     private Float etcDcPrice;
     private String deliveryMethodGb;
     private Float deliPrice;
-    private String deliveryInfo;
     private String orderId;
     private String orderSeq;
     private String channelGb = StringFactory.getGbOne(); // 01 하드코딩
+
+    // 21-09-28 추가된 컬럼
+    private Float goodsModelNo;
+    private Float divisionUseMileage;
+    private Float divisionGoodsDeliveryUseDeposit;
+    private Float divisionGoodsDeliveryUseMileage;
+    private Float divisionCouponOrderDcPrice;
+    private Float divisionUseDeposit;
+    private Float divisionCouponOrderMileage;
+    private Float addGoodsPrice;
+    private String optionTextInfo;
+    private String listImageData;
+    private Float optionPrice;
+    private Float optionTextPrice;
+    private Float fixedPrice;
+    private String deliveryInfo;
+    private Float costPrice;
+    private Float memberOverlapDcPrice;
+    private Long scmNo;
 }

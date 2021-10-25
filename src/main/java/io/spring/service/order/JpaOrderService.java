@@ -2,20 +2,13 @@ package io.spring.service.order;
 
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
-import io.spring.jparepos.goods.JpaItasrtRepository;
-import io.spring.jparepos.goods.JpaItitmcRepository;
-import io.spring.jparepos.goods.JpaItitmmRepository;
-import io.spring.jparepos.goods.JpaItitmtRepository;
-import io.spring.jparepos.order.JpaOrderStockRepository;
-import io.spring.jparepos.order.JpaTbOrderDetailRepository;
-import io.spring.jparepos.order.JpaTbOrderHistoryRepository;
-import io.spring.jparepos.order.JpaTbOrderMasterRepository;
+import io.spring.jparepos.goods.*;
+import io.spring.jparepos.order.*;
+import io.spring.model.goods.entity.IfGoodsMaster;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
-import io.spring.model.order.entity.OrderStock;
-import io.spring.model.order.entity.TbOrderDetail;
-import io.spring.model.order.entity.TbOrderHistory;
+import io.spring.model.order.entity.*;
 import io.spring.model.order.request.OrderStockMngInsertRequestData;
 import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
@@ -37,11 +30,14 @@ public class JpaOrderService {
     private final JpaItitmtRepository jpaItitmtRepository;
     private final JpaItitmcRepository jpaItitmcRepository;
     private final JpaItasrtRepository jpaItasrtRepository;
+    private final JpaIfGoodsMasterRepository jpaIfGoodsMasterRepository;
+    private final JpaIfOrderDetailRepository jpaIfOrderDetailRepository;
     private final JpaTbOrderMasterRepository jpaTbOrderMasterRepository;
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
     private final JpaTbOrderHistoryRepository jpaTbOrderHistoryRepository;
     private final JpaPurchaseService jpaPurchaseService;
 	private final JpaOrderStockRepository jpaOrderStockRepository;
+    private final JpaOrderLogRepository jpaOrderLogRepository;
 
     private final EntityManager em;
 
@@ -49,27 +45,69 @@ public class JpaOrderService {
     @Transactional
     public void changeOrderStatus(String orderId, String orderSeq) {
         // orderId, orderSeq로 해당하는 TbOrderDetail 찾아오기
+        log.debug("in changeOrderStatus ; orderId : " + orderId + ", orderSeq : " + orderSeq);
         TypedQuery<TbOrderDetail> query =
                 em.createQuery("select td from TbOrderDetail td " +
                                 "join fetch td.tbOrderMaster tm " +
                                 "left join fetch td.ititmm it " +
+                                "left join fetch td.itasrt itasrt " +
                                 "where td.orderId = ?1" +
                                 "and td.orderSeq = ?2 "
                         , TbOrderDetail.class);
         query.setParameter(1, orderId).setParameter(2, orderSeq);
         TbOrderDetail tbOrderDetail = query.getSingleResult();
-//        TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
         if(tbOrderDetail == null){
             log.debug("There is no TbOrderDetail of " + orderId + " and " + orderSeq);
             return;
         }
-        String assortGb = tbOrderDetail.getAssortGb();
-        if(assortGb.equals(StringFactory.getGbOne())){ // assortGb == '01' : 직구
+        else if(tbOrderDetail.getItitmm() == null){
+            log.debug("There is no ititmm of orderId : " + orderId + " and orderSeq : " + orderSeq);
+            return;
+        }
+        else if(tbOrderDetail.getItasrt() == null){
+            log.debug("There is no itasrt of orderId : " + orderId + " and orderSeq : " + orderSeq);
+            return;
+        }
+        Itasrt itasrt = tbOrderDetail.getItasrt();
+        String prevStatus = tbOrderDetail.getStatusCd();
+//        TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
+        String assortGb = itasrt.getAssortGb();
+
+        if(assortGb == null){ // add_goods인 경우 자체 assortGb가 존재하지 않아, 부모 상품의 것을 따른다.
+            itasrt = this.getParentAssortGb(orderId, orderSeq, itasrt);
+        }
+
+        if(StringFactory.getGbOne().equals(assortGb)){ // assortGb == '01' : 직구
             this.changeOrderStatusWhenDirect(tbOrderDetail);
         }
-        else if(assortGb.equals(StringFactory.getGbTwo())){ // assortGb == '02' : 수입
+        else if(StringFactory.getGbTwo().equals(assortGb)){ // assortGb == '02' : 수입
             this.changeOrderStatusWhenImport(tbOrderDetail);
         }
+
+        this.saveOrderLog(prevStatus, tbOrderDetail);
+    }
+
+    /**
+     * add_goods의 itasrt와 주문key를 받아 add_goods의 assortGb를 부모의 것으로 설정해주는 함수
+     */
+    private Itasrt getParentAssortGb(String orderId, String orderSeq, Itasrt itasrt) {
+        TypedQuery<Itasrt> q = em.createQuery("select i from Itasrt i, TbOrderDetail td, IfOrderDetail id, IfGoodsMaster im " +
+                "where td.channelOrderNo=id.channelOrderNo and td.channelOrderSeq=id.channelOrderSeq " +
+                "and id.channelParentGoodsNo=im.goodsNo " +
+                "and im.assortId=i.assortId " +
+                "and td.orderId=?1 and td.orderSeq=?2",Itasrt.class).setParameter(1,orderId).setParameter(2,orderSeq);
+        Itasrt parentItasrt = q.getSingleResult();
+        itasrt.setAssortGb(parentItasrt.getAssortGb());
+        return itasrt;
+    }
+
+    /**
+     * tbOrderDetail.statusCd가 변동될 때마다 로그를 기록함.
+     */
+    private void saveOrderLog(String prevStatus, TbOrderDetail tbOrderDetail) {
+        OrderLog orderLog = new OrderLog(tbOrderDetail);
+        orderLog.setPrevStatus(prevStatus);
+        jpaOrderLogRepository.save(orderLog);
     }
     
     /**
@@ -83,8 +121,9 @@ public class JpaOrderService {
         String itemId = tbOrderDetail.getItemId();
         String domesticStorageId = tbOrderDetail.getStorageId(); // 주문자 현지(국내?) 창고 id (국내창고)
 
-        List<TbOrderDetail> tbOrderDetailsC04 = jpaTbOrderDetailRepository.findAll().stream()
-                .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList()); // 주문코드가 CO4(국내입고완료)인 애들의 list
+        TypedQuery<TbOrderDetail> q = em.createQuery("select t from TbOrderDetail t where t.statusCd=?1", TbOrderDetail.class).setParameter(1,StringFactory.getStrC04());
+        List<TbOrderDetail> tbOrderDetailsC04 = q.getResultList();//jpaTbOrderDetailRepository.findAll().stream()
+//                .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList()); // 주문코드가 CO4(국내입고완료)인 애들의 list
         List<TbOrderDetail> domTbOrderDetailsC04 = tbOrderDetailsC04.stream().filter(x -> x.getStorageId().equals(domesticStorageId)).collect(Collectors.toList());
         long sumOfDomTbOrderDetailsC04 = domTbOrderDetailsC04.stream().map(x -> {if(x.getQty() == null){return 0l;}else {return x.getQty();}}).reduce((a,b) -> a+b).orElseGet(()->0l); // C04고 국내창고인 애들의 sum(domQty)
         // 국내창고 ititmc 불러오기
@@ -173,10 +212,12 @@ public class JpaOrderService {
 		String domesticStorageId = tbOrderDetail.getStorageId(); // 주문자 현지(국내?) 창고 id (국내창고)
         String overseaStorageId = itasrt.getStorageId(); // 물건의 산지(?) 창고 id (해외창고)
 
-        List<TbOrderDetail> tbOrderDetailsC01 = jpaTbOrderDetailRepository.findAll().stream()
-                .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList()); // 주문코드가 CO1(해외입고완료)인 애들의 list
-        List<TbOrderDetail> tbOrderDetailsC04 = jpaTbOrderDetailRepository.findAll().stream()
-                .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList()); // 주문코드가 CO4(국내입고완료)인 애들의 list
+//        List<TbOrderDetail> tbOrderDetailsC01 = jpaTbOrderDetailRepository.findAll().stream()
+//                .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList()); // 주문코드가 CO1(해외입고완료)인 애들의 list
+        TypedQuery<TbOrderDetail> q = em.createQuery("select t from TbOrderDetail t where t.statusCd=?1", TbOrderDetail.class).setParameter(1,StringFactory.getStrC04());
+        List<TbOrderDetail> tbOrderDetailsC04 = q.getResultList();
+//                jpaTbOrderDetailRepository.findAll().stream()
+//                .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList()); // 주문코드가 CO4(국내입고완료)인 애들의 list
 //        List<TbOrderDetail> ovrsTbOrderDetailsC01 = tbOrderDetailsC01.stream().filter(x -> x.getStorageId().equals(overseaStorageId)).collect(Collectors.toList());
         List<TbOrderDetail> domTbOrderDetailsC04 = tbOrderDetailsC04.stream().filter(x -> x.getStorageId().equals(domesticStorageId)).collect(Collectors.toList());
 //        long sumOfTbOrderDetailsC01 = tbOrderDetailsC01.stream().map(x -> {if(x.getQty() == null){return 0l;}else {return x.getQty();}}).reduce((a,b) -> a+b).orElseGet(()->0l); // C01인 애들의 sum(domQty) (창고 id는 불요)
@@ -332,8 +373,6 @@ public class JpaOrderService {
      * @param orderSeq
      * @param statusCd
      */
-
-
 	public void updateOrderStatusCd(String orderId, String orderSeq, String statusCd) {
 
 		TbOrderDetail tod = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
@@ -368,7 +407,6 @@ public class JpaOrderService {
 		
 
 	}
-
 
     public TbOrderDetail getOrderDetail(String orderId,String orderSeq){
         return jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId,orderSeq);

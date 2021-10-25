@@ -1,10 +1,15 @@
 package io.spring.model.purchase.response;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
@@ -17,10 +22,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,13 +32,16 @@ public class PurchaseSelectListResponseData {
         this.assortId = (String) param.get(StringFactory.getStrAssortId());
         this.purchasStatus = (String) param.get(StringFactory.getStrPurchaseStatus());
         this.purchaseGb = (String)param.get(StringFactory.getStrPurchaseGb());
+
     }
+
     public PurchaseSelectListResponseData(Lspchm lspchm){
         this.purchaseNo = lspchm.getPurchaseNo();
         this.purchaseDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
         this.depositStoreId = lspchm.getStoreCd();
         this.ownerId = lspchm.getOwnerId();
         this.purchaseGb = lspchm.getPurchaseGb();
+		this.vendorId = lspchm.getVendorId();
 //        this.dealtypeCd = lspchm.getDealtypeCd();
     }
     // 발주리스트 화면
@@ -71,6 +75,8 @@ public class PurchaseSelectListResponseData {
 //    private String purchaseVendorId; : ownerId로 수정
     private String ownerId;
 
+	private String vendorId;
+
     private List<Purchase> purchaseList;
 
     @Getter
@@ -82,7 +88,7 @@ public class PurchaseSelectListResponseData {
          */
         public Purchase(Lspchm lspchm, Lsdpsp lsdpsp, Itasrt itasrt){
             this.purchaseNo = lspchm.getPurchaseNo();
-            this.ownerId = lspchm.getOwnerId();
+			this.vendorId = lspchm.getVendorId();
             this.purchaseGb = lspchm.getPurchaseGb();
             this.dealtypeCd = lspchm.getDealtypeCd();
 
@@ -102,7 +108,7 @@ public class PurchaseSelectListResponseData {
             this.dealtypeCd = lspchm.getDealtypeCd();
             this.purchaseSeq = lspchd.getPurchaseSeq();
             this.purchaseKey = Utilities.addDashInMiddle(purchaseNo, purchaseSeq);
-            this.ownerId = lspchm.getOwnerId();
+			this.vendorId = lspchm.getVendorId();
             this.purchaseGb = lspchm.getPurchaseGb();
             this.assortId = lspchd.getAssortId();
             this.itemId = lspchd.getItemId();
@@ -135,7 +141,7 @@ public class PurchaseSelectListResponseData {
         private String purchaseStatus; // 발주상태 - 01 : 발주, 03 : 부분입고, 04 : 완전입고, 05 : 취소
         private String dealtypeCd; // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정
 //        private String purchaseVendorId; // 구매처 : ownerId로 수정
-        private String ownerId;
+		private String vendorId;
         private String orderId; // 주문번호
         private String orderSeq; // 주문순번
         private Float purchaseUnitAmt; // 개당금액

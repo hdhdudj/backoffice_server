@@ -1,23 +1,37 @@
 package io.spring.controller;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.move.request.MoveListSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
-import io.spring.model.move.response.*;
+import io.spring.model.move.response.GoodsModalListResponseData;
+import io.spring.model.move.response.MoveCompletedLIstReponseData;
+import io.spring.model.move.response.MoveIndicateDetailResponseData;
+import io.spring.model.move.response.MoveIndicateListResponseData;
+import io.spring.model.move.response.MoveListResponseData;
+import io.spring.model.move.response.MovedDetailResponseData;
+import io.spring.model.move.response.OrderMoveListResponseData;
 import io.spring.service.move.JpaMoveService;
+import io.spring.service.move.MyBatisMoveService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/move")
@@ -25,6 +39,7 @@ import java.util.Map;
 @Slf4j
 public class MoveController {
     private final JpaMoveService jpaMoveService;
+	private final MyBatisMoveService myBatisMoveService;
 
     /**
      * 주문이동지시 화면에서 검색시 가져오는 주문 list를 return
@@ -37,16 +52,41 @@ public class MoveController {
                                            @RequestParam @Nullable String assortNm,
                                            @RequestParam @Nullable String itemId,
                                            @RequestParam @Nullable String deliMethod){
-        Map<String, Object> map = new HashMap<>();
-        map.put("startDt", startDt);
-        map.put("endDt", endDt);
-        map.put("storageId", storageId);
-        map.put("assortId", assortId);
-        map.put("assortNm", assortNm);
-        map.put("itemId", itemId);
-        map.put("deliMethod", deliMethod);
+		HashMap<String, Object> map = new HashMap<>();
 
-        List<OrderMoveListResponseData> orderMoveListResponseData = jpaMoveService.getOrderMoveList(map);
+		if (startDt != null) {
+
+			LocalDateTime start = startDt.atStartOfDay();
+
+			map.put("startDt", start);
+		}
+		if (endDt != null) {
+
+			LocalDateTime end = endDt.atTime(23, 59, 59);
+			map.put("endDt", end);
+		}
+
+		if (storageId != null && !storageId.equals("")) {
+			map.put("storageId", storageId);
+		}
+		if (assortId != null && !assortId.equals("")) {
+			map.put("assortId", assortId);
+		}
+		if (assortNm != null && !assortNm.equals("")) {
+			map.put("assortNm", assortNm);
+		}
+		if (deliMethod != null && !deliMethod.equals("")) {
+			map.put("deliMethod", deliMethod);
+		}
+
+		/*
+		 * map.put("endDt", endDt); map.put("storageId", storageId); map.put("assortId",
+		 * assortId); map.put("assortNm", assortNm); map.put("itemId", itemId);
+		 * map.put("deliMethod", deliMethod);
+		 */
+
+
+        List<OrderMoveListResponseData> orderMoveListResponseData = myBatisMoveService.getOrderMoveList(map);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), orderMoveListResponseData);
         return ResponseEntity.ok(res);
     }
@@ -132,6 +172,9 @@ public class MoveController {
                                               @RequestParam @Nullable String assortId,
                                               @RequestParam @Nullable String assortNm
                                               ){
+
+
+
         MoveIndicateListResponseData moveIndicateListResponseData = jpaMoveService.getMoveIndicateList(startDt,endDt,storageId,oStorageId,assortId,assortNm);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),moveIndicateListResponseData);
         return ResponseEntity.ok(res);

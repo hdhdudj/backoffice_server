@@ -22,4 +22,9 @@ public class MyBatisOrderDaoImpl implements MyBatisOrderDao {
 		return orderMapper.selectOrderListByCondition(param);
 	}
 
+	@Override
+	public List<HashMap<String, Object>> getOrderMasterList(HashMap<String, Object> param) {
+		return orderMapper.getOrderMasterList(param);
+	}
+
 }

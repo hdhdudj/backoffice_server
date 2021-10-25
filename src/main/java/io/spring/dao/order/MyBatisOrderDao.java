@@ -12,4 +12,6 @@ public interface MyBatisOrderDao {
 
 	List<HashMap<String, Object>> selectOrderListByCondition(HashMap<String, Object> param);
 
+	List<HashMap<String, Object>> getOrderMasterList(HashMap<String, Object> param);
+
 }
