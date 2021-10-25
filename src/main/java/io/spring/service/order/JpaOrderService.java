@@ -122,10 +122,7 @@ public class JpaOrderService {
         String domesticStorageId = tbOrderDetail.getStorageId(); // 주문자 현지(국내?) 창고 id (국내창고)
 
         TypedQuery<TbOrderDetail> q = em.createQuery("select t from TbOrderDetail t where t.statusCd=?1", TbOrderDetail.class).setParameter(1,StringFactory.getStrC04());
-        List<TbOrderDetail> tbOrderDetailsC04 = q.getResultList();//jpaTbOrderDetailRepository.findAll().stream()
 //                .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList()); // 주문코드가 CO4(국내입고완료)인 애들의 list
-        List<TbOrderDetail> domTbOrderDetailsC04 = tbOrderDetailsC04.stream().filter(x -> x.getStorageId().equals(domesticStorageId)).collect(Collectors.toList());
-        long sumOfDomTbOrderDetailsC04 = domTbOrderDetailsC04.stream().map(x -> {if(x.getQty() == null){return 0l;}else {return x.getQty();}}).reduce((a,b) -> a+b).orElseGet(()->0l); // C04고 국내창고인 애들의 sum(domQty)
         // 국내창고 ititmc 불러오기
         List<Ititmc> domItitmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGrade(assortId, itemId, domesticStorageId, StringFactory.getStrEleven());
         // 국내창고 ititmt 불러오기
@@ -145,7 +142,7 @@ public class JpaOrderService {
 
         String statusCd;
         // 1. 국내재고
-        if(sumOfDomQty - sumOfDomShipIndQty - sumOfDomTbOrderDetailsC04 - tbOrderDetail.getQty() >= 0){
+        if(sumOfDomQty - sumOfDomShipIndQty - tbOrderDetail.getQty() >= 0){
             this.loopItitmc(domItitmc, tbOrderDetail);
             statusCd = StringFactory.getStrC04(); // 국내(현지)입고완료 : C04
         }
@@ -219,9 +216,7 @@ public class JpaOrderService {
 //                jpaTbOrderDetailRepository.findAll().stream()
 //                .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList()); // 주문코드가 CO4(국내입고완료)인 애들의 list
 //        List<TbOrderDetail> ovrsTbOrderDetailsC01 = tbOrderDetailsC01.stream().filter(x -> x.getStorageId().equals(overseaStorageId)).collect(Collectors.toList());
-        List<TbOrderDetail> domTbOrderDetailsC04 = tbOrderDetailsC04.stream().filter(x -> x.getStorageId().equals(domesticStorageId)).collect(Collectors.toList());
 //        long sumOfTbOrderDetailsC01 = tbOrderDetailsC01.stream().map(x -> {if(x.getQty() == null){return 0l;}else {return x.getQty();}}).reduce((a,b) -> a+b).orElseGet(()->0l); // C01인 애들의 sum(domQty) (창고 id는 불요)
-        long sumOfDomTbOrderDetailsC04 = domTbOrderDetailsC04.stream().map(x -> {if(x.getQty() == null){return 0l;}else {return x.getQty();}}).reduce((a,b) -> a+b).orElseGet(()->0l); // C04고 국내창고인 애들의 sum(domQty)
         // 국내창고 ititmc 불러오기
         List<Ititmc> domItitmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGrade(assortId, itemId, domesticStorageId, StringFactory.getStrEleven());
         // 국내창고 ititmt 불러오기
@@ -263,7 +258,7 @@ public class JpaOrderService {
 
         String statusCd;
         // 1. 국내재고
-        if(sumOfDomQty - sumOfDomShipIndQty - sumOfDomTbOrderDetailsC04 - tbOrderDetail.getQty() >= 0){
+        if(sumOfDomQty - sumOfDomShipIndQty - tbOrderDetail.getQty() >= 0){
             this.loopItitmc(domItitmc, tbOrderDetail);
             statusCd = StringFactory.getStrC04(); // 국내(현지)입고완료 : C04
         }
@@ -272,7 +267,7 @@ public class JpaOrderService {
             statusCd = this.loopItitmt(domItitmt, tbOrderDetail);
         }
         // 3. 해외재고
-        else if(sumOfOvrsQty - sumOfOvrsShipIndQty - sumOfDomTbOrderDetailsC04 - tbOrderDetail.getQty() > 0){
+        else if(sumOfOvrsQty - sumOfOvrsShipIndQty - tbOrderDetail.getQty() > 0){
             this.loopItitmc(ovrsItitmc, tbOrderDetail);
             statusCd = StringFactory.getStrC01(); // 해외입고완료 : C01
         }
