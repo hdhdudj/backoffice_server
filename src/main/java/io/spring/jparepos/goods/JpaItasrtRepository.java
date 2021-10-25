@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 public interface JpaItasrtRepository extends JpaRepository<Itasrt, String>{
-    @Query("select i from Itasrt i join fetch i.itvariList v where i.assortId=?1")
+    @Query("select i from Itasrt i left join fetch i.itvariList v where i.assortId=?1")
     Itasrt findByAssortId(String assortId);
 }
