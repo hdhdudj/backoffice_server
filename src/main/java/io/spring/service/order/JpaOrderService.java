@@ -1,10 +1,10 @@
 package io.spring.service.order;
 
+import io.spring.enums.DirectOrImport;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.goods.*;
 import io.spring.jparepos.order.*;
-import io.spring.model.goods.entity.IfGoodsMaster;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
@@ -20,7 +20,6 @@ import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -137,59 +136,26 @@ public class JpaOrderService {
         System.out.println("ㅡㅡㅡㅡㅡ sumOfDomShipIndQty : " + sumOfDomShipIndQty);
         System.out.println("ㅡㅡㅡㅡㅡ sumOfDomTempQty : " + sumOfDomTempQty);
         System.out.println("ㅡㅡㅡㅡㅡ sumOfDomTempIndQty : " + sumOfDomTempIndQty);
-        // 1.국내재고, 2.국내입고예정
+        // 1.해외재고, 2.해외입고예정
         // 입고예정이면 입고예정 data 생성.
 
-        String statusCd;
-        // 1. 국내재고
+        boolean isStockExist;
+
+        String statusCd = null;
+        // 1. 해외재고 있을 가능성이 있음
         if(sumOfDomQty - sumOfDomShipIndQty - tbOrderDetail.getQty() >= 0){
-            this.loopItitmc(domItitmc, tbOrderDetail);
-            statusCd = StringFactory.getStrC04(); // 국내(현지)입고완료 : C04
+            isStockExist = this.loopItitmc(domItitmc, tbOrderDetail);
+            statusCd = isStockExist? StringFactory.getStrC04() : statusCd; // 국내입고완료(해외지만 거기서 바로 쏘므로) : C04
         }
-        // 2. 국내입고예정
-        else if(sumOfDomTempQty - sumOfDomTempIndQty - tbOrderDetail.getQty() >= 0){
-            statusCd = this.loopItitmt(domItitmt, tbOrderDetail);
+        // 2. 해외입고예정재고 있을 가능성이 있음
+        if(statusCd == null && sumOfDomTempQty - sumOfDomTempIndQty - tbOrderDetail.getQty() >= 0){
+            statusCd = this.loopItitmt(domItitmt, tbOrderDetail, DirectOrImport.direct); // 해외입고예정재고 있음 : B02 (발주완료), 없음 : B01 (발주대기)
         }
-        else{
+        // 3. 해외재고도 없고 해외입고예정재고도 없음
+        else {
             statusCd = StringFactory.getStrB01(); // 발주대기 : B01
         }
         this.updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), statusCd);
-//        List<TbOrderDetail> tbOrderDetailsC04 = jpaTbOrderDetailRepository.findAll().stream()
-//                .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList()); // 주문코드가 CO4인 애들의 list
-//        long sumOfTbOrderDetailsC04 = tbOrderDetailsC04.stream().map(x -> x.getQty()).reduce((a,b) -> a+b).get(); // C04인 애들의 sum(qty)
-//        // assortId로 itasrt 찾아오기
-//        Itasrt itasrt = jpaItasrtRepository.findById(tbOrderDetail.getAssortId()).orElseGet(() -> null);
-//        String assortId = tbOrderDetail.getAssortId();
-//        String itemId = tbOrderDetail.getItemId();
-//        String storageId = itasrt.getStorageId();
-//        // ititmm 불러오기
-//        List<Ititmc> ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, storageId);
-//        // ititmt 불러오기
-//        List<Ititmt> ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageId(assortId, itemId, storageId);
-//        long qty = ititmc == null? 0l:ititmc.getQty();
-//        long shipIndQty = ititmc == null? 0l:ititmc.getShipIndicateQty();
-//        long tempQty = ititmt == null? 0l:ititmt.getTempQty();
-//        long tempIndQty = ititmt == null? 0l:ititmt.getTempIndicateQty();
-//        String statusCd;
-//        if(qty - shipIndQty - sumOfTbOrderDetailsC04 - tbOrderDetail.getQty() >= 0){ // (총 들어온 애들) - (이미 팔기로 예약된 애들) - (국내입고 완료 상태인 애들) > 0
-//            statusCd = StringFactory.getStrC04(); // 입고완료 : C04
-//        }
-//        else if(tempQty - tempIndQty - tbOrderDetail.getQty() >= 0){
-//            ititmt.setTempIndicateQty(tempIndQty + tbOrderDetail.getQty());
-//            em.persist(ititmt);
-//            // 발주 data 변경하기 (lspchm,lspchd,lspchs,lspchb,lsdpsp)
-//            boolean flag = jpaPurchaseService.makePurchaseData(tbOrderDetail, itasrt, ititmc, ititmt, StringFactory.getGbTwo());
-//            if(!flag){
-//                statusCd = StringFactory.getStrB01(); // 발주대기 : B01
-//            }
-//            else{
-//                statusCd = StringFactory.getStrB02(); // 발주완료 : B02
-//            }
-//        }
-//        else {
-//            statusCd = StringFactory.getStrB01(); // 발주대기 : B01
-//        }
-//        updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), statusCd);
     }
     
     /**
@@ -209,14 +175,6 @@ public class JpaOrderService {
 		String domesticStorageId = tbOrderDetail.getStorageId(); // 주문자 현지(국내?) 창고 id (국내창고)
         String overseaStorageId = itasrt.getStorageId(); // 물건의 산지(?) 창고 id (해외창고)
 
-//        List<TbOrderDetail> tbOrderDetailsC01 = jpaTbOrderDetailRepository.findAll().stream()
-//                .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList()); // 주문코드가 CO1(해외입고완료)인 애들의 list
-        TypedQuery<TbOrderDetail> q = em.createQuery("select t from TbOrderDetail t where t.statusCd=?1", TbOrderDetail.class).setParameter(1,StringFactory.getStrC04());
-        List<TbOrderDetail> tbOrderDetailsC04 = q.getResultList();
-//                jpaTbOrderDetailRepository.findAll().stream()
-//                .filter((x) -> x.getStatusCd().equals(StringFactory.getStrC04())).collect(Collectors.toList()); // 주문코드가 CO4(국내입고완료)인 애들의 list
-//        List<TbOrderDetail> ovrsTbOrderDetailsC01 = tbOrderDetailsC01.stream().filter(x -> x.getStorageId().equals(overseaStorageId)).collect(Collectors.toList());
-//        long sumOfTbOrderDetailsC01 = tbOrderDetailsC01.stream().map(x -> {if(x.getQty() == null){return 0l;}else {return x.getQty();}}).reduce((a,b) -> a+b).orElseGet(()->0l); // C01인 애들의 sum(domQty) (창고 id는 불요)
         // 국내창고 ititmc 불러오기
         List<Ititmc> domItitmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGrade(assortId, itemId, domesticStorageId, StringFactory.getStrEleven());
         // 국내창고 ititmt 불러오기
@@ -225,15 +183,6 @@ public class JpaOrderService {
         List<Ititmc> ovrsItitmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGrade(assortId, itemId, overseaStorageId, StringFactory.getStrEleven());
         // 해외창고 ititmt 불러오기
         List<Ititmt> ovrsItitmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGrade(assortId, itemId, overseaStorageId, StringFactory.getStrEleven());
-
-//        long domQty = domItitmc == null? 0l:domItitmc.getQty();
-//        long domShipIndQty = domItitmc == null? 0l:domItitmc.getShipIndicateQty();
-//        long domTempQty = domItitmt == null? 0l:domItitmt.getTempQty();
-//        long domTempIndQty = domItitmt == null? 0l:domItitmt.getTempIndicateQty();
-//        long ovrsQty = ovrsItitmc == null? 0l:ovrsItitmc.getQty();
-//        long ovrsShipIndQty = ovrsItitmc == null? 0l:ovrsItitmc.getShipIndicateQty();
-//        long ovrsTempQty = ovrsItitmt == null? 0l:ovrsItitmt.getTempQty();
-//        long ovrsTempIndQty = ovrsItitmt == null? 0l:ovrsItitmt.getTempIndicateQty();
 
         long sumOfDomQty = this.getSumOfItitmcQty(ItitmcQty.QTY,domItitmc);
         long sumOfDomShipIndQty = this.getSumOfItitmcQty(ItitmcQty.SHIPINDQTY,domItitmc);
@@ -257,108 +206,65 @@ public class JpaOrderService {
         // 입고예정이면 입고예정 data 생성.
 
         String statusCd;
-        // 1. 국내재고
+        // 1. 국내재고가 있을 가능성이 있음
         if(sumOfDomQty - sumOfDomShipIndQty - tbOrderDetail.getQty() >= 0){
             this.loopItitmc(domItitmc, tbOrderDetail);
             statusCd = StringFactory.getStrC04(); // 국내(현지)입고완료 : C04
         }
-        // 2. 국내입고예정
+        // 2. 국내입고예정 재고가 있을 가능성이 있음
         else if(sumOfDomTempQty - sumOfDomTempIndQty - tbOrderDetail.getQty() >= 0){
-            statusCd = this.loopItitmt(domItitmt, tbOrderDetail);
+            statusCd = this.loopItitmt(domItitmt, tbOrderDetail, DirectOrImport.imports);
         }
-        // 3. 해외재고
+        // 3. 해외재고가 있을 가능성이 있음
         else if(sumOfOvrsQty - sumOfOvrsShipIndQty - tbOrderDetail.getQty() > 0){
             this.loopItitmc(ovrsItitmc, tbOrderDetail);
             statusCd = StringFactory.getStrC01(); // 해외입고완료 : C01
         }
-        // 4. 해외입고예정
+        // 4. 해외입고예정 재고가 있을 가능성이 있음
         else if(sumOfOvrsTempQty - sumOfOvrsTempIndQty - tbOrderDetail.getQty() > 0){
-            statusCd = this.loopItitmt(ovrsItitmt, tbOrderDetail);
+            statusCd = this.loopItitmt(ovrsItitmt, tbOrderDetail, DirectOrImport.imports);
         }
+        // 5. 아무것도 없음
         else{
             statusCd = StringFactory.getStrB01(); // 발주대기 : B01
         }
-        // 1. 국내재고 확인 (tbOrderDetail의 storageId 확인)
-//        if(domQty - domShipIndQty - sumOfDomTbOrderDetailsC04 - tbOrderDetail.getQty() >= 0){
-//            statusCd = StringFactory.getStrC04(); // 국내(현지)입고완료 : C04
-//        }
-//        // 2. 국내입고예정 재고 확인
-//        else if(domTempQty - domTempIndQty - tbOrderDetail.getQty() >= 0){
-//            // ititmt 주문발주에 물량만큼 더하기
-//            domItitmt.setTempIndicateQty(domTempIndQty + tbOrderDetail.getQty());
-//            em.persist(domItitmt);
-//            // 발주 data 변경하기 (lspchm,lspchd,lspchs,lspchb,lsdpsp)
-//            boolean flag = jpaPurchaseService.makePurchaseData(tbOrderDetail, itasrt, domItitmc, domItitmt, StringFactory.getGbTwo());
-//            if(!flag){
-//                statusCd = StringFactory.getStrB01(); // 발주대기 : B01
-//            }
-//            else{
-//                statusCd = StringFactory.getStrC03(); // 이동지시완료 : C03
-//            }
-//        }
-//        // 3. 해외재고 확인 (itasrt의 storageId 확인)
-//        else if(ovrsQty - ovrsShipIndQty - sumOfTbOrderDetailsC01 - tbOrderDetail.getQty() >= 0){
-//            statusCd = StringFactory.getStrC01(); // 해외입고완료 : C01
-//        }
-//        // 4. 해외입고예정 재고 확인
-//        else if(ovrsTempQty - ovrsTempIndQty - tbOrderDetail.getQty() >= 0){
-//            // ititmt 주문발주에 물량만큼 더하기
-//            ovrsItitmt.setTempIndicateQty(ovrsTempIndQty + tbOrderDetail.getQty());
-//            em.persist(ovrsItitmt);
-//            // 발주 data 변경하기 (lspchm,lspchd,lspchs,lspchb,lsdpsp)
-//            boolean flag = jpaPurchaseService.makePurchaseData(tbOrderDetail, itasrt, ovrsItitmc, ovrsItitmt, StringFactory.getGbOne());
-//            if(!flag){
-//                statusCd = StringFactory.getStrB01(); // 발주대기 : B01
-//            }
-//            else{
-//                statusCd = StringFactory.getStrB02(); // 발주완료 : B02
-//            }
-//        }
-//        else {
-//            statusCd = StringFactory.getStrB01(); // 발주대기 : B01
-//        }
         this.updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), statusCd);
     }
 
     /**
      * Ititmt list를 loop 돌면서 qty 관련 계산
      */
-    private String loopItitmt(List<Ititmt> ititmtList, TbOrderDetail tbOrderDetail) {
+    private String loopItitmt(List<Ititmt> ititmtList, TbOrderDetail tbOrderDetail, DirectOrImport di) {
+        boolean isStockCandidateExist = false;
         long orderQty = tbOrderDetail.getQty();
         for(Ititmt ititmt : ititmtList){
             if(ititmt.getTempQty() >= orderQty + ititmt.getTempIndicateQty()){
                 ititmt.setTempIndicateQty(orderQty + ititmt.getTempIndicateQty());
+                isStockCandidateExist = true;
                 break;
             }
-            else{
-                orderQty = orderQty - (ititmt.getTempQty() - ititmt.getTempIndicateQty());
-                ititmt.setTempIndicateQty(ititmt.getTempQty());
-            }
         }
-        boolean flag = jpaPurchaseService.makePurchaseData(tbOrderDetail);
-        if(!flag){
-            return StringFactory.getStrB01(); // 발주대기 : B01
+        if(isStockCandidateExist){
+            jpaPurchaseService.makePurchaseDataByOrder(tbOrderDetail, di);
+            return StringFactory.getStrC03(); // 이동지시완료 : C03
         }
         else{
-            return StringFactory.getStrC03(); // 이동지시완료 : C03
+            return StringFactory.getStrB01(); // 발주대기 : B01
         }
     }
 
     /**
      * Ititmc list를 loop 돌면서 qty 관련 계산
      */
-    private void loopItitmc(List<Ititmc> ititmcList, TbOrderDetail tbOrderDetail){
+    private boolean loopItitmc(List<Ititmc> ititmcList, TbOrderDetail tbOrderDetail){
         long orderQty = tbOrderDetail.getQty();
         for(Ititmc ititmc : ititmcList){
             if(ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()){
                 ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
-                break;
-            }
-            else{
-                orderQty = orderQty - (ititmc.getQty() - ititmc.getShipIndicateQty());
-                ititmc.setShipIndicateQty(ititmc.getQty());
+                return true;
             }
         }
+        return false;
     }
 
     /**
