@@ -196,6 +196,28 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 	}
 
+	@GetMapping(path = "/stock/items")
+	public ResponseEntity getGoodsList(@RequestParam @Nullable String storageId,
+			@RequestParam @Nullable String assortId) {
+
+		HashMap<String, Object> map = new HashMap<>();
+
+		if (storageId != null && !storageId.equals("")) {
+			map.put("storageId", storageId);
+		}
+		if (assortId != null && !assortId.equals("")) {
+			map.put("assortId", assortId);
+		}
+
+		List<HashMap<String, Object>> responseData = goodsRepository.getGoodsStockList(map);
+		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
+		if (responseData == null) {
+			return null;
+		}
+		return ResponseEntity.ok(res);
+
+	}
+
 	@GetMapping(path="/getgoodslistmybatis")
 	public ResponseEntity getGoodsList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate regDtBegin,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate regDtEnd,

@@ -280,6 +280,51 @@
 	
 	</select>
 
-
-
+	
+	<select id="getGoodsStockList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	 <![CDATA[	
+		select aa.storage_id storageId 
+		,bb.storage_nm storageNm 
+		,aa.assort_id assortId 
+		,cc.assort_nm assortNm
+		,aa.item_id itemId
+		 ,  (select b1.option_nm
+		                from ititmm b2, itvari b1
+		                where b2.assort_id=aa.assort_id
+		                  And b2.item_id= aa.item_id
+		                  And  b2.assort_id = b1.assort_id
+		                  and b2.variation_gb1 = b1.variation_gb
+		                  and  b2.variation_seq1=b1.seq) optionNm1
+		           ,    (select b1.option_nm
+		                from ititmm b2, itvari b1
+		                where b2.assort_id=aa.assort_id
+		                  And b2.item_id= aa.item_id
+		                  And  b2.assort_id = b1.assort_id
+		                  and b2.variation_gb2 = b1.variation_gb
+		                  and  b2.variation_seq2=b1.seq) optionNm2
+		,aa.ship_indicate_qty
+		,aa.qty
+		from (
+		select storage_id
+		,assort_id ,item_id ,item_grade 
+		,sum(ship_indicate_qty) ship_indicate_qty
+		,sum(qty) qty
+		from ititmc i 
+		group by storage_id,assort_id ,item_id ,item_grade 
+		) aa,cmstgm bb
+		 ,itasrt cc
+		where aa.storage_id = bb.storage_id 
+		 and aa.assort_id = cc.assort_id 
+		]]>
+			<if test='assortId != null'>
+			 <![CDATA[		
+					and cc.assort_id =#{assortId} 
+			 ]]>
+			</if>			
+			<if test='storageId != null'>
+			 <![CDATA[		
+					and bb.storage_id =#{storageId} 
+			 ]]>
+			</if>						
+	</select>
 </mapper>

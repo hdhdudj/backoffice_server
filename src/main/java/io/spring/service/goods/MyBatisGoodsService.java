@@ -31,4 +31,10 @@ public class MyBatisGoodsService {
 		return goodsList;
 	}
 
+	public List<HashMap<String, Object>> getGoodsStockList(HashMap<String, Object> param) {
+		List<HashMap<String, Object>> goodsList = myBatisGoodsDao.getGoodsStockList(param);
+
+		return goodsList;
+	}
+
 }
