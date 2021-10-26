@@ -16,4 +16,6 @@ public interface OrderMapper {
 
 	List<HashMap<String, Object>> getOrderDetail(HashMap<String, Object> param);
 
+	List<HashMap<String, Object>> getOrderDetailList(HashMap<String, Object> param);
+
 }

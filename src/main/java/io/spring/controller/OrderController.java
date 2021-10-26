@@ -24,6 +24,7 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.order.entity.OrderStock;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.request.OrderStockMngInsertRequestData;
+import io.spring.model.order.response.OrderDetailListResponse;
 import io.spring.model.order.response.OrderDetailResponseData;
 import io.spring.model.order.response.OrderMasterListResponseData;
 import io.spring.service.common.JpaCommonService;
@@ -224,6 +225,41 @@ public class OrderController {
 		
 
 		List<OrderMasterListResponseData> r = myBatisOrderService.getOrderMasterList(map);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
+		return ResponseEntity.ok(res);
+
+	}
+
+	@GetMapping(path = "/goods/items")
+	public ResponseEntity getOrderDetailList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+			@RequestParam @Nullable String orderId, @RequestParam @Nullable String statusCd) {
+
+		System.out.println("getOrderDetailList");
+
+		HashMap<String, Object> map = new HashMap<>();
+
+		if (startDt != null) {
+
+			LocalDateTime start = startDt.atStartOfDay();
+
+			map.put("startDt", start);
+		}
+		if (endDt != null) {
+
+			LocalDateTime end = endDt.atTime(23, 59, 59);
+			map.put("endDt", end);
+		}
+
+		if (orderId != null && !orderId.equals("")) {
+			map.put("orderId", orderId);
+		}
+		if (statusCd != null && !statusCd.equals("")) {
+			map.put("statusCd", statusCd);
+		}
+
+		List<OrderDetailListResponse> r = myBatisOrderService.getOrderDetailList(map);
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
 		return ResponseEntity.ok(res);

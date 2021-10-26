@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import io.spring.dao.order.MyBatisOrderDao;
+import io.spring.model.order.response.OrderDetailListResponse;
 import io.spring.model.order.response.OrderDetailResponseData;
 import io.spring.model.order.response.OrderMasterListResponseData;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +56,21 @@ public class MyBatisOrderService {
 
 		return orderDetailResponse;
 		
+	}
+
+	public List<OrderDetailListResponse> getOrderDetailList(HashMap<String, Object> map) {
+
+		List<HashMap<String, Object>> list = myBatisOrderDao.getOrderDetailList(map);
+
+		List<OrderDetailListResponse> orderDetailListResponse = new ArrayList<>();
+
+		for (HashMap<String, Object> o : list) {
+			OrderDetailListResponse r = new OrderDetailListResponse(o);
+			orderDetailListResponse.add(r);
+		}
+
+		return orderDetailListResponse;
+
 	}
 
 }

@@ -41,5 +41,10 @@ public class MyBatisOrderDaoImpl implements MyBatisOrderDao {
 		return orderMapper.getOrderDetail(param);
 	}
 
+	@Override
+	public List<HashMap<String, Object>> getOrderDetailList(HashMap<String, Object> param) {
+		return orderMapper.getOrderDetailList(param);
+	}
+
 }
 
