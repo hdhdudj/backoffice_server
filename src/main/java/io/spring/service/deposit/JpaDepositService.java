@@ -122,7 +122,6 @@ public class JpaDepositService {
 
         this.changeStatusCdOfTbOrderDetail(lsdpspList);
 
-
         messageList.add(lsdpsm.getDepositNo());
         return true;
     }

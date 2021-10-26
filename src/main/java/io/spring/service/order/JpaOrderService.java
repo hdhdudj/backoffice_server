@@ -244,7 +244,7 @@ public class JpaOrderService {
         }
         if(isStockCandidateExist && di.equals(DirectOrImport.direct)){ // 직구
             jpaPurchaseService.makePurchaseDataByOrder(tbOrderDetail, di);
-            return StringFactory.getStrC04(); // 국내(현지)입고완료 : C04
+            return StringFactory.getStrB02(); // 발주완료 : B02
         }
         else if(isStockCandidateExist && di.equals(DirectOrImport.imports)){ // 수입
             jpaPurchaseService.makePurchaseDataByOrder(tbOrderDetail, di);
