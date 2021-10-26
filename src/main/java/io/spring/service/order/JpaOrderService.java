@@ -150,7 +150,7 @@ public class JpaOrderService {
             statusCd = this.loopItitmt(domItitmt, tbOrderDetail, DirectOrImport.direct); // 해외입고예정재고 있음 : B02 (발주완료), 없음 : B01 (발주대기)
         }
         // 3. 해외재고도 없고 해외입고예정재고도 없음
-        else {
+        else if(statusCd == null){
             statusCd = StringFactory.getStrB01(); // 발주대기 : B01
         }
         this.updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), statusCd);

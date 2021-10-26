@@ -674,7 +674,7 @@ public class JpaPurchaseService {
         Lspchd lspchd = this.saveLspchByOrder(tbOrderDetail, di);
         // 기존 lsdpsp update하고 새로운 lsdpsp 추가
         this.updateLsdpspWhenCandidateExist(lsdpsp, lspchd, tbOrderDetail);
-        this.updateLspchbd(lsdpsp.getLspchd(), tbOrderDetail.getQty());
+//        this.updateLspchbd(lsdpsp.getLspchd(), tbOrderDetail.getQty());
         // lspchm, s 저장
 //        this.updateLspchs(lsdpsp.getPurchaseNo(), StringFactory.getGbOne()); // 01 하드코딩
 
