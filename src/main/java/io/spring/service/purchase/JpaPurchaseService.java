@@ -645,7 +645,7 @@ public class JpaPurchaseService {
         // 1. lsdpsp 찾아오기 (d 딸려옴, d에 따라 b도 딸려옴)
         List<Lsdpsp> lsdpspList = jpaLsdpspRepository.findByAssortIdAndItemId(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
         // 2. dealTypeCd = 02 (주문발주가 아닌 상품발주), purchaseGb = 01 (이동요청이 아닌 일반발주) 인 애들을 필터
-        lsdpspList = lsdpspList.stream().filter(x->x.getDealtypeCd().equals(StringFactory.getGbThree())&&x.getPurchaseGb().equals(StringFactory.getGbOne())).collect(Collectors.toList());
+        lsdpspList = lsdpspList.stream().filter(x->x.getDealtypeCd().equals(StringFactory.getGbTwo())&&x.getPurchaseGb().equals(StringFactory.getGbOne())).collect(Collectors.toList());
         // 3. lspchb 중 purchaseStatus가 01(부분입고 완전입고 등등이 아닌 발주)인 애들만 남기기
         List<Lsdpsp> lsdpspList1 = new ArrayList<>();
         for(Lsdpsp lsdpsp : lsdpspList){
@@ -658,7 +658,7 @@ public class JpaPurchaseService {
             }
         }
         lsdpspList = lsdpspList1;
-        // 4. d, b 저장
+        // 4. psp 찾기
         Lsdpsp lsdpsp = null;
         for(Lsdpsp item : lsdpspList){
             // lsdpsp의 purchasePlanQty - purchaseTakeQty 값이 tbOrderDetail의 수량 이상일 때
@@ -670,11 +670,11 @@ public class JpaPurchaseService {
         if(lsdpsp == null){ // 해당하는 psp가 없을 때 -> 발주대기
             return false;
         }
-        // 기존 lsdpsp update하고 새로운 lsdpsp 추가
-        this.updateLsdpsp(lsdpsp, tbOrderDetail.getQty());
         // lspchm, lspchd, lspchb, lspchs 생성
-        this.saveLspchByOrder(tbOrderDetail, di);
-//        this.updateLspchbd(lsdpsp.getLspchd(), tbOrderDetail.getQty());
+        Lspchd lspchd = this.saveLspchByOrder(tbOrderDetail, di);
+        // 기존 lsdpsp update하고 새로운 lsdpsp 추가
+        this.updateLsdpspWhenCandidateExist(lsdpsp, lspchd, tbOrderDetail);
+        this.updateLspchbd(lsdpsp.getLspchd(), tbOrderDetail.getQty());
         // lspchm, s 저장
 //        this.updateLspchs(lsdpsp.getPurchaseNo(), StringFactory.getGbOne()); // 01 하드코딩
 
@@ -682,9 +682,26 @@ public class JpaPurchaseService {
     }
 
     /**
+     * 입고예정재고 lsdpsp 업데이트용 함수
+     * 기존 lsdpsp의 purchasePlanQty를 올려주고
+     */
+    private void updateLsdpspWhenCandidateExist(Lsdpsp lsdpsp, Lspchd lspchd, TbOrderDetail tbOrderDetail){
+        long qty = tbOrderDetail.getQty();
+        lsdpsp.setPurchasePlanQty(lsdpsp.getPurchasePlanQty() - qty);
+        Lsdpsp newLsdpsp = new Lsdpsp(this.getDepositPlanId(), lsdpsp);
+        newLsdpsp.setPurchaseTakeQty(0l);
+        newLsdpsp.setPurchasePlanQty(qty);
+        newLsdpsp.setPurchaseNo(lspchd.getPurchaseNo());
+        newLsdpsp.setPurchaseSeq(lsdpsp.getPurchaseSeq());
+        newLsdpsp.setDealtypeCd(StringFactory.getGbThree()); // dealtypeCd 03(입고예정주문발주) 하드코딩
+        jpaLsdpspRepository.save(lsdpsp);
+        jpaLsdpspRepository.save(newLsdpsp);
+    }
+
+    /**
      * 입고예정재고가 있을 때 발주 data를 만드는 함수
      */
-    private void saveLspchByOrder(TbOrderDetail tbOrderDetail, DirectOrImport di) {
+    private Lspchd saveLspchByOrder(TbOrderDetail tbOrderDetail, DirectOrImport di) {
         TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
         String purchaseNo = this.getPurchaseNo();
         Lspchm lspchm = new Lspchm(tbOrderDetail, di);
@@ -699,6 +716,8 @@ public class JpaPurchaseService {
         jpaLspchdRepository.save(lspchd);
         jpaLspchsRepository.save(lspchs);
         jpaLspchbRepository.save(lspchb);
+
+        return lspchd;
     }
 
     /**
@@ -726,7 +745,7 @@ public class JpaPurchaseService {
         Lspchb lspchb = lspchd.getLspchb().get(0);
         lspchb.setEffEndDt(LocalDateTime.now());
         Lspchb newLspchb = new Lspchb(lspchb);
-        long newQty = lspchd.getPurchaseQty() + qty;
+        long newQty = qty;
         newLspchb.setPurchaseQty(newQty);
         lspchd.setPurchaseQty(newQty);
         jpaLspchbRepository.save(lspchb);
@@ -745,7 +764,7 @@ public class JpaPurchaseService {
         long oldTakeQty = lsdpsp.getPurchaseTakeQty();
         long newPurchasePlanQty = oldPlanQty - oldTakeQty;
 //        lsdpsp.setPurchasePlanQty(oldTakeQty);
-        String depositPlanId = StringUtils.leftPad(jpaLsdpspRepository.findMaxDepositPlanId(),9,'0');
+        String depositPlanId = this.getDepositPlanId();
         Lsdpsp newLsdpsp = new Lsdpsp(depositPlanId,lsdpsp);
         if(newPurchasePlanQty > 0){
             newLsdpsp.setPurchasePlanQty(newPurchasePlanQty);
