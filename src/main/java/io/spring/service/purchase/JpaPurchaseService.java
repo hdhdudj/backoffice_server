@@ -658,7 +658,7 @@ public class JpaPurchaseService {
             }
         }
         lsdpspList = lsdpspList1;
-        // 4. d, b 저장
+        // 4. psp 찾기
         Lsdpsp lsdpsp = null;
         for(Lsdpsp item : lsdpspList){
             // lsdpsp의 purchasePlanQty - purchaseTakeQty 값이 tbOrderDetail의 수량 이상일 때
@@ -670,10 +670,10 @@ public class JpaPurchaseService {
         if(lsdpsp == null){ // 해당하는 psp가 없을 때 -> 발주대기
             return false;
         }
-        // 기존 lsdpsp update하고 새로운 lsdpsp 추가
-        this.updateLsdpspWhenCandidateExist(lsdpsp, tbOrderDetail);
         // lspchm, lspchd, lspchb, lspchs 생성
-        this.saveLspchByOrder(tbOrderDetail, di);
+        Lspchd lspchd = this.saveLspchByOrder(tbOrderDetail, di);
+        // 기존 lsdpsp update하고 새로운 lsdpsp 추가
+        this.updateLsdpspWhenCandidateExist(lsdpsp, lspchd, tbOrderDetail);
         this.updateLspchbd(lsdpsp.getLspchd(), tbOrderDetail.getQty());
         // lspchm, s 저장
 //        this.updateLspchs(lsdpsp.getPurchaseNo(), StringFactory.getGbOne()); // 01 하드코딩
@@ -685,12 +685,14 @@ public class JpaPurchaseService {
      * 입고예정재고 lsdpsp 업데이트용 함수
      * 기존 lsdpsp의 purchasePlanQty를 올려주고
      */
-    private void updateLsdpspWhenCandidateExist(Lsdpsp lsdpsp, TbOrderDetail tbOrderDetail){
+    private void updateLsdpspWhenCandidateExist(Lsdpsp lsdpsp, Lspchd lspchd, TbOrderDetail tbOrderDetail){
         long qty = tbOrderDetail.getQty();
         lsdpsp.setPurchasePlanQty(lsdpsp.getPurchasePlanQty() - qty);
         Lsdpsp newLsdpsp = new Lsdpsp(this.getDepositPlanId(), lsdpsp);
         newLsdpsp.setPurchaseTakeQty(0l);
         newLsdpsp.setPurchasePlanQty(qty);
+        newLsdpsp.setPurchaseNo(lspchd.getPurchaseNo());
+        newLsdpsp.setPurchaseSeq(lsdpsp.getPurchaseSeq());
         newLsdpsp.setDealtypeCd(StringFactory.getGbThree()); // dealtypeCd 03(입고예정주문발주) 하드코딩
         jpaLsdpspRepository.save(lsdpsp);
         jpaLsdpspRepository.save(newLsdpsp);
@@ -699,7 +701,7 @@ public class JpaPurchaseService {
     /**
      * 입고예정재고가 있을 때 발주 data를 만드는 함수
      */
-    private void saveLspchByOrder(TbOrderDetail tbOrderDetail, DirectOrImport di) {
+    private Lspchd saveLspchByOrder(TbOrderDetail tbOrderDetail, DirectOrImport di) {
         TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
         String purchaseNo = this.getPurchaseNo();
         Lspchm lspchm = new Lspchm(tbOrderDetail, di);
@@ -714,6 +716,8 @@ public class JpaPurchaseService {
         jpaLspchdRepository.save(lspchd);
         jpaLspchsRepository.save(lspchs);
         jpaLspchbRepository.save(lspchb);
+
+        return lspchd;
     }
 
     /**
@@ -741,7 +745,7 @@ public class JpaPurchaseService {
         Lspchb lspchb = lspchd.getLspchb().get(0);
         lspchb.setEffEndDt(LocalDateTime.now());
         Lspchb newLspchb = new Lspchb(lspchb);
-        long newQty = lspchd.getPurchaseQty() + qty;
+        long newQty = qty;
         newLspchb.setPurchaseQty(newQty);
         lspchd.setPurchaseQty(newQty);
         jpaLspchbRepository.save(lspchb);
