@@ -671,14 +671,29 @@ public class JpaPurchaseService {
             return false;
         }
         // 기존 lsdpsp update하고 새로운 lsdpsp 추가
-        this.updateLsdpsp(lsdpsp, tbOrderDetail.getQty());
+        this.updateLsdpspWhenCandidateExist(lsdpsp, tbOrderDetail);
         // lspchm, lspchd, lspchb, lspchs 생성
         this.saveLspchByOrder(tbOrderDetail, di);
-//        this.updateLspchbd(lsdpsp.getLspchd(), tbOrderDetail.getQty());
+        this.updateLspchbd(lsdpsp.getLspchd(), tbOrderDetail.getQty());
         // lspchm, s 저장
 //        this.updateLspchs(lsdpsp.getPurchaseNo(), StringFactory.getGbOne()); // 01 하드코딩
 
         return true;
+    }
+
+    /**
+     * 입고예정재고 lsdpsp 업데이트용 함수
+     * 기존 lsdpsp의 purchasePlanQty를 올려주고
+     */
+    private void updateLsdpspWhenCandidateExist(Lsdpsp lsdpsp, TbOrderDetail tbOrderDetail){
+        long qty = tbOrderDetail.getQty();
+        lsdpsp.setPurchasePlanQty(lsdpsp.getPurchasePlanQty() - qty);
+        Lsdpsp newLsdpsp = new Lsdpsp(this.getDepositPlanId(), lsdpsp);
+        newLsdpsp.setPurchaseTakeQty(0l);
+        newLsdpsp.setPurchasePlanQty(qty);
+        newLsdpsp.setDealtypeCd(StringFactory.getGbThree()); // dealtypeCd 03(입고예정주문발주) 하드코딩
+        jpaLsdpspRepository.save(lsdpsp);
+        jpaLsdpspRepository.save(newLsdpsp);
     }
 
     /**
@@ -745,7 +760,7 @@ public class JpaPurchaseService {
         long oldTakeQty = lsdpsp.getPurchaseTakeQty();
         long newPurchasePlanQty = oldPlanQty - oldTakeQty;
 //        lsdpsp.setPurchasePlanQty(oldTakeQty);
-        String depositPlanId = StringUtils.leftPad(jpaLsdpspRepository.findMaxDepositPlanId(),9,'0');
+        String depositPlanId = this.getDepositPlanId();
         Lsdpsp newLsdpsp = new Lsdpsp(depositPlanId,lsdpsp);
         if(newPurchasePlanQty > 0){
             newLsdpsp.setPurchasePlanQty(newPurchasePlanQty);
