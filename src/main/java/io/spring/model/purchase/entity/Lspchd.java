@@ -142,6 +142,22 @@ public class Lspchd extends CommonProps implements Serializable {
         super.setRegId(regId);
         super.setUpdId(regId);
     }
+
+    /**
+     * 입고예정재고가 있을 때 발주 데이터를 만드는 생성자
+     */
+    public Lspchd(TbOrderDetail tbOrderDetail) {
+        this.assortId = tbOrderDetail.getAssortId();
+        this.itemId = tbOrderDetail.getItemId();
+        this.purchaseQty = tbOrderDetail.getQty();
+        this.purchaseItemAmt = tbOrderDetail.getItemAmt();
+        this.purchaseUnitAmt = this.purchaseItemAmt * this.purchaseQty;
+        this.itemGrade = StringFactory.getStrEleven(); // 11 하드코딩
+        this.siteGb = StringFactory.getGbOne(); // 01 (고도몰) 하드코딩
+        this.orderId = tbOrderDetail.getOrderId();
+        this.orderSeq = tbOrderDetail.getOrderSeq();
+    }
+
     @Id
     private String purchaseNo;
     @Id
@@ -232,4 +248,5 @@ public class Lspchd extends CommonProps implements Serializable {
 	@JsonIgnore
 	@NotFound(action = NotFoundAction.IGNORE)
 	private TbOrderDetail tbOrderDetail;
+
 }

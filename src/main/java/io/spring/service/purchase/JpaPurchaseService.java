@@ -15,6 +15,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 import io.spring.enums.DirectOrImport;
+import io.spring.model.order.entity.TbOrderMaster;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -671,12 +672,33 @@ public class JpaPurchaseService {
         }
         // 기존 lsdpsp update하고 새로운 lsdpsp 추가
         this.updateLsdpsp(lsdpsp, tbOrderDetail.getQty());
-        // lspchb, lspchd update 및 새 row 추가
-        this.updateLspchbd(lsdpsp.getLspchd(), tbOrderDetail.getQty());
-        // lspchs 저장
-        this.updateLspchs(lsdpsp.getPurchaseNo(), StringFactory.getGbOne()); // 01 하드코딩
+        // lspchm, lspchd, lspchb, lspchs 생성
+        this.saveLspchByOrder(tbOrderDetail, di);
+//        this.updateLspchbd(lsdpsp.getLspchd(), tbOrderDetail.getQty());
+        // lspchm, s 저장
+//        this.updateLspchs(lsdpsp.getPurchaseNo(), StringFactory.getGbOne()); // 01 하드코딩
 
         return true;
+    }
+
+    /**
+     * 입고예정재고가 있을 때 발주 data를 만드는 함수
+     */
+    private void saveLspchByOrder(TbOrderDetail tbOrderDetail, DirectOrImport di) {
+        TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
+        String purchaseNo = this.getPurchaseNo();
+        Lspchm lspchm = new Lspchm(tbOrderDetail, di);
+        lspchm.setPurchaseNo(purchaseNo);
+        Lspchd lspchd = new Lspchd(tbOrderDetail);
+        lspchd.setPurchaseNo(purchaseNo);
+        lspchd.setPurchaseSeq(StringFactory.getFourStartCd()); // 0001 하드코딩
+        lspchd.setMemo(Utilities.addDashInMiddle(purchaseNo, StringFactory.getFourStartCd()));
+        Lspchs lspchs = new Lspchs(lspchm, "regId"); // regId 임시 하드코딩
+        Lspchb lspchb = new Lspchb(lspchd, "regId"); // regId 임시 하드코딩
+        jpaLspchmRepository.save(lspchm);
+        jpaLspchdRepository.save(lspchd);
+        jpaLspchsRepository.save(lspchs);
+        jpaLspchbRepository.save(lspchb);
     }
 
     /**

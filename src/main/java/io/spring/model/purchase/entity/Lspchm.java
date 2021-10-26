@@ -1,5 +1,6 @@
 package io.spring.model.purchase.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -13,9 +14,13 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import io.spring.enums.DirectOrImport;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
+import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import io.spring.model.ship.entity.Lsshpm;
 import lombok.AccessLevel;
@@ -176,6 +181,26 @@ public class Lspchm extends CommonProps {
 //        this.dealtypeCd = StringFactory.getGbOne(); // 01 : 주문발주, 02 : 상품발주, 03 : 입고예정 주문발주 (01 하드코딩) 바깥에서 set
     }
 
+    /**
+     *  입고예정재고가 있을 때 그에 따른 발주 데이터를 만드는 생성자
+     */
+    public Lspchm(TbOrderDetail tbOrderDetail, DirectOrImport di) {
+        Itasrt itasrt = tbOrderDetail.getItasrt();
+        this.purchaseDt = LocalDateTime.now();
+        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
+        this.purchaseStatus = StringFactory.getGbOne(); // 01 하드코딩
+        this.siteGb = StringFactory.getGbOne(); // 01 하드코딩 (고도몰)
+        this.vendorId = itasrt.getVendorId();
+        this.dealtypeCd = StringFactory.getGbThree(); // 03 (입고예정주문발주) 하드코딩
+        this.siteOrderNo = tbOrderDetail.getChannelOrderNo();
+        if(di.equals(DirectOrImport.direct)){ // 직구
+            this.purchaseGb = StringFactory.getGbOne(); // 01 (일반발주)
+        }
+        else { // 수입
+        }
+        this.storeCd = itasrt.getStorageId();
+    }
+
     @Id
     private String purchaseNo;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
@@ -215,4 +240,5 @@ public class Lspchm extends CommonProps {
     @JsonIgnore
     @JoinColumn(name = "purchaseNo", referencedColumnName = "purchaseNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     private List<Lspchd> lspchdList;
+
 }
