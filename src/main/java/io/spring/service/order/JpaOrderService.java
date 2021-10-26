@@ -203,27 +203,27 @@ public class JpaOrderService {
         // 1.국내재고, 2.국내입고예정, 3.해외재고, 4.해외입고예정 확인 후 주문상태 변경.
         // 입고예정이면 입고예정 data 생성.
 
-        String statusCd;
+        String statusCd = null;
         // 1. 국내재고가 있을 가능성이 있음
         if(sumOfDomQty - sumOfDomShipIndQty - tbOrderDetail.getQty() >= 0){
-            this.loopItitmc(domItitmc, tbOrderDetail);
-            statusCd = StringFactory.getStrC04(); // 국내(현지)입고완료 : C04
+            boolean isDomStockExist = this.loopItitmc(domItitmc, tbOrderDetail);
+            statusCd = isDomStockExist? StringFactory.getStrC04() : statusCd; // 국내(현지)입고완료 : C04
         }
         // 2. 국내입고예정 재고가 있을 가능성이 있음
-        else if(sumOfDomTempQty - sumOfDomTempIndQty - tbOrderDetail.getQty() >= 0){
+        if(statusCd == null && sumOfDomTempQty - sumOfDomTempIndQty - tbOrderDetail.getQty() >= 0){
             statusCd = this.loopItitmt(domItitmt, tbOrderDetail, DirectOrImport.imports);
         }
         // 3. 해외재고가 있을 가능성이 있음
-        else if(sumOfOvrsQty - sumOfOvrsShipIndQty - tbOrderDetail.getQty() > 0){
+        if(statusCd == null && sumOfOvrsQty - sumOfOvrsShipIndQty - tbOrderDetail.getQty() >= 0){
             this.loopItitmc(ovrsItitmc, tbOrderDetail);
             statusCd = StringFactory.getStrC01(); // 해외입고완료 : C01
         }
         // 4. 해외입고예정 재고가 있을 가능성이 있음
-        else if(sumOfOvrsTempQty - sumOfOvrsTempIndQty - tbOrderDetail.getQty() > 0){
+        if(statusCd == null && sumOfOvrsTempQty - sumOfOvrsTempIndQty - tbOrderDetail.getQty() >= 0){
             statusCd = this.loopItitmt(ovrsItitmt, tbOrderDetail, DirectOrImport.imports);
         }
         // 5. 아무것도 없음
-        else{
+        if(statusCd == null){
             statusCd = StringFactory.getStrB01(); // 발주대기 : B01
         }
         this.updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), statusCd);
