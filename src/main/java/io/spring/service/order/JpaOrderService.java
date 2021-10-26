@@ -162,7 +162,7 @@ public class JpaOrderService {
      * Ititmt : 상품입고예정재고
      * @param tbOrderDetail
      */
-    private void changeOrderStatusWhenImport(TbOrderDetail tbOrderDetail) {
+    private void  changeOrderStatusWhenImport(TbOrderDetail tbOrderDetail) {
         Itasrt itasrt = jpaItasrtRepository.findById(tbOrderDetail.getAssortId()).orElseGet(() -> null);
         if(itasrt == null){
             log.debug("해당 상품 정보가 존재하지 않습니다.");
@@ -235,10 +235,12 @@ public class JpaOrderService {
     private String loopItitmt(List<Ititmt> ititmtList, TbOrderDetail tbOrderDetail, DirectOrImport di) {
         boolean isStockCandidateExist = false;
         long orderQty = tbOrderDetail.getQty();
+        String goodsStorageId = null;
         for(Ititmt ititmt : ititmtList){
             if(ititmt.getTempQty() >= orderQty + ititmt.getTempIndicateQty()){
                 ititmt.setTempIndicateQty(orderQty + ititmt.getTempIndicateQty());
                 isStockCandidateExist = true;
+                goodsStorageId = ititmt.getStorageId();
                 break;
             }
         }
@@ -247,8 +249,15 @@ public class JpaOrderService {
             return StringFactory.getStrB02(); // 발주완료 : B02
         }
         else if(isStockCandidateExist && di.equals(DirectOrImport.imports)){ // 수입
+            String statusCd;
+            if(!tbOrderDetail.getStorageId().equals(goodsStorageId)){ // 물건이 해외입고예정이라면
+                statusCd = StringFactory.getStrB02(); // 발주완료 : B02
+            }
+            else { // 물건이 국내(주문자위치)입고예정이라면
+                statusCd = StringFactory.getStrC03(); // 이동지시완료 : C03
+            }
             jpaPurchaseService.makePurchaseDataByOrder(tbOrderDetail, di);
-            return StringFactory.getStrC03(); // 이동지시완료 : C03
+            return statusCd;
         }
         else{
             return StringFactory.getStrB01(); // 발주대기 : B01
