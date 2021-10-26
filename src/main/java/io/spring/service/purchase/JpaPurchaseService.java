@@ -645,7 +645,7 @@ public class JpaPurchaseService {
         // 1. lsdpsp 찾아오기 (d 딸려옴, d에 따라 b도 딸려옴)
         List<Lsdpsp> lsdpspList = jpaLsdpspRepository.findByAssortIdAndItemId(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
         // 2. dealTypeCd = 02 (주문발주가 아닌 상품발주), purchaseGb = 01 (이동요청이 아닌 일반발주) 인 애들을 필터
-        lsdpspList = lsdpspList.stream().filter(x->x.getDealtypeCd().equals(StringFactory.getGbThree())&&x.getPurchaseGb().equals(StringFactory.getGbOne())).collect(Collectors.toList());
+        lsdpspList = lsdpspList.stream().filter(x->x.getDealtypeCd().equals(StringFactory.getGbTwo())&&x.getPurchaseGb().equals(StringFactory.getGbOne())).collect(Collectors.toList());
         // 3. lspchb 중 purchaseStatus가 01(부분입고 완전입고 등등이 아닌 발주)인 애들만 남기기
         List<Lsdpsp> lsdpspList1 = new ArrayList<>();
         for(Lsdpsp lsdpsp : lsdpspList){
