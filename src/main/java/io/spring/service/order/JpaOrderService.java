@@ -181,10 +181,11 @@ public class JpaOrderService {
         lsdpsd.setOrderSeq(tbOrderDetail.getOrderSeq());
         jpaLsdpsdRepository.save(lsdpsd);
 
-        Lsdpds lsdpds = jpaLsdpdsRepository.findByDepositNoAndDepositSeqAndEffEndDt(lspchd.getDepositNo(), lsdpsd.getDepositSeq(), Utilities.getStringToDate(StringFactory.getDoomDay()));
+        Lsdpds lsdpds = jpaLsdpdsRepository.findByDepositNoAndDepositSeqAndEffEndDt(lsdpsd.getDepositNo(), lsdpsd.getDepositSeq(), Utilities.getStringToDate(StringFactory.getDoomDay()));
         lsdpds.setEffEndDt(new Date());
         Lsdpds newLsdpds = new Lsdpds(lsdpds);
         jpaLsdpdsRepository.save(lsdpds);
+        jpaLsdpdsRepository.save(newLsdpds);
 
         lspchd.setOrderId(tbOrderDetail.getOrderId());
         lspchd.setOrderSeq(tbOrderDetail.getOrderSeq());
