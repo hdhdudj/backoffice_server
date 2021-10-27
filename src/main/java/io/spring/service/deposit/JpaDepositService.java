@@ -285,10 +285,10 @@ public class JpaDepositService {
             }
             Lsdpds lsdpds = jpaLsdpdsRepository.findByDepositNoAndDepositSeqAndEffEndDt(lsdpsd.getDepositNo(), lsdpsd.getDepositSeq(), Utilities.getStringToDate(StringFactory.getDoomDay()));
             if(lsdpds == null){
-                lsdpds = new Lsdpds(lsdpsd, deposit);
+                lsdpds = new Lsdpds(lsdpsd);
             }
             else {
-                Lsdpds newLsdpds = new Lsdpds(lsdpsd, deposit);
+                Lsdpds newLsdpds = new Lsdpds(lsdpsd);
                 jpaLsdpdsRepository.save(newLsdpds);
             }
             jpaLsdpdsRepository.save(lsdpds);
