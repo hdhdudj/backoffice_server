@@ -678,6 +678,10 @@ public class JpaPurchaseService {
             // lsdpsp의 purchasePlanQty - purchaseTakeQty 값이 tbOrderDetail의 수량 이상일 때
             if(item.getPurchasePlanQty() - item.getPurchaseTakeQty() >= tbOrderDetail.getQty()){
                 lsdpsp = item;
+                Lspchd lspchd = lsdpsp.getLspchd();
+                lspchd.setOrderId(tbOrderDetail.getOrderId());
+                lspchd.setOrderSeq(tbOrderDetail.getOrderSeq());
+                jpaLspchdRepository.save(lspchd);
                 break;
             }
         }
@@ -697,7 +701,7 @@ public class JpaPurchaseService {
 
     /**
      * 입고예정재고 lsdpsp 업데이트용 함수
-     * 기존 lsdpsp의 purchasePlanQty를 올려주고
+     * 기존 lsdpsp의 purchasePlanQty를 빼고 주문량만큼의 purchasePlanQty를 가진 새로운 lsdpsp를 생성함
      */
     private void updateLsdpspWhenCandidateExist(Lsdpsp lsdpsp, Lspchd lspchd, TbOrderDetail tbOrderDetail){
         long qty = tbOrderDetail.getQty();
