@@ -954,11 +954,14 @@ public class JpaMoveService {
                         "left join fetch ld.tbOrderDetail td " +
                         "join fetch ld.itasrt it " +
                         "where lm.receiptDt between ?1 and ?2 " +
+				"and lm.shipGb='02'"
+				+
                         "and (?3 is null or trim(?3)='' or ld.shipId=?3) " +
                         "and (?4 is null or trim(?4)='' or ld.assortId=?4) " +
                         "and (?5 is null or trim(?5)='' or it.assortNm like concat('%',?5,'%')) " +
                         "and (?6 is null or trim(?6)='' or ld.oStorageId=?6) " +
-                        "and (?7 is null or trim(?7)='' or lm.delMethod=?7)"
+                        "and (?7 is null or trim(?7)='' or lm.delMethod=?7)" 
+                        
                 ,Lsshpd.class);
         query.setParameter(1,start).setParameter(2,end).setParameter(3,shipId)
                 .setParameter(4,assortId).setParameter(5,assortNm)

@@ -640,6 +640,8 @@ public class JpaDepositService {
 					
 					if (itasrt.getAssortGb().equals(StringFactory.getGbOne())) { // 직구
 
+						System.out.println("-----------------------수입------------------------------");
+
 						// 입고창고와 주문의 창고가 같은경우 출고지시
 						List<String> r = jpaShipService.saveShipIndicateByDeposit(lsdpsd);
 						if (r.size() > 0) {
@@ -652,6 +654,9 @@ public class JpaDepositService {
 						}
 
 					} else { // if(tbOrderDetail.getAssortGb().equals(StringFactory.getGbTwo())){ // 수입
+
+						System.out.println("-----------------------직구------------------------------");
+
 						if (tbOrderDetail.getStorageId().equals(lspchm.getStoreCd())) {
 							// 입고창고와 주문의 창고가 같은경우 출고지시
 							List<String> r = jpaShipService.saveShipIndicateByDeposit(lsdpsd);

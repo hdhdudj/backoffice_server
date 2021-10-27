@@ -1,6 +1,5 @@
 package io.spring.model.purchase.entity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -20,7 +19,6 @@ import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.order.entity.TbOrderDetail;
-import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import io.spring.model.ship.entity.Lsshpm;
 import lombok.AccessLevel;
@@ -112,7 +110,7 @@ public class Lspchm extends CommonProps {
 		this.purchaseStatus = StringFactory.getGbOne(); // 01 : 발주, 04 : 이동지시?, 05 : 취소 (04 하드코딩)
 //        this.purchaseRemark : 바깥 set
         this.siteGb = StringFactory.getGbOne(); // "01" 하드코딩
-		this.vendorId = "000000"; // "000000" 하드코딩
+		this.vendorId = "AAAAAA"; // "000000" 하드코딩
 //        this.siteOrderNo : 바깥 set
 //        this.siteTrackNo : 바깥 set (?)
 //        this.localPrice : ?
@@ -158,7 +156,7 @@ public class Lspchm extends CommonProps {
         this.purchaseStatus = StringFactory.getGbOne(); // 01:발주 03:부분입고 04:완전입고 05:취소  A1:송금완료 A2:거래처선금입금 A3:거래처잔금입금 (01 하드코딩)
 //        this.purchaseRemark : 바깥 set
         this.siteGb = StringFactory.getGbOne(); // "01" 하드코딩
-        this.vendorId = StringFactory.getFourStartCd(); // "0001" 하드코딩
+		this.vendorId = "AAAAAA"; // StringFactory.getFourStartCd(); // "0001" 하드코딩
 //        this.siteOrderNo : 바깥 set
 //        this.siteTrackNo : 바깥 set (?)
 //        this.localPrice : ?
