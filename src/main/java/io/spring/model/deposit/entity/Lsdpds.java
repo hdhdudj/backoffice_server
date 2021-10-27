@@ -28,7 +28,7 @@ public class Lsdpds extends CommonProps implements Serializable {
         this.effStaDt = new Date();
         this.depositStatus = item.getDepositStatus();
     }
-    public Lsdpds(Lsdpsd lsdpsd, DepositListWithPurchaseInfoData.Deposit deposit){
+    public Lsdpds(Lsdpsd lsdpsd){
         this.depositNo = lsdpsd.getDepositNo();
         this.depositSeq = lsdpsd.getDepositSeq();
         this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩

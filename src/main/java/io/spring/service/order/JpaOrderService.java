@@ -3,13 +3,22 @@ package io.spring.service.order;
 import io.spring.enums.DirectOrImport;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.jparepos.deposit.JpaLsdpdsRepository;
+import io.spring.jparepos.deposit.JpaLsdpsdRepository;
 import io.spring.jparepos.goods.*;
 import io.spring.jparepos.order.*;
+import io.spring.jparepos.purchase.JpaLspchbRepository;
+import io.spring.jparepos.purchase.JpaLspchdRepository;
+import io.spring.model.deposit.entity.Lsdpds;
+import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.order.entity.*;
 import io.spring.model.order.request.OrderStockMngInsertRequestData;
+import io.spring.model.purchase.entity.Lspchb;
+import io.spring.model.purchase.entity.Lspchd;
+import io.spring.service.deposit.JpaDepositService;
 import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +27,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -25,18 +35,18 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class JpaOrderService {
-    private final JpaItitmmRepository jpaItitmmRepository;
     private final JpaItitmtRepository jpaItitmtRepository;
     private final JpaItitmcRepository jpaItitmcRepository;
     private final JpaItasrtRepository jpaItasrtRepository;
-    private final JpaIfGoodsMasterRepository jpaIfGoodsMasterRepository;
-    private final JpaIfOrderDetailRepository jpaIfOrderDetailRepository;
-    private final JpaTbOrderMasterRepository jpaTbOrderMasterRepository;
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
     private final JpaTbOrderHistoryRepository jpaTbOrderHistoryRepository;
     private final JpaPurchaseService jpaPurchaseService;
 	private final JpaOrderStockRepository jpaOrderStockRepository;
     private final JpaOrderLogRepository jpaOrderLogRepository;
+    private final JpaLsdpsdRepository jpaLsdpsdRepository;
+    private final JpaLspchdRepository jpaLspchdRepository;
+    private final JpaLsdpdsRepository jpaLsdpdsRepository;
+    private final JpaLspchbRepository jpaLspchbRepository;
 
     private final EntityManager em;
 
@@ -144,6 +154,7 @@ public class JpaOrderService {
         if(sumOfDomQty - sumOfDomShipIndQty - tbOrderDetail.getQty() >= 0){
             isStockExist = this.loopItitmc(domItitmc, tbOrderDetail);
             statusCd = isStockExist? StringFactory.getStrC04() : statusCd; // 국내입고완료(해외지만 거기서 바로 쏘므로) : C04
+            this.getLsdpsdListByGoodsInfo(tbOrderDetail).get(0); // 숫자 맞는 상품입고와 그 입고에 연결된 상품발주에 orderId와 orderSeq 적어넣기
         }
         // 2. 해외입고예정재고 있을 가능성이 있음
         if(statusCd == null && sumOfDomTempQty - sumOfDomTempIndQty - tbOrderDetail.getQty() >= 0){
@@ -155,7 +166,57 @@ public class JpaOrderService {
         }
         this.updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), statusCd);
     }
-    
+
+    /**
+     * orderStatus 판단시 assortId, itemId, qty로 lsdpsd를 가져오는 함수
+     */
+    private List<Lsdpsd> getLsdpsdListByGoodsInfo(TbOrderDetail tbOrderDetail){
+        TypedQuery<Lsdpsd> q = em.createQuery("select lsdpsd from Lsdpsd lsdpsd " +
+                        "join fetch lsdpsd.lspchd ld " +
+                        "where lsdpsd.assortId=?1 and lsdpsd.itemId=?2 and lsdpsd.depositQty=?3",Lsdpsd.class)
+                .setParameter(1, tbOrderDetail.getAssortId())
+                .setParameter(2,tbOrderDetail.getItemId())
+                .setParameter(3,tbOrderDetail.getQty());
+        List<Lsdpsd> lsdpsdList = q.getResultList();
+        Lsdpsd lsdpsd = lsdpsdList.get(0);
+        lsdpsd.setOrderId(tbOrderDetail.getOrderId());
+        lsdpsd.setOrderSeq(tbOrderDetail.getOrderSeq());
+        this.updateLsdpsds(lsdpsd);
+
+        Lspchd lspchd = lsdpsd.getLspchd();
+        lspchd.setOrderId(tbOrderDetail.getOrderId());
+        lspchd.setOrderSeq(tbOrderDetail.getOrderSeq());
+        this.updateLspchds(lspchd);
+        jpaLspchdRepository.save(lspchd);
+
+        return lsdpsdList;
+    }
+
+    /**
+     * lspchd와 lspchb 업데이트
+     */
+    private void updateLspchds(Lspchd lspchd) {
+        Lspchb lspchb = jpaLspchbRepository.findByPurchaseNoAndPurchaseSeqAndEffEndDt(lspchd.getPurchaseNo(), lspchd.getPurchaseSeq(), Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
+        lspchb.setEffEndDt(LocalDateTime.now());
+        Lspchb newLspchb = new Lspchb(lspchd, "regId"); // regId 임시 하드코딩
+        newLspchb.setPurchaseStatus(lspchb.getPurchaseStatus());
+        jpaLspchdRepository.save(lspchd);
+        jpaLspchbRepository.save(lspchb);
+        jpaLspchbRepository.save(newLspchb);
+    }
+
+    /**
+     * lsdpsd와 lsdpds 업데이트
+     */
+    private void updateLsdpsds(Lsdpsd lsdpsd){
+        Lsdpds lsdpds = jpaLsdpdsRepository.findByDepositNoAndDepositSeqAndEffEndDt(lsdpsd.getDepositNo(), lsdpsd.getDepositSeq(), Utilities.getStringToDate(StringFactory.getDoomDay()));
+        lsdpds.setEffEndDt(new Date());
+        Lsdpds newLsdpds = new Lsdpds(lsdpsd);
+        jpaLsdpdsRepository.save(lsdpds);
+        jpaLsdpdsRepository.save(newLsdpds);
+        jpaLsdpsdRepository.save(lsdpsd);
+    }
+
     /**
      * 수입(해외창고 -> 국내창고 -> 국내주문자)일 때 주문상태 처리 함수
      * Ititmc : 상품재고
