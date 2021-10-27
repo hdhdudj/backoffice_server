@@ -331,6 +331,7 @@ public class JpaShipService {
 //            lsshpd.setLocalPrice(tbOrderDetail.getLspchd());
 		lsshpd.setVendorDealCd(StringFactory.getGbOne()); // 01 : 주문, 02 : 상품, 03 : 입고예정
 		lsshpd.setShipIndicateQty(lsdpsd.getDepositQty());
+		lsshpd.setShipGb("01"); // 주문출고지시
 		jpaLsshpdRepository.save(lsshpd);
 		return shipId;
 	}

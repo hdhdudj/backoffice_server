@@ -151,6 +151,7 @@ from (select aa.channel_gb channel_gb,
 		 LEFT OUTER JOIN tb_member AS tm    -- A_TABLE 기준
 		              ON tom.cust_id = tm.cust_id
 		where  1=1
+		and tom.order_status not like 'f%'
 		and tom.order_date between #{startDt} and  #{endDt}
 	]]>
 	<if test='orderId != null'>
@@ -208,7 +209,7 @@ from (select aa.channel_gb channel_gb,
 		where tom.order_id =#{orderId}
 		and tom.cust_id  = tm.cust_id 
 		and tom.deli_id  = tma.deli_id 
-		and tom.order_status not like 'f%'
+		
 		
 			
 	
@@ -221,7 +222,8 @@ from (select aa.channel_gb channel_gb,
 	<![CDATA[
 			
 		
- select tod.order_id orderId
+ select 
+ tod.order_id orderId
  ,tod.order_seq  orderSeq
  ,concat(tod.order_id,'-',tod.order_seq) orderKey
  ,tod.channel_order_no   channelOrderNo
@@ -257,7 +259,9 @@ from (select aa.channel_gb channel_gb,
  ,tod.deli_method  deliMethod
  ,tod.list_image_data  listImageData
  from tb_order_detail tod 
+ ,tb_order_master tom
  where  tod.order_id  = #{orderId}
+ and tod.order_id = tom.order_id
 
 		
 			
