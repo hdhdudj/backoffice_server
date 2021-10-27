@@ -43,7 +43,6 @@ public class JpaOrderService {
     private final JpaLsdpsdRepository jpaLsdpsdRepository;
     private final JpaLspchdRepository jpaLspchdRepository;
     private final JpaLsdpdsRepository jpaLsdpdsRepository;
-    private final JpaLsdpdsRepository jpaLsdpdsRepository;
 
     private final EntityManager em;
 
