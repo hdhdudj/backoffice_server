@@ -28,19 +28,12 @@ public class Lsdpds extends CommonProps implements Serializable {
         this.effStaDt = new Date();
         this.depositStatus = item.getDepositStatus();
     }
-    public Lsdpds(Lsdpsd lsdpsd, DepositListWithPurchaseInfoData.Deposit deposit){
+    public Lsdpds(Lsdpsd lsdpsd){
         this.depositNo = lsdpsd.getDepositNo();
         this.depositSeq = lsdpsd.getDepositSeq();
         this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
         this.effStaDt = new Date();
         this.depositStatus = StringFactory.getGbOne(); // 01 하드코딩
-    }
-    public Lsdpds(Lsdpds lsdpds){
-        this.depositNo = lsdpds.getDepositNo();
-        this.depositSeq = lsdpds.getDepositSeq();
-        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
-        this.effStaDt = new Date();
-        this.depositStatus = lsdpds.getDepositStatus();
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
