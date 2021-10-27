@@ -114,6 +114,8 @@ public class TbOrderDetail extends CommonProps
     private Float optionTextPrice;
     private String deliveryInfo;
 
+	private String parentOrderSeq;
+
     @JoinColumns(
     {
         @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),

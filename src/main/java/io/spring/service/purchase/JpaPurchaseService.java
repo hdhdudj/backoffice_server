@@ -14,12 +14,11 @@ import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
-import io.spring.enums.DirectOrImport;
-import io.spring.model.order.entity.TbOrderMaster;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.spring.enums.DirectOrImport;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
@@ -44,6 +43,7 @@ import io.spring.model.goods.entity.Itvari;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
+import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.purchase.entity.Lspchb;
 import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.entity.Lspchm;
@@ -338,7 +338,14 @@ public class JpaPurchaseService {
 
         for(PurchaseInsertRequestData.Items items : purchaseInsertRequestData.getItems()){
             ItitmtId ititmtId = new ItitmtId(purchaseInsertRequestData, items);
+
+			System.out.println(ititmtId);
+
             Ititmt ititmt = jpaItitmtRepository.findById(ititmtId).orElseGet(() -> null);
+
+			System.out.println(ititmt);
+			System.out.println(lspchm);
+
             if(ititmt == null) { // insert
 
 				Itasrt itasrt = jpaItasrtRepository.findByAssortId(items.getAssortId());
@@ -499,6 +506,9 @@ public class JpaPurchaseService {
 
         for(Lspchd lspchd : lspchdList){
             Ititmm ititmm = lspchd.getItitmm();
+
+
+
 //            Lsdpsd lsdpsd = lspchd.getLsdpsd();
             Itvari itvari1 = ititmm.getItvari1();
             Itvari itvari2 = ititmm.getItvari2();
@@ -510,6 +520,17 @@ public class JpaPurchaseService {
             purchase.setOptionNm2(optionNm2);
             purchase.setItemNm(ititmm.getItemNm());
             purchase.setDepositQty(lspchd.getPurchaseQty());
+
+			if (lspchd.getOrderId() != null && lspchd.getOrderSeq() != null) {
+				TbOrderDetail tob = tbOrderDetailRepository.findByOrderIdAndOrderSeq(lspchd.getOrderId(),
+						lspchd.getOrderSeq());
+
+				if (tob != null) {
+					purchase.setOptionInfo(tob.getOptionInfo());
+				}
+
+			}
+
             purchaseList.add(purchase);
         }
         purchaseSelectListResponseData.setPurchaseList(purchaseList);

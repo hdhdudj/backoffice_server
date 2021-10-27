@@ -94,6 +94,9 @@
 			 		and cd_minor =#{cdMinor}	
 			 	]]>
 				</if>
+					<![CDATA[
+					order by cd_order
+					]]>
 	</select>    
 	
 

@@ -18,6 +18,9 @@ import lombok.Setter;
 public class OrderDetailResponseData {
 
 	public OrderDetailResponseData(HashMap<String, Object> map) {
+
+		System.out.println(map);
+
 		this.channelGb = (String) map.get("channelGb");
 		this.orderId = (String) map.get("orderId");
 

@@ -154,5 +154,6 @@ public class PurchaseSelectListResponseData {
         private Long availableQty; // 가능수량
         private Long depositQty; // 입고수량
         private Float purchaseCost; // 발주금액
+		private String optionInfo;
     }
 }
