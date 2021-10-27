@@ -3,10 +3,12 @@ package io.spring.service.order;
 import io.spring.enums.DirectOrImport;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.jparepos.deposit.JpaLsdpdsRepository;
 import io.spring.jparepos.deposit.JpaLsdpsdRepository;
 import io.spring.jparepos.goods.*;
 import io.spring.jparepos.order.*;
 import io.spring.jparepos.purchase.JpaLspchdRepository;
+import io.spring.model.deposit.entity.Lsdpds;
 import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
@@ -40,6 +42,8 @@ public class JpaOrderService {
     private final JpaOrderLogRepository jpaOrderLogRepository;
     private final JpaLsdpsdRepository jpaLsdpsdRepository;
     private final JpaLspchdRepository jpaLspchdRepository;
+    private final JpaLsdpdsRepository jpaLsdpdsRepository;
+    private final JpaLsdpdsRepository jpaLsdpdsRepository;
 
     private final EntityManager em;
 
@@ -176,9 +180,15 @@ public class JpaOrderService {
         Lspchd lspchd = lsdpsd.getLspchd();
         lsdpsd.setOrderId(tbOrderDetail.getOrderId());
         lsdpsd.setOrderSeq(tbOrderDetail.getOrderSeq());
+        jpaLsdpsdRepository.save(lsdpsd);
+
+        Lsdpds lsdpds = jpaLsdpdsRepository.findByDepositNoAndDepositSeqAndEffEndDt(lspchd.getDepositNo(), lsdpsd.getDepositSeq(), Utilities.getStringToDate(StringFactory.getDoomDay()));
+        lsdpds.setEffEndDt(new Date());
+        Lsdpds newLsdpds = new Lsdpds(lsdpds);
+        jpaLsdpdsRepository.save(lsdpds);
+
         lspchd.setOrderId(tbOrderDetail.getOrderId());
         lspchd.setOrderSeq(tbOrderDetail.getOrderSeq());
-        jpaLsdpsdRepository.save(lsdpsd);
         jpaLspchdRepository.save(lspchd);
 
         return lsdpsdList;
