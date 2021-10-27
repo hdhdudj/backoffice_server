@@ -145,7 +145,21 @@ public class JpaDepositService {
 
 				Itasrt itasrt = jpaItasrtRepository.findByAssortId(lsdpsp.getAssortId());
 
-				if (itasrt.getAssortGb().equals(StringFactory.getGbOne())) { // 직구
+				String assortId2 = "";
+
+				if (tbOrderDetail.getAssortGb().equals("002")) {
+					TbOrderDetail tbOrderDetail2 = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId,
+							tbOrderDetail.getParentOrderSeq());
+
+					assortId2 = tbOrderDetail2.getAssortId();
+
+				} else {
+					assortId2 = lsdpsp.getAssortId();
+				}
+
+				Itasrt itasrt2 = jpaItasrtRepository.findByAssortId(assortId2);
+
+				if (itasrt2.getAssortGb().equals(StringFactory.getGbOne())) { // 직구
                     statusCd = StringFactory.getStrC04();
                 }
                 else{ //if(tbOrderDetail.getAssortGb().equals(StringFactory.getGbTwo())){ // 수입
@@ -636,9 +650,21 @@ public class JpaDepositService {
 							orderSeq);
 					String statusCd;
 					
+					String assortId2 = "";
+
+					if (tbOrderDetail.getAssortGb().equals("002")) {
+						TbOrderDetail tbOrderDetail2 = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId,
+								tbOrderDetail.getParentOrderSeq());
+						assortId2 = tbOrderDetail2.getAssortId();
+					} else {
+						assortId2 = lsdpsd.getAssortId();
+					}
+
 					Itasrt itasrt = jpaItasrtRepository.findByAssortId(lsdpsd.getAssortId());
 					
-					if (itasrt.getAssortGb().equals(StringFactory.getGbOne())) { // 직구
+					Itasrt itasrt2 = jpaItasrtRepository.findByAssortId(assortId2); // 추가상품일경우 원건의 상품구분사용
+
+					if (itasrt2.getAssortGb().equals(StringFactory.getGbOne())) { // 직구
 
 						System.out.println("-----------------------수입------------------------------");
 

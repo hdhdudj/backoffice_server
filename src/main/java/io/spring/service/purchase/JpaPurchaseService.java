@@ -338,7 +338,14 @@ public class JpaPurchaseService {
 
         for(PurchaseInsertRequestData.Items items : purchaseInsertRequestData.getItems()){
             ItitmtId ititmtId = new ItitmtId(purchaseInsertRequestData, items);
+
+			System.out.println(ititmtId);
+
             Ititmt ititmt = jpaItitmtRepository.findById(ititmtId).orElseGet(() -> null);
+
+			System.out.println(ititmt);
+			System.out.println(lspchm);
+
             if(ititmt == null) { // insert
 
 				Itasrt itasrt = jpaItasrtRepository.findByAssortId(items.getAssortId());
