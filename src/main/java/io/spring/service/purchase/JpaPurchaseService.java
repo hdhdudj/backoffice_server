@@ -962,7 +962,8 @@ public class JpaPurchaseService {
 			if (lsshpm.getShipOrderGb().equals("01")) { // 01 : 주문, 02 : 상품
 				// 주문이동지시
 				orderGoodsType = "01";
-			} else if (lsshpm.getShipOrderGb().equals("02")) {
+			}
+			else if (lsshpm.getShipOrderGb().equals("02")) {
 				// 상품이동지시
 				orderGoodsType = "02";
 			}
