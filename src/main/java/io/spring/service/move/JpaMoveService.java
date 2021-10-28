@@ -15,6 +15,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
+import io.spring.model.deposit.entity.Lsdpsp;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -516,6 +517,7 @@ public class JpaMoveService {
 
         String regId = null;
         LocalDateTime purchaseDt = null;
+        List<Lsshpd> lsshpdList = new ArrayList<>();
 
         for (GoodsMoveSaveData.Goods goods : goodsMoveSaveData.getGoods()) {
             regId = goodsMoveSaveData.getUserId();
@@ -567,6 +569,7 @@ public class JpaMoveService {
             lsshpd.setOStorageId(goodsMoveSaveData.getStorageId());
             lsshpd.setShipIndicateQty(moveQty);
             lsshpm.setChannelId(goods.getChannelId()); // vendorId는 바깥에서 set
+            lsshpdList.add(lsshpd);
             jpaLsshpdRepository.save(lsshpd);
             // 1-3. Lsshps 생성
             Lsshps lsshps = new Lsshps(lsshpm, regId);
@@ -576,12 +579,10 @@ public class JpaMoveService {
             shipIdList.add(shipId);
 
 			// 2. 발주 data 생성 이동 //발주데이타는 이동처리에서 만드므로 처리안함.
-			// jpaPurchaseService.makePurchaseDataFromGoodsMoveSave(regId, purchaseDt,
-			// lsshpm, lsshpd);
-
+//            jpaPurchaseService.makePurchaseDataFromGoodsMoveSave(regId, purchaseDt, lsshpm, lsshpd);
 //            List<Lsdpsp> lsdpspList = new ArrayList<>();
 //            lsdpspList.add(lsdpsp);
-
+//
 //            // 3. ititmt 수량 변경
 //            Ititmc ititmc1 = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(lsshpd.getAssortId(),lsshpd.getItemId(),lsshpm.getStorageId(),
 //                    StringFactory.getStrEleven(), Utilities.dateToLocalDateTime(goods.getDepositDt())); // ititmc의 생성 시각과 수정해야 할 ititmt의 수정 시각이 같음.
@@ -590,6 +591,7 @@ public class JpaMoveService {
 //            ititmt.setTempIndicateQty(moveQty);
 //            jpaItitmtRepository.save(ititmt);
         }
+        jpaPurchaseService.makePurchaseDataFromOrderMoveSave2(lsshpdList);
 
         return shipIdList;
     }
@@ -752,7 +754,14 @@ public class JpaMoveService {
 
 
 			Lsshpm lsshpm = jpaLsshpmRepository.findByShipId(lsshpd.getShipId());
-
+            if(lsshpm == null){
+                log.debug("there's no data(lsshpm) of shipId : " + shipId);
+                continue;
+            }
+            if(lsshpm.getShipOrderGb().equals(StringFactory.getGbTwo())){ // 01 주문, 02 상품
+                log.debug("주문이동처리가 아닌 상품이동지시입니다.");
+                continue;
+            }
             // ititmc.shipIndicateQty, ititmc.shipQty 차감
             long shipIndQty = lsshpd.getShipIndicateQty();
 			// List<Ititmc> ititmcList =
@@ -781,16 +790,11 @@ public class JpaMoveService {
 //                Ititmc ititmc = new Ititmc(lsshpd.getOStorageId(), lsshpd.getAssortId(), lsshpd.getItemId(), lsshpd.getLocalPrice(), shipIndQty);
 //                jpaItitmcRepository.save(ititmc);
 //            }
-            if(lsshpm == null){
-                log.debug("there's no data(lsshpm) of shipId : " + shipId);
-                continue;
-            }
-            else{
-                lsshpd.setShipQty(lsshpd.getShipIndicateQty());
-                lsshpm.setShipStatus(StringFactory.getGbFour()); // 04 하드코딩
-                lsshpm.setApplyDay(LocalDateTime.now()); // 출고일자 now date
-                newShipIdList.add(lsshpm.getShipId());
-            }
+
+            lsshpd.setShipQty(lsshpd.getShipIndicateQty());
+            lsshpm.setShipStatus(StringFactory.getGbFour()); // 04 하드코딩
+            lsshpm.setApplyDay(LocalDateTime.now()); // 출고일자 now date
+            newShipIdList.add(lsshpm.getShipId());
             this.updateLssSeries(lsshpd);
 
 			l2.add(lsshpd);
