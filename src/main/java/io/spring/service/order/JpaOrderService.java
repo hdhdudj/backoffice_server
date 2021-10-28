@@ -3,14 +3,20 @@ package io.spring.service.order;
 import io.spring.enums.DirectOrImport;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.deposit.JpaLsdpdsRepository;
 import io.spring.jparepos.deposit.JpaLsdpsdRepository;
+import io.spring.jparepos.deposit.JpaLsdpsmRepository;
 import io.spring.jparepos.goods.*;
 import io.spring.jparepos.order.*;
 import io.spring.jparepos.purchase.JpaLspchbRepository;
 import io.spring.jparepos.purchase.JpaLspchdRepository;
+import io.spring.jparepos.ship.JpaLsshpdRepository;
+import io.spring.jparepos.ship.JpaLsshpmRepository;
+import io.spring.jparepos.ship.JpaLsshpsRepository;
 import io.spring.model.deposit.entity.Lsdpds;
 import io.spring.model.deposit.entity.Lsdpsd;
+import io.spring.model.deposit.entity.Lsdpsm;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
@@ -18,10 +24,14 @@ import io.spring.model.order.entity.*;
 import io.spring.model.order.request.OrderStockMngInsertRequestData;
 import io.spring.model.purchase.entity.Lspchb;
 import io.spring.model.purchase.entity.Lspchd;
+import io.spring.model.ship.entity.Lsshpd;
+import io.spring.model.ship.entity.Lsshpm;
+import io.spring.model.ship.entity.Lsshps;
 import io.spring.service.deposit.JpaDepositService;
 import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -47,6 +57,12 @@ public class JpaOrderService {
     private final JpaLspchdRepository jpaLspchdRepository;
     private final JpaLsdpdsRepository jpaLsdpdsRepository;
     private final JpaLspchbRepository jpaLspchbRepository;
+
+    private final JpaLsshpsRepository jpaLsshpsRepository;
+    private final JpaSequenceDataRepository jpaSequenceDataRepository;
+    private final JpaLsdpsmRepository jpaLsdpsmRepository;
+    private final JpaLsshpmRepository jpaLsshpmRepository;
+    private final JpaLsshpdRepository jpaLsshpdRepository;
 
     private final EntityManager em;
 
@@ -333,10 +349,54 @@ public class JpaOrderService {
         for(Ititmc ititmc : ititmcList){
             if(ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()){
                 ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
+                this.makeShipDataByDeposit(ititmc, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * 출고 관련 값 update, 출고 관련 data 생성 함수 (lsshpm,d,s) ShipIndicateSaveData 객체로
+     * lsshpm,s,d 생성
+     */
+    private String makeShipDataByDeposit(Ititmc ititmc, TbOrderDetail tbOrderDetail, String shipStatus) {
+        String shipId = this.getShipId();
+
+        Itasrt itasrt = tbOrderDetail.getItasrt();
+        // lsshpm 저장
+        Lsshpm lsshpm = new Lsshpm("01", shipId, itasrt, tbOrderDetail);
+
+        lsshpm.setShipStatus(shipStatus); // 01 : 이동지시or출고지시, 02 : 이동지시or출고지시 접수, 04 : 출고
+        lsshpm.setDeliId(tbOrderDetail.getTbOrderMaster().getDeliId());
+
+        lsshpm.setShipOrderGb("01");
+        lsshpm.setMasterShipGb("01");
+
+        // lsshpm.setOStorageId(tbOrderDetail.getStorageId());
+
+        lsshpm.setStorageId(itasrt.getStorageId());
+
+        // lsshps 저장
+        Lsshps lsshps = new Lsshps(lsshpm);
+        jpaLsshpsRepository.save(lsshps);
+        jpaLsshpmRepository.save(lsshpm);
+        // lsshpd 저장
+        String shipSeq = StringUtils.leftPad(Integer.toString(1), 4, '0'); // 0001 하드코딩
+        Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc, itasrt);
+//            lsshpd.setLocalPrice(tbOrderDetail.getLspchd());
+        lsshpd.setVendorDealCd(StringFactory.getGbOne()); // 01 : 주문, 02 : 상품, 03 : 입고예정
+        lsshpd.setShipIndicateQty(tbOrderDetail.getQty());
+        lsshpd.setShipGb("01"); // 주문출고지시
+        jpaLsshpdRepository.save(lsshpd);
+        return shipId;
+    }
+
+    /**
+     * shipId 채번 함수
+     */
+    private String getShipId(){
+        return Utilities.getStringNo('L',jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLsshpm()),9);
     }
 
     /**

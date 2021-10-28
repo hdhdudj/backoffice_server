@@ -14,6 +14,12 @@ import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import io.spring.jparepos.deposit.JpaLsdpsmRepository;
+import io.spring.jparepos.ship.JpaLsshpsRepository;
+import io.spring.model.deposit.entity.Lsdpsd;
+import io.spring.model.deposit.entity.Lsdpsm;
+import io.spring.model.goods.entity.*;
+import io.spring.model.ship.entity.Lsshps;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,10 +42,6 @@ import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.deposit.response.PurchaseListInDepositModalData;
-import io.spring.model.goods.entity.Itasrt;
-import io.spring.model.goods.entity.Ititmm;
-import io.spring.model.goods.entity.Ititmt;
-import io.spring.model.goods.entity.Itvari;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
@@ -74,9 +76,7 @@ public class JpaPurchaseService {
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
 
 	private final JpaLsshpmRepository jpaLsshpmRepository;
-	private final JpaLsshpdRepository jpaLsshpdRepository;
 
-	private final JpaTbOrderMasterRepository tbOrderMasterRepository;
 	private final JpaTbOrderDetailRepository tbOrderDetailRepository;
 	private final JpaTbOrderHistoryRepository tbOrderHistoryrRepository;
 
@@ -730,7 +730,7 @@ public class JpaPurchaseService {
      * 입고예정재고가 있을 때 발주 data를 만드는 함수
      */
     private Lspchd saveLspchByOrder(TbOrderDetail tbOrderDetail, Lspchm origLspchm, Lspchd origLspchd, DirectOrImport di) {
-        TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
+//        TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
         this.addMinusPurchase(tbOrderDetail, origLspchd);
         String purchaseNo = this.getPurchaseNo();
         Lspchm lspchm = new Lspchm(tbOrderDetail, di);
