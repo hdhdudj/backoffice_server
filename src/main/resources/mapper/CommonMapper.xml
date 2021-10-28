@@ -95,7 +95,7 @@
 			 	]]>
 				</if>
 					<![CDATA[
-					order by cd_order
+					order by cd_table,cd_order
 					]]>
 	</select>    
 	

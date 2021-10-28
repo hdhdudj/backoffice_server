@@ -28,12 +28,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShipIndicateSaveListResponseData {
-    public ShipIndicateSaveListResponseData(LocalDate startDt, LocalDate endDt, String assortId, String assortNm, String vendorId){
+	public ShipIndicateSaveListResponseData(LocalDate startDt, LocalDate endDt, String assortId, String assortNm,
+			String vendorId, String orderId) {
         this.startDt = startDt;
         this.endDt = endDt;
         this.assortId = assortId;
         this.assortNm = assortNm;
         this.vendorId = vendorId;
+		this.orderId = orderId;
     }
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -46,6 +48,7 @@ public class ShipIndicateSaveListResponseData {
     private String assortId;
     private String assortNm;
     private String vendorId;
+	private String orderId;
     private List<Ship> ships;
 
     @Getter
@@ -89,6 +92,10 @@ public class ShipIndicateSaveListResponseData {
 			this.shipSeq = (String) map.get("shipSeq");
 			this.storageId = (String) map.get("storageId");
 			this.receiptDt = map.get("receiptDt").toString().substring(0, 19);
+
+			this.optionNm1 = (String) map.get("optionNm1");
+			this.optionNm2 = (String) map.get("optionNm2");
+
 		}
 
 //        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
