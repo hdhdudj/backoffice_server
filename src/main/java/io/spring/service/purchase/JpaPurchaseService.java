@@ -682,11 +682,13 @@ public class JpaPurchaseService {
         // 4. psp 찾기
         Lsdpsp lsdpsp = null;
         Lspchd origLspchd = null;
+        Lspchm origLspchm = null;
         for(Lsdpsp item : lsdpspList){
             // lsdpsp의 purchasePlanQty - purchaseTakeQty 값이 tbOrderDetail의 수량 이상일 때
             if(item.getPurchasePlanQty() - item.getPurchaseTakeQty() >= tbOrderDetail.getQty()){
                 lsdpsp = item;
                 origLspchd = lsdpsp.getLspchd();
+                origLspchm = origLspchd.getLspchm();
 //                lspchd.setOrderId(tbOrderDetail.getOrderId());
 //                lspchd.setOrderSeq(tbOrderDetail.getOrderSeq());
 //                jpaLspchdRepository.save(lspchd);
@@ -697,7 +699,7 @@ public class JpaPurchaseService {
             return false;
         }
         // lspchm, lspchd, lspchb, lspchs 생성
-        Lspchd lspchd = this.saveLspchByOrder(tbOrderDetail, origLspchd, di);
+        Lspchd lspchd = this.saveLspchByOrder(tbOrderDetail, origLspchm, origLspchd, di);
         // 기존 lsdpsp update하고 새로운 lsdpsp 추가
         this.updateLsdpspWhenCandidateExist(lsdpsp, lspchd, tbOrderDetail);
 //        this.updateLspchbd(lsdpsp.getLspchd(), tbOrderDetail.getQty());
@@ -727,12 +729,13 @@ public class JpaPurchaseService {
     /**
      * 입고예정재고가 있을 때 발주 data를 만드는 함수
      */
-    private Lspchd saveLspchByOrder(TbOrderDetail tbOrderDetail, Lspchd origLspchd, DirectOrImport di) {
+    private Lspchd saveLspchByOrder(TbOrderDetail tbOrderDetail, Lspchm origLspchm, Lspchd origLspchd, DirectOrImport di) {
         TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
         this.addMinusPurchase(tbOrderDetail, origLspchd);
         String purchaseNo = this.getPurchaseNo();
         Lspchm lspchm = new Lspchm(tbOrderDetail, di);
         lspchm.setPurchaseNo(purchaseNo);
+        lspchm.setSiteOrderNo(origLspchm.getSiteOrderNo());
         Lspchd lspchd = new Lspchd(tbOrderDetail);
         lspchd.setPurchaseNo(purchaseNo);
         lspchd.setPurchaseSeq(StringFactory.getFourStartCd()); // 0001 하드코딩
