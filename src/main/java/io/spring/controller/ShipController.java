@@ -148,8 +148,11 @@ public class ShipController {
     }
 
     /**
-     * 출고리스트 화면 : 출고지시일자, 출고지시번호, 상품코드, 구매처를 받아서 조회하면 출고 목록을 보여줌
-     */
+	 * 출고리스트 화면 : 출고지시일자, 출고지시번호, 상품코드, 구매처를 받아서 조회하면 출고 목록을 보여줌
+	 * 
+	 * 
+	 * todo : 2021-10-27 출고리스트 서비스 안만들어짐 지금쓰는건 출고지시용임,새로 출고리스트 조회하는거 하나 새로 만들어야함,.
+	 */
     @GetMapping(path = "/ship/items")
     public ResponseEntity getShipList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
