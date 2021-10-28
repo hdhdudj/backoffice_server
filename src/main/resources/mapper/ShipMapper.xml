@@ -69,7 +69,11 @@ and tod.order_id = tom.order_id
 			 ]]>
 			</if>		
 			
-			
+<if test='orderId != null'>
+			 <![CDATA[		
+		and tod.order_id =#{orderId}	
+			 ]]>
+			</if>					
 		
 			
 					

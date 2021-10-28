@@ -1,10 +1,15 @@
 package io.spring.model.ship.response;
 
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
 import io.spring.model.order.entity.TbMember;
@@ -16,10 +21,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
-
 /**
  * 출고 - 출고지시리스트 : 출고지시일자, 출고지시번호, 상품코드or상품명, 구매처 조건에 맞는 출고지시 리스트 DTO
  * 출고 - 출고처리 : 출고처리 화면에서 조건 검색으로 리스트 가져올 때도 이용됨.
@@ -29,13 +30,15 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShipIndicateListData {
-    public ShipIndicateListData(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String channelId){
+	public ShipIndicateListData(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm,
+			String channelId, String orderId) {
         this.startDt = startDt;
         this.endDt = endDt;
         this.shipId = shipId;
         this.assortId = assortId;
         this.assortNm = assortNm;
         this.channelId = channelId;
+		this.orderId = orderId;
     }
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -49,6 +52,8 @@ public class ShipIndicateListData {
     private String assortId;
     private String assortNm;
     private String channelId;
+	private String orderId;
+
     private List<Ship> ships;
 
     @Getter
