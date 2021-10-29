@@ -251,6 +251,7 @@
 					bbb1.assort_nm assortNm,
 					bbb1.item_id itemId,
 					concat(bbb1.option_nm1, ifnull(CONCAT('-', bbb1.option_nm2), '')) optionNm,
+					bbb1.option_info optionInfo,
 					bbb1.qty purchaseQty,
 					bbb1.md_rrp rrp,
 					bbb1.buy_supply_discount discountRate
@@ -303,6 +304,7 @@
 						tod.order_seq,
 							tod.assort_id ,
 							tod.item_id ,
+							tod.option_info,
 							tod.qty ,
 							case 
 								when tod.order_seq <> tod.parent_order_seq then

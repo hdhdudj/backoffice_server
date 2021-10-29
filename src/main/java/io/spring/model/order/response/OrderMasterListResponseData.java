@@ -36,7 +36,7 @@ public class OrderMasterListResponseData {
 		this.payGb = (String) m.get("payGb");
 		this.payStatus = (String) m.get("payStatus");
 		
-
+		this.channelOrderNo = (String) m.get("channelOrderNo");
 		
 	}
 
@@ -58,5 +58,6 @@ public class OrderMasterListResponseData {
 	private double orderAmt;
 	private String payGb;
 	private String payStatus;
+
 
 }

@@ -137,7 +137,7 @@ from (select aa.channel_gb channel_gb,
 		else
 		'결제실패 및 취소'
 		end payStatus
-		,(select iom.channel_order_no from if_order_master iom where iom.order_id = tom.order_id ) channelOrderNo 
+		,tom.channel_order_no channelOrderNo 
 		 ,tm.cust_id custId 
 		 ,tm.cust_nm custNm
 		,(select tod2.goods_nm from tb_order_detail tod2 where tod2.order_id = tom.order_id and tod2.order_seq='0001') goodsNm 
@@ -147,6 +147,7 @@ from (select aa.channel_gb channel_gb,
 		,tom.order_amt orderAmt
 		,tom.pay_gb payGb
 		,tom.pay_dt payDt
+		,tom.channel_order_no  channelOrderNo
 		from tb_order_master tom 
 		 LEFT OUTER JOIN tb_member AS tm    -- A_TABLE 기준
 		              ON tom.cust_id = tm.cust_id
@@ -170,7 +171,11 @@ from (select aa.channel_gb channel_gb,
 				and tm.cust_hp = #{custHp}
 			]]>
 		</if>	
-	
+		<if test='channelOrderNo != null'>
+			<![CDATA[
+				and tom.channel_order_no =#{channelOrderNo}
+			]]>
+		</if>	
 	
 	</select>
 	
@@ -305,6 +310,8 @@ select aa.channel_gb channelGb
 		,bb.dc_sum_price dcSumPrice
 		,(bb.sale_price + bb.deli_price - bb.dc_sum_price) totalPrice 
 		,bb.list_image_data listImageData
+		,bb.channel_order_no  channelOrderNo
+		,bb.channel_order_seq  channelOrderSeq		
 		from tb_order_master aa
 		,tb_order_detail bb
 		,tb_member cc
@@ -325,7 +332,11 @@ select aa.channel_gb channelGb
 				and aa.order_id =#{orderId}
 			]]>
 		</if>
-	
+	<if test='channelOrderNo != null'>
+			<![CDATA[
+				and bb.channel_order_no =#{channelOrderNo}
+			]]>
+		</if>	
 	</select>	
 	
 	
