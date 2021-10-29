@@ -43,6 +43,9 @@ public class OrderDetailListResponse {
 
 			this.listImageData = (String) map.get("listImageData");
 
+			this.channelOrderNo = (String) map.get("channelOrderNo");
+			this.channelOrderSeq = (String) map.get("channelOrderSeq");
+
 		}
 
 		private String channelGb;
@@ -66,6 +69,8 @@ public class OrderDetailListResponse {
 		private double dcSumPrice;
 		private double totalPrice;
 		private String listImageData; // 이미지
+		private String channelOrderNo;
+		private String channelOrderSeq;
 
 
 
