@@ -707,10 +707,10 @@ public class JpaPurchaseService {
         // lspchm, lspchd, lspchb, lspchs 생성
         Lspchd lspchd = this.saveLspchByOrder(tbOrderDetail, origLspchm, origLspchd, di);
         // 기존 lsdpsp update하고 새로운 lsdpsp 추가
-        if(lspchd == null){
-            this.minusLsdpsp(lsdpsp, tbOrderDetail);
-        }
-        else{
+        if(lspchd != null){
+//            this.minusLsdpsp(lsdpsp, tbOrderDetail);
+//        }
+//        else{
             this.updateLsdpspWhenCandidateExist(lsdpsp, lspchd, tbOrderDetail);
         }
 //        this.updateLspchbd(lsdpsp.getLspchd(), tbOrderDetail.getQty());
@@ -780,6 +780,7 @@ public class JpaPurchaseService {
         Lspchd lspchd = new Lspchd(tbOrderDetail);
         lspchd.setPurchaseNo(origLspchd.getPurchaseNo());
         lspchd.setPurchaseSeq(Utilities.plusOne(origLspchd.getPurchaseSeq(),4));
+        lspchd.setOwnerId(origLspchd.getOwnerId());
         lspchd.setPurchaseQty(-lspchd.getPurchaseQty());
         Lspchb lspchb = new Lspchb(lspchd, "regId"); // regID 임시 하드코딩
         jpaLspchdRepository.save(lspchd);
