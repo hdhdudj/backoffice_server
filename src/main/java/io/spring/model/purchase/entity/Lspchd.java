@@ -154,6 +154,7 @@ public class Lspchd extends CommonProps implements Serializable {
         this.purchaseItemAmt = this.purchaseUnitAmt * (this.purchaseQty);
         this.itemGrade = StringFactory.getStrEleven(); // 11 하드코딩
         this.siteGb = StringFactory.getGbOne(); // 01 (고도몰) 하드코딩
+        this.ownerId = lspchd.getOwnerId();
 //        this.orderId = tbOrderDetail.getOrderId();
 //        this.orderSeq = tbOrderDetail.getOrderSeq();
     }

@@ -200,7 +200,7 @@ public class Lspchm extends CommonProps {
         else if(di.equals(DirectOrImport.move)){ // 수입, 이동요청
             this.purchaseGb = di.getFieldName(); // 02 (이동요청)
         }
-        this.storeCd = itasrt.getStorageId();
+        this.storeCd = tbOrderDetail.getStorageId();
     }
 
     @Id
