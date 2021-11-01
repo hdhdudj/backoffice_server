@@ -566,7 +566,7 @@ public class JpaMoveService {
             String shipSeq = StringFactory.getFourStartCd(); // 0001 하드코딩 //StringUtils.leftPad(Integer.toString(index),4,'0');
             // 1-2. Lsshpd 생성
             Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, ititmc, goods, regId);
-            lsshpd.setOStorageId(goodsMoveSaveData.getStorageId());
+            lsshpd.setOStorageId(goodsMoveSaveData.getOStorageId());
             lsshpd.setShipIndicateQty(moveQty);
             lsshpm.setChannelId(goods.getChannelId()); // vendorId는 바깥에서 set
             lsshpdList.add(lsshpd);
