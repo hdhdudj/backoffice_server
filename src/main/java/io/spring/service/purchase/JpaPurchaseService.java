@@ -761,7 +761,7 @@ public class JpaPurchaseService {
         Lspchm lspchm = new Lspchm(tbOrderDetail, di);
         lspchm.setPurchaseNo(purchaseNo);
         lspchm.setSiteOrderNo(origLspchm.getSiteOrderNo());
-        Lspchd lspchd = new Lspchd(tbOrderDetail);
+        Lspchd lspchd = new Lspchd(tbOrderDetail, origLspchd);
         lspchd.setPurchaseNo(purchaseNo);
         lspchd.setPurchaseSeq(StringFactory.getFourStartCd()); // 0001 하드코딩
         lspchd.setMemo(Utilities.addDashInMiddle(purchaseNo, StringFactory.getFourStartCd()));
@@ -779,7 +779,7 @@ public class JpaPurchaseService {
      * 음의 qty값을 가진 lspchd를 생성하는 함수
      */
     private void addMinusPurchase(TbOrderDetail tbOrderDetail, Lspchd origLspchd) {
-        Lspchd lspchd = new Lspchd(tbOrderDetail);
+        Lspchd lspchd = new Lspchd(tbOrderDetail, origLspchd);
         lspchd.setPurchaseNo(origLspchd.getPurchaseNo());
         lspchd.setPurchaseSeq(Utilities.plusOne(origLspchd.getPurchaseSeq(),4));
         lspchd.setOwnerId(origLspchd.getOwnerId());

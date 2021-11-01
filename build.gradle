@@ -80,8 +80,13 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'mysql:mysql-connector-java'
 
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    implementation 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
+    annotationProcessor "org.projectlombok:lombok:1.18.20"
+    implementation "org.projectlombok:lombok:1.18.20"
+
+    implementation 'org.mapstruct:mapstruct:1.4.1.Final'
+    annotationProcessor "org.mapstruct:mapstruct-processor:1.4.1.Final"
 
 
 

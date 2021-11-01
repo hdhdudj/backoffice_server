@@ -55,7 +55,7 @@ public class MoveCompletedLIstReponseData {
             this.shipKey = Utilities.addDashInMiddle(shipId,shipSeq);
             this.trackNo = lsshpm.getBlNo();
             this.storageId = lsshpm.getStorageId();
-            this.oStorageId = lsshpd.getOStorageId();
+            this.oStorageId = lsshpm.getOStorageId();
             this.shipGb = lsshpd.getShipGb();
             this.deliMethod = lsshpm.getDelMethod();
             this.assortId = lsshpd.getAssortId();
