@@ -88,13 +88,17 @@ public class PurchaseSelectListResponseData {
          */
         public Purchase(Lspchm lspchm, Lsdpsp lsdpsp, Itasrt itasrt){
             this.purchaseNo = lspchm.getPurchaseNo();
-			this.vendorId = lspchm.getVendorId();
+            this.purchaseSeq = lsdpsp.getPurchaseSeq();
+            this.purchaseKey = Utilities.addDashInMiddle(this.purchaseNo, this.purchaseSeq);
+
+            this.vendorId = lspchm.getVendorId();
             this.purchaseGb = lspchm.getPurchaseGb();
             this.dealtypeCd = lspchm.getDealtypeCd();
 
-            this.purchaseSeq = lsdpsp.getPurchaseSeq();
             this.assortId = lsdpsp.getAssortId();
             this.itemId = lsdpsp.getItemId();
+            this.itemKey = Utilities.addDashInMiddle(this.assortId, this.itemId);
+
             this.depositPlanId = lsdpsp.getDepositPlanId();
 
             this.itemNm = itasrt.getAssortNm();
@@ -107,11 +111,12 @@ public class PurchaseSelectListResponseData {
             this.purchaseNo = lspchm.getPurchaseNo();
             this.dealtypeCd = lspchm.getDealtypeCd();
             this.purchaseSeq = lspchd.getPurchaseSeq();
-            this.purchaseKey = Utilities.addDashInMiddle(purchaseNo, purchaseSeq);
+            this.purchaseKey = Utilities.addDashInMiddle(this.purchaseNo, this.purchaseSeq);
 			this.vendorId = lspchm.getVendorId();
             this.purchaseGb = lspchm.getPurchaseGb();
             this.assortId = lspchd.getAssortId();
             this.itemId = lspchd.getItemId();
+            this.itemKey = Utilities.addDashInMiddle(this.assortId, this.itemId);
             this.purchaseDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
             this.purchaseGb = lspchm.getPurchaseGb();
             this.purchaseCost = lspchd.getPurchaseUnitAmt();
@@ -128,6 +133,7 @@ public class PurchaseSelectListResponseData {
         private String purchaseKey; // 발주번호-발주순번
         private String assortId; // 품목코드
         private String itemId; // 상품코드
+        private String itemKey; // 품목코드-상품코드
         private String itemNm; // 상품이름
         private String optionNm1; // 색상
         private String optionNm2; // 사이즈
