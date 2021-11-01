@@ -192,9 +192,13 @@ public class Lspchm extends CommonProps {
         this.dealtypeCd = StringFactory.getGbThree(); // 03 (입고예정주문발주) 하드코딩
         this.siteOrderNo = tbOrderDetail.getChannelOrderNo();
         if(di.equals(DirectOrImport.direct)){ // 직구
-            this.purchaseGb = StringFactory.getGbOne(); // 01 (일반발주)
+            this.purchaseGb = di.getFieldName(); // 01 (일반발주)
         }
-        else { // 수입
+        else if(di.equals(DirectOrImport.purchase)) { // 수입, 일반발주
+            this.purchaseGb = di.getFieldName(); // 01 (일반발주)
+        }
+        else if(di.equals(DirectOrImport.move)){ // 수입, 이동요청
+            this.purchaseGb = di.getFieldName(); // 02 (이동요청)
         }
         this.storeCd = itasrt.getStorageId();
     }

@@ -329,9 +329,11 @@ public class JpaOrderService {
             String statusCd;
             if(!tbOrderDetail.getStorageId().equals(goodsStorageId)){ // 물건이 해외입고예정이라면
                 statusCd = StringFactory.getStrB02(); // 발주완료 : B02
+                di = DirectOrImport.move;
             }
             else { // 물건이 국내(주문자위치)입고예정이라면
                 statusCd = StringFactory.getStrC03(); // 이동지시완료 : C03
+                di = DirectOrImport.purchase;
             }
             jpaPurchaseService.makePurchaseDataByOrder(tbOrderDetail, di);
             return statusCd;
