@@ -784,6 +784,8 @@ public class JpaPurchaseService {
         lspchd.setPurchaseSeq(Utilities.plusOne(origLspchd.getPurchaseSeq(),4));
         lspchd.setOwnerId(origLspchd.getOwnerId());
         lspchd.setPurchaseQty(-lspchd.getPurchaseQty());
+        lspchd.setPurchaseUnitAmt(-lspchd.getPurchaseUnitAmt());
+        lspchd.setPurchaseItemAmt(-lspchd.getPurchaseItemAmt());
         Lspchb lspchb = new Lspchb(lspchd, "regId"); // regID 임시 하드코딩
         jpaLspchdRepository.save(lspchd);
         jpaLspchbRepository.save(lspchb);
