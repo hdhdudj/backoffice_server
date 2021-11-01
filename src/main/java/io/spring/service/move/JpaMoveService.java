@@ -760,6 +760,8 @@ public class JpaMoveService {
             }
             if(lsshpm.getShipOrderGb().equals(StringFactory.getGbTwo())){ // 01 주문, 02 상품
                 log.debug("주문이동처리가 아닌 상품이동지시입니다.");
+                lsshpm.setShipStatus(StringFactory.getGbFour()); // 01 이동지시or출고지시 02 이동지시or출고지시 접수 04 출고
+                jpaLsshpmRepository.save(lsshpm);
                 continue;
             }
             // ititmc.shipIndicateQty, ititmc.shipQty 차감
@@ -911,7 +913,7 @@ public class JpaMoveService {
      * @return 이동지시 목록 반환 DTO
      */
     public MoveListResponseData getMoveList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId, String deliMethod) {
-        List<Lsshpd> lsshpdList = this.getLsshpdMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, deliMethod);
+        List<Lsshpd> lsshpdList = this.getLsshpdMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, deliMethod, StringFactory.getGbTwo()); // shitStatus = 02
         // 03 : 주문이동지시, 04 : 상품이동지시인 애들만 남겨둠
         lsshpdList = lsshpdList.stream().filter(x->x.getShipGb().equals(StringFactory.getGbThree())||x.getShipGb().equals(StringFactory.getGbFour())).collect(Collectors.toList());
         if(lsshpdList.size()==0){
@@ -950,7 +952,7 @@ public class JpaMoveService {
      * @param deliMethod
      * @return
      */
-    private List<Lsshpd> getLsshpdMoveList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId, String deliMethod) {
+    private List<Lsshpd> getLsshpdMoveList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId, String deliMethod, String shipStatus) {
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
         TypedQuery<Lsshpd> query = em.createQuery("select ld from Lsshpd ld " +
@@ -958,8 +960,7 @@ public class JpaMoveService {
                         "left join fetch ld.tbOrderDetail td " +
                         "join fetch ld.itasrt it " +
                         "where lm.receiptDt between ?1 and ?2 " +
-				"and lm.shipGb='02'"
-				+
+				"and lm.shipStatus=?8 " +
                         "and (?3 is null or trim(?3)='' or ld.shipId=?3) " +
                         "and (?4 is null or trim(?4)='' or ld.assortId=?4) " +
                         "and (?5 is null or trim(?5)='' or it.assortNm like concat('%',?5,'%')) " +
@@ -970,7 +971,8 @@ public class JpaMoveService {
                 ,Lsshpd.class);
         query.setParameter(1,start).setParameter(2,end).setParameter(3,shipId)
                 .setParameter(4,assortId).setParameter(5,assortNm)
-                .setParameter(6,storageId).setParameter(7,deliMethod);
+                .setParameter(6,storageId).setParameter(7,deliMethod)
+                .setParameter(8, shipStatus);
         List<Lsshpd> lsshpdList = query.getResultList();
         
 
@@ -990,7 +992,7 @@ public class JpaMoveService {
      */
     public MoveCompletedLIstReponseData getMovedList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId) {
         MoveCompletedLIstReponseData moveCompletedLIstReponseData = new MoveCompletedLIstReponseData(startDt, endDt, shipId, assortId, assortNm, storageId);
-        List<Lsshpd> lsshpdList = this.getLsshpdMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, null);
+        List<Lsshpd> lsshpdList = this.getLsshpdMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, null, StringFactory.getGbFour()); // shiptStatus = 04
         // lsshpm의 shipStatus가 04(출고)인 놈만 남기기
         lsshpdList = lsshpdList.stream().filter(x->x.getLsshpm().getShipStatus().equals(StringFactory.getGbFour())).collect(Collectors.toList());
         List<MoveCompletedLIstReponseData.Move> moveList = new ArrayList<>();

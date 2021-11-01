@@ -665,8 +665,14 @@ public class JpaPurchaseService {
     public boolean makePurchaseDataByOrder(TbOrderDetail tbOrderDetail, DirectOrImport di) {
         // 1. lsdpsp 찾아오기 (d 딸려옴, d에 따라 b도 딸려옴)
         List<Lsdpsp> lsdpspList = jpaLsdpspRepository.findByAssortIdAndItemId(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
-        // 2. dealTypeCd = 02 (주문발주가 아닌 상품발주), purchaseGb = 01 (이동요청이 아닌 일반발주) 인 애들을 필터
-        lsdpspList = lsdpspList.stream().filter(x->x.getDealtypeCd().equals(StringFactory.getGbTwo())&&x.getPurchaseGb().equals(StringFactory.getGbOne())).collect(Collectors.toList());
+        // 2. dealTypeCd = 02 (주문발주가 아닌 상품발주), purchaseGb = 01 (일반발주) 인 애들을 필터
+        if(di.equals(DirectOrImport.direct)){
+            lsdpspList = lsdpspList.stream().filter(x->x.getDealtypeCd().equals(StringFactory.getGbTwo())&&x.getPurchaseGb().equals(StringFactory.getGbOne())).collect(Collectors.toList());
+        }
+        // 2. dealTypeCd = 02 (주문발주가 아닌 상품발주), purchaseGb = 02 (이동요청) 인 애들을 필터
+        else if(di.equals(DirectOrImport.imports)){
+            lsdpspList = lsdpspList.stream().filter(x->x.getDealtypeCd().equals(StringFactory.getGbTwo())&&x.getPurchaseGb().equals(StringFactory.getGbTwo())).collect(Collectors.toList());
+        }
         // 3. lspchb 중 purchaseStatus가 01(부분입고 완전입고 등등이 아닌 발주)인 애들만 남기기
         List<Lsdpsp> lsdpspList1 = new ArrayList<>();
         for(Lsdpsp lsdpsp : lsdpspList){
@@ -701,12 +707,25 @@ public class JpaPurchaseService {
         // lspchm, lspchd, lspchb, lspchs 생성
         Lspchd lspchd = this.saveLspchByOrder(tbOrderDetail, origLspchm, origLspchd, di);
         // 기존 lsdpsp update하고 새로운 lsdpsp 추가
-        this.updateLsdpspWhenCandidateExist(lsdpsp, lspchd, tbOrderDetail);
+        if(lspchd != null){
+//            this.minusLsdpsp(lsdpsp, tbOrderDetail);
+//        }
+//        else{
+            this.updateLsdpspWhenCandidateExist(lsdpsp, lspchd, tbOrderDetail);
+        }
 //        this.updateLspchbd(lsdpsp.getLspchd(), tbOrderDetail.getQty());
         // lspchm, s 저장
 //        this.updateLspchs(lsdpsp.getPurchaseNo(), StringFactory.getGbOne()); // 01 하드코딩
 
         return true;
+    }
+
+    /**
+     * 수입 : 국내입고예정재고가 있는 경우 기존 lsdpsp에서 주문량만큼 입고예정재고 차감
+     */
+    private void minusLsdpsp(Lsdpsp lsdpsp, TbOrderDetail tbOrderDetail) {
+        lsdpsp.setPurchasePlanQty(lsdpsp.getPurchasePlanQty() - tbOrderDetail.getQty());
+        jpaLsdpspRepository.save(lsdpsp);
     }
 
     /**
@@ -719,6 +738,8 @@ public class JpaPurchaseService {
         Lsdpsp newLsdpsp = new Lsdpsp(this.getDepositPlanId(), lsdpsp);
         newLsdpsp.setPurchaseTakeQty(0l);
         newLsdpsp.setPurchasePlanQty(qty);
+//        newLsdpsp.setOrderId(tbOrderDetail.getOrderId());
+//        newLsdpsp.setOrderSeq(tbOrderDetail.getOrderSeq());
         newLsdpsp.setPurchaseNo(lspchd.getPurchaseNo());
         newLsdpsp.setPurchaseSeq(lsdpsp.getPurchaseSeq());
         newLsdpsp.setDealtypeCd(StringFactory.getGbThree()); // dealtypeCd 03(입고예정주문발주) 하드코딩
@@ -732,6 +753,10 @@ public class JpaPurchaseService {
     private Lspchd saveLspchByOrder(TbOrderDetail tbOrderDetail, Lspchm origLspchm, Lspchd origLspchd, DirectOrImport di) {
 //        TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
         this.addMinusPurchase(tbOrderDetail, origLspchd);
+//        if(di.equals(DirectOrImport.imports)){
+//            log.debug("수입이므로 새로운 발주 데이터 생성하지 않음.");
+//            return null;
+//        }
         String purchaseNo = this.getPurchaseNo();
         Lspchm lspchm = new Lspchm(tbOrderDetail, di);
         lspchm.setPurchaseNo(purchaseNo);
@@ -757,6 +782,7 @@ public class JpaPurchaseService {
         Lspchd lspchd = new Lspchd(tbOrderDetail);
         lspchd.setPurchaseNo(origLspchd.getPurchaseNo());
         lspchd.setPurchaseSeq(Utilities.plusOne(origLspchd.getPurchaseSeq(),4));
+        lspchd.setOwnerId(origLspchd.getOwnerId());
         lspchd.setPurchaseQty(-lspchd.getPurchaseQty());
         Lspchb lspchb = new Lspchb(lspchd, "regId"); // regID 임시 하드코딩
         jpaLspchdRepository.save(lspchd);
@@ -931,7 +957,7 @@ public class JpaPurchaseService {
     }
 
 	/**
-	 * 주문이동 저장시 생성되는 발주 data를 만드는 함수
+	 * 주문이동처리 저장, 상품이동지시 저장시 생성되는 발주 data를 만드는 함수
 	 */
 	public void makePurchaseDataFromOrderMoveSave2(List<Lsshpd> moveList) {
 

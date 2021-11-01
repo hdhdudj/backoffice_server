@@ -110,7 +110,7 @@ public class Lspchm extends CommonProps {
 		this.purchaseStatus = StringFactory.getGbOne(); // 01 : 발주, 04 : 이동지시?, 05 : 취소 (04 하드코딩)
 //        this.purchaseRemark : 바깥 set
         this.siteGb = StringFactory.getGbOne(); // "01" 하드코딩
-		this.vendorId = "AAAAAA"; // "000000" 하드코딩
+		this.vendorId = "AAAAAA"; // todo : 아직 방식이 정해지지 않았음. (원건의 구매처를 넣을 수도 있고.. 임시 하드코딩)
 //        this.siteOrderNo : 바깥 set
 //        this.siteTrackNo : 바깥 set (?)
 //        this.localPrice : ?
@@ -192,9 +192,13 @@ public class Lspchm extends CommonProps {
         this.dealtypeCd = StringFactory.getGbThree(); // 03 (입고예정주문발주) 하드코딩
         this.siteOrderNo = tbOrderDetail.getChannelOrderNo();
         if(di.equals(DirectOrImport.direct)){ // 직구
-            this.purchaseGb = StringFactory.getGbOne(); // 01 (일반발주)
+            this.purchaseGb = di.getFieldName(); // 01 (일반발주)
         }
-        else { // 수입
+        else if(di.equals(DirectOrImport.purchase)) { // 수입, 일반발주
+            this.purchaseGb = di.getFieldName(); // 01 (일반발주)
+        }
+        else if(di.equals(DirectOrImport.move)){ // 수입, 이동요청
+            this.purchaseGb = di.getFieldName(); // 02 (이동요청)
         }
         this.storeCd = itasrt.getStorageId();
     }

@@ -37,7 +37,7 @@ import lombok.Setter;
 @Table(name = "lsshpm")
 public class Lsshpm extends CommonProps {
     /**
-     * 주문이동지시 저장, 출고 시 실행되는 생성자
+     * 상품이동지시 저장, 주문이동처리 저장,출고 시 실행되는 생성자
      */
 	public Lsshpm(String shipGb, String shipId, Itasrt itasrt, TbOrderDetail tbOrderDetail) {
         this.shipId = shipId;
@@ -48,6 +48,7 @@ public class Lsshpm extends CommonProps {
         this.shipItemCnt = null;
         this.receiptDt = LocalDateTime.now(); // 출고지시 일자
         this.storageId = itasrt.getStorageId();
+        this.oStorageId = tbOrderDetail.getStorageId();
 		this.instructDt = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());// 패킹일자
 																					// //Utilities.getStringToDate(StringFactory.getDoomDay());
         this.applyDay = LocalDateTime.parse(StringFactory.getDoomDay(), DateTimeFormatter.ofPattern(StringFactory.getDateFormat())); // 출고처리 일자
