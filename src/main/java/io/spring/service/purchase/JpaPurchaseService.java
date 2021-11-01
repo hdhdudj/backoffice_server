@@ -738,6 +738,8 @@ public class JpaPurchaseService {
         Lsdpsp newLsdpsp = new Lsdpsp(this.getDepositPlanId(), lsdpsp);
         newLsdpsp.setPurchaseTakeQty(0l);
         newLsdpsp.setPurchasePlanQty(qty);
+//        newLsdpsp.setOrderId(tbOrderDetail.getOrderId());
+//        newLsdpsp.setOrderSeq(tbOrderDetail.getOrderSeq());
         newLsdpsp.setPurchaseNo(lspchd.getPurchaseNo());
         newLsdpsp.setPurchaseSeq(lsdpsp.getPurchaseSeq());
         newLsdpsp.setDealtypeCd(StringFactory.getGbThree()); // dealtypeCd 03(입고예정주문발주) 하드코딩
@@ -751,10 +753,10 @@ public class JpaPurchaseService {
     private Lspchd saveLspchByOrder(TbOrderDetail tbOrderDetail, Lspchm origLspchm, Lspchd origLspchd, DirectOrImport di) {
 //        TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
         this.addMinusPurchase(tbOrderDetail, origLspchd);
-        if(di.equals(DirectOrImport.imports)){
-            log.debug("수입이므로 새로운 발주 데이터 생성하지 않음.");
-            return null;
-        }
+//        if(di.equals(DirectOrImport.imports)){
+//            log.debug("수입이므로 새로운 발주 데이터 생성하지 않음.");
+//            return null;
+//        }
         String purchaseNo = this.getPurchaseNo();
         Lspchm lspchm = new Lspchm(tbOrderDetail, di);
         lspchm.setPurchaseNo(purchaseNo);
@@ -955,7 +957,7 @@ public class JpaPurchaseService {
     }
 
 	/**
-	 * 주문이동 저장시 생성되는 발주 data를 만드는 함수
+	 * 주문이동처리 저장, 상품이동지시 저장시 생성되는 발주 data를 만드는 함수
 	 */
 	public void makePurchaseDataFromOrderMoveSave2(List<Lsshpd> moveList) {
 
