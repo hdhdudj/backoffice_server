@@ -69,7 +69,7 @@ public class Lsdpsd extends CommonProps implements Serializable {
         this.inputSeq = item.getPurchaseSeq();
     }
     // 입고 체크 후 저장시 실행되는 생성자
-    public Lsdpsd(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData, Lsdpsm lsdpsm, String depositSeq, DepositListWithPurchaseInfoData.Deposit deposit) {
+    public Lsdpsd(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData, Lsdpsm lsdpsm, String depositSeq, DepositListWithPurchaseInfoData.Deposit deposit, Lsdpsp lsdpsp) {
         this.depositNo = lsdpsm.getDepositNo();
         this.depositSeq = depositSeq;
         this.assortId = deposit.getAssortId();
@@ -90,6 +90,9 @@ public class Lsdpsd extends CommonProps implements Serializable {
 		// '0'); // 000001 하드코딩
         this.inputNo = deposit.getPurchaseNo();
         this.inputSeq = deposit.getPurchaseSeq();
+
+        this.orderId = lsdpsp.getOrderId();
+        this.orderSeq = lsdpsp.getOrderSeq();
     }
     @Id
     private String depositNo;

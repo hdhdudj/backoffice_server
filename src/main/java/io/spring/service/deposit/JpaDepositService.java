@@ -108,7 +108,7 @@ public class JpaDepositService {
         // 2. lsdpss 저장 (입고 마스터 이력)
         this.saveLsdpss(lsdpsm, depositListWithPurchaseInfoData);
         // 3. lsdpsd 저장 (입고 디테일)
-        List<Lsdpsd> lsdpsdList = this.insertLsdpsd(depositListWithPurchaseInfoData, lsdpsm);
+        List<Lsdpsd> lsdpsdList = this.insertLsdpsd(depositListWithPurchaseInfoData, lsdpsm, lsdpspList);
         // 4. lsdpds 저장 (입고 디테일 이력)
         this.saveLsdpds(lsdpsdList, depositListWithPurchaseInfoData);
         // 5. lsdpsp의 입고예정과 실제 입고량을 비교해 부분입고인지 완전입고인지 여부로 lspchm,b,s의 purchaseStatus 변경
@@ -137,17 +137,17 @@ public class JpaDepositService {
         for(Lsdpsp lsdpsp : lsdpspList){
             if(lsdpsp.getDealtypeCd().equals(StringFactory.getGbOne())){ // dealtypeCd가 01(주문발주)인 애들만 해당
                 Lspchd lspchd = lsdpsp.getLspchd();
-                String orderId = lspchd.getOrderId();
-                String orderSeq = lspchd.getOrderSeq();
+                String orderId = lsdpsp.getOrderId();
+                String orderSeq = lsdpsp.getOrderSeq();
                 Lspchm lspchm = lspchd.getLspchm();
                 TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId,orderSeq);
                 String statusCd;
 
 				Itasrt itasrt = jpaItasrtRepository.findByAssortId(lsdpsp.getAssortId());
 
-				String assortId2 = "";
+				String assortId2;
 
-				if (tbOrderDetail.getAssortGb().equals("002")) {
+				if (tbOrderDetail.getAssortGb().equals("002")) { // add_goods
 					TbOrderDetail tbOrderDetail2 = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId,
 							tbOrderDetail.getParentOrderSeq());
 
@@ -210,18 +210,19 @@ public class JpaDepositService {
 //        return lsdpsdList;
 //    }
 
-    private List<Lsdpsd> insertLsdpsd(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData, Lsdpsm lsdpsm){
+    private List<Lsdpsd> insertLsdpsd(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData, Lsdpsm lsdpsm, List<Lsdpsp> lsdpspList){
         List<Lsdpsd> lsdpsdList = new ArrayList<>();
         int index = 1;
         for(DepositListWithPurchaseInfoData.Deposit deposit : depositListWithPurchaseInfoData.getDeposits()){
+            lsdpspList = lsdpspList.stream().filter(x->x.getPurchaseNo().equals(deposit.getPurchaseNo()) && x.getPurchaseSeq().equals(deposit.getPurchaseSeq()))
+                    .collect(Collectors.toList());
             if(deposit.getAvailableQty() < deposit.getDepositQty()){
                 log.debug("input deposit qty is bigger than deposit available qty.");
                 continue;
             }
 
             String depositSeq = StringUtils.leftPad(Integer.toString(index), 4, '0');
-            Lsdpsd lsdpsd = new Lsdpsd(depositListWithPurchaseInfoData, lsdpsm, depositSeq, deposit);
-
+            Lsdpsd lsdpsd = new Lsdpsd(depositListWithPurchaseInfoData, lsdpsm, depositSeq, deposit, lsdpspList.get(0));
 
             Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(lsdpsd.getInputNo(), lsdpsd.getInputSeq());
 			// lspchd.setDepositNo(lsdpsd.getDepositNo());
@@ -525,6 +526,15 @@ public class JpaDepositService {
             }
 
             Lspchm lspchm = lsdpsp.getLspchd().getLspchm();
+            // lspchd.purchaseGb=02(상품발주), lspchd.dealtypeCd = 03 (입고예정 주문발주) 이면 해당 lsdpsp와 주문을 연결시켜줌 (tbOrderDetail.statusCd = C03인 주문을 대상으로)
+            if(lsdpsp.getPurchaseGb().equals(StringFactory.getGbTwo()) && lsdpsp.getDealtypeCd().equals(StringFactory.getGbThree())){
+                List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository
+                        .findByAssortIdAndItemIdAndQtyAndStatusCd(lsdpsp.getAssortId(), lsdpsp.getItemId(), lsdpsp.getPurchasePlanQty(), StringFactory.getStrC03());
+                TbOrderDetail to = tbOrderDetailList.get(0);
+                lsdpsp.setOrderId(to.getOrderId());
+                lsdpsp.setOrderSeq(to.getOrderSeq());
+                lsdpsp.setDealtypeCd(StringFactory.getGbOne()); // 03(입고예정주문발주) -> 01(일반발주) 로 변경
+            }
             LocalDateTime purchaseDt = lspchm.getPurchaseDt();
             lsdpsp = this.changeLsdpspStatus(lsdpsp, isCompleteDeposit);
             lsdpspList.add(lsdpsp);

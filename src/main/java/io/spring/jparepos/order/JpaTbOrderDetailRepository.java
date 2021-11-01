@@ -18,4 +18,6 @@ public interface JpaTbOrderDetailRepository extends JpaRepository<TbOrderDetail,
     TbOrderDetail findByOrderIdAndOrderSeq(String orderId, String orderSeq);
 
     List<TbOrderDetail> findByAssortIdAndItemId(String assortId, String itemId);
+
+    List<TbOrderDetail> findByAssortIdAndItemIdAndQtyAndStatusCd(String assortId, String itemId, Long purchasePlanQty, String strC03);
 }
