@@ -522,8 +522,8 @@ public class JpaPurchaseService {
             purchase.setDepositQty(lspchd.getPurchaseQty());
 
 			if (lspchd.getOrderId() != null && lspchd.getOrderSeq() != null) {
-				TbOrderDetail tob = tbOrderDetailRepository.findByOrderIdAndOrderSeq(lspchd.getOrderId(),
-						lspchd.getOrderSeq());
+				TbOrderDetail tob = lspchd.getTbOrderDetail();//tbOrderDetailRepository.findByOrderIdAndOrderSeq(lspchd.getOrderId(),
+						//lspchd.getOrderSeq());
 
 				if (tob != null) {
 					purchase.setOptionInfo(tob.getOptionInfo());
@@ -555,9 +555,14 @@ public class JpaPurchaseService {
 
         TypedQuery<Lspchd> query =
                 em.createQuery("select d from Lspchd d " +
+                                "join fetch d.tbOrderDetail tob " +
+                                "join fetch tob.tbOrderMaster tom " +
+                                "join fetch tom.tbMember tm " +
                                 "join fetch d.lspchm m " +
                                 "left join fetch d.ititmm it " +
-                                "join fetch it.itasrt " +
+                                "join fetch it.itasrt itasrt " +
+                                "join fetch itasrt.itcatg itcatg " +
+                                "join fetch itasrt.cmvdmr cmvdmr " +
                                 "left join fetch it.itvari1 " +
                                 "left join fetch it.itvari2 " +
                                 "where m.purchaseDt between ?1 and ?2 " +
