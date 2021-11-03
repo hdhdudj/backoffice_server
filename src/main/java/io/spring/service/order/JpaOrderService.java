@@ -22,6 +22,7 @@ import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.order.entity.*;
 import io.spring.model.order.request.OrderStockMngInsertRequestData;
+import io.spring.model.order.response.OrderDetailResponseData;
 import io.spring.model.purchase.entity.Lspchb;
 import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.ship.entity.Lsshpd;
@@ -535,6 +536,15 @@ public class JpaOrderService {
         }
         return sum;
     }
+
+//    public TbOrderDetail getNullTest(String orderId, String orderSeq) {
+//        TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
+//
+//        if(tbOrderDetail.getItasrt() == null){
+//            System.out.println("널입니다.");
+//        }
+//        return tbOrderDetail;
+//    }
 
     private enum ItitmcQty{
         QTY, SHIPINDQTY

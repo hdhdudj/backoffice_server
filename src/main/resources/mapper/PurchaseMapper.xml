@@ -245,6 +245,7 @@
 					bbb1.order_id orderId,
 					bbb1.order_seq orderSeq,
 					concat(bbb1.order_id,'-',bbb1.order_seq) orderCd,
+					concat(bbb1.order_id,'-',bbb1.parent_order_seq) parentOrderCd,					
 					bbb1.vendor_id vendorId,
 					bbb1.vd_nm vdNm, 
 					bbb1.assort_id assortId,
@@ -302,6 +303,7 @@
 						select
 						tod.order_id,
 						tod.order_seq,
+						tod.parent_order_seq,
 							tod.assort_id ,
 							tod.item_id ,
 							tod.option_info,

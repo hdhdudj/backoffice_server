@@ -292,4 +292,17 @@ public class OrderController {
 
 	}
 
+//	@GetMapping(path = "/items/{orderId}/{orderSeq}")
+//	public ResponseEntity getOrder(@PathVariable String orderId, @PathVariable String orderSeq) {
+//
+//		System.out.println("testest");
+//
+//		TbOrderDetail t = jpaOrderService.getNullTest(orderId, orderSeq);
+//
+//		// List<OrderMasterListResponseData> r = myBatisOrderService.get(map);
+//
+//		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), t);
+//		return ResponseEntity.ok(res);
+//
+//	}
 }

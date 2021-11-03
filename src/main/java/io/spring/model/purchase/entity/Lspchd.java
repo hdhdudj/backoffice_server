@@ -3,19 +3,10 @@ package io.spring.model.purchase.entity;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
@@ -40,6 +31,11 @@ import lombok.Setter;
 @Table(name="lspchd")
 @IdClass(value = LspchdId.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NamedEntityGraph(
+    name = "Lspchd.purchaseList", attributeNodes = {
+    @NamedAttributeNode("lspchm"),@NamedAttributeNode("tbOrderDetail"), @NamedAttributeNode(value="ititmm", subgraph = "ititmm_itvari")
+}, subgraphs = {@NamedSubgraph(name="ititmm_itvari", attributeNodes = {@NamedAttributeNode("itvari1"), @NamedAttributeNode("itvari2")})}
+)
 public class Lspchd extends CommonProps implements Serializable {
     public Lspchd(Lspchd lspchd, String purchaseSeq){
         this.purchaseNo = lspchd.getPurchaseNo();
@@ -213,7 +209,7 @@ public class Lspchd extends CommonProps implements Serializable {
     private Lspchm lspchm;
 
     // 연관관계 : ititmm
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumns({
             @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
@@ -245,9 +241,7 @@ public class Lspchd extends CommonProps implements Serializable {
 	@JoinColumns({
 			@JoinColumn(name = "orderId", referencedColumnName = "orderId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
 			@JoinColumn(name = "orderSeq", referencedColumnName = "orderSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")) })
-	@OneToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
-	@NotFound(action = NotFoundAction.IGNORE)
 	private TbOrderDetail tbOrderDetail;
-
 }

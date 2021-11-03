@@ -7,6 +7,8 @@ import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.vendor.entity.Cmvdmr;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
@@ -20,7 +22,6 @@ import java.util.List;
  */
 
 @Entity
-@ToString
 @Table(name = "itasrt")
 @Getter
 @Setter
@@ -242,18 +243,15 @@ public class Itasrt extends CommonProps {
 	@JoinColumn(name="dispCategoryId", referencedColumnName = "categoryId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
-	@NotFound(action = NotFoundAction.IGNORE)
 	private Itcatg itcatg; // itcatg 연관관계
 
 	@JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@OneToMany(fetch = FetchType.LAZY)
 	@JsonIgnore
-	@NotFound(action = NotFoundAction.IGNORE)
 	private List<Itaimg> itaimg; // itaimg 연관관계
 
 	@JoinColumn(name = "vendorId", referencedColumnName = "id", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
-	@NotFound(action = NotFoundAction.IGNORE)
 	private Cmvdmr cmvdmr; // cmvdmr 연관관계
 }
