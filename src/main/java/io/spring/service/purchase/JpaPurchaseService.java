@@ -3,15 +3,13 @@ package io.spring.service.purchase;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import io.spring.jparepos.deposit.JpaLsdpsmRepository;
@@ -496,18 +494,15 @@ public class JpaPurchaseService {
         List<PurchaseSelectListResponseData.Purchase> purchaseList = new ArrayList<>();
 
         List<Lspchd> lspchdList = this.getLspchd(param);
-        
-        Lspchm lspchm = null;
+
         if(lspchdList.size() > 0){
-            lspchm = lspchdList.get(0).getLspchm();
+            Lspchm lspchm = lspchdList.get(0).getLspchm();
             purchaseSelectListResponseData.setPurchaseNo(lspchm.getPurchaseNo());
             purchaseSelectListResponseData.setPurchaseDt(Utilities.removeTAndTransToStr(lspchm.getPurchaseDt()));
         }
 
         for(Lspchd lspchd : lspchdList){
             Ititmm ititmm = lspchd.getItitmm();
-
-
 
 //            Lsdpsd lsdpsd = lspchd.getLsdpsd();
             Itvari itvari1 = ititmm.getItvari1();
@@ -553,30 +548,25 @@ public class JpaPurchaseService {
         LocalDateTime end = ((LocalDate)param.get(StringFactory.getStrEndDt())).atTime(23,59,59);
 //        purchaseNo = purchaseNo == null || purchaseNo.equals("")? "":" and d.depositNo='"+purchaseNo+"'";
 
-        TypedQuery<Lspchd> query =
-                em.createQuery("select d from Lspchd d " +
-                                "join fetch d.tbOrderDetail tob " +
-                                "join fetch tob.tbOrderMaster tom " +
-                                "join fetch tom.tbMember tm " +
-                                "join fetch d.lspchm m " +
-                                "left join fetch d.ititmm it " +
-                                "join fetch it.itasrt itasrt " +
-                                "left join fetch itasrt.itcatg itcatg " +
-                                "join fetch itasrt.cmvdmr cmvdmr " +
-                                "left join fetch it.itvari1 " +
-                                "left join fetch it.itvari2 " +
-                                "where m.purchaseDt between ?1 and ?2 " +
-                                "and (?3 is null or trim(?3)='' or m.ownerId=?3) "+
-                                "and (?4 is null or trim(?4)='' or d.assortId=?4) "+
-                                "and (?5 is null or trim(?5)='' or m.purchaseStatus=?5) "+
-                                "and (?6 is null or trim(?6)='' or m.purchaseGb=?6) " +
-                                "and (?7 is null or trim(?7)='' or m.dealtypeCd=?7) " +
-                                "and (?8 is null or trim(?8)='' or m.purchaseGb like concat('%',?8,'%'))"
-                        , Lspchd.class);
-        query.setParameter(1, start).setParameter(2, end)
+        Query query = em.createQuery("select ld from Lspchd ld " +
+                "join fetch ld.lspchm lm " +
+                "join fetch ld.tbOrderDetail tod " +
+                "left outer join fetch ld.ititmm itm " +
+                "left outer join fetch itm.itvari1 iv1 " +
+                "left outer join fetch itm.itvari2 iv2 " +
+                "where lm.purchaseDt between ?1 and ?2 " +
+                "and (?3 is null or trim(?3)='' or ld.lspchm.ownerId=?3) " +
+                "and (?4 is null or trim(?4)='' or ld.assortId=?4) "+
+                "and (?5 is null or trim(?5)='' or ld.lspchm.purchaseStatus=?5) "+
+                "and (?6 is null or trim(?6)='' or ld.lspchm.purchaseGb=?6) " +
+                "and (?7 is null or trim(?7)='' or ld.lspchm.dealtypeCd=?7) " +
+                "and (?8 is null or trim(?8)='' or ld.lspchm.purchaseGb like concat('%',?8,'%'))")
+                .setParameter(1, start).setParameter(2, end)
                 .setParameter(3,purchaseVendorId).setParameter(4,assortId)
                 .setParameter(5,purchaseStatus).setParameter(6,purchaseGb).setParameter(7,dealtypeCd)
                 .setParameter(8,assortNm);
+//        EntityGraph graph = em.getEntityGraph("Lspchd.purchaseList");
+//        query.setHint("javax.persistence.fetchgraph", graph);
         List<Lspchd> lspchdList = query.getResultList();
         return lspchdList;
     }

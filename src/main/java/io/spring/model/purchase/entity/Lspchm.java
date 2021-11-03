@@ -242,5 +242,4 @@ public class Lspchm extends CommonProps {
     @JsonIgnore
     @JoinColumn(name = "purchaseNo", referencedColumnName = "purchaseNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     private List<Lspchd> lspchdList;
-
 }
