@@ -42,6 +42,7 @@ public class Lsdpsm extends CommonProps {
 		// StringUtils.leftPad("1",6,'0');//depositInsertRequestData.getOwnerId();
     }
 
+    // push test
     public Lsdpsm(String depositNo, DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
 		this.vendorId = depositListWithPurchaseInfoData.getVendorId();
         this.depositNo = depositNo;
