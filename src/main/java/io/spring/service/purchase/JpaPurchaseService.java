@@ -561,7 +561,7 @@ public class JpaPurchaseService {
                                 "join fetch d.lspchm m " +
                                 "left join fetch d.ititmm it " +
                                 "join fetch it.itasrt itasrt " +
-                                "join fetch itasrt.itcatg itcatg " +
+                                "left join fetch itasrt.itcatg itcatg " +
                                 "join fetch itasrt.cmvdmr cmvdmr " +
                                 "left join fetch it.itvari1 " +
                                 "left join fetch it.itvari2 " +
