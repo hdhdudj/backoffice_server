@@ -516,7 +516,7 @@ public class JpaPurchaseService {
             purchase.setItemNm(ititmm.getItemNm());
             purchase.setDepositQty(lspchd.getPurchaseQty());
 
-			if (lspchd.getOrderId() != null && lspchd.getOrderSeq() != null) {
+            if (lspchd.getOrderId() != null && lspchd.getOrderSeq() != null) {
 				TbOrderDetail tob = lspchd.getTbOrderDetail();//tbOrderDetailRepository.findByOrderIdAndOrderSeq(lspchd.getOrderId(),
 						//lspchd.getOrderSeq());
 
@@ -550,7 +550,7 @@ public class JpaPurchaseService {
 
         Query query = em.createQuery("select ld from Lspchd ld " +
                 "join fetch ld.lspchm lm " +
-                "join fetch ld.tbOrderDetail tod " +
+                "left outer join fetch ld.tbOrderDetail tod " +
                 "left outer join fetch ld.ititmm itm " +
                 "left outer join fetch itm.itvari1 iv1 " +
                 "left outer join fetch itm.itvari2 iv2 " +

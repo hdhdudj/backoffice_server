@@ -538,18 +538,18 @@ public class JpaOrderService {
         return sum;
     }
 
-//    public TbOrderDetail getNullTest(String orderId, String orderSeq) {
-//        List<TbOrderDetail> tbOrderDetail = em.createQuery("select t from TbOrderDetail t " +
-//                "join fetch t.itasrt " +
-//                "where t.orderId in (?1) and t.orderSeq=?2", TbOrderDetail.class)
-//                .setParameter(1, Arrays.asList(new String[]{"O00020410"}))//, "O00020410"O00025071
-//                .setParameter(2,orderSeq).getResultList();
-//
-//        if(tbOrderDetail.get(0).getItasrt() == null){
-//            System.out.println("널입니다.");
-//        }
-//        return tbOrderDetail.get(0);
-//    }
+    public TbOrderDetail getNullTest(String orderId, String orderSeq) {
+        TbOrderDetail tbOrderDetail = em.createQuery("select t from TbOrderDetail t " +
+                "left join fetch t.itasrt " +
+                "where t.orderId=?1 and t.orderSeq=?2", TbOrderDetail.class)
+                .setParameter(1, orderId)//, "O00020410"O00025071
+                .setParameter(2,orderSeq).getSingleResult();
+
+        if(tbOrderDetail.getItasrt() == null){
+            System.out.println("널입니다.");
+        }
+        return tbOrderDetail;
+    }
 
     private enum ItitmcQty{
         QTY, SHIPINDQTY
