@@ -39,6 +39,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -535,12 +536,16 @@ public class JpaOrderService {
     }
 
 //    public TbOrderDetail getNullTest(String orderId, String orderSeq) {
-//        TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
+//        List<TbOrderDetail> tbOrderDetail = em.createQuery("select t from TbOrderDetail t " +
+//                "join fetch t.itasrt " +
+//                "where t.orderId in (?1) and t.orderSeq=?2", TbOrderDetail.class)
+//                .setParameter(1, Arrays.asList(new String[]{"O00020410"}))//, "O00020410"O00025071
+//                .setParameter(2,orderSeq).getResultList();
 //
-//        if(tbOrderDetail.getItasrt() == null){
+//        if(tbOrderDetail.get(0).getItasrt() == null){
 //            System.out.println("널입니다.");
 //        }
-//        return tbOrderDetail;
+//        return tbOrderDetail.get(0);
 //    }
 
     private enum ItitmcQty{

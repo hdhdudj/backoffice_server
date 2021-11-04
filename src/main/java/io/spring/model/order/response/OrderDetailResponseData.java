@@ -28,6 +28,7 @@ public class OrderDetailResponseData {
 		this.channelOrderNo = (String) map.get("channelOrderNo");
 		this.custId = (int) map.get("custId");
 		this.custNm = (String) map.get("custNm");
+		this.custPcode = (String) map.get("custPcode");
 		this.custTel = (String) map.get("custTel");
 		this.custHp = (String) map.get("custHp");
 		this.custZipcode = (String) map.get("custZipcode");
@@ -55,6 +56,7 @@ public class OrderDetailResponseData {
 	private String channelOrderNo; // 제휴주문번호
 	private int custId; // 고객번호
 	private String custNm; // 주문자명
+	private String custPcode; // 개인고유통관번호
 	private String custTel; // 주문자 전화번호
 	private String custHp; // 주문자 휴대폰번호
 	private String custZipcode; // 주문자 우편번호
