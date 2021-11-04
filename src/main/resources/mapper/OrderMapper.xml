@@ -190,6 +190,7 @@ from (select aa.channel_gb channel_gb,
 		,tom.order_date orderDate
 		,tom.channel_order_no channelOrderNo
 		,tom.cust_id custId
+		,tom.cust_pcode custPcode
 		,tm.cust_nm  custNm
 		,tm.cust_tel  custTel
 		,tm.cust_hp custHp
