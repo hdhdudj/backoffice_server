@@ -3,21 +3,18 @@ package io.spring.service.purchase;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
-import io.spring.jparepos.deposit.JpaLsdpsmRepository;
-import io.spring.jparepos.ship.JpaLsshpsRepository;
-import io.spring.model.deposit.entity.Lsdpsd;
-import io.spring.model.deposit.entity.Lsdpsm;
-import io.spring.model.goods.entity.*;
-import io.spring.model.ship.entity.Lsshps;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,19 +28,20 @@ import io.spring.jparepos.goods.JpaItasrtRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.order.JpaTbOrderHistoryRepository;
-import io.spring.jparepos.order.JpaTbOrderMasterRepository;
 import io.spring.jparepos.purchase.JpaLspchbRepository;
 import io.spring.jparepos.purchase.JpaLspchdRepository;
 import io.spring.jparepos.purchase.JpaLspchmRepository;
 import io.spring.jparepos.purchase.JpaLspchsRepository;
-import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.deposit.response.PurchaseListInDepositModalData;
+import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.goods.entity.Ititmm;
+import io.spring.model.goods.entity.Ititmt;
+import io.spring.model.goods.entity.Itvari;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
-import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.purchase.entity.Lspchb;
 import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.entity.Lspchm;
@@ -658,17 +656,34 @@ public class JpaPurchaseService {
      */
     @Transactional
     public boolean makePurchaseDataByOrder(TbOrderDetail tbOrderDetail, DirectOrImport di) {
+
+		System.out.println("makePurchaseDataByOrder");
+
+		System.out.println("di >>" + di);
+
         // 1. lsdpsp 찾아오기 (d 딸려옴, d에 따라 b도 딸려옴)
         List<Lsdpsp> lsdpspList = jpaLsdpspRepository.findByAssortIdAndItemId(tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
         // 2. dealTypeCd = 02 (주문발주가 아닌 상품발주), purchaseGb = 01 (일반발주) 인 애들을 필터
-        if(di.equals(DirectOrImport.direct)){
+		// if(di.equals(DirectOrImport.direct)){
+		if (di.equals(DirectOrImport.purchase)) {
+
+			System.out.println("발주");
+
             lsdpspList = lsdpspList.stream().filter(x->x.getDealtypeCd().equals(StringFactory.getGbTwo())&&x.getPurchaseGb().equals(StringFactory.getGbOne())).collect(Collectors.toList());
         }
         // 2. dealTypeCd = 02 (주문발주가 아닌 상품발주), purchaseGb = 02 (이동요청) 인 애들을 필터
-        else if(di.equals(DirectOrImport.imports)){
+		// else if(di.equals(DirectOrImport.imports)){
+		else if (di.equals(DirectOrImport.move)) {
+
+			System.out.println("이동지시");
+
             lsdpspList = lsdpspList.stream().filter(x->x.getDealtypeCd().equals(StringFactory.getGbTwo())&&x.getPurchaseGb().equals(StringFactory.getGbTwo())).collect(Collectors.toList());
+
+			System.out.println(lsdpspList);
+
         }
         // 3. lspchb 중 purchaseStatus가 01(부분입고 완전입고 등등이 아닌 발주)인 애들만 남기기
+
         List<Lsdpsp> lsdpspList1 = new ArrayList<>();
         for(Lsdpsp lsdpsp : lsdpspList){
             List<Lspchb> lspchbList = lsdpsp.getLspchd().getLspchb();
@@ -706,8 +721,20 @@ public class JpaPurchaseService {
 //            this.minusLsdpsp(lsdpsp, tbOrderDetail);
 //        }
 //        else{
+
+			Lspchm lp = jpaLspchmRepository.findByPurchaseNo(lspchd.getPurchaseNo()).orElse(null);
+
+			Ititmt it = new Ititmt(lp, lspchd, "newRegID");
+			it.setTempIndicateQty(lspchd.getPurchaseQty());
+
+			jpaItitmtRepository.save(it);
+
+			// jpaItitmtRepository.save(it);
+
             this.updateLsdpspWhenCandidateExist(lsdpsp, lspchd, tbOrderDetail);
+
         }
+
 //        this.updateLspchbd(lsdpsp.getLspchd(), tbOrderDetail.getQty());
         // lspchm, s 저장
 //        this.updateLspchs(lsdpsp.getPurchaseNo(), StringFactory.getGbOne()); // 01 하드코딩
@@ -733,8 +760,8 @@ public class JpaPurchaseService {
         Lsdpsp newLsdpsp = new Lsdpsp(this.getDepositPlanId(), lsdpsp);
         newLsdpsp.setPurchaseTakeQty(0l);
         newLsdpsp.setPurchasePlanQty(qty);
-//        newLsdpsp.setOrderId(tbOrderDetail.getOrderId());
-//        newLsdpsp.setOrderSeq(tbOrderDetail.getOrderSeq());
+		newLsdpsp.setOrderId(tbOrderDetail.getOrderId());
+		newLsdpsp.setOrderSeq(tbOrderDetail.getOrderSeq());
         newLsdpsp.setPurchaseNo(lspchd.getPurchaseNo());
         newLsdpsp.setPurchaseSeq(lsdpsp.getPurchaseSeq());
         newLsdpsp.setDealtypeCd(StringFactory.getGbThree()); // dealtypeCd 03(입고예정주문발주) 하드코딩
@@ -757,9 +784,11 @@ public class JpaPurchaseService {
         lspchm.setPurchaseNo(purchaseNo);
         lspchm.setSiteOrderNo(origLspchm.getSiteOrderNo());
         Lspchd lspchd = new Lspchd(tbOrderDetail, origLspchd);
+		lspchd.setOrderId(tbOrderDetail.getOrderId());
+		lspchd.setOrderSeq(tbOrderDetail.getOrderSeq());
         lspchd.setPurchaseNo(purchaseNo);
         lspchd.setPurchaseSeq(StringFactory.getFourStartCd()); // 0001 하드코딩
-        lspchd.setMemo(Utilities.addDashInMiddle(purchaseNo, StringFactory.getFourStartCd()));
+		lspchd.setMemo(Utilities.addDashInMiddle(origLspchd.getPurchaseNo(), origLspchd.getPurchaseSeq()));
         Lspchs lspchs = new Lspchs(lspchm, "regId"); // regId 임시 하드코딩
         Lspchb lspchb = new Lspchb(lspchd, "regId"); // regId 임시 하드코딩
         jpaLspchmRepository.save(lspchm);
@@ -777,10 +806,10 @@ public class JpaPurchaseService {
         Lspchd lspchd = new Lspchd(tbOrderDetail, origLspchd);
         lspchd.setPurchaseNo(origLspchd.getPurchaseNo());
         lspchd.setPurchaseSeq(Utilities.plusOne(origLspchd.getPurchaseSeq(),4));
-        lspchd.setOwnerId(origLspchd.getOwnerId());
-        lspchd.setPurchaseQty(-lspchd.getPurchaseQty());
-        lspchd.setPurchaseUnitAmt(-lspchd.getPurchaseUnitAmt());
-        lspchd.setPurchaseItemAmt(-lspchd.getPurchaseItemAmt());
+		lspchd.setOwnerId(origLspchd.getOwnerId());
+		lspchd.setPurchaseQty(-lspchd.getPurchaseQty());
+		lspchd.setPurchaseUnitAmt(-lspchd.getPurchaseUnitAmt());
+		lspchd.setPurchaseItemAmt(-lspchd.getPurchaseItemAmt());
         Lspchb lspchb = new Lspchb(lspchd, "regId"); // regID 임시 하드코딩
         jpaLspchdRepository.save(lspchd);
         jpaLspchbRepository.save(lspchb);

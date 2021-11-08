@@ -82,10 +82,13 @@ public class DepositController {
     }
 
     /**
-     * 입고처리 : 화면에서 입고수량 입력 후 저장을 눌렀을 때 타는 api (create)
-     */
+	 * 입고처리 : 화면에서 입고수량 입력 후 저장을 눌렀을 때 타는 api (create)
+	 * 
+	 * @throws Exception
+	 */
     @PostMapping(path="")
-    public ResponseEntity createDepositListJpa(@RequestBody DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
+	public ResponseEntity createDepositListJpa(
+			@RequestBody DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) throws Exception {
         log.debug("입고처리 호출");
         List<String> messageList = new ArrayList<>();
         boolean flag = jpaDepositService.sequenceCreateDeposit(depositListWithPurchaseInfoData, messageList);

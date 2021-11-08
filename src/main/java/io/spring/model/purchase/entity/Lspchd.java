@@ -3,12 +3,20 @@ package io.spring.model.purchase.entity;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.*;
-
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedSubgraph;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -145,9 +153,9 @@ public class Lspchd extends CommonProps implements Serializable {
     public Lspchd(TbOrderDetail tbOrderDetail, Lspchd lspchd) {
         this.assortId = tbOrderDetail.getAssortId();
         this.itemId = tbOrderDetail.getItemId();
-        this.purchaseQty = lspchd.getPurchaseQty();
-        this.purchaseUnitAmt = lspchd.getPurchaseUnitAmt();
-        this.purchaseItemAmt = this.purchaseUnitAmt * (this.purchaseQty);
+		this.purchaseQty = tbOrderDetail.getQty(); // lspchd.getPurchaseQty();
+		this.purchaseUnitAmt = lspchd.getPurchaseUnitAmt();
+		this.purchaseItemAmt = (this.purchaseUnitAmt * (this.purchaseQty));
         this.itemGrade = StringFactory.getStrEleven(); // 11 하드코딩
         this.siteGb = StringFactory.getGbOne(); // 01 (고도몰) 하드코딩
         this.ownerId = lspchd.getOwnerId();

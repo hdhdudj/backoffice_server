@@ -1,5 +1,16 @@
 package io.spring.service.order;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+
 import io.spring.enums.DirectOrImport;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
@@ -7,8 +18,13 @@ import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.deposit.JpaLsdpdsRepository;
 import io.spring.jparepos.deposit.JpaLsdpsdRepository;
 import io.spring.jparepos.deposit.JpaLsdpsmRepository;
-import io.spring.jparepos.goods.*;
-import io.spring.jparepos.order.*;
+import io.spring.jparepos.goods.JpaItasrtRepository;
+import io.spring.jparepos.goods.JpaItitmcRepository;
+import io.spring.jparepos.goods.JpaItitmtRepository;
+import io.spring.jparepos.order.JpaOrderLogRepository;
+import io.spring.jparepos.order.JpaOrderStockRepository;
+import io.spring.jparepos.order.JpaTbOrderDetailRepository;
+import io.spring.jparepos.order.JpaTbOrderHistoryRepository;
 import io.spring.jparepos.purchase.JpaLspchbRepository;
 import io.spring.jparepos.purchase.JpaLspchdRepository;
 import io.spring.jparepos.ship.JpaLsshpdRepository;
@@ -16,32 +32,22 @@ import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
 import io.spring.model.deposit.entity.Lsdpds;
 import io.spring.model.deposit.entity.Lsdpsd;
-import io.spring.model.deposit.entity.Lsdpsm;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
-import io.spring.model.order.entity.*;
+import io.spring.model.order.entity.OrderLog;
+import io.spring.model.order.entity.OrderStock;
+import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.order.entity.TbOrderHistory;
 import io.spring.model.order.request.OrderStockMngInsertRequestData;
-import io.spring.model.order.response.OrderDetailResponseData;
 import io.spring.model.purchase.entity.Lspchb;
 import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import io.spring.model.ship.entity.Lsshps;
-import io.spring.service.deposit.JpaDepositService;
 import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -103,6 +109,8 @@ public class JpaOrderService {
         if(assortGb == null){ // add_goods인 경우 자체 assortGb가 존재하지 않아, 부모 상품의 것을 따른다.
             itasrt = this.getParentAssortGb(orderId, orderSeq, itasrt);
         }
+
+		System.out.println(assortGb);
 
         if(StringFactory.getGbOne().equals(assortGb)){ // assortGb == '01' : 직구
             this.changeOrderStatusWhenDirect(tbOrderDetail);
@@ -242,11 +250,15 @@ public class JpaOrderService {
      * @param tbOrderDetail
      */
     private void  changeOrderStatusWhenImport(TbOrderDetail tbOrderDetail) {
+
+		System.out.println("changeOrderStatusWhenImport");
+
         Itasrt itasrt = jpaItasrtRepository.findById(tbOrderDetail.getAssortId()).orElseGet(() -> null);
         if(itasrt == null){
             log.debug("해당 상품 정보가 존재하지 않습니다.");
             return;
         }
+
         String assortId = tbOrderDetail.getAssortId();
         String itemId = tbOrderDetail.getItemId();
 		String domesticStorageId = tbOrderDetail.getStorageId(); // 주문자 현지(국내?) 창고 id (국내창고)
@@ -299,6 +311,8 @@ public class JpaOrderService {
         }
         // 4. 해외입고예정 재고가 있을 가능성이 있음
         if(statusCd == null && sumOfOvrsTempQty - sumOfOvrsTempIndQty - tbOrderDetail.getQty() >= 0){
+			System.out.println("44444444444444444444444444444444444444");
+
             statusCd = this.loopItitmt(ovrsItitmt, tbOrderDetail, DirectOrImport.imports);
         }
         // 5. 아무것도 없음
@@ -312,30 +326,46 @@ public class JpaOrderService {
      * Ititmt list를 loop 돌면서 qty 관련 계산
      */
     private String loopItitmt(List<Ititmt> ititmtList, TbOrderDetail tbOrderDetail, DirectOrImport di) {
+
+		System.out.println("loopItitmt");
+
+		System.out.println(di);
+
         boolean isStockCandidateExist = false;
         long orderQty = tbOrderDetail.getQty();
         String goodsStorageId = null;
         for(Ititmt ititmt : ititmtList){
             if(ititmt.getTempQty() >= orderQty + ititmt.getTempIndicateQty()){
-                ititmt.setTempIndicateQty(orderQty + ititmt.getTempIndicateQty());
+				ititmt.setTempQty(ititmt.getTempQty() - orderQty);
+				// ititmt.setTempIndicateQty(orderQty + ititmt.getTempIndicateQty());
+				// ititmt.setTempIndicateQty(orderQty + ititmt.getTempIndicateQty());
                 isStockCandidateExist = true;
                 goodsStorageId = ititmt.getStorageId();
                 break;
             }
         }
+
         if(isStockCandidateExist && di.equals(DirectOrImport.direct)){ // 직구
+
+			System.out.println("111111111111111111111111111");
+
             jpaPurchaseService.makePurchaseDataByOrder(tbOrderDetail, di);
             return StringFactory.getStrB02(); // 발주완료 : B02
         }
         else if(isStockCandidateExist && di.equals(DirectOrImport.imports)){ // 수입
+
+			System.out.println("222222222222222222222222222");
+
             String statusCd;
             if(!tbOrderDetail.getStorageId().equals(goodsStorageId)){ // 물건이 해외입고예정이라면
                 statusCd = StringFactory.getStrB02(); // 발주완료 : B02
-                di = DirectOrImport.move;
+				// di = DirectOrImport.move;
+				di = DirectOrImport.purchase;
             }
             else { // 물건이 국내(주문자위치)입고예정이라면
                 statusCd = StringFactory.getStrC03(); // 이동지시완료 : C03
-                di = DirectOrImport.purchase;
+				// di = DirectOrImport.purchase;
+				di = DirectOrImport.move;
             }
             jpaPurchaseService.makePurchaseDataByOrder(tbOrderDetail, di);
             return statusCd;
