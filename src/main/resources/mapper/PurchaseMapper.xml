@@ -241,99 +241,73 @@
     <select id="getOrderListByPurchaseVendorItem" parameterType="java.util.HashMap"  resultType="HashMap">
     	
     	<![CDATA[
-				select
-					bbb1.order_id orderId,
-					bbb1.order_seq orderSeq,
-					concat(bbb1.order_id,'-',bbb1.order_seq) orderCd,
-					concat(bbb1.order_id,'-',bbb1.parent_order_seq) parentOrderCd,					
-					bbb1.vendor_id vendorId,
-					bbb1.vd_nm vdNm, 
-					bbb1.assort_id assortId,
-					bbb1.assort_nm assortNm,
-					bbb1.item_id itemId,
-					concat(bbb1.option_nm1, ifnull(CONCAT('-', bbb1.option_nm2), '')) optionNm,
-					bbb1.option_info optionInfo,
-					bbb1.qty purchaseQty,
-					bbb1.md_rrp rrp,
-					bbb1.buy_supply_discount discountRate
-				from
-					(
-					select
-					
-					
-						case
-						when aaa.order_vendor_id <> '000000' then
-							ifnull(aaa.order_vendor_id, '000000')
-						else
-							ifnull(bbb.vendor_id, '000000') 
-						end vendor_id,
-						case
-						when aaa.order_vendor_id <> '000000' then
-							ifnull((select bb.vd_nm from cmvdmr bb where bb.id = aaa.order_vendor_id), '거래처없음')
-						else
-							ifnull((select bb.vd_nm from cmvdmr bb where bb.id = bbb.vendor_id), '거래처없음')
-							 
-						end vd_nm,						
-						bbb.assort_nm ,
-						bbb.md_rrp ,
-						bbb.buy_supply_discount ,
-						aaa.* ,
-						(
-						select
-							iv.option_nm
-						from
-							itvari iv
-						where
-							iv.assort_id = ccc.assort_id
-							and iv.seq = ccc.variation_seq1
-							and iv.variation_gb = '01'
-							and del_yn = '02' ) option_nm1 ,
-						(
-						select
-							iv.option_nm
-						from
-							itvari iv
-						where
-							iv.assort_id = ccc.assort_id
-							and iv.seq = ccc.variation_seq2
-							and iv.variation_gb = '02'
-							and del_yn = '02' ) option_nm2
-					from
-						(
-						select
-						tod.order_id,
-						tod.order_seq,
-						tod.parent_order_seq,
-							tod.assort_id ,
-							tod.item_id ,
-							tod.option_info,
-							tod.qty ,
-							case 
-								when tod.order_seq <> tod.parent_order_seq then
-									(select eee.vendor_id from tb_order_detail vvv, itasrt eee
-									where vvv.order_id = tod.order_id
-									and vvv.order_seq = tod.parent_order_seq
-									and vvv.assort_id = eee.assort_id
-									)
-									
-								else 
-									'000000'
-								end order_vendor_id							
-						from
-							tb_order_detail tod
-						where
-							status_cd = 'B01' ) aaa ,
-						itasrt bbb,
-						ititmm ccc
-					where
-						1 = 1
-						and aaa.assort_id = bbb.assort_id
-						and aaa.assort_id = ccc.assort_id
-						and aaa.item_id = ccc.item_id
-						 ) bbb1
-				where
-					bbb1.vendor_id = #{vendorId}
-				order by orderId
+		select bbb1.order_id                                                     orderId,
+			   bbb1.order_seq                                                    orderSeq,
+			   concat(bbb1.order_id, '-', bbb1.order_seq)                        orderCd,
+			   concat(bbb1.order_id, '-', bbb1.parent_order_seq)                 parentOrderCd,
+			   bbb1.vendor_id                                                    vendorId,
+			   bbb1.vd_nm                                                        vdNm,
+			   bbb1.assort_id                                                    assortId,
+			   bbb1.assort_nm                                                    assortNm,
+			   bbb1.item_id                                                      itemId,
+			   concat(bbb1.option_nm1, ifnull(CONCAT('-', bbb1.option_nm2), '')) optionNm,
+			   bbb1.option_info                                                  optionInfo,
+			   bbb1.qty                                                          purchaseQty,
+			   bbb1.md_rrp                                                       rrp,
+			   bbb1.buy_supply_discount                                          discountRate,
+			   bbb1.order_date
+		from (select case
+						 when aaa.order_vendor_id <> '000000' then ifnull(aaa.order_vendor_id, '000000')
+						 else ifnull(bbb.vendor_id, '000000') end                                               vendor_id,
+					 case
+						 when aaa.order_vendor_id <> '000000' then ifnull(
+								 (select bb.vd_nm from cmvdmr bb where bb.id = aaa.order_vendor_id), '거래처없음')
+						 else ifnull((select bb.vd_nm from cmvdmr bb where bb.id = bbb.vendor_id), '거래처없음') end vd_nm,
+					 bbb.assort_nm,
+					 bbb.md_rrp,
+					 bbb.buy_supply_discount,
+					 tom.order_date,
+					 aaa.*,
+					 (select iv.option_nm
+					  from itvari iv
+					  where iv.assort_id = ccc.assort_id
+						and iv.seq = ccc.variation_seq1
+						and iv.variation_gb = '01'
+						and del_yn = '02')                                                                      option_nm1,
+					 (select iv.option_nm
+					  from itvari iv
+					  where iv.assort_id = ccc.assort_id
+						and iv.seq = ccc.variation_seq2
+						and iv.variation_gb = '02'
+						and del_yn = '02')                                                                      option_nm2
+			  from (select tod.order_id,
+						   tod.order_seq,
+						   tod.parent_order_seq,
+						   tod.reg_dt,
+						   tod.assort_id,
+						   tod.item_id,
+						   tod.option_info,
+						   tod.qty,
+						   case
+							   when tod.order_seq <> tod.parent_order_seq then (select eee.vendor_id
+																				from tb_order_detail vvv,
+																					 itasrt eee
+																				where vvv.order_id = tod.order_id
+																				  and vvv.order_seq = tod.parent_order_seq
+																				  and vvv.assort_id = eee.assort_id)
+							   else '000000' end order_vendor_id
+					from tb_order_detail tod
+					where status_cd in ('p1', 'B01')) aaa,
+				   itasrt bbb,
+				   ititmm ccc,
+				   tb_order_master tom
+			  where 1 = 1
+				and aaa.assort_id = bbb.assort_id
+				and aaa.assort_id = ccc.assort_id
+				and aaa.item_id = ccc.item_id
+				and tom.order_id = aaa.order_id) bbb1
+		where bbb1.vendor_id = #{vendorId}
+		order by bbb1.order_date desc, bbb1.order_seq desc;
 			]]>
 		
 		 		
