@@ -657,7 +657,9 @@ public class JpaDepositService {
 			Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(lsdpsd.getInputNo(),
 					lsdpsd.getInputSeq());
 
-			if (lspchd.getLspchm().getDealtypeCd().equals(StringFactory.getGbOne())) {
+			// 주문발주나 입고예정발주시 처리
+			if (lspchd.getLspchm().getDealtypeCd().equals(StringFactory.getGbOne())
+					|| lspchd.getLspchm().getDealtypeCd().equals("03")) {
 
 
 				System.out.println(lsdpsd);

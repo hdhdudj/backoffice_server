@@ -15,7 +15,6 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
-import io.spring.model.deposit.entity.Lsdpsp;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -591,6 +590,9 @@ public class JpaMoveService {
 //            ititmt.setTempIndicateQty(moveQty);
 //            jpaItitmtRepository.save(ititmt);
         }
+
+		// 상품이동지시의 경우 이동지시에 걸려있는상황에서 발주가 없으면 ititmc 에만 데이타가 있는거기 떄문에 신규주문에 대한 처리가 안됨 그래서
+		// 상품발주는 이동발주를 이동지시와 같이 처리함,
         jpaPurchaseService.makePurchaseDataFromOrderMoveSave2(lsshpdList);
 
         return shipIdList;
@@ -749,6 +751,7 @@ public class JpaMoveService {
 
         // lss- 변경
         for(String shipId : shipNoSet){
+			// todo 출고건이 무조건 하나라는 가정으로 1개의건만 가져오는데 이부분 리스트로 받아서 처리되도록 수정해야함.
             Lsshpd lsshpd = jpaLsshpdRepository.findByShipId(shipId).get(0);
 
 
@@ -762,16 +765,18 @@ public class JpaMoveService {
                 log.debug("주문이동처리가 아닌 상품이동지시입니다.");
                 lsshpm.setShipStatus(StringFactory.getGbFour()); // 01 이동지시or출고지시 02 이동지시or출고지시 접수 04 출고
                 jpaLsshpmRepository.save(lsshpm);
-                continue;
+				// continue; // 상품이동지시여도 재고처리는 해야함.
             }
             // ititmc.shipIndicateQty, ititmc.shipQty 차감
             long shipIndQty = lsshpd.getShipIndicateQty();
+
 			// List<Ititmc> ititmcList =
 			// jpaItitmcRepository.findByAssortIdAndItemIdAndEffEndDtOrderByEffEndDtAsc(lsshpd.getAssortId(),
 			// lsshpd.getItemId(), lsshpd.getExcAppDt());
 			// List<Ititmc> ititmcList =
 			// jpaItitmcRepository.findByAssortIdAndItemIdAndEffEndDtOrderByEffEndDtAsc(lsshpd.getAssortId(),
 			// lsshpd.getItemId(), lsshpd.getExcAppDt());
+
 			List<Ititmc> ititmcList = jpaItitmcRepository
 					.findByAssortIdAndItemIdAndEffEndDtAndStorageIdOrderByEffEndDtAsc(
 					lsshpd.getAssortId(), lsshpd.getItemId(), lsshpd.getExcAppDt(), lsshpm.getStorageId());
@@ -799,7 +804,10 @@ public class JpaMoveService {
             newShipIdList.add(lsshpm.getShipId());
             this.updateLssSeries(lsshpd);
 
-			l2.add(lsshpd);
+			if (lsshpm.getShipOrderGb().equals("01")) {
+				// 주문이동지시일경우 발주데이타 생성
+				l2.add(lsshpd);
+			}
 
 			if (lsshpm.getShipOrderGb().equals("01")) {
 				HashMap<String, Object> m = new HashMap<String, Object>();

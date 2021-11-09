@@ -1001,6 +1001,11 @@ public class JpaPurchaseService {
 		// Lsshpd lsshpd = jpaLsshpdRepository.findByShipIdAndShipSeq(move.getShipId(),
 		// move.getShipSeq());
 
+		if (lsshpm.getShipOrderGb().equals("02")) {
+			// 상품이동지시라면 건너뛰기
+			continue;
+		}
+
 			String purchaseNo = this.getPurchaseNo();
 
 			// Lsdpsd itemLsdpsd = lsdpsdList.get(i);
