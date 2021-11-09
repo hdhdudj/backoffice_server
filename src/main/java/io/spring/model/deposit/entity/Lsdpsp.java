@@ -24,12 +24,14 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Entity
 @Getter
 @Setter
+@ToString
 @Table(name="lsdpsp")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lsdpsp extends CommonProps implements Serializable {
@@ -52,6 +54,9 @@ public class Lsdpsp extends CommonProps implements Serializable {
 		this.planStatus = StringFactory.getGbOne();
     }
     public Lsdpsp(PurchaseInsertRequestData purchaseInsertRequestData, PurchaseInsertRequestData.Items items){
+
+		System.out.println(purchaseInsertRequestData);
+
         this.depositPlanId = purchaseInsertRequestData.getDepositPlanId();
         this.smReservationDt = Utilities.getStringToDate(StringFactory.getDoomDay());
         this.purchasePlanQty = items.getPurchaseQty();
@@ -59,8 +64,8 @@ public class Lsdpsp extends CommonProps implements Serializable {
         this.assortId = items.getAssortId();
         this.itemId = items.getItemId();
         this.planStatus = purchaseInsertRequestData.getPlanStatus();
-        this.orderId = purchaseInsertRequestData.getOrderId();
-        this.orderSeq = purchaseInsertRequestData.getOrderSeq();
+		this.orderId = items.getOrderId();
+		this.orderSeq = items.getOrderSeq();
         this.purchaseNo = purchaseInsertRequestData.getPurchaseId();
         this.purchaseSeq = items.getPurchaseSeq();
         this.claimItemYn = StringFactory.getGbTwo(); // 02
@@ -136,6 +141,8 @@ public class Lsdpsp extends CommonProps implements Serializable {
 			this.dealtypeCd = StringFactory.getGbTwo(); // 01 : 주문발주, 02 : 상품발주
 		}
 
+		this.orderId = lspchd.getOrderId();
+		this.orderSeq = lspchd.getOrderSeq();
 
 		this.claimItemYn = StringFactory.getGbTwo(); // 02
 		super.setRegId(regId);

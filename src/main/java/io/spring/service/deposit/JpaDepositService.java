@@ -90,10 +90,13 @@ public class JpaDepositService {
 //    }
 
     /**
-     * 입고처리 화면에서 발주조회 후 입고 데이터 저장
-     */
-    @Transactional
-	public boolean sequenceCreateDeposit(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData, List<String> messageList) {
+	 * 입고처리 화면에서 발주조회 후 입고 데이터 저장
+	 * 
+	 * @throws Exception
+	 */
+	@Transactional
+	public boolean sequenceCreateDeposit(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData,
+			List<String> messageList) throws Exception {
 
 		// todo:주문발주의 경우 처리후 이동지시나 출고지시에 대한 내역 생성
 
@@ -146,6 +149,8 @@ public class JpaDepositService {
 				Itasrt itasrt = jpaItasrtRepository.findByAssortId(lsdpsp.getAssortId());
 
 				String assortId2;
+
+				System.out.println(tbOrderDetail.getAssortGb());
 
 				if (tbOrderDetail.getAssortGb().equals("002")) { // add_goods
 					TbOrderDetail tbOrderDetail2 = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId,
@@ -487,9 +492,12 @@ public class JpaDepositService {
     }
 
     /**
-     * 입고 처리가능수량을 변경했을 때 수정하는 함수
-     */
-    private List<Lsdpsp> updateDepositQty(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData, List<String> messageList) {
+	 * 입고 처리가능수량을 변경했을 때 수정하는 함수
+	 * 
+	 * @throws Exception
+	 */
+	private List<Lsdpsp> updateDepositQty(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData,
+			List<String> messageList) throws Exception {
         String storageId = depositListWithPurchaseInfoData.getStorageId();
         List<Lsdpsp> lsdpspList = new ArrayList<>();
         List<DepositListWithPurchaseInfoData.Deposit> depositList = new ArrayList<>();
@@ -602,13 +610,19 @@ public class JpaDepositService {
         return ititmc;
     }
 
-    private Ititmt saveItitmt(LocalDateTime purchaseDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit, String dealTypeCd){
+	private Ititmt saveItitmt(LocalDateTime purchaseDt, String storageId,
+			DepositListWithPurchaseInfoData.Deposit deposit, String dealTypeCd) throws Exception {
         Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt
                         (deposit.getAssortId(), deposit.getItemId(), storageId, StringFactory.getStrEleven(), purchaseDt); // dealtypeCd = '01'인 애들(주문)
         if(ititmt == null){
 //            ititmt = new Ititmt(purchaseDt, storageId, deposit);
             log.debug("There is no proper ititmt. Check data.");
-            return null;
+
+			// throw new Exception();
+			// throw new RuntimeException(e);
+			throw new RuntimeException("There is no proper ititmt. Check data.");
+
+			// return null;
         }
         else {
             ititmt.setTempQty(ititmt.getTempQty() - deposit.getDepositQty());
@@ -645,7 +659,9 @@ public class JpaDepositService {
 			Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(lsdpsd.getInputNo(),
 					lsdpsd.getInputSeq());
 
-			if (lspchd.getLspchm().getDealtypeCd().equals(StringFactory.getGbOne())) {
+			// 주문발주나 입고예정발주시 처리
+			if (lspchd.getLspchm().getDealtypeCd().equals(StringFactory.getGbOne())
+					|| lspchd.getLspchm().getDealtypeCd().equals("03")) {
 
 
 				System.out.println(lsdpsd);
