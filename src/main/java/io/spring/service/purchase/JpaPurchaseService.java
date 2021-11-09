@@ -816,6 +816,9 @@ public class JpaPurchaseService {
 		lspchd.setPurchaseQty(-lspchd.getPurchaseQty());
 		lspchd.setPurchaseUnitAmt(-lspchd.getPurchaseUnitAmt());
 		lspchd.setPurchaseItemAmt(-lspchd.getPurchaseItemAmt());
+		lspchd.setSetShipId(origLspchd.getPurchaseNo());
+		lspchd.setSetShipSeq(origLspchd.getPurchaseSeq());
+
         Lspchb lspchb = new Lspchb(lspchd, "regId"); // regID 임시 하드코딩
         jpaLspchdRepository.save(lspchd);
         jpaLspchbRepository.save(lspchb);
@@ -1007,10 +1010,6 @@ public class JpaPurchaseService {
 		// Lsshpd lsshpd = jpaLsshpdRepository.findByShipIdAndShipSeq(move.getShipId(),
 		// move.getShipSeq());
 
-		if (lsshpm.getShipOrderGb().equals("02")) {
-			// 상품이동지시라면 건너뛰기
-			continue;
-		}
 
 			String purchaseNo = this.getPurchaseNo();
 

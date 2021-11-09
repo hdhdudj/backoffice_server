@@ -47,8 +47,8 @@ public class Lsshpm extends CommonProps {
         this.deliId = null; // 이동지시 null, 출고지시 tb_order_master.deli_id
         this.shipItemCnt = null;
         this.receiptDt = LocalDateTime.now(); // 출고지시 일자
-        this.storageId = itasrt.getStorageId();
-        this.oStorageId = tbOrderDetail.getStorageId();
+		this.storageId = itasrt.getStorageId(); // 상황에 따라서 창고가 틀림 이부분도 나중에 수정해야함.
+		this.oStorageId = tbOrderDetail.getStorageId(); // 상황에 따라서 창고가 틀림 이부분도 나중에 수정해야함.
 		this.instructDt = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());// 패킹일자
 																					// //Utilities.getStringToDate(StringFactory.getDoomDay());
         this.applyDay = LocalDateTime.parse(StringFactory.getDoomDay(), DateTimeFormatter.ofPattern(StringFactory.getDateFormat())); // 출고처리 일자
