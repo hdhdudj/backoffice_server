@@ -86,6 +86,9 @@ public class JpaPurchaseService {
      */
     @Transactional
     public String createPurchaseSquence(PurchaseInsertRequestData purchaseInsertRequestData) {
+
+		System.out.println(purchaseInsertRequestData);
+
         String purchaseNo = null;
         if(purchaseInsertRequestData.getPurchaseId() == null){
             purchaseNo = this.getPurchaseNo();
@@ -323,6 +326,9 @@ public class JpaPurchaseService {
                 lsdpsp.setPlanStatus(purchaseInsertRequestData.getPlanStatus());
                 lsdpsp.setUpdId(purchaseInsertRequestData.getUserId());
             }
+            
+			System.out.println(lsdpsp);
+            
             lsdpspList.add(lsdpsp);
             jpaLsdpspRepository.save(lsdpsp);
         }

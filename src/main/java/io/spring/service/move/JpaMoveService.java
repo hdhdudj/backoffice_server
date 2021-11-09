@@ -961,6 +961,9 @@ public class JpaMoveService {
      * @return
      */
     private List<Lsshpd> getLsshpdMoveList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId, String deliMethod, String shipStatus) {
+
+		System.out.println("getLsshpdMoveList");
+
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
         TypedQuery<Lsshpd> query = em.createQuery("select ld from Lsshpd ld " +

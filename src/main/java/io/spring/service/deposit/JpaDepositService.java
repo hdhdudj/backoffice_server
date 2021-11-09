@@ -150,6 +150,8 @@ public class JpaDepositService {
 
 				String assortId2;
 
+				System.out.println(tbOrderDetail.getAssortGb());
+
 				if (tbOrderDetail.getAssortGb().equals("002")) { // add_goods
 					TbOrderDetail tbOrderDetail2 = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId,
 							tbOrderDetail.getParentOrderSeq());

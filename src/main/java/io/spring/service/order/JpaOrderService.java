@@ -306,7 +306,7 @@ public class JpaOrderService {
         }
         // 3. 해외재고가 있을 가능성이 있음
         if(statusCd == null && sumOfOvrsQty - sumOfOvrsShipIndQty - tbOrderDetail.getQty() >= 0){
-            this.loopItitmc(ovrsItitmc, tbOrderDetail);
+			this.loopItitmcByMove(ovrsItitmc, tbOrderDetail);
             statusCd = StringFactory.getStrC01(); // 해외입고완료 : C01
         }
         // 4. 해외입고예정 재고가 있을 가능성이 있음
@@ -389,6 +389,60 @@ public class JpaOrderService {
         }
         return false;
     }
+
+	/**
+	 * Ititmc list를 loop 돌면서 qty 관련 계산
+	 */
+	private boolean loopItitmcByMove(List<Ititmc> ititmcList, TbOrderDetail tbOrderDetail) {
+		// 해외입고건은 이동지시 생성
+
+		long orderQty = tbOrderDetail.getQty();
+		for (Ititmc ititmc : ititmcList) {
+			if (ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()) {
+				ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
+				this.makeMoveDataByDeposit(ititmc, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * 출고 관련 값 update, 출고 관련 data 생성 함수 (lsshpm,d,s) ShipIndicateSaveData 객체로
+	 * lsshpm,s,d 생성
+	 */
+	private String makeMoveDataByDeposit(Ititmc ititmc, TbOrderDetail tbOrderDetail, String shipStatus) {
+		String shipId = this.getShipId();
+
+		Itasrt itasrt = tbOrderDetail.getItasrt();
+		// lsshpm 저장
+		Lsshpm lsshpm = new Lsshpm("03", shipId, itasrt, tbOrderDetail);
+
+		lsshpm.setShipStatus(shipStatus); // 01 : 이동지시or출고지시, 02 : 이동지시or출고지시 접수, 04 : 출고
+		lsshpm.setDeliId(tbOrderDetail.getTbOrderMaster().getDeliId());
+
+		lsshpm.setShipGb("02");
+		lsshpm.setShipOrderGb("01");
+		lsshpm.setMasterShipGb("03");
+
+		// lsshpm.setOStorageId(tbOrderDetail.getStorageId());
+
+		lsshpm.setStorageId(itasrt.getStorageId());
+
+		// lsshps 저장
+		Lsshps lsshps = new Lsshps(lsshpm);
+		jpaLsshpsRepository.save(lsshps);
+		jpaLsshpmRepository.save(lsshpm);
+		// lsshpd 저장
+		String shipSeq = StringUtils.leftPad(Integer.toString(1), 4, '0'); // 0001 하드코딩
+		Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc, itasrt);
+//            lsshpd.setLocalPrice(tbOrderDetail.getLspchd());
+		lsshpd.setVendorDealCd(StringFactory.getGbOne()); // 01 : 주문, 02 : 상품, 03 : 입고예정
+		lsshpd.setShipIndicateQty(tbOrderDetail.getQty());
+		lsshpd.setShipGb("03"); // 주문이동지시
+		jpaLsshpdRepository.save(lsshpd);
+		return shipId;
+	}
 
     /**
      * 출고 관련 값 update, 출고 관련 data 생성 함수 (lsshpm,d,s) ShipIndicateSaveData 객체로
