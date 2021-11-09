@@ -180,7 +180,8 @@ public class JpaOrderService {
         if(sumOfDomQty - sumOfDomShipIndQty - tbOrderDetail.getQty() >= 0){
             isStockExist = this.loopItitmc(domItitmc, tbOrderDetail);
             statusCd = isStockExist? StringFactory.getStrC04() : statusCd; // 국내입고완료(해외지만 거기서 바로 쏘므로) : C04
-            this.getLsdpsdListByGoodsInfo(tbOrderDetail).get(0); // 숫자 맞는 상품입고와 그 입고에 연결된 상품발주에 orderId와 orderSeq 적어넣기
+			// this.getLsdpsdListByGoodsInfo(tbOrderDetail).get(0); // 숫자 맞는 상품입고와 그 입고에 연결된
+			// 상품발주에 orderId와 orderSeq 적어넣기
         }
         // 2. 해외입고예정재고 있을 가능성이 있음
         if(statusCd == null && sumOfDomTempQty - sumOfDomTempIndQty - tbOrderDetail.getQty() >= 0){
