@@ -555,7 +555,10 @@ public class JpaOrderService {
 		TbOrderDetail tod = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
         Date date = Utilities.getStringToDate(StringFactory.getDoomDay());
 		List<TbOrderHistory> tohs = jpaTbOrderHistoryRepository.findByOrderIdAndOrderSeqAndEffEndDt(orderId, orderSeq, date);
-
+        if(statusCd.equals(tod.getStatusCd())){
+            log.debug("변경하려는 주문상태가 현재 주문상태와 동일합니다.");
+            return;
+        }
 		tod.setStatusCd(statusCd);
 
 		Date newEffEndDate = new Date();
@@ -577,6 +580,9 @@ public class JpaOrderService {
         TbOrderDetail t = jpaTbOrderDetailRepository.save(tod);
 //        System.out.println(t);
         jpaTbOrderHistoryRepository.saveAll(tohs);
+
+        // todo: 문자, 카카오 비즈톡 발송 코드
+
 	}
 
 	public List<OrderStock> getOrderStock() {

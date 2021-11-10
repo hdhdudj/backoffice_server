@@ -302,8 +302,8 @@
 		                  And  b2.assort_id = b1.assort_id
 		                  and b2.variation_gb2 = b1.variation_gb
 		                  and  b2.variation_seq2=b1.seq) optionNm2
-		,aa.ship_indicate_qty
-		,aa.qty
+		,aa.ship_indicate_qty shipIndicateQty
+		,aa.qty qty
 		from (
 		select storage_id
 		,assort_id ,item_id ,item_grade 
