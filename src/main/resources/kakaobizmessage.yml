@@ -1,9 +1,0 @@
-appKey : 6Tt6xBHx7coMPcBX
-secretKey : wUiXwVR5
-url:
-  nhnCloud : https://api-alimtalk.cloud.toast.com
-    alimtalk :
-      /alimtalk/v2.2/appkeys/
-    messages :
-      /messages
-
