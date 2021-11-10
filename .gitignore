@@ -43,5 +43,5 @@ application.properties
 .DS_Store
 
 ### yaml ###
-.yml
-.yaml
+*.yml
+*.yaml
