@@ -161,6 +161,7 @@ public class JpaPurchaseService {
             return Utilities.removeTAndTransToStr(lspchm.getPrintDt());
         }
         lspchm.setPrintDt(Utilities.dateToLocalDateTime(printDt));
+        jpaLspchmRepository.save(lspchm);
         return Utilities.dateToString(printDt);
     }
 

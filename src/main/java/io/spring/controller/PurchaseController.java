@@ -131,7 +131,7 @@ public class PurchaseController {
     }
 
     @PostMapping(path = "/{purchaseNo}/update") // update
-    public ResponseEntity savePurchaseJpa(@PathVariable String purchaseNo, @RequestBody PurchaseUpdateRequestData purchaseUpdateRequestData){
+    public ResponseEntity savePurchaseJpa(@PathVariable("purchaseNo") String purchaseNo, @RequestBody PurchaseUpdateRequestData purchaseUpdateRequestData){
         log.debug("update purchase by jpa");
 
         String purchaseNo2 = jpaPurchaseService.updatePurchaseSquence(purchaseNo, purchaseUpdateRequestData);
@@ -149,8 +149,8 @@ public class PurchaseController {
      * lspchm.printDt 저장을 위한 api
      */
     @GetMapping(path = "/{purchaseNo}/update/printdt") // update printDt
-    public ResponseEntity savePrintDt(@PathVariable String purchaseNo, @RequestParam Date printDt){
-        log.debug("update purchase by jpa");
+    public ResponseEntity savePrintDt(@PathVariable String purchaseNo, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date printDt){
+        log.debug("update purchase.printdt by jpa");
 
         String printDt2 = jpaPurchaseService.savePrintDt(purchaseNo, printDt);
 
