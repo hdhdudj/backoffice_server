@@ -174,7 +174,7 @@ public class OrderController {
 
 	// orderId, orderSeq를 받아서 주문 상태를 바꿔주는 주소
 	@RequestMapping(path = "/orderstatus", method = RequestMethod.GET)
-	public ResponseEntity changeOrderStatus(@RequestParam String orderId, @RequestParam String orderSeq) throws JsonProcessingException {
+	public ResponseEntity changeOrderStatus(@RequestParam String orderId, @RequestParam String orderSeq) {
 		log.debug("changeOrderStatus 실행.");
 		jpaOrderService.changeOrderStatus(orderId, orderSeq);
 

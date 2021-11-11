@@ -1,7 +1,6 @@
-package io.spring.model.kakaobizmessage.template;
+package io.spring.model.kakaobizmessage.template.alimtalk;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.spring.infrastructure.util.StringFactory;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

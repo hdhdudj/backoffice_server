@@ -2,9 +2,9 @@ package io.spring.model.kakaobizmessage;
 
 import io.spring.enums.TrdstOrderStatus;
 import io.spring.infrastructure.util.StringFactory;
-import io.spring.model.kakaobizmessage.template.KakaoTemplate;
-import io.spring.model.kakaobizmessage.template.Order125;
-import io.spring.model.kakaobizmessage.template.Order126;
+import io.spring.model.kakaobizmessage.template.alimtalk.KakaoTemplate;
+import io.spring.model.kakaobizmessage.template.alimtalk.Order125;
+import io.spring.model.kakaobizmessage.template.alimtalk.Order126;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
