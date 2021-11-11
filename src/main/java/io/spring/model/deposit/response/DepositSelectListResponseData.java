@@ -77,5 +77,7 @@ public class DepositSelectListResponseData {
         private String optionNm2;
         private Long depositQty;
         private Float extraUnitcost;
+        // 21-11-11 추가
+        private Float weight;
     }
 }
