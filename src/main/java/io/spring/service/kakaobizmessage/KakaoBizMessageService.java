@@ -1,8 +1,12 @@
 package io.spring.service.kakaobizmessage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.spring.enums.MessageType;
 import io.spring.enums.TrdstOrderStatus;
+import io.spring.infrastructure.util.StringFactory;
+import io.spring.jparepos.kakaobizmessage.JpaSendMessageLogRepository;
 import io.spring.model.kakaobizmessage.TemplateMap;
+import io.spring.model.kakaobizmessage.entity.SendMessageLog;
 import io.spring.model.kakaobizmessage.template.KakaoTemplate;
 import io.spring.model.kakaobizmessage.template.ReplaceMessageCommon;
 import io.spring.model.order.entity.TbMember;
@@ -13,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -21,12 +26,14 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Configuration
+@Component
 @PropertySource("classpath:kakaobizmessage.yml")
 public class KakaoBizMessageService {
     private final TemplateMap templateMap;
     private final ObjectMapper objectMapper;
     private final HttpApiService httpApiService;
+
+    private final JpaSendMessageLogRepository jpaSendMessageLogRepository;
     // api 주소 : nhnCloudUrl + alimtalkUrl + appKey + message
 //    @Value("${url.nhnCloud}")
     private String nhnCloudUrl = "https://api-alimtalk.cloud.toast.com";
@@ -53,15 +60,16 @@ public class KakaoBizMessageService {
         ReplaceMessageCommon replaceMessageCommon = new ReplaceMessageCommon(senderKey, tempNm, template);
         try{
             String jsonBody = objectMapper.writeValueAsString(replaceMessageCommon);
-//            log.debug(jsonBody);
             Map<String, String> headerMap = new HashMap<String, String>(){{
-                put("X-Secret-Key", secretKey);
-                put("Content-Type", "application/json;charset=UTF-8");
+                put(StringFactory.getStrXSecretKey(), secretKey);
+                put(StringFactory.getStrContentType(), StringFactory.getStrContentTypeValue());
             }};
             int res = httpApiService.post(reqUrl, headerMap, jsonBody);
 
             if(res == 200){
                 // todo : send_message_log 기록 저장
+                SendMessageLog sl = new SendMessageLog(tod, tm, MessageType.alimtalk);
+                jpaSendMessageLogRepository.save(sl);
             }
             else {
                 log.debug("알림톡이 정상적으로 보내지지 않았습니다.");

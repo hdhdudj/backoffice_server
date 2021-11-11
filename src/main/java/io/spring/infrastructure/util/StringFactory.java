@@ -175,4 +175,12 @@ public class StringFactory {
     public final static String strOrder126 = "order_126";
     @Getter
     public final static String strUtf8 = "UTF-8";
+
+    // http 헤더용
+    @Getter
+    public final static String strContentType = "Content-Type";
+    @Getter
+    public final static String strContentTypeValue = "application/json;charset=UTF-8";
+    @Getter
+    public final static String strXSecretKey = "X-Secret-Key";
 }

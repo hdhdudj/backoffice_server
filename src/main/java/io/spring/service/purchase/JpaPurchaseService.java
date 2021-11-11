@@ -554,7 +554,7 @@ public class JpaPurchaseService {
 
         Query query = em.createQuery("select ld from Lspchd ld " +
                 "join fetch ld.lspchm lm " +
-                "join fetch ld.tbOrderDetail tod " +
+                "left outer join fetch ld.tbOrderDetail tod " +
                 "left outer join fetch ld.ititmm itm " +
                 "left outer join fetch itm.itvari1 iv1 " +
                 "left outer join fetch itm.itvari2 iv2 " +
@@ -564,7 +564,7 @@ public class JpaPurchaseService {
                 "and (?5 is null or trim(?5)='' or ld.lspchm.purchaseStatus=?5) "+
                 "and (?6 is null or trim(?6)='' or ld.lspchm.purchaseGb=?6) " +
                 "and (?7 is null or trim(?7)='' or ld.lspchm.dealtypeCd=?7) " +
-                "and (?8 is null or trim(?8)='' or ld.lspchm.purchaseGb like concat('%',?8,'%'))")
+                "and (?8 is null or trim(?8)='' or itm.itemNm like concat('%',?8,'%'))")
                 .setParameter(1, start).setParameter(2, end)
                 .setParameter(3,purchaseVendorId).setParameter(4,assortId)
                 .setParameter(5,purchaseStatus).setParameter(6,purchaseGb).setParameter(7,dealtypeCd)
