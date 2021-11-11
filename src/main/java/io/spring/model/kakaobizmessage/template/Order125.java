@@ -1,5 +1,6 @@
 package io.spring.model.kakaobizmessage.template;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.kakaobizmessage.TemplateMap;
 import io.spring.model.order.entity.TbMember;
@@ -15,32 +16,19 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * template code : order_125, B01일 때 보내게 되는 메시지
+ */
 @Getter
 @Setter
 @RequiredArgsConstructor
 public class Order125 implements KakaoTemplate{
-    private String senderKey;
-    private String templateCode = StringFactory.getStrOrder125();
-    private List<Recipient> recipientList;
-
-    public void setTemplate(String senderKey, TbOrderDetail tod, TbOrderMaster tom, TbMember tm){
-        this.senderKey = senderKey;
-        Recipient r = new Recipient(tod, tm);
-        if(this.recipientList == null){
-            this.recipientList = new ArrayList<>();
-        }
-        this.recipientList.add(r);
-    }
-
-    @Getter
-    @Setter
-    public class Recipient{
-        public Recipient(TbOrderDetail tod, TbMember tm){
-            this.recipientNo = tm.getCustHp();
-            this.templateParameter = new TemplateParams(tod, tm);
-        }
-        private String recipientNo;
-        private TemplateParams templateParameter;
+    private String recipientNo;
+    @JsonProperty
+    private TemplateParams templateParameter;
+    public void setTemplate(TbOrderDetail tod, TbOrderMaster tom, TbMember tm){
+        this.recipientNo = tm.getCustHp();
+        this.templateParameter = new TemplateParams(tod, tm);
     }
 
     @Getter

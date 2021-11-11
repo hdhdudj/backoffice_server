@@ -5,5 +5,5 @@ import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderMaster;
 
 public interface KakaoTemplate {
-    public void setTemplate(String senderKey, TbOrderDetail tod, TbOrderMaster tom, TbMember tm);
+    public void setTemplate(TbOrderDetail tod, TbOrderMaster tom, TbMember tm);
 }

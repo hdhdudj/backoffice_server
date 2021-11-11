@@ -1,8 +1,10 @@
 package io.spring.model.kakaobizmessage;
 
 import io.spring.enums.TrdstOrderStatus;
+import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.kakaobizmessage.template.KakaoTemplate;
 import io.spring.model.kakaobizmessage.template.Order125;
+import io.spring.model.kakaobizmessage.template.Order126;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -11,12 +13,20 @@ import java.util.Map;
 
 @Component
 public class TemplateMap {
-    private final Map<TrdstOrderStatus, KakaoTemplate> templateMap = new HashMap<TrdstOrderStatus, KakaoTemplate>(){{
-        put(TrdstOrderStatus.B01, new Order125());
-        put(TrdstOrderStatus.B02, new Order125());
+    private final Map<TrdstOrderStatus, String> templateNameMap = new HashMap<TrdstOrderStatus, String>(){{
+        put(TrdstOrderStatus.B01, StringFactory.getStrOrder125());
+        put(TrdstOrderStatus.B02, StringFactory.getStrOrder125());
     }};
+
+    public KakaoTemplate getTemplateObject(TrdstOrderStatus status){
+        switch (status) {
+            case B01 : return new Order125();
+            case B02 : return new Order126();
+        }
+        return null;
+    }
     @Bean
-    public Map<TrdstOrderStatus, KakaoTemplate> getTemplateMap(){
-        return templateMap;
+    public Map<TrdstOrderStatus, String> getTemplateNameMap(){
+        return this.templateNameMap;
     }
 }
