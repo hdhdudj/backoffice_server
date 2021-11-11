@@ -171,4 +171,6 @@ public class StringFactory {
     public final static String strUrlTrdst = "trdst.com";
     @Getter
     public final static String strOrder125 = "order_125";
+    @Getter
+    public final static String strOrder126 = "order_126";
 }

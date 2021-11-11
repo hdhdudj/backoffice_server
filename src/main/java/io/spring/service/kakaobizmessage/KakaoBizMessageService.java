@@ -4,13 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.spring.enums.TrdstOrderStatus;
 import io.spring.model.kakaobizmessage.TemplateMap;
 import io.spring.model.kakaobizmessage.template.KakaoTemplate;
+import io.spring.model.kakaobizmessage.template.ReplaceMessageCommon;
 import io.spring.model.order.entity.TbMember;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.service.HttpApiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
@@ -46,15 +46,26 @@ public class KakaoBizMessageService {
         String reqUrl = nhnCloudUrl + alimtalkUrl + appKey + message;
         TbOrderMaster tom = tod.getTbOrderMaster();
         TbMember tm = tom.getTbMember();
-        KakaoTemplate template = this.templateMap.getTemplateMap().get(this.strCdToEnumCd(statusCd));
-        template.setTemplate(senderKey, tod, tom, tm);
+        TrdstOrderStatus enumStatusCd = this.strCdToEnumCd(statusCd);
+        KakaoTemplate template = this.templateMap.getTemplateObject(enumStatusCd);
+        template.setTemplate(tod, tom, tm);
+        String tempNm = this.templateMap.getTemplateNameMap().get(enumStatusCd);
+        ReplaceMessageCommon replaceMessageCommon = new ReplaceMessageCommon(senderKey, tempNm, template);
         try{
-            String jsonBody = objectMapper.writeValueAsString(template);
+            String jsonBody = objectMapper.writeValueAsString(replaceMessageCommon);
+//            log.debug(jsonBody);
             Map<String, String> headerMap = new HashMap<String, String>(){{
                 put("X-Secret-Key", secretKey);
                 put("Content-Type", "application/json;charset=UTF-8");
             }};
-            httpApiService.post(reqUrl, headerMap, jsonBody);
+            int res = httpApiService.post(reqUrl, headerMap, jsonBody);
+            if(res == 200){
+                // todo : send_message_log 기록 저장
+                // todo : timeout 설정
+            }
+            else {
+
+            }
         }
         catch (Exception e){
             e.printStackTrace();
