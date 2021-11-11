@@ -5,10 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +48,9 @@ public class HttpApiService {
 
     public int post(String requestURL, Map<String, String> headerMap, String json) {
         try {
-            HttpClient client = HttpClientBuilder.create().build(); // HttpClient 생성
+            int maxTimeOut = 1000;
+            RequestConfig reqConfig = RequestConfig.custom().setConnectTimeout(maxTimeOut).setConnectionRequestTimeout(maxTimeOut).setSocketTimeout(maxTimeOut).build();
+            CloseableHttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(reqConfig).build(); // HttpClient 생성
             HttpPost postRequest = new HttpPost(requestURL); //GET 메소드 URL 생성
 
             for(String key : headerMap.keySet()){
