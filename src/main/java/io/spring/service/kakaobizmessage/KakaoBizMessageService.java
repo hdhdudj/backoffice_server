@@ -11,6 +11,7 @@ import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.service.HttpApiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.client.config.RequestConfig;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
@@ -59,12 +60,12 @@ public class KakaoBizMessageService {
                 put("Content-Type", "application/json;charset=UTF-8");
             }};
             int res = httpApiService.post(reqUrl, headerMap, jsonBody);
+
             if(res == 200){
                 // todo : send_message_log 기록 저장
-                // todo : timeout 설정
             }
             else {
-
+                log.debug("알림톡이 정상적으로 보내지지 않았습니다.");
             }
         }
         catch (Exception e){
