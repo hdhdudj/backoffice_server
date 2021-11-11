@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -173,7 +174,7 @@ public class OrderController {
 
 	// orderId, orderSeq를 받아서 주문 상태를 바꿔주는 주소
 	@RequestMapping(path = "/orderstatus", method = RequestMethod.GET)
-	public ResponseEntity changeOrderStatus(@RequestParam String orderId, @RequestParam String orderSeq){
+	public ResponseEntity changeOrderStatus(@RequestParam String orderId, @RequestParam String orderSeq) throws JsonProcessingException {
 		log.debug("changeOrderStatus 실행.");
 		jpaOrderService.changeOrderStatus(orderId, orderSeq);
 

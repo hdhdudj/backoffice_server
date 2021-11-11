@@ -163,4 +163,12 @@ public class StringFactory {
     public final static String strNotCompleteDeposit = "This purchase.dealtypeCd is 01, but this isn't complete deposit.";
     @Getter
     public final static String strInputQtyBig = "input qty is bigger than available qty.";
+
+    // 카카오 비즈메시지 탬플릿 고정값
+    @Getter
+    public final static String strTrdst = "Trdst";
+    @Getter
+    public final static String strUrlTrdst = "trdst.com";
+    @Getter
+    public final static String strOrder125 = "order_125";
 }
