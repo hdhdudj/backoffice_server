@@ -11,7 +11,6 @@ import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.service.HttpApiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.client.config.RequestConfig;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;

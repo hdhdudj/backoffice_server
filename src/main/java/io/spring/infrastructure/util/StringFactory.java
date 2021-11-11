@@ -173,4 +173,6 @@ public class StringFactory {
     public final static String strOrder125 = "order_125";
     @Getter
     public final static String strOrder126 = "order_126";
+    @Getter
+    public final static String strUtf8 = "UTF-8";
 }
