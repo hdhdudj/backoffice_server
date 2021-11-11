@@ -2,7 +2,9 @@ package io.spring.model.kakaobizmessage.template;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.spring.infrastructure.util.StringFactory;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +13,7 @@ import java.util.List;
  * 메시지 치환 전송시 공통 폼
  */
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReplaceMessageCommon {
     private String senderKey;
     private String templateCode;
