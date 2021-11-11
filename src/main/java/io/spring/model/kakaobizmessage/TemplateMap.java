@@ -11,11 +11,14 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * statusCd와 template 매칭을 위한 클래스
+ */
 @Component
 public class TemplateMap {
     private final Map<TrdstOrderStatus, String> templateNameMap = new HashMap<TrdstOrderStatus, String>(){{
         put(TrdstOrderStatus.B01, StringFactory.getStrOrder125());
-        put(TrdstOrderStatus.B02, StringFactory.getStrOrder125());
+        put(TrdstOrderStatus.B02, StringFactory.getStrOrder126());
     }};
 
     public KakaoTemplate getTemplateObject(TrdstOrderStatus status){

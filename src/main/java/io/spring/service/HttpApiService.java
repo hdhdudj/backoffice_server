@@ -53,12 +53,12 @@ public class HttpApiService {
             RequestConfig reqConfig = RequestConfig.custom().setConnectTimeout(maxTimeOut).setConnectionRequestTimeout(maxTimeOut).setSocketTimeout(maxTimeOut)
                     .build();
             CloseableHttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(reqConfig).build(); // HttpClient 생성
-            HttpPost postRequest = new HttpPost(requestURL); //GET 메소드 URL 생성
+            HttpPost postRequest = new HttpPost(requestURL); //Post 메소드 URL 생성
 
             for(String key : headerMap.keySet()){
                 postRequest.addHeader(key, headerMap.get(key));
             }
-            StringEntity stringEntity = new StringEntity(json, StringFactory.getStrUtf8());
+            StringEntity stringEntity = new StringEntity(json, StringFactory.getStrUtf8()); // utf-8 설정
             postRequest.setEntity(stringEntity);
             HttpResponse response = client.execute(postRequest);
 

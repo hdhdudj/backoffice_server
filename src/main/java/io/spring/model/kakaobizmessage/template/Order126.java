@@ -11,6 +11,7 @@ import lombok.Setter;
 /**
  * template code : order_126, B02일 때 보내게 되는 메시지
  */
+@Getter
 public class Order126 implements KakaoTemplate {
     private String recipientNo;
     @JsonProperty
