@@ -1,5 +1,6 @@
 package io.spring.service;
 
+import io.spring.infrastructure.util.StringFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
@@ -49,14 +50,15 @@ public class HttpApiService {
     public int post(String requestURL, Map<String, String> headerMap, String json) {
         try {
             int maxTimeOut = 1000;
-            RequestConfig reqConfig = RequestConfig.custom().setConnectTimeout(maxTimeOut).setConnectionRequestTimeout(maxTimeOut).setSocketTimeout(maxTimeOut).build();
+            RequestConfig reqConfig = RequestConfig.custom().setConnectTimeout(maxTimeOut).setConnectionRequestTimeout(maxTimeOut).setSocketTimeout(maxTimeOut)
+                    .build();
             CloseableHttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(reqConfig).build(); // HttpClient 생성
             HttpPost postRequest = new HttpPost(requestURL); //GET 메소드 URL 생성
 
             for(String key : headerMap.keySet()){
                 postRequest.addHeader(key, headerMap.get(key));
             }
-            StringEntity stringEntity = new StringEntity(json);
+            StringEntity stringEntity = new StringEntity(json, StringFactory.getStrUtf8());
             postRequest.setEntity(stringEntity);
             HttpResponse response = client.execute(postRequest);
 
