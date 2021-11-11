@@ -236,6 +236,9 @@ public class Lspchm extends CommonProps {
     private String delivery;
     private String payment;
     private String carrier;
+    // 21-11-11 추가된 컬럼
+    private LocalDateTime printDt;
+    private String purchaseEmail;
 
     // 연관관계 : lspchd
     @OneToMany

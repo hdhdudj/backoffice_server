@@ -16,6 +16,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.apache.commons.lang3.StringUtils;
+import org.graalvm.compiler.core.common.util.Util;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -144,6 +145,24 @@ public class JpaPurchaseService {
         lspchm.setUpdId(purchaseUpdateRequestData.getUserId());
         jpaLspchmRepository.save(lspchm);
         return purchaseNo;
+    }
+
+    /**
+     * printDt update 함수
+     * * printDt가 이미 존재하는 발주면 저장돼있는 printDt를 반환
+     * * printDt가 없던 발주면 저장하고 반환
+     */
+    public String savePrintDt(String purchaseNo, Date printDt){
+        Lspchm lspchm = jpaLspchmRepository.findByPurchaseNo(purchaseNo).orElseGet(() -> null);
+        if(lspchm == null){
+            log.debug("해당하는 발주번호의 발주데이터가 존재하지 않습니다.");
+            return null;
+        }
+        if(lspchm.getPrintDt() != null){
+            return Utilities.removeTAndTransToStr(lspchm.getPrintDt());
+        }
+        lspchm.setPrintDt(Utilities.dateToLocalDateTime(printDt));
+        return Utilities.dateToString(printDt);
     }
 
     private Lspchm saveLspchm(PurchaseInsertRequestData purchaseInsertRequestData, List<Lspchd> lspchdList) {
