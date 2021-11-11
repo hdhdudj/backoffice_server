@@ -449,6 +449,8 @@ public class JpaDepositService {
             deposit.setVdNm(lsdpsd.getLsdpsm().getCmvdmr() == null? "":lsdpsd.getLsdpsm().getCmvdmr().getVdNm());
             Itasrt itasrt = lsdpsd.getItasrt();
             deposit.setAssortNm(itasrt.getAssortNm());
+            // 21-11-11 무게 추가
+            deposit.setWeight(itasrt.getWeight());
             Utilities.setOptionNames(deposit, itasrt.getItvariList());
 //            List<Lsdpsp> lsdpspList = lsdpsd.getLspchd().getLsdpsp();
 //            lsdpspList.stream().filter(x->x.getPlanStatus().equals(StringFactory.getGbOne())).map(x->x.getq).reduce((a,b)->a+b).get();
