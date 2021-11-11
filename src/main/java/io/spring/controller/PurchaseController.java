@@ -19,6 +19,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -144,12 +145,28 @@ public class PurchaseController {
         return ResponseEntity.ok(res);
     }
 
+    /**
+     * lspchm.printDt 저장을 위한 api
+     */
+    @GetMapping(path = "/{purchaseNo}/update/printdt") // update printDt
+    public ResponseEntity savePrintDt(@PathVariable String purchaseNo, @RequestParam Date printDt){
+        log.debug("update purchase by jpa");
+
+        String printDt2 = jpaPurchaseService.savePrintDt(purchaseNo, printDt);
+
+        // jpaOrderService.updateStatusCd("O2106100714498480", "0001", "B02");
+
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), printDt2);
+        if(res == null){
+            return null;
+        }
+        return ResponseEntity.ok(res);
+    }
+
 	@PostMapping(path = "/{purchaseNo}")
 	public ResponseEntity updatePurchaseJpa(@PathVariable("purchaseNo") String purchaseNo,
 			@RequestBody PurchaseUpdateRequestData req) {
         log.debug("insert or update purchase by jpa");
-
-
 
 //		req.setPurchaseNo(jpaCommonService.getStrNumberId(StringFactory.getCUpperStr(), req.getPurchaseNo(),
 		// StringFactory.getPurchaseSeqStr(), StringFactory.getIntEight())); //

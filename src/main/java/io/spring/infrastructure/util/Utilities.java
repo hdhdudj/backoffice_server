@@ -164,4 +164,13 @@ public class Utilities {
             setOptionInterface.setOptionNm2(itvariList.get(1).getOptionNm());
         }
     }
+
+    /**
+     * Date to String
+     */
+    public static String dateToString(Date from){
+        SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String to = transFormat.format(from);
+        return to;
+    }
 }
