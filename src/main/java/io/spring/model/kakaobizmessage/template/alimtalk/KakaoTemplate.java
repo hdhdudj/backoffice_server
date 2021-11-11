@@ -1,4 +1,4 @@
-package io.spring.model.kakaobizmessage.template;
+package io.spring.model.kakaobizmessage.template.alimtalk;
 
 import io.spring.model.order.entity.TbMember;
 import io.spring.model.order.entity.TbOrderDetail;

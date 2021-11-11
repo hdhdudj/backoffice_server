@@ -7,15 +7,14 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.jparepos.kakaobizmessage.JpaSendMessageLogRepository;
 import io.spring.model.kakaobizmessage.TemplateMap;
 import io.spring.model.kakaobizmessage.entity.SendMessageLog;
-import io.spring.model.kakaobizmessage.template.KakaoTemplate;
-import io.spring.model.kakaobizmessage.template.ReplaceMessageCommon;
+import io.spring.model.kakaobizmessage.template.alimtalk.KakaoTemplate;
+import io.spring.model.kakaobizmessage.template.alimtalk.ReplaceMessageCommon;
 import io.spring.model.order.entity.TbMember;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.service.HttpApiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -55,8 +54,16 @@ public class KakaoBizMessageService {
         TbMember tm = tom.getTbMember();
         TrdstOrderStatus enumStatusCd = this.strCdToEnumCd(statusCd);
         KakaoTemplate template = this.templateMap.getTemplateObject(enumStatusCd);
+        if(template == null){
+            log.debug("존재하지 않는 템플릿입니다.");
+            return;
+        }
         template.setTemplate(tod, tom, tm);
         String tempNm = this.templateMap.getTemplateNameMap().get(enumStatusCd);
+        if(tempNm == null){
+            log.debug("존재하지 않는 템플릿 이름입니다.");
+            return;
+        }
         ReplaceMessageCommon replaceMessageCommon = new ReplaceMessageCommon(senderKey, tempNm, template);
         try{
             String jsonBody = objectMapper.writeValueAsString(replaceMessageCommon);
@@ -67,7 +74,6 @@ public class KakaoBizMessageService {
             int res = httpApiService.post(reqUrl, headerMap, jsonBody);
 
             if(res == 200){
-                // todo : send_message_log 기록 저장
                 SendMessageLog sl = new SendMessageLog(tod, tm, MessageType.alimtalk);
                 jpaSendMessageLogRepository.save(sl);
             }

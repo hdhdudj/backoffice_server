@@ -586,8 +586,8 @@ public class JpaOrderService {
 //        System.out.println(t);
         jpaTbOrderHistoryRepository.saveAll(tohs);
 
-        // todo: 문자, 카카오 비즈톡 발송 코드
-        kakaoBizMessageService.sendKakaoBizMessage(statusCd, tod);
+        // 카카오 알림톡 발송
+        //kakaoBizMessageService.sendKakaoBizMessage(statusCd, tod);
 	}
 
 	public List<OrderStock> getOrderStock() {
