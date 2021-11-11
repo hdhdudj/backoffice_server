@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -136,7 +137,7 @@ public class JpaDepositService {
     public void sequenceUpdateDeposit(DepositInsertRequestData depositInsertRequestData) {
     }
 
-    private void changeStatusCdOfTbOrderDetail(List<Lsdpsp> lsdpspList) {
+    private void changeStatusCdOfTbOrderDetail(List<Lsdpsp> lsdpspList) throws JsonProcessingException {
         for(Lsdpsp lsdpsp : lsdpspList){
             if(lsdpsp.getDealtypeCd().equals(StringFactory.getGbOne())){ // dealtypeCd가 01(주문발주)인 애들만 해당
                 Lspchd lspchd = lsdpsp.getLspchd();

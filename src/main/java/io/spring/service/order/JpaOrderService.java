@@ -8,7 +8,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
+import io.spring.service.kakaobizmessage.KakaoBizMessageService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import io.spring.enums.DirectOrImport;
@@ -73,6 +76,8 @@ public class JpaOrderService {
     private final JpaLsshpdRepository jpaLsshpdRepository;
 
     private final EntityManager em;
+
+    private final KakaoBizMessageService kakaoBizMessageService;
 
     // orderId, orderSeq를 받아 주문 상태를 변경해주는 함수
     @Transactional
@@ -579,7 +584,7 @@ public class JpaOrderService {
         jpaTbOrderHistoryRepository.saveAll(tohs);
 
         // todo: 문자, 카카오 비즈톡 발송 코드
-
+        kakaoBizMessageService.sendKakaoBizMessage(statusCd, tod);
 	}
 
 	public List<OrderStock> getOrderStock() {
