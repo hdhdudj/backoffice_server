@@ -1,17 +1,12 @@
 package io.spring.model.ship.entity;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
+import io.spring.model.deposit.entity.Lsdpsd;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -37,7 +32,7 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name="lsshpd")
 @IdClass(value = LsshpdId.class)
-public class Lsshpd extends CommonProps {
+public class Lsshpd extends CommonProps implements Serializable {
     // 주문 이동지시 저장시 작동하는 생성자
     public Lsshpd(String shipId, String shipSeq, TbOrderDetail tbOrderDetail, Ititmc ititmc, Itasrt itasrt){
         this.shipId = shipId;
@@ -149,4 +144,12 @@ public class Lsshpd extends CommonProps {
 //            @JoinColumn(name = "depositSeq", referencedColumnName = "depositSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 //    })
 //    private List<Lspchd> lspchdList;
+    @JoinColumns({
+            @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+            @JoinColumn(name = "itemId", referencedColumnName = "itemId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+    })
+    @OneToMany(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @NotFound(action = NotFoundAction.IGNORE)
+    private List<Lsdpsd> lsdpsdList; // itasrt 연관관계
 }

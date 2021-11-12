@@ -898,18 +898,10 @@ public class JpaMoveService {
 
         List<MoveIndicateDetailResponseData.Move> moveList = new ArrayList<>();
         for(Lsshpd lsshpd : lsshpdList){
-            MoveIndicateDetailResponseData.Move move = new MoveIndicateDetailResponseData.Move(lsshpd);
-            move.setDeliMethod(lsshpm.getDelMethod());
+            Lsdpsd lsdpsd = lsshpd.getLsdpsdList().stream().filter(x->x.getLsdpsm().getDepositDt().equals(lsshpd.getExcAppDt())).collect(Collectors.toList()).get(0);
+            Lspchd lspchd = lsdpsd.getLspchd();
+            MoveIndicateDetailResponseData.Move move = new MoveIndicateDetailResponseData.Move(lsshpd, lsshpm, lspchd);
             Utilities.setOptionNames(move,lsshpd.getItasrt().getItvariList());
-            List<Itvari> itvariList = lsshpd.getItasrt().getItvariList();
-//            if(itvariList.size() > 0){
-//                Itvari itvari1 = itvariList.get(0);
-//                move.setOptionNm1(itvari1.getOptionNm());
-//            }
-//            if(itvariList.size() > 1){
-//                Itvari itvari2 = itvariList.get(1);
-//                move.setOptionNm2(itvari2.getOptionNm());
-//            }
             moveList.add(move);
         }
         moveIndicateDetailResponseData.setMoves(moveList);
