@@ -15,6 +15,7 @@ import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.service.HttpApiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -34,19 +35,19 @@ public class KakaoBizMessageService {
 
     private final JpaSendMessageLogRepository jpaSendMessageLogRepository;
     // api 주소 : nhnCloudUrl + alimtalkUrl + appKey + message
-//    @Value("${url.nhnCloud}")
-    private String nhnCloudUrl = "https://api-alimtalk.cloud.toast.com";
-//    @Value("${url.alimtalk}")
-    private String alimtalkUrl = "/alimtalk/v2.2/appkeys/";
-//    @Value("${appKey}")
-    private String appKey = "6Tt6xBHx7coMPcBX";
-//    @Value("${url.message}")
-    private String message = "/messages";
+    @Value("${url.nhnCloud}")
+    private String nhnCloudUrl;
+    @Value("${url.alimtalk}")
+    private String alimtalkUrl;
+    @Value("${appKey}")
+    private String appKey;
+    @Value("${url.messages}")
+    private String message;
 
-//    @Value("${secretKey}")
-    private String secretKey = "wUiXwVR5";
-//    @Value("${senderKey}")
-    private String senderKey = "16facfeb928b85c9817e5d44fd5bd81cff5a9342";
+    @Value("${secretKey}")
+    private String secretKey;
+    @Value("${senderKey}")
+    private String senderKey;
 
     public void sendKakaoBizMessage(String statusCd, TbOrderDetail tod){
         String reqUrl = nhnCloudUrl + alimtalkUrl + appKey + message;
