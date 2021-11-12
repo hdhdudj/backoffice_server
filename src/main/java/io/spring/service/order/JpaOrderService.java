@@ -584,13 +584,11 @@ public class JpaOrderService {
         jpaTbOrderHistoryRepository.saveAll(tohs);
 
         // 카카오 알림톡 발송
-        kakaoBizMessageService.sendKakaoBizMessage(statusCd, tod);
+//        kakaoBizMessageService.sendKakaoBizMessage(statusCd, tod);
 	}
 
 	public List<OrderStock> getOrderStock() {
 		return jpaOrderStockRepository.findAll();
-		
-
 	}
 
     public TbOrderDetail getOrderDetail(String orderId,String orderSeq){
