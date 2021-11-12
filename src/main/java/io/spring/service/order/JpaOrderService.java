@@ -579,12 +579,12 @@ public class JpaOrderService {
 		tohs.add(toh);
 
 //        System.out.println(tod);
-        TbOrderDetail t = jpaTbOrderDetailRepository.save(tod);
+//        TbOrderDetail t = jpaTbOrderDetailRepository.save(tod);
 //        System.out.println(t);
         jpaTbOrderHistoryRepository.saveAll(tohs);
 
         // 카카오 알림톡 발송
-        //kakaoBizMessageService.sendKakaoBizMessage(statusCd, tod);
+        kakaoBizMessageService.sendKakaoBizMessage(statusCd, tod);
 	}
 
 	public List<OrderStock> getOrderStock() {
