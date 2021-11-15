@@ -896,11 +896,18 @@ public class JpaMoveService {
         moveIndicateDetailResponseData.setOStorageId(lsshpdOne.getOStorageId());
         moveIndicateDetailResponseData.setDealtypeCd(lsshpdOne.getShipGb()); // 이동지시구분
 
+
         List<MoveIndicateDetailResponseData.Move> moveList = new ArrayList<>();
         for(Lsshpd lsshpd : lsshpdList){
+
+			Itasrt itasrt = jpaItasrtRepository.findByAssortId(lsshpd.getAssortId());
+
             Lsdpsd lsdpsd = lsshpd.getLsdpsdList().stream().filter(x->x.getLsdpsm().getDepositDt().equals(lsshpd.getExcAppDt())).collect(Collectors.toList()).get(0);
             Lspchd lspchd = lsdpsd.getLspchd();
             MoveIndicateDetailResponseData.Move move = new MoveIndicateDetailResponseData.Move(lsshpd, lsshpm, lspchd);
+
+			move.setWeight(itasrt.getWeight());
+
             Utilities.setOptionNames(move,lsshpd.getItasrt().getItvariList());
             moveList.add(move);
         }
