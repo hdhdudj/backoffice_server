@@ -34,6 +34,10 @@ public class MoveIndicateDetailResponseData {
     private String storageId;
     private String moveIndDt;
     private String dealtypeCd;
+
+	// 2021-11-15 추가
+	private String purchaseNo;
+
     private List<Move> moves;
     @Getter
     @Setter
