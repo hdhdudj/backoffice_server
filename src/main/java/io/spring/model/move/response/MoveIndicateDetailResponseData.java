@@ -1,6 +1,9 @@
 package io.spring.model.move.response;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
 import io.spring.model.purchase.entity.Lspchd;
@@ -10,8 +13,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 /**
  * 이동지시내역 조회 DTO
@@ -33,6 +34,10 @@ public class MoveIndicateDetailResponseData {
     private String storageId;
     private String moveIndDt;
     private String dealtypeCd;
+
+	// 2021-11-15 추가
+	private String purchaseNo;
+
     private List<Move> moves;
     @Getter
     @Setter
@@ -79,5 +84,9 @@ public class MoveIndicateDetailResponseData {
         private String purchaseSeq;
         private String purchaseKey;
         private String purchaseDt;
+
+		// 21-11-15 무게추가
+		private Float weight;
+
     }
 }
