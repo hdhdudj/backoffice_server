@@ -8,10 +8,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
-import io.spring.service.kakaobizmessage.KakaoBizMessageService;
+import io.spring.service.nhncloud.KakaoBizMessageService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import io.spring.enums.DirectOrImport;

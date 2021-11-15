@@ -1,4 +1,4 @@
-package io.spring.model.kakaobizmessage.entity;
+package io.spring.model.nhncloud.entity;
 
 import io.spring.enums.MessageType;
 import io.spring.model.common.entity.CommonProps;

@@ -1,19 +1,18 @@
-package io.spring.model.kakaobizmessage.template.alimtalk;
+package io.spring.model.nhncloud.template.alimtalk;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.order.entity.TbMember;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderMaster;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * template code : order_125, B01일 때 보내게 되는 메시지
+ * template code : order_126, B02일 때 보내게 되는 메시지
  */
 @Getter
-@Setter
-@RequiredArgsConstructor
-public class Order125 implements KakaoTemplate{
+public class Order126 implements KakaoTemplate {
     private String recipientNo;
     @JsonProperty
     private TemplateParams templateParameter;

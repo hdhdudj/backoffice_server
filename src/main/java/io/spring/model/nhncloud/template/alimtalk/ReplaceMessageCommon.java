@@ -1,4 +1,4 @@
-package io.spring.model.kakaobizmessage.template.alimtalk;
+package io.spring.model.nhncloud.template.alimtalk;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
