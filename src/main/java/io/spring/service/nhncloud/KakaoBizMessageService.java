@@ -1,23 +1,23 @@
-package io.spring.service.kakaobizmessage;
+package io.spring.service.nhncloud;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.spring.enums.MessageType;
 import io.spring.enums.TrdstOrderStatus;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.jparepos.kakaobizmessage.JpaSendMessageLogRepository;
-import io.spring.model.kakaobizmessage.TemplateMap;
-import io.spring.model.kakaobizmessage.entity.SendMessageLog;
-import io.spring.model.kakaobizmessage.template.alimtalk.KakaoTemplate;
-import io.spring.model.kakaobizmessage.template.alimtalk.ReplaceMessageCommon;
+import io.spring.model.nhncloud.TemplateMap;
+import io.spring.model.nhncloud.entity.SendMessageLog;
+import io.spring.model.nhncloud.template.alimtalk.KakaoTemplate;
+import io.spring.model.nhncloud.template.alimtalk.ReplaceMessageCommon;
 import io.spring.model.order.entity.TbMember;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.service.HttpApiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -26,7 +26,6 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Component
 @PropertySource("classpath:kakaobizmessage.yml")
 public class KakaoBizMessageService {
     private final TemplateMap templateMap;
@@ -35,25 +34,23 @@ public class KakaoBizMessageService {
 
     private final JpaSendMessageLogRepository jpaSendMessageLogRepository;
     // api 주소 : nhnCloudUrl + alimtalkUrl + appKey + message
-    @Value("${url.nhnCloud}")
+    @Value("${alimtalk.url}")
     private String nhnCloudUrl;
-    @Value("${url.alimtalk}")
-    private String alimtalkUrl;
-    @Value("${appKey}")
+    @Value("${appKey.alimtalk}")
     private String appKey;
-    @Value("${url.messages}")
+    @Value("${alimtalk.messages}")
     private String message;
 
-    @Value("${secretKey}")
+    @Value("${secretKey.alimtalk}")
     private String secretKey;
-    @Value("${senderKey}")
+    @Value("${senderKey.alimtalk}")
     private String senderKey;
 
     public void sendKakaoBizMessage(String statusCd, TbOrderDetail tod){
-        String reqUrl = nhnCloudUrl + alimtalkUrl + appKey + message;
+        String reqUrl = nhnCloudUrl + appKey + message;
         TbOrderMaster tom = tod.getTbOrderMaster();
         TbMember tm = tom.getTbMember();
-        TrdstOrderStatus enumStatusCd = this.strCdToEnumCd(statusCd);
+        TrdstOrderStatus enumStatusCd = EnumUtils.getEnum(TrdstOrderStatus.class, statusCd);
         KakaoTemplate template = this.templateMap.getTemplateObject(enumStatusCd);
         if(template == null){
             log.debug("존재하지 않는 템플릿입니다.");
@@ -85,17 +82,6 @@ public class KakaoBizMessageService {
         catch (Exception e){
             e.printStackTrace();
         }
-    }
-
-
-
-    private TrdstOrderStatus strCdToEnumCd(String statusCd){
-        for(TrdstOrderStatus val : TrdstOrderStatus.values()){
-            if(val.toString().equals(statusCd)){
-                return val;
-            }
-        }
-        return null;
     }
 }
 
