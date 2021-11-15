@@ -9,6 +9,7 @@ import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 import io.spring.service.nhncloud.KakaoBizMessageService;
+import io.spring.service.nhncloud.SmsService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -76,6 +77,7 @@ public class JpaOrderService {
     private final EntityManager em;
 
     private final KakaoBizMessageService kakaoBizMessageService;
+    private final SmsService smsService;
 
     // orderId, orderSeq를 받아 주문 상태를 변경해주는 함수
     @Transactional
@@ -703,6 +705,11 @@ public class JpaOrderService {
         TEMPQTY, TEMPINDQTY
     }
 
+
+//    public void testSms(String body, String tbOrderNo){
+//        TbOrderDetail td = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(tbOrderNo, "0001");
+//        smsService.sendSmsMessage(body, td);
+//    }
 }
 
 
