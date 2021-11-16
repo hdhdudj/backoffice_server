@@ -15,6 +15,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
+import io.spring.enums.TrdstOrderStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -820,7 +821,7 @@ public class JpaMoveService {
         }
 
 		// 주문상태변경
-		this.changeStatusCdOfTbOrderDetail(orderList, "C03");
+		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.C03.toString());
 
 		jpaPurchaseService.makePurchaseDataFromOrderMoveSave2(l2);
 
