@@ -15,8 +15,4 @@ public class Recipient {
     public Recipient(TbMember tm){
         this.recipientNo = tm.getCustHp();
     }
-
-    public Recipient(String hp){
-        this.recipientNo = hp;
-    }
 }
