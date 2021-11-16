@@ -310,9 +310,9 @@ public class OrderController {
 //	@GetMapping(path = "/")
 
 
-//	@GetMapping(path = "/test/sms")
-//	public ResponseEntity smsSendTest(@RequestParam String body, @RequestParam String tbOrderNo){
-//		jpaOrderService.testSms(body, tbOrderNo);
-//		return null;
-//	}
+	@GetMapping(path = "/test/sms")
+	public ResponseEntity smsSendTest(@RequestParam String body, @RequestParam String tbOrderNo){
+		jpaOrderService.testSms(body, tbOrderNo);
+		return null;
+	}
 }
