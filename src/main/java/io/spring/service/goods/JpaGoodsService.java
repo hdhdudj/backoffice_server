@@ -585,7 +585,7 @@ public class JpaGoodsService {
 
 		// 카테고리벨류
         IfBrand ifBrand = jpaIfBrandRepository.findByChannelGbAndBrandId(StringFactory.getGbOne(),itasrt.getBrandId());
-        goodsSelectDetailResponseData.setBrandNm(ifBrand.getBrandNm());
+        goodsSelectDetailResponseData.setBrandNm(ifBrand!=null?ifBrand.getBrandNm():"");
         List<GoodsSelectDetailResponseData.Description> descriptions = makeDescriptions(itasrt.getItasrdList());
         List<GoodsSelectDetailResponseData.Attributes> attributesList = makeAttributesList(itasrt.getItvariList());
         List<GoodsSelectDetailResponseData.Items> itemsList = makeItemsList(itasrt.getItitmmList());
