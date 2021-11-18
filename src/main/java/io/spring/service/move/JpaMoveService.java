@@ -15,6 +15,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
+import io.spring.enums.TrdstOrderStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -128,30 +129,30 @@ public class JpaMoveService {
     /**
      * 주문 이동지시 화면에서 검색에 맞는 TbOrderDetail들을 가져오는 함수
      */
-    private List<TbOrderDetail> getTbOrderDetail(LocalDate startDt, LocalDate endDt, String storageId, String assortId, String assortNm, String itemId, String deliMethod) {
-        // lsdpsd, lsdpsm, tbOrderDetail, itasrt, itvari
-        LocalDateTime start = startDt.atStartOfDay();
-        LocalDateTime end = endDt.atTime(23,59,59);
-        TypedQuery<TbOrderDetail> query = em.createQuery("select to from TbOrderDetail to " +
-                "join fetch pd.lspchm pm " +
-                "join fetch pd.lsdpsd sd " +
-                "join fetch sd.lsdpsm sm " +
-                "join fetch to.itasrt i " +
-                "where " +
-                "to.regDt between ?1 and ?2 " +
-                "and (?3 is null or trim(?3)='' or pm.storeCd=?3) " +
-                "and (?4 is null or trim(?4)='' or to.assortId=?4) " +
-                "and (?5 is null or trim(?5)='' or to.itemId=?5) " +
-                "and (?6 is null or trim(?6)='' or to.deliMethod=?6) " +
-                "and (?7 is null or trim(?7)='' or i.assortNm like concat('%',?7,'%')) " +
-                "and to.statusCd = ?8"
-        , TbOrderDetail.class);
-        query.setParameter(1, start).setParameter(2, end).setParameter(3,storageId)
-                .setParameter(4,assortId).setParameter(5,itemId).setParameter(6,deliMethod)
-                .setParameter(7,assortNm).setParameter(8,StringFactory.getStrC01());
-        List<TbOrderDetail> tbOrderDetailList = query.getResultList();
-        return tbOrderDetailList;
-    }
+//    private List<TbOrderDetail> getTbOrderDetail(LocalDate startDt, LocalDate endDt, String storageId, String assortId, String assortNm, String itemId, String deliMethod) {
+//        // lsdpsd, lsdpsm, tbOrderDetail, itasrt, itvari
+//        LocalDateTime start = startDt.atStartOfDay();
+//        LocalDateTime end = endDt.atTime(23,59,59);
+//        TypedQuery<TbOrderDetail> query = em.createQuery("select to from TbOrderDetail to " +
+//                "join fetch pd.lspchm pm " +
+//                "join fetch pd.lsdpsd sd " +
+//                "join fetch sd.lsdpsm sm " +
+//                "join fetch to.itasrt i " +
+//                "where " +
+//                "to.regDt between ?1 and ?2 " +
+//                "and (?3 is null or trim(?3)='' or pm.storeCd=?3) " +
+//                "and (?4 is null or trim(?4)='' or to.assortId=?4) " +
+//                "and (?5 is null or trim(?5)='' or to.itemId=?5) " +
+//                "and (?6 is null or trim(?6)='' or to.deliMethod=?6) " +
+//                "and (?7 is null or trim(?7)='' or i.assortNm like concat('%',?7,'%')) " +
+//                "and to.statusCd = ?8"
+//        , TbOrderDetail.class);
+//        query.setParameter(1, start).setParameter(2, end).setParameter(3,storageId)
+//                .setParameter(4,assortId).setParameter(5,itemId).setParameter(6,deliMethod)
+//                .setParameter(7,assortNm).setParameter(8,StringFactory.getStrC01());
+//        List<TbOrderDetail> tbOrderDetailList = query.getResultList();
+//        return tbOrderDetailList;
+//    }
 
     /**
      * 주문 이동지시 화면에서 검색에 맞는 Lsdpsd들을 가져오는 함수
@@ -820,7 +821,7 @@ public class JpaMoveService {
         }
 
 		// 주문상태변경
-		this.changeStatusCdOfTbOrderDetail(orderList, "C03");
+		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.C03.toString());
 
 		jpaPurchaseService.makePurchaseDataFromOrderMoveSave2(l2);
 
@@ -944,13 +945,7 @@ public class JpaMoveService {
                 continue;
             }
             MoveListResponseData.Move move = new MoveListResponseData.Move(lsshpm, lsshpd);
-            List<Itvari> itvariList = lsshpd.getItasrt().getItvariList();
-            if(itvariList.size() > 0){
-                move.setOptionNm1(itvariList.get(0).getOptionNm());
-            }
-            if(itvariList.size() > 1){
-                move.setOptionNm2(itvariList.get(1).getOptionNm());
-            }
+            Utilities.setOptionNames(move, lsshpd.getItasrt().getItvariList());
             moveList.add(move);
         }
         moveListResponseData.setMoves(moveList);

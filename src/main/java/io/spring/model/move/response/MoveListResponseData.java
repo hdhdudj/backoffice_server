@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.SetOptionInterface;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import lombok.AccessLevel;
@@ -46,7 +47,7 @@ public class MoveListResponseData {
     @Getter
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class Move{
+    public static class Move implements SetOptionInterface {
         public Move(Lsshpm lsshpm, Lsshpd lsshpd){
             this.moveIndDt = Utilities.removeTAndTransToStr(lsshpm.getReceiptDt());
             this.shipId = lsshpd.getShipId();
