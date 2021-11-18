@@ -47,9 +47,9 @@ public class GoodsInsertRequestData {
 	private Float localDeliFee; 
 	private Float localSale; // itasrn에도 들어감
 	private String assortColor;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "Asia/Seoul")
 	private Date sellStaDt;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "Asia/Seoul")
 	private Date sellEndDt;
 	private Float mdRrp;
 	private String mdTax;
@@ -66,7 +66,7 @@ public class GoodsInsertRequestData {
 	private Float buyExchangeRate;
 	private String sizeType;
 	private Float mdDiscountRate;
-	private String vendorId;
+	private String purchaseVendorId;
 	private String optionUseYn;
 
 
