@@ -143,10 +143,12 @@ public class JpaGoodsService {
         for(GoodsInsertRequestData.UploadMainImage uploadMainImage : uploadMainImageList){
             Itaimg itaimg = jpaItaimgRepository.findById(uploadMainImage.getUid()).orElseGet(() -> null);
             itaimg.setAssortId(assortId);
+            jpaItaimgRepository.save(itaimg);
         }
         for(GoodsInsertRequestData.UploadAddImage uploadAddImage : uploadAddImageList){
             Itaimg itaimg = jpaItaimgRepository.findById(uploadAddImage.getUid()).orElseGet(() -> null);
             itaimg.setAssortId(assortId);
+            jpaItaimgRepository.save(itaimg);
         }
     }
 
@@ -582,7 +584,7 @@ public class JpaGoodsService {
         GoodsSelectDetailResponseData goodsSelectDetailResponseData = new GoodsSelectDetailResponseData(itasrt);
 
 		// 카테고리벨류
-        IfBrand ifBrand = jpaIfBrandRepository.findByChannelGbAndChannelBrandId(StringFactory.getGbOne(),itasrt.getBrandId());
+        IfBrand ifBrand = jpaIfBrandRepository.findByChannelGbAndBrandId(StringFactory.getGbOne(),itasrt.getBrandId());
         goodsSelectDetailResponseData.setBrandNm(ifBrand.getBrandNm());
         List<GoodsSelectDetailResponseData.Description> descriptions = makeDescriptions(itasrt.getItasrdList());
         List<GoodsSelectDetailResponseData.Attributes> attributesList = makeAttributesList(itasrt.getItvariList());

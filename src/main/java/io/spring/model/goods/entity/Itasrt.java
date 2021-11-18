@@ -72,7 +72,7 @@ public class Itasrt extends CommonProps {
 //		this.sizeType = goodsInsertRequestData.getSizeType();
 		this.mdDiscountRate = goodsInsertRequestData.getMdDiscountRate();
 		this.optionGbName = goodsInsertRequestData.getOptionGbName();
-		this.vendorId = goodsInsertRequestData.getVendorId();
+		this.vendorId = goodsInsertRequestData.getPurchaseVendorId();
 
 		this.optionUseYn = goodsInsertRequestData.getOptionUseYn();
 		
