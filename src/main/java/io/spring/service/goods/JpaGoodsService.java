@@ -701,7 +701,7 @@ public class JpaGoodsService {
         for(Itasrt itasrt : itasrtList){
             GoodsSelectListResponseData.Goods goods = new GoodsSelectListResponseData.Goods(itasrt);
             IfBrand ifBrand = jpaIfBrandRepository.findByChannelGbAndChannelBrandId(StringFactory.getGbOne(),itasrt.getBrandId()); // 채널은 01 하드코딩
-            goods.setBrandNm(ifBrand.getBrandNm());
+            goods.setBrandNm(ifBrand==null? null:ifBrand.getBrandNm());
             goodsList.add(goods);
         }
         GoodsSelectListResponseData goodsSelectListResponseData = new GoodsSelectListResponseData(goodsList);

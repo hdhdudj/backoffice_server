@@ -64,7 +64,7 @@ public class GoodsSelectDetailResponseData {
 		this.vendorId = itasrt.getVendorId();
 
 //		this.brandNm = (itasrt.getIfBrand() != null ? itasrt.getIfBrand().getBrandNm() : ""); 바깥에서 set
-		this.vendorNm = (itasrt.getCmvdmr() != null ? itasrt.getCmvdmr().getVdNm() : "");
+		this.vendorNm = (itasrt.getCmvdmr() != null ? itasrt.getCmvdmr().getVdNm() : null);
 
 		this.optionUseYn = itasrt.getOptionUseYn();
 		
