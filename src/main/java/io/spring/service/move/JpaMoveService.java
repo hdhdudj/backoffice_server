@@ -755,8 +755,6 @@ public class JpaMoveService {
 			// todo 출고건이 무조건 하나라는 가정으로 1개의건만 가져오는데 이부분 리스트로 받아서 처리되도록 수정해야함.
             Lsshpd lsshpd = jpaLsshpdRepository.findByShipId(shipId).get(0);
 
-
-
 			Lsshpm lsshpm = jpaLsshpmRepository.findByShipId(lsshpd.getShipId());
             if(lsshpm == null){
                 log.debug("there's no data(lsshpm) of shipId : " + shipId);
