@@ -117,7 +117,7 @@ public class TbOrderDetail extends CommonProps
     })
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    @NotFound(action = NotFoundAction.IGNORE)
+//    @NotFound(action = NotFoundAction.IGNORE)
     private Ititmm ititmm; // ititmm 연관관계
 
     @JoinColumn(name="orderId", referencedColumnName = "orderId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
