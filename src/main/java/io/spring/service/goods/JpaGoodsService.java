@@ -588,9 +588,9 @@ public class JpaGoodsService {
         goodsSelectDetailResponseData.setBrandNm(ifBrand!=null?ifBrand.getBrandNm():"");
         List<GoodsSelectDetailResponseData.Description> descriptions = makeDescriptions(itasrt.getItasrdList());
         List<GoodsSelectDetailResponseData.Attributes> attributesList = makeAttributesList(itasrt.getItvariList());
-        List<GoodsSelectDetailResponseData.Items> itemsList = makeItemsList(itasrt.getItitmmList());
-        List<GoodsSelectDetailResponseData.UploadMainImage> uploadMainImageList = makeUploadMainImageList(itasrt.getItaimg());
-        List<GoodsSelectDetailResponseData.UploadAddImage> uploadAddImageList = makeUploadAddImageList(itasrt.getItaimg());
+        List<GoodsSelectDetailResponseData.Items> itemsList = this.makeItemsList(itasrt.getItitmmList());
+        List<GoodsSelectDetailResponseData.UploadMainImage> uploadMainImageList = this.makeUploadMainImageList(itasrt.getItaimg());
+        List<GoodsSelectDetailResponseData.UploadAddImage> uploadAddImageList = this.makeUploadAddImageList(itasrt.getItaimg());
         goodsSelectDetailResponseData.setDescription(descriptions);
         goodsSelectDetailResponseData.setAttributes(attributesList);
         goodsSelectDetailResponseData.setItems(itemsList);
