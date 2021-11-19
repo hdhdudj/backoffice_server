@@ -253,5 +253,6 @@ public class Itasrt extends CommonProps {
 	@JoinColumn(name = "vendorId", referencedColumnName = "id", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
+	@NotFound(action = NotFoundAction.IGNORE)
 	private Cmvdmr cmvdmr; // cmvdmr 연관관계
 }
