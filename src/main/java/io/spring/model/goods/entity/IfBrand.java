@@ -11,6 +11,7 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "if_brand")
@@ -18,7 +19,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @IdClass(value = IfBrandId.class)
-public class IfBrand extends CommonProps {
+public class IfBrand extends CommonProps implements Serializable {
     @Id
     private String channelGb;
     @Id
@@ -30,6 +31,6 @@ public class IfBrand extends CommonProps {
     @JoinColumn(name="brandId", referencedColumnName = "brandId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     @OneToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    @NotFound(action = NotFoundAction.IGNORE)
+//    @NotFound(action = NotFoundAction.IGNORE)
     private Itbrnd itbrnd; // itbrnd 연관관계
 }

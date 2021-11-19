@@ -409,7 +409,7 @@ public class JpaMoveService {
         for(Ititmc ititmc : ititmcList){
             Itasrt itasrt = ititmc.getItasrt();
             GoodsModalListResponseData.Goods goods = new GoodsModalListResponseData.Goods(ititmc, itasrt);
-            IfBrand ifBrand = jpaIfBrandRepository.findByChannelGbAndChannelBrandId(StringFactory.getGbOne(), itasrt.getBrandId()); // 채널은 01 하드코딩
+            IfBrand ifBrand = itasrt.getIfBrand();//jpaIfBrandRepository.findByChannelGbAndChannelBrandId(StringFactory.getGbOne(), itasrt.getBrandId()); // 채널은 01 하드코딩
 
 			// 주문관련 이동지시나 출고지시할떄 indicateqty 에 이미 적용이 되어있으므로 밑에 로직 삭제
 
@@ -493,6 +493,8 @@ public class JpaMoveService {
     private List<Ititmc> getItitmc(String storageId, String purchaseVendorId, String assortId, String assortNm) {
         Query query = em.createQuery("select ic from Ititmc ic " +
                 "join fetch ic.itasrt it " +
+                "join fetch it.ifBrand ib " +
+                "join fetch it.itvariList iv " +
                 "where " +
                 "(?1 is null or trim(?1)='' or ic.storageId=?1) " +
                 "and (?2 is null or trim(?2)='' or it.vendorId=?2) " +
@@ -868,7 +870,7 @@ public class JpaMoveService {
                         "left join fetch ld.tbOrderDetail td " +
                         "join fetch ld.itasrt it " +
                         "where lm.instructDt between ?1 and ?2 " +
-				"and lm.shipStatus ='02'" // 지시상태만 조회
+				"and lm.shipStatus ='02' and lm.shipGb in ('03', '04')" // 지시상태만 조회
                 ,Lsshpd.class);
 		query.setParameter(1, start).setParameter(2, end);
         List<Lsshpd> lsshpdList = query.getResultList();
