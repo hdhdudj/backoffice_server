@@ -439,7 +439,7 @@ public class JpaShipService {
 				+ "join fetch td.tbOrderMaster tom "
 				+ "join fetch tom.tbMember tm "
 				+ "join fetch td.itasrt it "
-				+ "join fetch it.ititmmList im "
+				+ "join fetch it.itvariList iv "
 				+ "where lsm.applyDay between ?1 and ?2 " + "and (?3 is null or trim(?3)='' or td.assortId=?3) "
 				+ "and (?4 is null or trim(?4)='' or lsd.shipId=?4) "
 				+ "and (?5 is null or trim(?5)='' or it.assortNm like concat('%', ?5, '%')) "
