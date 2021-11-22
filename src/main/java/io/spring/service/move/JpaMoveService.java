@@ -973,6 +973,8 @@ public class JpaMoveService {
                         "join fetch ld.lsshpm lm " +
                         "left join fetch ld.tbOrderDetail td " +
                         "join fetch ld.itasrt it " +
+                        "left join fetch it.ifBrand ib " +
+                        "left join fetch it.itvariList iv " +
                         "where lm.receiptDt between ?1 and ?2 " +
 				"and lm.shipStatus=?8 " +
                         "and (?3 is null or trim(?3)='' or ld.shipId=?3) " +
