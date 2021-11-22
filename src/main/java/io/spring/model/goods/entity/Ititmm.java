@@ -61,6 +61,9 @@ public class Ititmm extends CommonProps implements Serializable {
     private Long orderLmtCnt;
     private Float addPrice = 0f; // 하드코딩
 
+    // 21-11-22 추가
+    private String delYn = StringFactory.getGbTwo(); // 02 하드코딩
+
     // itasrt 연관 관계
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
