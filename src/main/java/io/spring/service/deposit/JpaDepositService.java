@@ -428,6 +428,8 @@ public class JpaDepositService {
 //                        "left join fetch ld.lsdpsp lp " +
 //                        "left join fetch ld.lsdpds ls " +
                         "left join fetch ld.itasrt it " +
+                        "left join fetch it.ifBrand ib " +
+                        "left join fetch it.itvariList iv " +
                         "left join fetch lm.cmvdmr cm " +
                         "left join fetch ld.ititmm im " +
 //                        "left join fetch im.itvari1 iv1 " +
