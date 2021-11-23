@@ -218,9 +218,10 @@ public class JpaDepositService {
 
     private List<Lsdpsd> insertLsdpsd(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData, Lsdpsm lsdpsm, List<Lsdpsp> lsdpspList){
         List<Lsdpsd> lsdpsdList = new ArrayList<>();
+        List<Lsdpsp> imsiLsdpsp = new ArrayList<>();
         int index = 1;
         for(DepositListWithPurchaseInfoData.Deposit deposit : depositListWithPurchaseInfoData.getDeposits()){
-            lsdpspList = lsdpspList.stream().filter(x->x.getPurchaseNo().equals(deposit.getPurchaseNo()) && x.getPurchaseSeq().equals(deposit.getPurchaseSeq()))
+            imsiLsdpsp = lsdpspList.stream().filter(x->x.getPurchaseNo().equals(deposit.getPurchaseNo()) && x.getPurchaseSeq().equals(deposit.getPurchaseSeq()))
                     .collect(Collectors.toList());
             if(deposit.getAvailableQty() < deposit.getDepositQty()){
                 log.debug("input deposit qty is bigger than deposit available qty.");
@@ -228,7 +229,7 @@ public class JpaDepositService {
             }
 
             String depositSeq = StringUtils.leftPad(Integer.toString(index), 4, '0');
-            Lsdpsd lsdpsd = new Lsdpsd(depositListWithPurchaseInfoData, lsdpsm, depositSeq, deposit, lsdpspList.get(0));
+            Lsdpsd lsdpsd = new Lsdpsd(depositListWithPurchaseInfoData, lsdpsm, depositSeq, deposit, imsiLsdpsp.get(0));
 
             Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(lsdpsd.getInputNo(), lsdpsd.getInputSeq());
 			// lspchd.setDepositNo(lsdpsd.getDepositNo());
