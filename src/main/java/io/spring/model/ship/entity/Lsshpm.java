@@ -63,7 +63,7 @@ public class Lsshpm extends CommonProps {
 
 		if (shipGb.equals("01")) {
 			// 출고일 경우 현재는 주문출고만 있음
-			this.shipGb = StringFactory.getGbOne(); // 02 하드코딩 (01 : 출고, 02 : 이동)
+			this.shipGb = StringFactory.getGbOne(); // 01 하드코딩 (01 : 출고, 02 : 이동)
 			this.masterShipGb = "01"; // 01 출고 03 주문이동지시 04싱픔이동지시
 			this.shipOrderGb = "01"; // 01 주문 02 상품
 		} else if (shipGb.equals("03")) {
@@ -76,8 +76,7 @@ public class Lsshpm extends CommonProps {
 			// 주문이동지시
 			this.shipGb = StringFactory.getGbTwo(); // 02 하드코딩 (01 : 출고, 02 : 이동)
 			this.masterShipGb = "04"; // 01 출고 03 주문이동지시 04싱픔이동지시
-			this.shipOrderGb = "01"; // 01 주문 02 상품
-
+			this.shipOrderGb = "02"; // 01 주문 02 상품
 		}
 
 
