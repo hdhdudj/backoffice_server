@@ -215,7 +215,7 @@ public class JpaMoveService {
 		// jpaPurchaseService.makePurchaseDataFromOrderMoveSave(lsdpsdList, moveList);
 		// 이동처리를 할떄 생성함..2021-10-18
 
-		this.changeStatusCdOfTbOrderDetail(orderList, "C02");
+		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.C02.toString());
 
 		// moveList
 
@@ -281,7 +281,7 @@ public class JpaMoveService {
 		List<String> ret = new ArrayList<String>();
 
 		Lsshpm lsshpm = jpaLsshpmRepository.findById(move.getShipId()).orElse(null);
-		Lsshpd lsshdd = jpaLsshpdRepository.findByShipIdAndShipSeq(move.getShipId(), move.getShipSeq());
+		Lsshpd lsshpd = jpaLsshpdRepository.findByShipIdAndShipSeq(move.getShipId(), move.getShipSeq());
 
 		lsshpm.setInstructDt(LocalDateTime.now());
 		lsshpm.setShipStatus("02");
@@ -870,7 +870,7 @@ public class JpaMoveService {
                         "left join fetch ld.tbOrderDetail td " +
                         "join fetch ld.itasrt it " +
                         "where lm.instructDt between ?1 and ?2 " +
-				"and lm.shipStatus ='02' and lm.shipGb in ('03', '04')" // 지시상태만 조회
+				"and lm.shipStatus ='02' and lm.masterShipGb in ('03', '04')" // 지시상태만 조회
                 ,Lsshpd.class);
 		query.setParameter(1, start).setParameter(2, end);
         List<Lsshpd> lsshpdList = query.getResultList();

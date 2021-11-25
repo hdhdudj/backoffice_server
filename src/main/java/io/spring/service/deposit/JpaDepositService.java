@@ -137,7 +137,7 @@ public class JpaDepositService {
     public void sequenceUpdateDeposit(DepositInsertRequestData depositInsertRequestData) {
     }
 
-    private void changeStatusCdOfTbOrderDetail(List<Lsdpsp> lsdpspList) throws JsonProcessingException {
+    private void changeStatusCdOfTbOrderDetail(List<Lsdpsp> lsdpspList){
         for(Lsdpsp lsdpsp : lsdpspList){
             if(lsdpsp.getDealtypeCd().equals(StringFactory.getGbOne())){ // dealtypeCd가 01(주문발주)인 애들만 해당
                 Lspchd lspchd = lsdpsp.getLspchd();
@@ -667,7 +667,7 @@ public class JpaDepositService {
 
 			// 주문발주나 입고예정발주시 처리
 			if (lspchd.getLspchm().getDealtypeCd().equals(StringFactory.getGbOne())
-					|| lspchd.getLspchm().getDealtypeCd().equals("03")) {
+					|| lspchd.getLspchm().getDealtypeCd().equals(StringFactory.getGbThree())) {
 
 
 				System.out.println(lsdpsd);
