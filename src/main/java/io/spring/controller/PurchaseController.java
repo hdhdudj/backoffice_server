@@ -127,6 +127,7 @@ public class PurchaseController {
         if(res == null){
             return null;
         }
+
         return ResponseEntity.ok(res);
     }
 

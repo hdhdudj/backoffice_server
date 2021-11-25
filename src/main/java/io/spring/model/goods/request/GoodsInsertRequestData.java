@@ -100,8 +100,10 @@ public class GoodsInsertRequestData {
 //		@Expose // object 중 해당 값이 null일 경우, json으로 만들 필드를 자동 생략
 		private String variationSeq1;
 		private String variationSeq2;
+		private String variationSeq3;
 		private String variationValue1;
 		private String variationValue2;
+		private String variationValue3;
 		private Float addPrice;
 		private String shortYn;
 	}
