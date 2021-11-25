@@ -15,6 +15,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import io.spring.enums.TrdstOrderStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -578,6 +579,7 @@ public class JpaPurchaseService {
                 "left outer join fetch itm.itvari1 iv1 " +
                 "left outer join fetch itm.itvari2 iv2 " +
                 "where lm.purchaseDt between ?1 and ?2 " +
+//                "and (tod.statusCd in ('B01','C03') or lm.dealtypeCd='02') " +
                 "and (?3 is null or trim(?3)='' or ld.lspchm.ownerId=?3) " +
                 "and (?4 is null or trim(?4)='' or ld.assortId=?4) "+
                 "and (?5 is null or trim(?5)='' or ld.lspchm.purchaseStatus=?5) "+
@@ -638,9 +640,12 @@ public class JpaPurchaseService {
                 em.createQuery("select p from Lsdpsp p " +
                                 "left join fetch p.lspchd d " +
                                 "left join fetch d.lspchm m " +
-                                "where p.purchaseNo=?1 order by p.depositPlanId asc"
+                                "left join fetch d.tbOrderDetail tod " +
+                                "where p.purchaseNo=?1 and tod.statusCd in (?2, ?3) order by p.depositPlanId asc"
                         , Lsdpsp.class);
-        query.setParameter(1, purchaseNo);
+        query.setParameter(1, purchaseNo)
+                .setParameter(2, TrdstOrderStatus.B01.toString())
+                .setParameter(3,TrdstOrderStatus.C03.toString());
         List<Lsdpsp> lsdpspList = query.getResultList();
         return lsdpspList;
     }

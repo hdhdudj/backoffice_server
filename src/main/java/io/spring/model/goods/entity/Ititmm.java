@@ -56,6 +56,10 @@ public class Ititmm extends CommonProps implements Serializable {
     private String variationSeq1;
     private String variationGb2;
     private String variationSeq2;
+    // 21-11-25 추가
+    private String variationGb3;
+    private String variationSeq3;
+    // 추가 끝
     private String setYn = StringFactory.getGbTwo(); // 02 하드코딩
     private String orderLmtYn;
     private Long orderLmtCnt;
@@ -86,6 +90,15 @@ public class Ititmm extends CommonProps implements Serializable {
             @JoinColumn(name = "variationSeq2", referencedColumnName="seq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
     })
     private Itvari itvari2;
+
+    // itvari 연관 관계 (일단 단방향) - 재질
+    @NotFound(action = NotFoundAction.IGNORE)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Itvari.class)
+    @JoinColumns({
+            @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+            @JoinColumn(name = "variationSeq3", referencedColumnName="seq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+    })
+    private Itvari itvari3;
 
     // ititmc 연관 관계 (일단 단방향) - 사이즈
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Ititmc.class)

@@ -168,12 +168,15 @@ public class GoodsSelectDetailResponseData {
         private String itemId;
 		private String seq1;
 		private String seq2;
+		private String seq3;
 		private String value1;
 		private String value2;
+		private String value3;
         private Float addPrice;
 		private String shortageYn;
 		private String status1;
 		private String status2;
+		private String status3;
     }
 
 	// image 愿��젴

@@ -99,8 +99,11 @@ public class JpaGoodsService {
             tmitem.setShortYn(ititmm.getShortYn());
             tmitem.setVariationGb1(ititmm.getVariationGb1());
             tmitem.setVariationGb2(ititmm.getVariationGb2());
+            tmitem.setVariationGb2(ititmm.getVariationGb3());
             tmitem.setVariationSeq1(ititmm.getVariationSeq1());
             tmitem.setVariationSeq2(ititmm.getVariationSeq2());
+            tmitem.setVariationSeq2(ititmm.getVariationSeq3());
+
             tmitem.setOptionPrice(ititmm.getAddPrice());
 //            jpaTmitemRepository.save(tmitem);
             em.persist(tmitem);
@@ -418,7 +421,6 @@ public class JpaGoodsService {
                 ititmm = jpaItitmmRepository.findByAssortIdAndItemId(goodsInsertRequestData.getAssortId(), itemId);
             }
             // 옵션1 관련값 찾아넣기
-//            Itvari op1 = jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), item.getVariationValue1());
             Itvari op1 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getOptionNm().equals(item.getVariationValue1()))
                     .collect(Utilities.toSingleton());
             if(op1 != null){
@@ -428,10 +430,16 @@ public class JpaGoodsService {
             // 옵션2 관련값 찾아넣기
             Itvari op2 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getOptionNm().equals(item.getVariationValue2()))
                     .collect(Utilities.toSingleton());
-//            Itvari op2 = jpaItvariRepository.findByAssortIdAndOptionNm(goodsInsertRequestData.getAssortId(), item.getVariationValue2());
             if(op2 != null){
                 ititmm.setVariationGb2(op2.getOptionGb());
                 ititmm.setVariationSeq2(op2.getSeq());
+            }
+            // 옵션3 관련값 찾아넣기
+            Itvari op3 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getOptionNm().equals(item.getVariationValue3()))
+                    .collect(Utilities.toSingleton());
+            if(op3 != null){
+                ititmm.setVariationGb3(op3.getOptionGb());
+                ititmm.setVariationSeq3(op3.getSeq());
             }
             ititmm.setAddPrice(item.getAddPrice());
             ititmm.setShortYn(item.getShortYn());
@@ -640,6 +648,14 @@ public class JpaGoodsService {
 				item.setSeq2(optionNm);
 				item.setValue2(seq);
 				item.setStatus2(StringFactory.getStrR()); // r 하드코딩
+            }
+            if(ititmm.getVariationSeq3() != null){
+                Itvari op3 = ititmm.getItvari3();//jpaItvariRepository.findByAssortIdAndSeq(ititmm.getAssortId(), ititmm.getVariationSeq2());
+                optionNm = op3 == null? null : op3.getOptionNm();
+                seq = op3 == null? null : op3.getSeq();
+                item.setSeq3(optionNm);
+                item.setValue3(seq);
+                item.setStatus3(StringFactory.getStrR()); // r 하드코딩
             }
             item.setAddPrice(ititmm.getAddPrice());
 			item.setShortageYn(ititmm.getShortYn());
