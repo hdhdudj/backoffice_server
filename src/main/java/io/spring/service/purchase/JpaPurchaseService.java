@@ -640,8 +640,8 @@ public class JpaPurchaseService {
                 em.createQuery("select p from Lsdpsp p " +
                                 "left join fetch p.lspchd d " +
                                 "left join fetch d.lspchm m " +
-                                "left join fetch d.tbOrderDetail tob " +
-                                "where p.purchaseNo=?1 and tob.statusCd in (?2, ?3) order by p.depositPlanId asc"
+                                "left join fetch d.tbOrderDetail tod " +
+                                "where p.purchaseNo=?1 and tod.statusCd in (?2, ?3) order by p.depositPlanId asc"
                         , Lsdpsp.class);
         query.setParameter(1, purchaseNo)
                 .setParameter(2, TrdstOrderStatus.B01.toString())
