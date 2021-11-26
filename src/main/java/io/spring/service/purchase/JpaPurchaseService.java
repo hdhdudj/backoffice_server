@@ -639,6 +639,7 @@ public class JpaPurchaseService {
         TypedQuery<Lsdpsp> query =
                 em.createQuery("select p from Lsdpsp p " +
                                 "left join fetch p.lspchd d " +
+                                "left join fetch p.itasrt it " +
                                 "left join fetch d.lspchm m " +
                                 "left join fetch d.tbOrderDetail tod " +
                                 "where p.purchaseNo=?1 and tod.statusCd in (?2, ?3) order by p.depositPlanId asc" //

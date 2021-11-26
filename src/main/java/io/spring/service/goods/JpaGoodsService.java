@@ -585,7 +585,10 @@ public class JpaGoodsService {
      * @return GoodsResponseData
      */
     public GoodsSelectDetailResponseData getGoodsDetailPage(String assortId) {
-        Itasrt itasrt = jpaItasrtRepository.findById(assortId).orElseThrow(() -> new ResourceNotFoundException());
+        Itasrt itasrt = em.createQuery("select i from Itasrt i " +
+                "left outer join fetch i.cmvdmr cv " +
+                "left outer join fetch i.ifBrand ib " +
+                "where i.assortId=?1", Itasrt.class).setParameter(1,assortId).getSingleResult();//jpaItasrtRepository.findById(assortId).orElseThrow(() -> new ResourceNotFoundException());
     	
 //		System.out.println(itasrt);
 

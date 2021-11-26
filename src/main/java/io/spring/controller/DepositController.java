@@ -75,9 +75,6 @@ public class DepositController {
         PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getDepositPlanList(purchaseNo);
 
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectListResponseData);
-        if(res == null){
-            return null;
-        }
         return ResponseEntity.ok(res);
     }
 
