@@ -249,6 +249,7 @@ public class Itasrt extends CommonProps {
 	@JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@OneToMany(fetch = FetchType.LAZY)
 	@JsonIgnore
+	@BatchSize(size = 5)
 	private List<Itaimg> itaimg; // itaimg 연관관계
 
 	@JoinColumn(name = "vendorId", referencedColumnName = "id", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
