@@ -184,17 +184,18 @@ public class JpaGoodsService {
 //        itasrt.setUpdDt(new Date());
 
         itasrt.setAssortNm(goodsInsertRequestData.getAssortNm());
-        itasrt.setAssortColor(goodsInsertRequestData.getAssortColor());
+        itasrt.setAssortColor(goodsInsertRequestData.getAssortColor().trim().equals("")? null : goodsInsertRequestData.getAssortColor());
 
-		itasrt.setDispCategoryId(goodsInsertRequestData.getDispCategoryId());
+		itasrt.setDispCategoryId(goodsInsertRequestData.getDispCategoryId().trim().equals("")? null : goodsInsertRequestData.getDispCategoryId());
         itasrt.setCategoryId(getGodoCateCd(goodsInsertRequestData.getDispCategoryId()));
 
-        itasrt.setBrandId(goodsInsertRequestData.getBrandId());
+        itasrt.setBrandId(goodsInsertRequestData.getBrandId().trim().equals("")? null : goodsInsertRequestData.getBrandId());
 
         itasrt.setOrigin(goodsInsertRequestData.getOrigin());
 
-        itasrt.setManufactureNm(goodsInsertRequestData.getManufactureNm());
-        itasrt.setAssortModel(goodsInsertRequestData.getAssortModel());
+        itasrt.setManufactureNm(goodsInsertRequestData.getManufactureNm().trim().equals("")? null : goodsInsertRequestData.getManufactureNm());
+        itasrt.setAssortModel(goodsInsertRequestData.getAssortModel().trim().equals("")? null : goodsInsertRequestData.getAssortModel());
+        itasrt.setVendorId(goodsInsertRequestData.getPurchaseVendorId().trim().equals("")? null : goodsInsertRequestData.getPurchaseVendorId());
 
 		itasrt.setOptionGbName(goodsInsertRequestData.getOptionGbName());
 		itasrt.setTaxGb(goodsInsertRequestData.getTaxGb());
@@ -595,13 +596,13 @@ public class JpaGoodsService {
         GoodsSelectDetailResponseData goodsSelectDetailResponseData = new GoodsSelectDetailResponseData(itasrt);
 
 		// 카테고리벨류
-        IfBrand ifBrand = null;
+        IfBrand ifBrand;
         if(itasrt.getBrandId() != null && !itasrt.getBrandId().trim().equals("")){
             ifBrand = itasrt.getIfBrand();//jpaIfBrandRepository.findByChannelGbAndBrandId(StringFactory.getGbOne(),itasrt.getBrandId());
+            goodsSelectDetailResponseData.setBrandNm(ifBrand.getBrandNm());
         }
-        goodsSelectDetailResponseData.setBrandNm(ifBrand!=null?ifBrand.getBrandNm():null);
-        List<GoodsSelectDetailResponseData.Description> descriptions = makeDescriptions(itasrt.getItasrdList());
-        List<GoodsSelectDetailResponseData.Attributes> attributesList = makeAttributesList(itasrt.getItvariList());
+        List<GoodsSelectDetailResponseData.Description> descriptions = this.makeDescriptions(itasrt.getItasrdList());
+        List<GoodsSelectDetailResponseData.Attributes> attributesList = this.makeAttributesList(itasrt.getItvariList());
         List<GoodsSelectDetailResponseData.Items> itemsList = this.makeItemsList(itasrt.getItitmmList());
         List<GoodsSelectDetailResponseData.UploadMainImage> uploadMainImageList = this.makeUploadMainImageList(itasrt.getItaimg());
         List<GoodsSelectDetailResponseData.UploadAddImage> uploadAddImageList = this.makeUploadAddImageList(itasrt.getItaimg());
