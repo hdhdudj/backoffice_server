@@ -163,6 +163,9 @@ public class Utilities {
         if(itvariList.size() > 1){
             setOptionInterface.setOptionNm2(itvariList.get(1).getOptionNm());
         }
+        if(itvariList.size() > 2){
+            setOptionInterface.setOptionNm2(itvariList.get(2).getOptionNm());
+        }
     }
 
     /**
