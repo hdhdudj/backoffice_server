@@ -589,6 +589,8 @@ public class JpaGoodsService {
         Itasrt itasrt = em.createQuery("select i from Itasrt i " +
                 "left outer join fetch i.cmvdmr cv " +
                 "left outer join fetch i.ifBrand ib " +
+                "left outer join fetch i.itaimg img " +
+                "left outer join fetch i.itvariList ivList " +
                 "where i.assortId=?1", Itasrt.class).setParameter(1,assortId).getSingleResult();//jpaItasrtRepository.findById(assortId).orElseThrow(() -> new ResourceNotFoundException());
     	
 //		System.out.println(itasrt);

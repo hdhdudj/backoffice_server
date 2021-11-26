@@ -232,6 +232,7 @@ public class Itasrt extends CommonProps {
 	@JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@OneToMany(fetch = FetchType.LAZY) // itasrd 연관관계
 	@JsonIgnore
+	@BatchSize(size = 2)
 	private List<Itasrd> itasrdList;
 
 //	@JoinColumn(name="brandId", referencedColumnName = "channelBrandId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
