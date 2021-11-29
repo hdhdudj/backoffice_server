@@ -192,11 +192,19 @@ public class OrderController {
 
 
 	@GetMapping(path = "/items")
+	// 주문일자,주문상태,주문번호,( 셀렉트방식으로 채널주문번호(기본값),주문자명,주문자휴대폰번호,주문자전화번호,수령자명,수령자휴대폰번호,수령자 전화번호,입금자명
 	public ResponseEntity getOrderList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+			  @RequestParam @Nullable String statusCd,
 			  @RequestParam @Nullable String orderId,
+			  @RequestParam @Nullable String channelOrderNo,
 			  @RequestParam @Nullable String custNm,
-			@RequestParam @Nullable String custHp, @RequestParam @Nullable String channelOrderNo) {
+			@RequestParam @Nullable String custHp,
+			@RequestParam @Nullable String custTel,
+			@RequestParam @Nullable String deliNm,
+			@RequestParam @Nullable String deliHp,
+			@RequestParam @Nullable String deliTel // todo: 입금자명 추가
+									   ) {
 
 		System.out.println("getOrderList");
 
@@ -213,7 +221,9 @@ public class OrderController {
 			LocalDateTime end = endDt.atTime(23, 59, 59);
 			map.put("endDt", end);
 		}
-
+		if (statusCd != null && !statusCd.equals("")) {
+			map.put("orderStatus", statusCd);
+		}
 		if (orderId != null && !orderId.equals("")) {
 			map.put("orderId", orderId);
 		}
@@ -223,7 +233,18 @@ public class OrderController {
 		if (custHp != null && !custHp.equals("")) {
 			map.put("custHp", custHp);
 		}
-		
+		if (custTel != null && !custTel.equals("")) {
+			map.put("custTel", custTel);
+		}
+		if (deliNm != null && !deliNm.equals("")) {
+			map.put("deliNm", deliNm);
+		}
+		if (deliHp != null && !deliHp.equals("")) {
+			map.put("deliHp", deliHp);
+		}
+		if (deliTel != null && !deliTel.equals("")) {
+			map.put("deliTel", deliTel);
+		}
 		if (channelOrderNo != null && !channelOrderNo.equals("")) {
 			map.put("channelOrderNo", channelOrderNo);
 		}

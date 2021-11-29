@@ -25,11 +25,12 @@ public class IfBrand extends CommonProps implements Serializable {
     @Id
     private String channelBrandId;
     private String channelBrandNm;
+    @Column(unique = true)
     private String brandId;
     private String brandNm;
 
     @JoinColumn(name="brandId", referencedColumnName = "brandId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
 //    @NotFound(action = NotFoundAction.IGNORE)
     private Itbrnd itbrnd; // itbrnd 연관관계

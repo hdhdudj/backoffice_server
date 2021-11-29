@@ -3,7 +3,6 @@ package io.spring.service.goods;
 import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
-import io.spring.infrastructure.util.exception.ResourceNotFoundException;
 import io.spring.jparepos.category.JpaIfCategoryRepository;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.goods.*;
@@ -184,18 +183,18 @@ public class JpaGoodsService {
 //        itasrt.setUpdDt(new Date());
 
         itasrt.setAssortNm(goodsInsertRequestData.getAssortNm());
-        itasrt.setAssortColor(goodsInsertRequestData.getAssortColor().trim().equals("")? null : goodsInsertRequestData.getAssortColor());
+        itasrt.setAssortColor(goodsInsertRequestData.getAssortColor() == null || goodsInsertRequestData.getAssortColor().trim().equals("")? null : goodsInsertRequestData.getAssortColor());
 
-		itasrt.setDispCategoryId(goodsInsertRequestData.getDispCategoryId().trim().equals("")? null : goodsInsertRequestData.getDispCategoryId());
+		itasrt.setDispCategoryId(goodsInsertRequestData.getDispCategoryId() == null || goodsInsertRequestData.getDispCategoryId().trim().equals("")? null : goodsInsertRequestData.getDispCategoryId());
         itasrt.setCategoryId(getGodoCateCd(goodsInsertRequestData.getDispCategoryId()));
 
-        itasrt.setBrandId(goodsInsertRequestData.getBrandId().trim().equals("")? null : goodsInsertRequestData.getBrandId());
+        itasrt.setBrandId(goodsInsertRequestData.getBrandId() == null || goodsInsertRequestData.getBrandId().trim().equals("")? null : goodsInsertRequestData.getBrandId());
 
         itasrt.setOrigin(goodsInsertRequestData.getOrigin());
 
-        itasrt.setManufactureNm(goodsInsertRequestData.getManufactureNm().trim().equals("")? null : goodsInsertRequestData.getManufactureNm());
-        itasrt.setAssortModel(goodsInsertRequestData.getAssortModel().trim().equals("")? null : goodsInsertRequestData.getAssortModel());
-        itasrt.setVendorId(goodsInsertRequestData.getPurchaseVendorId().trim().equals("")? null : goodsInsertRequestData.getPurchaseVendorId());
+        itasrt.setManufactureNm(goodsInsertRequestData.getManufactureNm() == null || goodsInsertRequestData.getManufactureNm().trim().equals("")? null : goodsInsertRequestData.getManufactureNm());
+        itasrt.setAssortModel(goodsInsertRequestData.getAssortModel() == null || goodsInsertRequestData.getAssortModel().trim().equals("")? null : goodsInsertRequestData.getAssortModel());
+        itasrt.setVendorId(goodsInsertRequestData.getVendorId() == null || goodsInsertRequestData.getVendorId().trim().equals("")? null : goodsInsertRequestData.getVendorId());
 
 		itasrt.setOptionGbName(goodsInsertRequestData.getOptionGbName());
 		itasrt.setTaxGb(goodsInsertRequestData.getTaxGb());
@@ -745,7 +744,7 @@ public class JpaGoodsService {
     
    
     public Itaimg getItaimg(Long uid) {
-    	Itaimg r = jpaItaimgRepository.findById(uid) .orElse(null);
+    	Itaimg r = jpaItaimgRepository.findById(uid).orElse(null);
     	
     	return r;
     	
@@ -756,5 +755,11 @@ public class JpaGoodsService {
     	
      jpaItaimgRepository.delete(ii);
 
+    }
+
+
+    @Transactional
+    public void batchSizeTest() {
+        Itasrt itasrt = jpaItasrtRepository.findById("000075775").orElseGet(()->null);
     }
 }
