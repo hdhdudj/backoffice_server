@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -24,6 +23,7 @@ import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.order.entity.OrderStock;
 import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.order.request.OrderOptionRequestData;
 import io.spring.model.order.request.OrderStockMngInsertRequestData;
 import io.spring.model.order.response.OrderDetailListResponse;
 import io.spring.model.order.response.OrderDetailResponseData;
@@ -336,4 +336,29 @@ public class OrderController {
 		jpaOrderService.testSms(body, tbOrderNo);
 		return null;
 	}
+
+	@PostMapping(path = "/ifoption")
+	public ResponseEntity saveOrderOption(
+			@RequestBody OrderOptionRequestData req) {
+
+		System.out.println(req);
+
+		Boolean ret = jpaOrderService.saveGoodsIfoption(req.getOrderId(), req.getOrderSeq(), req.getAssortId(),
+				req.getChannelGoodsNo(),
+				req.getChannelOptionSno());
+
+		if (ret) {
+			jpaOrderService.changeOrderStatus(req.getOrderId(), req.getOrderSeq());
+		}
+
+		ApiResponseMessage res = null;
+
+		// log.debug(r.size());
+
+		res = new ApiResponseMessage<String>("SUCCESS", "", "");
+
+		return ResponseEntity.ok(res);
+
+	}
+
 }
