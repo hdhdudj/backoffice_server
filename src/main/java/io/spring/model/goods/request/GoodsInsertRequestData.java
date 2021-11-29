@@ -66,7 +66,7 @@ public class GoodsInsertRequestData {
 	private Float buyExchangeRate;
 	private String sizeType;
 	private Float mdDiscountRate;
-	private String purchaseVendorId;
+	private String vendorId;
 	private String optionUseYn;
 
 
