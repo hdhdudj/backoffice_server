@@ -19,7 +19,7 @@ import java.util.List;
 @Table(name="cmvdmr")
 @Getter
 @Setter
-public class Cmvdmr extends CommonProps {
+public class Cmvdmr extends CommonProps{
     @Id
     private String id;
     private String vdNm;

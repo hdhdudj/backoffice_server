@@ -266,6 +266,7 @@ public class Itasrt extends CommonProps{
 	@JoinColumn(name = "brandId", referencedColumnName = "brandId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
+	@LazyToOne(value = LazyToOneOption.NO_PROXY)
 //	@NotFound(action = NotFoundAction.IGNORE)
-	private IfBrand ifBrand; // ifBrand 연관관계
+	private IfBrand ifBrand;
 }
