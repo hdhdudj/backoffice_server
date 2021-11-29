@@ -242,4 +242,14 @@ public class GoodsController {
 		}
 		return ResponseEntity.ok(res);
 	}
+
+	@GetMapping(path="/batch-size-test")
+	public ResponseEntity batchSizeTest() {
+		log.debug("/goods/batch-size-test");
+
+		jpaGoodsService.batchSizeTest();
+		ApiResponseMessage res = new ApiResponseMessage("ok", "success", null);
+
+		return ResponseEntity.ok(res);
+	}
 }

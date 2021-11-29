@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 
@@ -15,6 +16,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Table(name="itaimg")
+@BatchSize(size = 10)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Itaimg extends CommonProps {
 	  public Itaimg(String imageGb, FileVo f){

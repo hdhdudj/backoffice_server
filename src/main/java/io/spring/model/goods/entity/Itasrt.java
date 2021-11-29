@@ -8,13 +8,16 @@ import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.vendor.entity.Cmvdmr;
 import lombok.*;
 import org.hibernate.annotations.*;
+import org.hibernate.engine.spi.PersistentAttributeInterceptable;
+import org.hibernate.engine.spi.PersistentAttributeInterceptor;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
 import javax.persistence.Table;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  *  ITASRT table의 Entity
@@ -26,7 +29,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Itasrt extends CommonProps {
+public class Itasrt extends CommonProps{
 
 	public Itasrt(GoodsInsertRequestData goodsInsertRequestData){
 		this.assortId = goodsInsertRequestData.getAssortId();
@@ -72,7 +75,7 @@ public class Itasrt extends CommonProps {
 //		this.sizeType = goodsInsertRequestData.getSizeType();
 		this.mdDiscountRate = goodsInsertRequestData.getMdDiscountRate();
 		this.optionGbName = goodsInsertRequestData.getOptionGbName();
-		this.vendorId = goodsInsertRequestData.getPurchaseVendorId();
+		this.vendorId = goodsInsertRequestData.getVendorId();
 
 		this.optionUseYn = goodsInsertRequestData.getOptionUseYn();
 		
@@ -226,14 +229,16 @@ public class Itasrt extends CommonProps {
 
 	@JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@JsonIgnore
+	@BatchSize(size = 100)
 	@OneToMany(fetch = FetchType.LAZY) // ititmm 연관관계
 	private List<Ititmm> ititmmList;
 
 	@JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+	@BatchSize(size = 100)
 	@OneToMany(fetch = FetchType.LAZY) // itasrd 연관관계
 	@JsonIgnore
-	@BatchSize(size = 2)
 	private List<Itasrd> itasrdList;
+
 
 //	@JoinColumn(name="brandId", referencedColumnName = "channelBrandId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 //	@ManyToOne(fetch = FetchType.LAZY)
@@ -247,9 +252,9 @@ public class Itasrt extends CommonProps {
 	private Itcatg itcatg; // itcatg 연관관계
 
 	@JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+	@BatchSize(size = 100)
 	@OneToMany(fetch = FetchType.LAZY)
 	@JsonIgnore
-	@BatchSize(size = 5)
 	private List<Itaimg> itaimg; // itaimg 연관관계
 
 	@JoinColumn(name = "vendorId", referencedColumnName = "id", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
@@ -261,6 +266,7 @@ public class Itasrt extends CommonProps {
 	@JoinColumn(name = "brandId", referencedColumnName = "brandId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
+	@LazyToOne(value = LazyToOneOption.NO_PROXY)
 //	@NotFound(action = NotFoundAction.IGNORE)
-	private IfBrand ifBrand; // ifBrand 연관관계
+	private IfBrand ifBrand;
 }

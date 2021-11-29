@@ -426,6 +426,8 @@ public class JpaDepositService {
         List<DepositSelectListResponseData.Deposit> depositList = new ArrayList<>();
         TypedQuery<Lsdpsd> query = em.createQuery("select ld from Lsdpsd ld " +
                         "left join fetch ld.lsdpsm lm " +
+                        "left join fetch ld.lspchd lcd " +
+                        "left join fetch lcd.lspchm lcm " +
 //                        "left join fetch ld.lsdpsp lp " +
 //                        "left join fetch ld.lsdpds ls " +
                         "left join fetch ld.itasrt it " +

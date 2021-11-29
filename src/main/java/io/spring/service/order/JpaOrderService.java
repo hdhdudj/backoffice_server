@@ -8,8 +8,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
-import io.spring.service.nhncloud.KakaoBizMessageService;
-import io.spring.service.nhncloud.SmsService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +18,12 @@ import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.deposit.JpaLsdpdsRepository;
 import io.spring.jparepos.deposit.JpaLsdpsdRepository;
 import io.spring.jparepos.deposit.JpaLsdpsmRepository;
+import io.spring.jparepos.goods.JpaIfGoodsOptionRepository;
 import io.spring.jparepos.goods.JpaItasrtRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
+import io.spring.jparepos.goods.JpaItitmmRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
+import io.spring.jparepos.goods.JpaTmitemRepository;
 import io.spring.jparepos.order.JpaOrderLogRepository;
 import io.spring.jparepos.order.JpaOrderStockRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
@@ -34,9 +35,12 @@ import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
 import io.spring.model.deposit.entity.Lsdpds;
 import io.spring.model.deposit.entity.Lsdpsd;
+import io.spring.model.goods.entity.IfGoodsOption;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
+import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.goods.entity.Ititmt;
+import io.spring.model.goods.entity.Tmitem;
 import io.spring.model.order.entity.OrderLog;
 import io.spring.model.order.entity.OrderStock;
 import io.spring.model.order.entity.TbOrderDetail;
@@ -47,6 +51,8 @@ import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import io.spring.model.ship.entity.Lsshps;
+import io.spring.service.nhncloud.KakaoBizMessageService;
+import io.spring.service.nhncloud.SmsService;
 import io.spring.service.purchase.JpaPurchaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -73,6 +79,12 @@ public class JpaOrderService {
     private final JpaLsdpsmRepository jpaLsdpsmRepository;
     private final JpaLsshpmRepository jpaLsshpmRepository;
     private final JpaLsshpdRepository jpaLsshpdRepository;
+
+	private final JpaIfGoodsOptionRepository jpaIfGoodsOptionRepository;
+
+	private final JpaTmitemRepository jpaTmitemRepository;
+
+	private final JpaItitmmRepository jpaItitmmRepository;
 
     private final EntityManager em;
 
@@ -710,6 +722,101 @@ public class JpaOrderService {
         TbOrderDetail td = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(tbOrderNo, "0001");
         smsService.sendSmsMessage(body, td);
     }
+
+	@Transactional
+	public boolean saveGoodsIfoption(String orderId, String orderSeq, String assortId, String channelGoodsNo,
+			String channelOptionSno) {
+
+		IfGoodsOption igo = null;
+		Tmitem ti = null;
+
+		System.out.println(orderId);
+		System.out.println(orderSeq);
+		System.out.println(assortId);
+		System.out.println(channelGoodsNo);
+		System.out.println(channelOptionSno);
+		
+		List<Ititmm> r2 = jpaItitmmRepository.findByAssortId(assortId);
+		
+		if (r2.size() > 1) {
+			System.out.println(assortId + " 해당상품은 옵션이 많은 상품입니다.확인후 처리하세요");
+			throw new RuntimeException("해당상품은 옵션이 많은 상품입니다.확인후 처리하세요.");
+		}
+
+		System.out.println(r2.size());
+
+		List<IfGoodsOption> r = jpaIfGoodsOptionRepository.findBySnoAndGoodsNo(channelOptionSno, channelGoodsNo);
+		if (r == null || r.size() == 0) {
+
+			igo = new IfGoodsOption();
+			
+			igo.setChannelGb("01");
+			igo.setGoodsNo(channelGoodsNo);
+			igo.setSno(channelOptionSno);
+			igo.setOptionNo("1");
+			igo.setOptionViewFl("y");
+			igo.setUploadStatus("02");
+			igo.setAssortId(assortId);
+			igo.setItemId("0001");
+			igo.setRegDt(new Date());
+			igo.setModDt(new Date());
+			
+			
+			
+
+		} else {
+			System.out.println("ifGoodsOption 이 이미 있습니다");
+			// throw new RuntimeException("ifGoodsOption 이 이미 있습니다");
+		}
+
+		System.out.println(r.size());
+
+		Tmitem r1 = jpaTmitemRepository.findByChannelGbAndAssortIdAndItemId("01", assortId, "0001").orElse(null);
+
+		if (r1 == null) {
+			ti = new Tmitem("01", assortId, "0001", channelGoodsNo, channelOptionSno);
+			ti.setRegDt(LocalDateTime.now());
+			ti.setRegId("1");
+			ti.setUpdDt(LocalDateTime.now());
+			ti.setUpdId("1");
+		} else {
+			System.out.println("tmitem 이 이미 있습니다");
+			// throw new RuntimeException("tmitem 이 이미 있습니다");
+		}
+
+		System.out.println(r1);
+
+		TbOrderDetail tod = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
+
+		if (tod != null) {
+			tod.setItemId("0001");
+		} else {
+			System.out.println("TbOrderDetail 이 없습니다.");
+			throw new RuntimeException("TbOrderDetail 이 없습니다.");
+		}
+
+		System.out.println(tod);
+
+		Boolean ret = false;
+
+		if (r2.size() == 1) {
+
+			if (r.size() == 0 && r1 == null) {
+				jpaIfGoodsOptionRepository.save(igo);
+				jpaTmitemRepository.save(ti);
+				jpaTbOrderDetailRepository.save(tod);
+				ret = true;
+			} else if (r.size() == 1 && r1 != null) {
+				jpaTbOrderDetailRepository.save(tod);
+				ret = true;
+			}
+
+		}
+
+		return ret;
+
+
+	}
 }
 
 

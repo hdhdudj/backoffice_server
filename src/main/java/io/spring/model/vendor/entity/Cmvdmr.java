@@ -6,10 +6,12 @@ import javax.persistence.*;
 import io.spring.model.common.entity.CommonProps;
 
 import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.goods.idclass.IfBrandId;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.List;
 
 @ToString
@@ -17,7 +19,7 @@ import java.util.List;
 @Table(name="cmvdmr")
 @Getter
 @Setter
-public class Cmvdmr extends CommonProps {
+public class Cmvdmr extends CommonProps{
     @Id
     private String id;
     private String vdNm;

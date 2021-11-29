@@ -148,9 +148,14 @@ from (select aa.channel_gb channel_gb,
 		,tom.pay_gb payGb
 		,tom.pay_dt payDt
 		,tom.channel_order_no  channelOrderNo
-		from tb_order_master tom 
+		,tma.deli_nm deliNm
+		,tma.deli_hp deliHp
+		,tma.deli_tel deliTel
+		from tb_order_master tom
 		 LEFT OUTER JOIN tb_member AS tm    -- A_TABLE 기준
 		              ON tom.cust_id = tm.cust_id
+		 LEFT OUTER JOIN tb_member_address AS tma    -- A_TABLE 기준
+			  ON tom.cust_id = tma.cust_id
 		where  1=1
 		and tom.order_status not like 'f%'
 		and tom.order_date between #{startDt} and  #{endDt}
@@ -160,17 +165,41 @@ from (select aa.channel_gb channel_gb,
 				and tom.order_id =#{orderId}
 			]]>
 		</if>
-	
+		<if test='orderStatus != null'>
+			<![CDATA[
+				and tom.order_status =#{orderStatus}
+			]]>
+		</if>
 	<if test='custNm != null'>
 			<![CDATA[
 				and tm.cust_nm like CONCAT(#{custNm},'%' )
 			]]>
 		</if>
 		<if test='custHp != null'>
-			<![CDATA[
+		<![CDATA[
 				and tm.cust_hp = #{custHp}
 			]]>
-		</if>	
+		</if>
+		<if test='custTel != null'>
+			<![CDATA[
+				and tm.cust_tel = #{custTel}
+			]]>
+		</if>
+		<if test='deliNm != null'>
+			<![CDATA[
+				and tma.deli_nm = #{deliNm}
+			]]>
+		</if>
+		<if test='deliHp != null'>
+			<![CDATA[
+				and tma.deli_hp = #{deliHp}
+			]]>
+		</if>
+		<if test='deliTel != null'>
+			<![CDATA[
+				and tma.deli_tel = #{deliTel}
+			]]>
+		</if>
 		<if test='channelOrderNo != null'>
 			<![CDATA[
 				and tom.channel_order_no =#{channelOrderNo}
