@@ -616,6 +616,10 @@ public class JpaGoodsService {
 
     private List<GoodsSelectDetailResponseData.UploadAddImage> makeUploadAddImageList(List<Itaimg> itaimgList) {
         List<GoodsSelectDetailResponseData.UploadAddImage> uploadAddImageList = new ArrayList<>();
+        if(itaimgList == null){
+            log.debug("itasrt.itaimgList가 존재하지 않습니다.");
+            return uploadAddImageList;
+        }
         for(Itaimg itaimg : itaimgList){
             if(itaimg.getImageGb().equals(StringFactory.getGbTwo())) {
                 GoodsSelectDetailResponseData.UploadAddImage uploadAddImage = new GoodsSelectDetailResponseData.UploadAddImage(itaimg);
@@ -627,6 +631,10 @@ public class JpaGoodsService {
 
     private List<GoodsSelectDetailResponseData.UploadMainImage> makeUploadMainImageList(List<Itaimg> itaimgList) {
         List<GoodsSelectDetailResponseData.UploadMainImage> uploadMainImageList = new ArrayList<>();
+        if(itaimgList == null){
+            log.debug("itasrt.itaimgList가 존재하지 않습니다.");
+            return uploadMainImageList;
+        }
         for(Itaimg itaimg : itaimgList){
             if(itaimg.getImageGb().equals(StringFactory.getGbOne())){
                 GoodsSelectDetailResponseData.UploadMainImage uploadMainImage = new GoodsSelectDetailResponseData.UploadMainImage(itaimg);
@@ -639,6 +647,10 @@ public class JpaGoodsService {
     // ititmm -> items 형태로 바꿔주는 함수
     private List<GoodsSelectDetailResponseData.Items> makeItemsList(List<Ititmm> ititmmList) {
         List<GoodsSelectDetailResponseData.Items> itemsList = new ArrayList<>();
+        if(ititmmList == null){
+            log.debug("itasrt.ititmmList가 존재하지 않습니다.");
+            return itemsList;
+        }
         for(Ititmm ititmm : ititmmList){
             GoodsSelectDetailResponseData.Items item = new GoodsSelectDetailResponseData.Items();
             item.setItemId(ititmm.getItemId());
@@ -674,6 +686,10 @@ public class JpaGoodsService {
     // itvari -> attributes 형태로 바꿔주는 함수
     private List<GoodsSelectDetailResponseData.Attributes> makeAttributesList(List<Itvari> itvariList) {
         List<GoodsSelectDetailResponseData.Attributes> attributesList = new ArrayList<>();
+        if(itvariList == null){
+            log.debug("itasrt.itvariList가 존재하지 않습니다.");
+            return attributesList;
+        }
         for(Itvari itvari : itvariList){
             GoodsSelectDetailResponseData.Attributes attr = new GoodsSelectDetailResponseData.Attributes();
             attr.setSeq(itvari.getSeq());
@@ -687,6 +703,10 @@ public class JpaGoodsService {
     // itasrd -> description 형태로 바꿔주는 함수
     private List<GoodsSelectDetailResponseData.Description> makeDescriptions(List<Itasrd> itasrdList) {
         List<GoodsSelectDetailResponseData.Description> descriptionList = new ArrayList<>();
+        if(itasrdList == null){
+            log.debug("itasrt.itasrdList가 존재하지 않습니다.");
+            return descriptionList;
+        }
         for(Itasrd itasrd : itasrdList){
             GoodsSelectDetailResponseData.Description desc = new GoodsSelectDetailResponseData.Description();
             desc.setSeq(itasrd.getSeq());
