@@ -104,6 +104,7 @@ public class PurchaseSelectListResponseData {
             this.itemNm = itasrt.getAssortNm();
 
             this.depositQty = 0l;
+            this.purchaseQty = lsdpsp.getPurchasePlanQty();
 
             this.purchaseCost = lsdpsp.getLspchd().getPurchaseUnitAmt();
         }
@@ -157,7 +158,7 @@ public class PurchaseSelectListResponseData {
 
         // 입고처리 화면 요소
         private String depositPlanId; // 입고예정번호
-        private Long availableQty; // 가능수량
+        private Long availableQty; // 가능수량(입고예정수량)
         private Long depositQty; // 입고수량
         private Float purchaseCost; // 발주금액
 		private String optionInfo;
