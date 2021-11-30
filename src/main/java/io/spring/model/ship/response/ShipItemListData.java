@@ -1,6 +1,7 @@
 package io.spring.model.ship.response;
 
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.SetOptionInterface;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import lombok.AccessLevel;
@@ -41,7 +42,7 @@ public class ShipItemListData {
     @Getter
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class Ship{
+    public static class Ship implements SetOptionInterface {
         public Ship(Lsshpd lsshpd){
             this.shipId = lsshpd.getShipId();
             this.shipSeq = lsshpd.getShipSeq();
@@ -72,6 +73,7 @@ public class ShipItemListData {
         private String assortNm;
         private String optionNm1;
         private String optionNm2;
+        private String optionNm3;
         private Long qty;
         private Float cost;
     }

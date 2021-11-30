@@ -90,6 +90,7 @@ public class PurchaseSelectDetailResponseData {
         private String assortId;
         private String optionNm1;
         private String optionNm2;
+        private String optionNm3;
         private String deliMethod;
         private Float mdRrp;
         private Float buySupplyDiscount;
