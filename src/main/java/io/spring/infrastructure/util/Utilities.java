@@ -157,6 +157,10 @@ public class Utilities {
      * optionNm1, optionNm2 설정 함수
      */
     public static void setOptionNames(SetOptionInterface setOptionInterface, List<Itvari> itvariList){
+        if(itvariList == null){
+            log.debug("itvari list가 존재하지 않습니다.");
+            return;
+        }
         if(itvariList.size() > 0){
             setOptionInterface.setOptionNm1(itvariList.get(0).getOptionNm());
         }
