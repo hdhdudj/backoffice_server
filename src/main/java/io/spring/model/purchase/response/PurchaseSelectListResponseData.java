@@ -90,6 +90,7 @@ public class PurchaseSelectListResponseData {
             this.purchaseNo = lspchm.getPurchaseNo();
             this.purchaseSeq = lsdpsp.getPurchaseSeq();
             this.purchaseKey = Utilities.addDashInMiddle(this.purchaseNo, this.purchaseSeq);
+            this.purchaseDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
 
             this.vendorId = lspchm.getVendorId();
             this.purchaseGb = lspchm.getPurchaseGb();
