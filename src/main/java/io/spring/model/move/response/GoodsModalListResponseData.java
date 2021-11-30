@@ -58,6 +58,7 @@ public class GoodsModalListResponseData {
         private String brandNm;
         private String optionNm1;
         private String optionNm2;
+        private String optionNm3;
         private String channelId;
         private Long qty;
         private Long orderQty;

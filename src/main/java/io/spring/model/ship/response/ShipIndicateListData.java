@@ -24,8 +24,7 @@ import lombok.Setter;
 /**
  * 출고 - 출고지시리스트 : 출고지시일자, 출고지시번호, 상품코드or상품명, 구매처 조건에 맞는 출고지시 리스트 DTO
  * 출고 - 출고처리 : 출고처리 화면에서 조건 검색으로 리스트 가져올 때도 이용됨.
- * 출고 - 출고리스트 : 출고리스트 화면에서 조건 검색으로 리스트 가져올 때도 이용됨.
- */
+*/
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -74,6 +73,9 @@ public class ShipIndicateListData {
             this.assortNm = tbOrderDetail.getGoodsNm();
             this.blNo = lsshpm.getBlNo(); // 트래킹 번호
             this.shipDt = Utilities.removeTAndTransToStr(lsshpm.getApplyDay());
+            this.orderId = lsshpd.getOrderId();
+            this.orderSeq = lsshpd.getOrderSeq();
+            this.orderKey = Utilities.addDashInMiddle(orderId, orderSeq);
             // 옵션은 외부 set
             // qty는 외부 set
         }
@@ -87,6 +89,9 @@ public class ShipIndicateListData {
         private String shipId;
         private String shipSeq;
         private String shipKey;
+        private String orderId;
+        private String orderSeq;
+        private String orderKey;
         private String blNo;
         private String assortGb;
         private String deliMethod;
@@ -96,6 +101,7 @@ public class ShipIndicateListData {
         private String assortNm;
         private String optionNm1;
         private String optionNm2;
+        private String optionNm3;
         private Long qty;
     }
 }

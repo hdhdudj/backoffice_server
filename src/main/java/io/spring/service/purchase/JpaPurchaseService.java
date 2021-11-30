@@ -527,16 +527,9 @@ public class JpaPurchaseService {
 
         for(Lspchd lspchd : lspchdList){
             Ititmm ititmm = lspchd.getItitmm();
-
-//            Lsdpsd lsdpsd = lspchd.getLsdpsd();
-            Itvari itvari1 = ititmm.getItvari1();
-            Itvari itvari2 = ititmm.getItvari2();
-            String optionNm1 = itvari1 == null? null : itvari1.getOptionNm();
-            String optionNm2 = itvari2 == null? null : itvari2.getOptionNm();
+            List<Itvari> itvariList = ititmm.getItasrt().getItvariList();
             PurchaseSelectListResponseData.Purchase purchase = new PurchaseSelectListResponseData.Purchase(lspchd.getLspchm(), lspchd);
-//            purchase.setAssortNm(lspchd.getItitmm().getItasrt().getAssortNm());
-            purchase.setOptionNm1(optionNm1);
-            purchase.setOptionNm2(optionNm2);
+            Utilities.setOptionNames(purchase, itvariList);
             purchase.setItemNm(ititmm.getItemNm());
             purchase.setDepositQty(lspchd.getPurchaseQty());
 
@@ -576,8 +569,8 @@ public class JpaPurchaseService {
                 "join fetch ld.lspchm lm " +
                 "left outer join fetch ld.tbOrderDetail tod " +
                 "left outer join fetch ld.ititmm itm " +
-                "left outer join fetch itm.itvari1 iv1 " +
-                "left outer join fetch itm.itvari2 iv2 " +
+                "left outer join fetch itm.itasrt ita " +
+                "left outer join fetch ita.itvariList iv " +
                 "where lm.purchaseDt between ?1 and ?2 " +
 //                "and (tod.statusCd in ('B01','C03') or lm.dealtypeCd='02') " +
                 "and (?3 is null or trim(?3)='' or ld.lspchm.ownerId=?3) " +

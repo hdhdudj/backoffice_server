@@ -76,5 +76,6 @@ public class OrderMoveSaveData {
         // itvari
         private String optionNm1;
         private String optionNm2;
+        private String optionNm3;
     }
 }

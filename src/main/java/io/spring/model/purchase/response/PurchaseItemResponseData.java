@@ -44,6 +44,7 @@ public class PurchaseItemResponseData {
 		private String deliMethod;
 		private String optionNm1;
 		private String optionNm2;
+		private String optionNm3;
 		private String purchaseStatus;
 		private Float mdRrp;
 		private Float buySupplyDiscount;
