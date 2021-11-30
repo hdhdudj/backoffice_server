@@ -29,7 +29,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Itasrt extends CommonProps{
+public class Itasrt extends CommonProps implements PersistentAttributeInterceptable{
 
 	public Itasrt(GoodsInsertRequestData goodsInsertRequestData){
 		this.assortId = goodsInsertRequestData.getAssortId();
@@ -269,4 +269,31 @@ public class Itasrt extends CommonProps{
 	@LazyToOne(value = LazyToOneOption.NO_PROXY)
 //	@NotFound(action = NotFoundAction.IGNORE)
 	private IfBrand ifBrand;
+	public IfBrand getIfBrand() {
+		if (interceptor!=null) {
+			return (IfBrand)interceptor.readObject(this, "ifBrand", ifBrand);
+		}
+		return ifBrand;
+	}
+
+	public void setIfBrand(IfBrand ifBrand) {
+		if (interceptor!=null) {
+			this.ifBrand = (IfBrand) interceptor.writeObject(this,"ifBrand", this.ifBrand, ifBrand);
+			return ;
+		}
+		this.ifBrand = ifBrand;
+	}
+
+	@Transient
+	private PersistentAttributeInterceptor interceptor;
+
+	@Override
+	public PersistentAttributeInterceptor $$_hibernate_getInterceptor() {
+		return interceptor;
+	}
+
+	@Override
+	public void $$_hibernate_setInterceptor(PersistentAttributeInterceptor interceptor) {
+		this.interceptor = interceptor;
+	}
 }

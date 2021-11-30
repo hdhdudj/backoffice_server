@@ -576,6 +576,7 @@ public class JpaPurchaseService {
                 "join fetch ld.lspchm lm " +
                 "left outer join fetch ld.tbOrderDetail tod " +
                 "left outer join fetch ld.ititmm itm " +
+                "left outer join fetch itm.itasrt ita " +
                 "left outer join fetch itm.itvari1 iv1 " +
                 "left outer join fetch itm.itvari2 iv2 " +
                 "where lm.purchaseDt between ?1 and ?2 " +
