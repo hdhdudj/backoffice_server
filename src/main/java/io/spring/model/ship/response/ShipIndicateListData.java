@@ -74,6 +74,9 @@ public class ShipIndicateListData {
             this.assortNm = tbOrderDetail.getGoodsNm();
             this.blNo = lsshpm.getBlNo(); // 트래킹 번호
             this.shipDt = Utilities.removeTAndTransToStr(lsshpm.getApplyDay());
+            this.orderId = lsshpd.getOrderId();
+            this.orderSeq = lsshpd.getOrderSeq();
+            this.orderKey = Utilities.addDashInMiddle(orderId, orderSeq);
             // 옵션은 외부 set
             // qty는 외부 set
         }
@@ -87,6 +90,9 @@ public class ShipIndicateListData {
         private String shipId;
         private String shipSeq;
         private String shipKey;
+        private String orderId;
+        private String orderSeq;
+        private String orderKey;
         private String blNo;
         private String assortGb;
         private String deliMethod;
