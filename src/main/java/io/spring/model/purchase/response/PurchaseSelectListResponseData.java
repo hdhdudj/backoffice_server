@@ -104,6 +104,7 @@ public class PurchaseSelectListResponseData {
             this.itemNm = itasrt.getAssortNm();
 
             this.depositQty = 0l;
+            this.purchaseQty = lsdpsp.getPurchasePlanQty();
 
             this.purchaseCost = lsdpsp.getLspchd().getPurchaseUnitAmt();
         }

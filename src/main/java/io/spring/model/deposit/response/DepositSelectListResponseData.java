@@ -58,6 +58,11 @@ public class DepositSelectListResponseData {
             this.extraUnitcost = lsdpsd.getExtraUnitcost();
             this.depositDt = Utilities.removeTAndTransToStr(lsdpsd.getLsdpsm().getDepositDt());
             this.purchaseDt = lsdpsd.getLspchd() == null? null : Utilities.removeTAndTransToStr(lsdpsd.getLspchd().getLspchm().getPurchaseDt());
+            if(lsdpsd.getLspchd() != null){
+                this.orderId = lsdpsd.getOrderId();
+                this.orderSeq = lsdpsd.getOrderSeq();
+                this.orderkey = Utilities.addDashInMiddle(orderId, orderSeq);
+            }
         }
         private String depositKey;
 //        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -82,5 +87,9 @@ public class DepositSelectListResponseData {
         private Float weight;
         // 21-11-29 추가
         private String purchaseDt;
+        // 21-11-30 추가
+        private String orderId;
+        private String orderSeq;
+        private String orderkey;
     }
 }
