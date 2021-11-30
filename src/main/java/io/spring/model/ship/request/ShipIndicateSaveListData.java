@@ -73,6 +73,7 @@ public class ShipIndicateSaveListData {
         private String assortNm;
         private String optionNm1;
         private String optionNm2;
+        private String optionNm3;
         private Long availableQty;
         private Long qty;
 		private String shipId;

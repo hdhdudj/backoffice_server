@@ -94,6 +94,7 @@ public class OrderDetailResponseData {
 			this.optionInfo = (String) map.get("optionInfo");
 			this.optionNm1 = (String) map.get("optionNm1");
 			this.optionNm2 = (String) map.get("optionNm2");
+			this.optionNm3 = (String) map.get("optionNm3");
 			this.qty = Long.valueOf((int) map.get("qty"));
 			this.salePrice = ((BigDecimal) map.get("salePrice")).doubleValue();
 			this.deliveryInfo = (String) map.get("deliveryInfo");
@@ -117,6 +118,7 @@ public class OrderDetailResponseData {
 		private String optionInfo; // 제휴옵션정보
 		private String optionNm1; // 옵션1
 		private String optionNm2; // 옵션2
+		private String optionNm3; // 옵션3
 		private Long qty; // 수량
 		private double salePrice; // 판매가
 		private String deliveryInfo; // 제휴배송정보

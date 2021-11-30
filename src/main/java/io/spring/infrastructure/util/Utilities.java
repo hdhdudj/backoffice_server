@@ -154,7 +154,7 @@ public class Utilities {
     }
 
     /**
-     * optionNm1, optionNm2 설정 함수
+     * optionNm1, optionNm2, optionNm3 설정 함수
      */
     public static void setOptionNames(SetOptionInterface setOptionInterface, List<Itvari> itvariList){
         if(itvariList == null){

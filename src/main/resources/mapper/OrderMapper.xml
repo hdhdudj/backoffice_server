@@ -282,6 +282,13 @@ from (select aa.channel_gb channel_gb,
                   And  b2.assort_id = b1.assort_id
                   and b2.variation_gb2 = b1.variation_gb
                   and  b2.variation_seq2=b1.seq) optionNm2
+	 ,    (select b1.option_nm
+		   from ititmm b2, itvari b1
+		   where b2.assort_id=tod.assort_id
+			 And b2.item_id= tod.item_id
+			 And  b2.assort_id = b1.assort_id
+			 and b2.variation_gb3 = b1.variation_gb
+			 and  b2.variation_seq3=b1.seq) optionNm3
  ,tod.qty qty 
  ,tod.sale_price  salePrice
  ,tod.delivery_info  deliveryInfo
@@ -332,7 +339,14 @@ select aa.channel_gb channelGb
                   And b2.item_id= bb.item_id
                   And  b2.assort_id = b1.assort_id
                   and b2.variation_gb2 = b1.variation_gb
-                  and  b2.variation_seq2=b1.seq) optionNm2	
+                  and  b2.variation_seq2=b1.seq) optionNm2
+                ,    (select b1.option_nm
+                from ititmm b2, itvari b1
+                where b2.assort_id=bb.assort_id
+                  And b2.item_id= bb.item_id
+                  And  b2.assort_id = b1.assort_id
+                  and b2.variation_gb3 = b1.variation_gb
+                  and  b2.variation_seq3=b1.seq) optionNm3
                   	,bb.option_info optionInfo
 		,bb.qty qty
 		,bb.sale_price salePrice

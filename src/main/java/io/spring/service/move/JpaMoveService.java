@@ -1014,13 +1014,7 @@ public class JpaMoveService {
         List<MoveCompletedLIstReponseData.Move> moveList = new ArrayList<>();
         for(Lsshpd lsshpd : lsshpdList){
             MoveCompletedLIstReponseData.Move move = new MoveCompletedLIstReponseData.Move(lsshpd.getLsshpm(), lsshpd);
-            List<Itvari> itvariList = lsshpd.getItasrt().getItvariList();
-            if(itvariList.size() > 0){
-                move.setOptionNm1(itvariList.get(0).getOptionNm());
-            }
-            if(itvariList.size() > 1){
-                move.setOptionNm2(itvariList.get(1).getOptionNm());
-            }
+            Utilities.setOptionNames(move, lsshpd.getItasrt().getItvariList());
             moveList.add(move);
         }
         moveCompletedLIstReponseData.setMoves(moveList);

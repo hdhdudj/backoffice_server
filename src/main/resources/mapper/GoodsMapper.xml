@@ -169,6 +169,7 @@
 			 ,im.short_yn as itemShortageYn
 			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq1 and iv.variation_gb='01' and del_yn='02' ) optionNm1
 			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq2 and iv.variation_gb='02' and del_yn='02' ) optionNm2			 
+			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq3 and iv.variation_gb='03' and del_yn='02' ) optionNm3
 			 ,i.brand_id as brandId
 			 ,ib.brand_nm as brandNm
 			 ,i.disp_category_id as dispCategoryId
@@ -212,6 +213,7 @@
 			,aaa.itemShortageYn
 			,aaa.optionNm1
 			,aaa.optionNm2
+			,aaa.optionNm3
 			,aaa.brandId
 			,aaa.brandNm
 			,aaa.dispCategoryId dispCategoryId
@@ -229,6 +231,7 @@
 			 ,im.short_yn as itemShortageYn
 			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq1 and iv.variation_gb='01' and del_yn='02' ) optionNm1
 			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq2 and iv.variation_gb='02' and del_yn='02' ) optionNm2			 
+			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq3 and iv.variation_gb='03' and del_yn='02' ) optionNm3
 			 ,i.brand_id as brandId
 			 ,i.storage_id as storageId
 			 ,ib.brand_nm as brandNm
@@ -302,6 +305,13 @@
 		                  And  b2.assort_id = b1.assort_id
 		                  and b2.variation_gb2 = b1.variation_gb
 		                  and  b2.variation_seq2=b1.seq) optionNm2
+		           ,    (select b1.option_nm
+		                from ititmm b2, itvari b1
+		                where b2.assort_id=aa.assort_id
+		                  And b2.item_id= aa.item_id
+		                  And  b2.assort_id = b1.assort_id
+		                  and b2.variation_gb3 = b1.variation_gb
+		                  and  b2.variation_seq3=b1.seq) optionNm3
 		,aa.ship_indicate_qty shipIndicateQty
 		,aa.qty qty
 		from (

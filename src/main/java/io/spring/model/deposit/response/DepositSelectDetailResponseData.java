@@ -71,6 +71,7 @@ public class DepositSelectDetailResponseData {
         private String itemNm;
         private String optionNm1;
         private String optionNm2;
+        private String optionNm3;
 
 //        private String itemGrade;
         private Long depositQty;

@@ -139,6 +139,7 @@ public class PurchaseSelectListResponseData {
         private String itemNm; // 상품이름
         private String optionNm1; // 색상
         private String optionNm2; // 사이즈
+        private String optionNm3; // 재질
 
         // 발주리스트 화면 요소
 //        @JsonDeserialize(using = LocalDateDeserializer.class)
