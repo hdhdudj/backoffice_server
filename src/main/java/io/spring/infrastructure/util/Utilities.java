@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collector;
@@ -179,5 +180,16 @@ public class Utilities {
         SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String to = transFormat.format(from);
         return to;
+    }
+
+    /**
+     *  MyBatis로 결과물을 받았을 때 해당 prop이 null이면 빈 칸으로 바꿔주는 함수
+     */
+    public static void changeNullToEmpty(HashMap<String, Object> map){
+        for(String key : map.keySet()){
+            if(map.get(key) == null){
+                map.put(key, "");
+            }
+        }
     }
 }
