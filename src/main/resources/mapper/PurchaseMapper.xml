@@ -262,17 +262,24 @@
 			   bbb1.order_seq                                                    orderSeq,
 			   concat(bbb1.order_id, '-', bbb1.order_seq)                        orderCd,
 			   concat(bbb1.order_id, '-', bbb1.parent_order_seq)                 parentOrderCd,
-			   bbb1.vendor_id                                                    vendorId,
-			   bbb1.vd_nm                                                        vdNm,
-			   bbb1.assort_id                                                    assortId,
-			   bbb1.assort_nm                                                    assortNm,
-			   bbb1.item_id                                                      itemId,
+			   ifnull(bbb1.vendor_id, '')                                                    vendorId,
+			   ifnull(bbb1.vd_nm, '')                                                        vdNm,
+			   ifnull(bbb1.assort_id, '')                                                    assortId,
+			   ifnull(bbb1.assort_nm, '')                                                    assortNm,
+			   ifnull(bbb1.item_id,'')                                                      itemId,
 			   concat(bbb1.option_nm1, ifnull(CONCAT('-', bbb1.option_nm2), '')) optionNm,
-			   bbb1.option_info                                                  optionInfo,
-			   bbb1.qty                                                          purchaseQty,
-			   bbb1.md_rrp                                                       rrp,
-			   bbb1.buy_supply_discount                                          discountRate,
-			   bbb1.order_date
+			   ifnull(bbb1.option_info,'')                                                  optionInfo,
+			   ifnull(bbb1.qty,'')                                                          purchaseQty,
+			   ifnull(bbb1.md_rrp,'')                                                        rrp,
+			   ifnull(bbb1.buy_supply_discount,'')                                          discountRate,
+			   ifnull(bbb1.order_date,'') orderDate,
+			   ifnull(bbb1.cust_category,'')                                                custCategory,
+			   ifnull(bbb1.model_no,'')                                                     modelNo,
+			   ifnull(bbb1.material,'')                                                     material,
+			   ifnull(bbb1.purchase_price,'')                                               purchasePrice,
+			   ifnull(bbb1.cust_nm,'')                                               custNm,
+			   ifnull(bbb1.origin,'')                                               origin,
+			   ifnull(concat('https://trdst.hgodo.com/', itaimg.image_path, itaimg.image_name),'') imagePath
 		from (select case
 						 when aaa.order_vendor_id <> '000000' then ifnull(aaa.order_vendor_id, '000000')
 						 else ifnull(bbb.vendor_id, '000000') end                                               vendor_id,
@@ -282,9 +289,15 @@
 						 else ifnull((select bb.vd_nm from cmvdmr bb where bb.id = bbb.vendor_id), '거래처없음') end vd_nm,
 					 bbb.assort_nm,
 					 bbb.md_rrp,
+		             bbb.origin,
 					 bbb.buy_supply_discount,
+		             bbb.cust_category,
 					 tom.order_date,
 					 aaa.*,
+		             ccc.model_no,
+		             ccc.material,
+		             ccc.purchase_price,
+		             tm.cust_nm,
 					 (select iv.option_nm
 					  from itvari iv
 					  where iv.assort_id = ccc.assort_id
@@ -317,12 +330,15 @@
 					where status_cd in ('p1', 'B01')) aaa,
 				   itasrt bbb,
 				   ititmm ccc,
-				   tb_order_master tom
+				   tb_order_master tom,
+				   tb_member tm
 			  where 1 = 1
 				and aaa.assort_id = bbb.assort_id
 				and aaa.assort_id = ccc.assort_id
 				and aaa.item_id = ccc.item_id
-				and tom.order_id = aaa.order_id) bbb1
+				and tom.order_id = aaa.order_id
+				and tom.cust_id = tm.cust_id) bbb1
+				left outer join itaimg on itaimg.assort_id = bbb1.assort_id
 		where bbb1.vendor_id = #{vendorId}
 		order by bbb1.order_date desc, bbb1.order_seq desc;
 			]]>
