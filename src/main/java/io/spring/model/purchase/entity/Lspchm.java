@@ -241,6 +241,7 @@ public class Lspchm extends CommonProps {
     private String purchaseEmail;
     // 21-12-02 추가된 컬럼
     private String piNo;
+    private String memo;
 
     // 연관관계 : lspchd
     @OneToMany
