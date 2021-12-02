@@ -220,6 +220,8 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 	private Float mdDiscountRate;
 	private String optionGbName;
 	private String optionUseYn;
+	// 21-12-02 컬럼 추가
+	private String custCategory;
 
 	//// 다른 테이블과 엮으면 나오는 프로퍼티들
 	@JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))

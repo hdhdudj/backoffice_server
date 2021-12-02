@@ -139,6 +139,54 @@ public class JpaOrderService {
         this.saveOrderLog(prevStatus, tbOrderDetail);
     }
 
+	// orderId, orderSeq를 받아 주문 상태를 변경해주는 함수
+	@Transactional
+	public void noOptionChangeOrderStatus(String orderId, String orderSeq) {
+		// orderId, orderSeq로 해당하는 TbOrderDetail 찾아오기
+		log.debug("in changeOrderStatus ; orderId : " + orderId + ", orderSeq : " + orderSeq);
+		TypedQuery<TbOrderDetail> query = em.createQuery(
+				"select td from TbOrderDetail td " + "join fetch td.tbOrderMaster tm " + "left join fetch td.ititmm it "
+						+ "left join fetch td.itasrt itasrt " + "where td.orderId = ?1" + "and td.orderSeq = ?2 ",
+				TbOrderDetail.class);
+		query.setParameter(1, orderId).setParameter(2, orderSeq);
+		TbOrderDetail tbOrderDetail = query.getSingleResult();
+		if (tbOrderDetail == null) {
+			log.debug("There is no TbOrderDetail of " + orderId + " and " + orderSeq);
+			return;
+		}
+		Ititmm ititmm = jpaItitmmRepository.findByAssortIdAndItemId(tbOrderDetail.getAssortId(),
+				tbOrderDetail.getItemId());
+		if (ititmm == null) {
+			log.debug("There is no ititmm of orderId : " + orderId + " and orderSeq : " + orderSeq);
+			return;
+		}
+
+		Itasrt itasrt = jpaItasrtRepository.findByAssortId(tbOrderDetail.getAssortId());
+
+		if (itasrt == null) {
+			log.debug("There is no itasrt of orderId : " + orderId + " and orderSeq : " + orderSeq);
+			return;
+		}
+		// Itasrt itasrt = tbOrderDetail.getItasrt();
+		String prevStatus = tbOrderDetail.getStatusCd();
+//        TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
+		String assortGb = itasrt.getAssortGb();
+
+		if (assortGb == null) { // add_goods인 경우 자체 assortGb가 존재하지 않아, 부모 상품의 것을 따른다.
+			itasrt = this.getParentAssortGb(orderId, orderSeq, itasrt);
+		}
+
+		System.out.println(assortGb);
+
+		if (StringFactory.getGbOne().equals(assortGb)) { // assortGb == '01' : 직구
+			this.changeOrderStatusWhenDirect(tbOrderDetail);
+		} else if (StringFactory.getGbTwo().equals(assortGb)) { // assortGb == '02' : 수입
+			this.changeOrderStatusWhenImport(tbOrderDetail);
+		}
+
+		this.saveOrderLog(prevStatus, tbOrderDetail);
+	}
+
     /**
      * add_goods의 itasrt와 주문key를 받아 add_goods의 assortGb를 부모의 것으로 설정해주는 함수
      */

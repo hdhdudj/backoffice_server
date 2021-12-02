@@ -67,6 +67,10 @@ public class Ititmm extends CommonProps implements Serializable {
 
     // 21-11-22 추가
     private String delYn = StringFactory.getGbTwo(); // 02 하드코딩
+    // 21-12-02 추가
+    private String modelNo;
+    private String material;
+    private Float purchasePrice;
 
     // itasrt 연관 관계
     @ManyToOne(fetch = FetchType.LAZY)

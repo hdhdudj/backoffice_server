@@ -599,7 +599,7 @@ public class JpaGoodsService {
         IfBrand ifBrand;
         if(itasrt.getBrandId() != null && !itasrt.getBrandId().trim().equals("")){
             ifBrand = itasrt.getIfBrand();//jpaIfBrandRepository.findByChannelGbAndBrandId(StringFactory.getGbOne(),itasrt.getBrandId());
-            goodsSelectDetailResponseData.setBrandNm(ifBrand.getBrandNm());
+            goodsSelectDetailResponseData.setBrandNm(ifBrand == null? null : ifBrand.getBrandNm());
         }
         List<GoodsSelectDetailResponseData.Description> descriptions = this.makeDescriptions(itasrt.getItasrdList());
         List<GoodsSelectDetailResponseData.Attributes> attributesList = this.makeAttributesList(itasrt.getItvariList());
