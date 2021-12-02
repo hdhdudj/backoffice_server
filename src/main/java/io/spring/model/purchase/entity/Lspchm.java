@@ -239,6 +239,8 @@ public class Lspchm extends CommonProps {
     // 21-11-11 추가된 컬럼
     private LocalDateTime printDt;
     private String purchaseEmail;
+    // 21-12-02 추가된 컬럼
+    private String piNo;
 
     // 연관관계 : lspchd
     @OneToMany
