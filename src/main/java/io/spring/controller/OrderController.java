@@ -348,7 +348,7 @@ public class OrderController {
 				req.getChannelOptionSno());
 
 		if (ret) {
-			jpaOrderService.changeOrderStatus(req.getOrderId(), req.getOrderSeq());
+			jpaOrderService.noOptionChangeOrderStatus(req.getOrderId(), req.getOrderSeq());
 		}
 
 		ApiResponseMessage res = null;
