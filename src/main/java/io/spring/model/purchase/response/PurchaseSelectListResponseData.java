@@ -26,13 +26,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PurchaseSelectListResponseData {
-    public PurchaseSelectListResponseData(Map<String, Object> param){
-        this.startDt = (LocalDate) param.get(StringFactory.getStrStartDt());
-        this.endDt = (LocalDate) param.get(StringFactory.getStrEndDt());
-        this.assortId = (String) param.get(StringFactory.getStrAssortId());
-        this.purchasStatus = (String) param.get(StringFactory.getStrPurchaseStatus());
-        this.purchaseGb = (String)param.get(StringFactory.getStrPurchaseGb());
-
+    public PurchaseSelectListResponseData(String vendorId,String assortId, String purchaseNo, String channelOrderNo, String custNm, String assortNm,
+                                          String purchaseStatus, String brandNm, LocalDate startDt, LocalDate endDt, String purchaseGb, String dealtypeCd){
+        this.startDt = startDt;
+        this.endDt = endDt;
+        this.assortId = assortId;
+        this.purchasStatus = purchaseStatus;
+        this.purchaseGb = purchaseGb;
     }
 
     public PurchaseSelectListResponseData(Lspchm lspchm){

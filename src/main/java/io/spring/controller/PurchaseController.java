@@ -209,10 +209,14 @@ public class PurchaseController {
      * 발주 list get (발주리스트 화면)
      */
     @GetMapping(path="/items")
-    public ResponseEntity getPurchaseListJpa(@RequestParam @Nullable String purchaseVendorId,
+    public ResponseEntity getPurchaseListJpa(@RequestParam @Nullable String vendorId,
                                              @RequestParam @Nullable String assortId,
+                                             @RequestParam @Nullable String purchaseNo,
+                                             @RequestParam @Nullable String channelOrderNo,
+                                             @RequestParam @Nullable String custNm,
                                              @RequestParam @Nullable String assortNm,
                                              @RequestParam @Nullable String purchaseStatus,
+                                             @RequestParam @Nullable String brandNm,
                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
                                              @RequestParam @Nullable String purchaseGb,
@@ -220,19 +224,8 @@ public class PurchaseController {
                                              ){
         log.debug("get purchase list - jpa");
 
-        HashMap<String, Object> param = new HashMap<>();
-
-        param.put("purchaseVendorId", purchaseVendorId);
-        param.put("assortId", assortId);
-        param.put("assortNm", assortNm);
-        param.put("purchaseStatus", purchaseStatus);
-        param.put("startDt", startDt);
-        param.put("endDt", endDt);
-        param.put("purchaseGb", purchaseGb);
-        param.put("dealtypeCd", dealtypeCd);
-        param.put("purchaseNo", null);
-
-        PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getPurchaseList(param);
+        PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getPurchaseList(vendorId, assortId, purchaseNo, channelOrderNo, custNm, assortNm, purchaseStatus, brandNm,
+                startDt, endDt, purchaseGb, dealtypeCd);
 
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectListResponseData);
         if(res == null){
