@@ -272,7 +272,13 @@
 			   bbb1.qty                                                          purchaseQty,
 			   bbb1.md_rrp                                                       rrp,
 			   bbb1.buy_supply_discount                                          discountRate,
-			   bbb1.order_date
+			   bbb1.order_date,
+		       bbb1.cust_category custCategory,
+		       bbb1.model_no modelNo,
+		       bbb1.material material,
+		       bbb1.purchase_price purchasePrice,
+			   concat('https://trdst.hgodo.com/', itaimg.image_path, itaimg.image_name) imagePath,
+		       bbb1.cust_nm custNm
 		from (select case
 						 when aaa.order_vendor_id <> '000000' then ifnull(aaa.order_vendor_id, '000000')
 						 else ifnull(bbb.vendor_id, '000000') end                                               vendor_id,
@@ -283,8 +289,13 @@
 					 bbb.assort_nm,
 					 bbb.md_rrp,
 					 bbb.buy_supply_discount,
+		             bbb.cust_category,
 					 tom.order_date,
 					 aaa.*,
+		             ccc.model_no,
+		             ccc.material,
+		             ccc.purchase_price,
+		             tm.cust_nm,
 					 (select iv.option_nm
 					  from itvari iv
 					  where iv.assort_id = ccc.assort_id
@@ -317,12 +328,15 @@
 					where status_cd in ('p1', 'B01')) aaa,
 				   itasrt bbb,
 				   ititmm ccc,
-				   tb_order_master tom
+				   tb_order_master tom,
+				   tb_member tm
 			  where 1 = 1
 				and aaa.assort_id = bbb.assort_id
 				and aaa.assort_id = ccc.assort_id
 				and aaa.item_id = ccc.item_id
-				and tom.order_id = aaa.order_id) bbb1
+				and tom.order_id = aaa.order_id
+				and tom.cust_id = tm.cust_id) bbb1
+				left outer join itaimg on itaimg.assort_id = bbb1.assort_id
 		where bbb1.vendor_id = #{vendorId}
 		order by bbb1.order_date desc, bbb1.order_seq desc;
 			]]>

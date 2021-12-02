@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+    <properties resource="application.properties"></properties>
+    <settings>
+        <setting name="useGeneratedKeys" value="true"/>
+        <setting name="callSettersOnNulls" value="true"/>
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <setting name="defaultStatementTimeout" value="200"/>
+        <setting name="defaultExecutorType" value="REUSE"/>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <setting name="cacheEnabled" value="false" />
+        <setting name="jdbcTypeForNull" value="NULL" />
+    </settings>
+    <typeAliases>
+        <package name="eblo"/>
+    </typeAliases>
+
+    <typeHandlers>
+        <typeHandler javaType="java.sql.Timestamp"
+                     handler="org.apache.ibatis.type.DateTypeHandler"/>
+        <typeHandler javaType="java.sql.Time"
+                     handler="org.apache.ibatis.type.DateTypeHandler"/>
+        <typeHandler javaType="java.util.Date"
+                     handler="org.apache.ibatis.type.DateTypeHandler"/>
+    </typeHandlers>
+</configuration>
