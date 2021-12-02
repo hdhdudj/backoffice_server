@@ -214,6 +214,10 @@
 			,aaa.optionNm2
 			,aaa.optionNm3
 			,aaa.modelNo
+			,aaa.origin
+			,aaa.custCategory
+			,aaa.material
+			,aaa.purchasePrice
 			,aaa.brandId
 			,aaa.brandNm
 			,aaa.dispCategoryId dispCategoryId
@@ -231,11 +235,15 @@
 			 ,im.item_id as itemId
 			 ,im.short_yn as itemShortageYn
 			 ,im.model_no as modelNo
+	    	 ,i.cust_category as custCategory
+			 ,im.material as material
+			 ,im.purchase_price as purchasePrice
 			 ,concat('https://trdst.hgodo.com/', img.image_path, img.image_name) imagePath
 			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq1 and iv.variation_gb='01' and del_yn='02' ) optionNm1
 			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq2 and iv.variation_gb='02' and del_yn='02' ) optionNm2			 
 			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq3 and iv.variation_gb='03' and del_yn='02' ) optionNm3
 			 ,i.brand_id as brandId
+		     ,i.origin as origin
 			 ,i.storage_id as storageId
 			 ,ib.brand_nm as brandNm
 			 ,i.disp_category_id as dispCategoryId
