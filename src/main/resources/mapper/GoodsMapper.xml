@@ -205,7 +205,6 @@
 	
 	<select id="getGoodsItemListWithCategory" parameterType="java.util.HashMap" resultType="java.util.HashMap">
 	 <![CDATA[	
-
 			select aaa.assortId assortId
 			,aaa.assortNm assortNm
 			,aaa.shortageYn shortageYn
@@ -223,6 +222,7 @@
 			,aaa.mdRrp 
 			,aaa.buySupplyDiscount
 			,aaa.fullCatePathId fullCatePathId
+			,aaa.imagePath
 			from (
 			select
 			i.assort_id as assortId
@@ -231,7 +231,7 @@
 			 ,im.item_id as itemId
 			 ,im.short_yn as itemShortageYn
 			 ,im.model_no as modelNo
-			 ,concat('https://trdst.hgodo.com/', itaimg.image_path, itaimg.image_name) imagePath
+			 ,concat('https://trdst.hgodo.com/', img.image_path, img.image_name) imagePath
 			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq1 and iv.variation_gb='01' and del_yn='02' ) optionNm1
 			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq2 and iv.variation_gb='02' and del_yn='02' ) optionNm2			 
 			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq3 and iv.variation_gb='03' and del_yn='02' ) optionNm3
@@ -243,7 +243,7 @@
 			 ,f_categoryFullPath(i.disp_category_id) fullCategoryNm
 			 ,i.md_rrp mdRrp
 			 ,i.buy_supply_discount buySupplyDiscount
-			 	,f_categoryFullPathId(i.disp_category_id) fullCatePathId
+			 ,f_categoryFullPathId(i.disp_category_id) fullCatePathId
 		from itasrt i
 		LEFT JOIN if_brand ib ON i.brand_id = ib.channel_brand_id
 		LEFT JOIN itcatg ic ON i.disp_category_id = ic.category_id

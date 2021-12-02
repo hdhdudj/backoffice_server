@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import io.spring.infrastructure.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -189,6 +190,9 @@ public class GoodsController {
 		}
 
 		List<HashMap<String, Object>> responseData = goodsRepository.getGoodsItemListWithCategory(param);
+		for(HashMap<String, Object> map : responseData){
+			Utilities.changeNullToEmpty(map);
+		}
 		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
 		if (responseData == null) {
 			return null;
