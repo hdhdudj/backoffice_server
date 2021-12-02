@@ -143,6 +143,8 @@ public class JpaPurchaseService {
         lspchm.setPayment(purchaseUpdateRequestData.getPayment());
         lspchm.setCarrier(purchaseUpdateRequestData.getCarrier());
         lspchm.setUpdId(purchaseUpdateRequestData.getUserId());
+        lspchm.setPiNo(purchaseUpdateRequestData.getPiNo());
+        lspchm.setMemo(purchaseUpdateRequestData.getMemo());
         jpaLspchmRepository.save(lspchm);
         return purchaseNo;
     }
