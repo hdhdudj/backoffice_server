@@ -437,7 +437,8 @@ public class JpaPurchaseService {
                 "left outer join fetch ld.lspchm lm " +
                 "left outer join fetch ld.ititmm im " +
                 "join fetch im.itasrt ita " +
-                "left join fetch ita.itaimg img", Lspchd.class).getResultList();//jpaLspchmRepository.findById(purchaseNo).orElseGet(() -> null);//.get();
+                "left join fetch ita.itaimg img " +
+                "where ld.purchaseNo=?1", Lspchd.class).setParameter(1,purchaseNo).getResultList();//jpaLspchmRepository.findById(purchaseNo).orElseGet(() -> null);//.get();
         if(lspchdList == null){
             log.debug("해당 발주번호에 해당하는 발주상세내역이 존재하지 않습니다.");
             return null;

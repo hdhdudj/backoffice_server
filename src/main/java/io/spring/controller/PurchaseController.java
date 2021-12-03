@@ -188,7 +188,7 @@ public class PurchaseController {
 	}
 
     /**
-     * 발주 detail get
+     * 발주사후(관리) 발주 detail get
      */
     @GetMapping(path="/item/{purchaseNo}")
     public ResponseEntity getPurchaseDetailPage(@PathVariable String purchaseNo) {
