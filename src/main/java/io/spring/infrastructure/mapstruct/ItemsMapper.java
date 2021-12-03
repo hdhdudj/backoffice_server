@@ -1,0 +1,34 @@
+package io.spring.infrastructure.mapstruct;
+
+import io.spring.model.purchase.response.PurchaseSelectDetailResponseData;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+@Mapper(componentModel = "spring")
+public interface ItemsMapper {
+
+    @Mapping(target = "purchaseId", expression = "java(items.getPurchaseId() == null? \"\" : items.getPurchaseId())")
+    @Mapping(target = "orderId", expression = "java(items.getOrderId() == null? \"\" : items.getOrderId())")
+    @Mapping(target = "orderSeq", expression = "java(items.getOrderSeq() == null? \"\" : items.getOrderSeq())")
+    @Mapping(target = "assortNm", expression = "java(items.getAssortNm() == null? \"\" : items.getAssortNm())")
+    @Mapping(target = "assortId", expression = "java(items.getAssortId() == null? \"\" : items.getAssortId())")
+    @Mapping(target = "itemId", expression = "java(items.getItemId() == null? \"\" : items.getItemId())")
+    @Mapping(target = "itemKey", expression = "java(items.getItemKey() == null? \"\" : items.getItemKey())")
+    @Mapping(target = "optionNm1", expression = "java(items.getOptionNm1() == null? \"\" : items.getOptionNm1())")
+    @Mapping(target = "optionNm2", expression = "java(items.getOptionNm2() == null? \"\" : items.getOptionNm2())")
+    @Mapping(target = "optionNm3", expression = "java(items.getOptionNm3() == null? \"\" : items.getOptionNm3())")
+    @Mapping(target = "deliMethod", expression = "java(items.getDeliMethod() == null? \"\" : items.getDeliMethod())")
+    @Mapping(target = "purchaseSeq", expression = "java(items.getPurchaseSeq() == null? \"\" : items.getPurchaseSeq())")
+    @Mapping(target = "purchaseStatus", expression = "java(items.getPurchaseStatus() == null? \"\" : items.getPurchaseStatus())")
+    @Mapping(target = "imagePath", expression = "java(items.getImagePath() == null? \"\" : items.getImagePath())")
+    @Mapping(target = "modelNo", expression = "java(items.getModelNo() == null? \"\" : items.getModelNo())")
+    @Mapping(target = "origin", expression = "java(items.getOrigin() == null? \"\" : items.getOrigin())")
+    @Mapping(target = "custCategory", expression = "java(items.getCustCategory() == null? \"\" : items.getCustCategory())")
+    @Mapping(target = "material", expression = "java(items.getMaterial() == null? \"\" : items.getMaterial())")
+    @Mapping(target = "imgServerUrl", expression = "java(items.getImgServerUrl() == null? \"\" : items.getImgServerUrl())")
+    @Mapping(target = "mdRrp", constant = "0f")
+    @Mapping(target = "buySupplyDiscount", constant = "0f")
+    @Mapping(target = "purchaseQty", constant = "0l")
+    @Mapping(target = "purchaseUnitAmt", constant = "0f")
+    PurchaseSelectDetailResponseData.Items nullToEmpty(PurchaseSelectDetailResponseData.Items items);
+}

@@ -14,9 +14,6 @@
         <setting name="cacheEnabled" value="false" />
         <setting name="jdbcTypeForNull" value="NULL" />
     </settings>
-    <typeAliases>
-        <package name="eblo"/>
-    </typeAliases>
 
     <typeHandlers>
         <typeHandler javaType="java.sql.Timestamp"

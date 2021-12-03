@@ -16,7 +16,11 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import io.spring.enums.TrdstOrderStatus;
+import io.spring.infrastructure.mapstruct.ItemsMapper;
+import io.spring.model.goods.entity.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,10 +40,6 @@ import io.spring.jparepos.purchase.JpaLspchsRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.deposit.response.PurchaseListInDepositModalData;
-import io.spring.model.goods.entity.Itasrt;
-import io.spring.model.goods.entity.Ititmm;
-import io.spring.model.goods.entity.Ititmt;
-import io.spring.model.goods.entity.Itvari;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
@@ -76,6 +76,8 @@ public class JpaPurchaseService {
 
 	private final JpaTbOrderDetailRepository tbOrderDetailRepository;
 	private final JpaTbOrderHistoryRepository tbOrderHistoryrRepository;
+
+    private final ItemsMapper itemsMapper;
 
     private final EntityManager em;
 
@@ -429,18 +431,23 @@ public class JpaPurchaseService {
      * @return
      */
     public PurchaseSelectDetailResponseData getPurchaseDetailPage(String purchaseNo) {
-        Lspchm lspchm = jpaLspchmRepository.findById(purchaseNo).orElseGet(() -> null);//.get();
-        if(lspchm == null){
+        List<Lspchd> lspchdList = em.createQuery("select ld from Lspchd ld " +
+                "left outer join fetch ld.lspchm lm " +
+                "left outer join fetch ld.ititmm im " +
+                "join fetch im.itasrt ita " +
+                "left join fetch ita.itaimg img", Lspchd.class).getResultList();//jpaLspchmRepository.findById(purchaseNo).orElseGet(() -> null);//.get();
+        if(lspchdList == null){
+            log.debug("해당 발주번호에 해당하는 발주상세내역이 존재하지 않습니다.");
             return null;
         }
-        List<PurchaseSelectDetailResponseData.Items> itemsList = this.makeItemsList(lspchm);
+        Lspchm lspchm = lspchdList.get(0).getLspchm();
+        List<PurchaseSelectDetailResponseData.Items> itemsList = this.makeItemsList(lspchdList);
         PurchaseSelectDetailResponseData purchaseSelectDetailResponseData = new PurchaseSelectDetailResponseData(lspchm);
         purchaseSelectDetailResponseData.setItems(itemsList);
         return purchaseSelectDetailResponseData;
     }
 
-    private List<PurchaseSelectDetailResponseData.Items> makeItemsList(Lspchm lspchm) {
-        List<Lspchd> lspchdList = lspchm.getLspchdList();
+    private List<PurchaseSelectDetailResponseData.Items> makeItemsList(List<Lspchd> lspchdList) {
         List<PurchaseSelectDetailResponseData.Items> itemsList = new ArrayList<>();
         this.makePurchaseItem(itemsList, lspchdList);
         return itemsList;
@@ -448,8 +455,12 @@ public class JpaPurchaseService {
 
     private void makePurchaseItem(List<PurchaseSelectDetailResponseData.Items> itemsList, List<Lspchd> lspchdList) {
         for(Lspchd lspchd : lspchdList){
-            Itasrt itasrt = lspchd.getItitmm().getItasrt();
-            PurchaseSelectDetailResponseData.Items item = new PurchaseSelectDetailResponseData.Items(lspchd, itasrt);
+            Ititmm ititmm = lspchd.getItitmm();
+            Itasrt itasrt = ititmm.getItasrt();
+            List<Itaimg> imgList = itasrt.getItaimg();
+            imgList = imgList.stream().filter(x->x.getImageGb().equals(StringFactory.getGbOne())).collect(Collectors.toList());
+            PurchaseSelectDetailResponseData.Items item = new PurchaseSelectDetailResponseData.Items(lspchd, ititmm, itasrt, imgList.size() == 0? null : imgList.get(0));
+            item = itemsMapper.nullToEmpty(item);
             Utilities.setOptionNames(item, itasrt.getItvariList()); // optionNm set
 			if (lspchd.getTbOrderDetail() != null) { // 주문발주인 경우
 				TbOrderDetail tbOrderDetail = lspchd.getTbOrderDetail();
@@ -556,7 +567,6 @@ public class JpaPurchaseService {
 
     /**
      * lspchd 조건 검색 쿼리로 lspchd의 리스트를 가져오는 함수
-     * @param param
      * @return
      */
     private List<Lspchd> getLspchd(String vendorId,String assortId, String purchaseNo, String channelOrderNo, String custNm, String assortNm,
