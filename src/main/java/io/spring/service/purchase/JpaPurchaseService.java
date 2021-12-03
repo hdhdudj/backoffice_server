@@ -446,7 +446,7 @@ public class JpaPurchaseService {
         List<PurchaseSelectDetailResponseData.Items> itemsList = this.makeItemsList(lspchdList);
         PurchaseSelectDetailResponseData purchaseSelectDetailResponseData = new PurchaseSelectDetailResponseData(lspchm);
         purchaseSelectDetailResponseData.setItems(itemsList);
-        purchaseSelectDetailResponseDataMapper.nullToEmpty(purchaseSelectDetailResponseData);
+        purchaseSelectDetailResponseData = purchaseSelectDetailResponseDataMapper.nullToEmpty(purchaseSelectDetailResponseData);
         return purchaseSelectDetailResponseData;
     }
 
