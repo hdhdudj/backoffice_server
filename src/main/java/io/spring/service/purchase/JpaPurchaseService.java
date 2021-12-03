@@ -17,6 +17,7 @@ import javax.persistence.TypedQuery;
 
 import io.spring.enums.TrdstOrderStatus;
 import io.spring.infrastructure.mapstruct.ItemsMapper;
+import io.spring.infrastructure.mapstruct.PurchaseSelectDetailResponseDataMapper;
 import io.spring.model.goods.entity.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -78,6 +79,7 @@ public class JpaPurchaseService {
 	private final JpaTbOrderHistoryRepository tbOrderHistoryrRepository;
 
     private final ItemsMapper itemsMapper;
+    private final PurchaseSelectDetailResponseDataMapper purchaseSelectDetailResponseDataMapper;
 
     private final EntityManager em;
 
@@ -444,6 +446,7 @@ public class JpaPurchaseService {
         List<PurchaseSelectDetailResponseData.Items> itemsList = this.makeItemsList(lspchdList);
         PurchaseSelectDetailResponseData purchaseSelectDetailResponseData = new PurchaseSelectDetailResponseData(lspchm);
         purchaseSelectDetailResponseData.setItems(itemsList);
+        purchaseSelectDetailResponseDataMapper.nullToEmpty(purchaseSelectDetailResponseData);
         return purchaseSelectDetailResponseData;
     }
 
