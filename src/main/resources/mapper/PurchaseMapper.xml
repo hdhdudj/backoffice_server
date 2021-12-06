@@ -260,6 +260,7 @@
     	<![CDATA[
 		select bbb1.order_id                                                     orderId,
 			   bbb1.order_seq                                                    orderSeq,
+			   bbb1.channel_order_no                                                    channelOrderNo,
 			   concat(bbb1.order_id, '-', bbb1.order_seq)                        orderCd,
 			   concat(bbb1.order_id, '-', bbb1.parent_order_seq)                 parentOrderCd,
 			   bbb1.vendor_id                                                    vendorId,
@@ -293,6 +294,7 @@
 					 bbb.buy_supply_discount,
 		             bbb.cust_category,
 					 tom.order_date,
+					 tom.channel_order_no,
 					 aaa.*,
 		             ccc.model_no,
 		             ccc.material,
