@@ -30,7 +30,7 @@ public class PurchaseInsertRequestData {
         this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 23:59:59 하드코딩
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
         this.vendorId = StringFactory.getFourStartCd(); // "0001" 하드코딩
-        this.siteOrderNo = null;
+        this.siteOrderNo = null; // 해외주문번호
         this.siteTrackNo = null;
 //        this.localPrice = tbOrderDetail.get
 

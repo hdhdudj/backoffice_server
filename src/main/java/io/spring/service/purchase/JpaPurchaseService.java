@@ -537,13 +537,13 @@ public class JpaPurchaseService {
     /**
      * 발주리스트 화면 기준 리스트 가져오는 함수 (Lspchd 기준의 list를 가져옴)
      */
-    public PurchaseSelectListResponseData getPurchaseList(String vendorId,String assortId, String purchaseNo, String channelOrderNo, String custNm, String assortNm,
+    public PurchaseSelectListResponseData getPurchaseList(String vendorId,String assortId, String purchaseNo, String channelOrderNo, String siteOrderNo, String custNm, String assortNm,
                                                           String purchaseStatus, String brandNm, LocalDate startDt, LocalDate endDt, String purchaseGb, String dealtypeCd) {
         PurchaseSelectListResponseData purchaseSelectListResponseData = new PurchaseSelectListResponseData(vendorId, assortId, purchaseNo, channelOrderNo, custNm, assortNm, purchaseStatus, brandNm,
                 startDt, endDt, purchaseGb, dealtypeCd);
         List<PurchaseSelectListResponseData.Purchase> purchaseList = new ArrayList<>();
 
-        List<Lspchd> lspchdList = this.getLspchd(vendorId, assortId, purchaseNo, channelOrderNo, custNm, assortNm, purchaseStatus, brandNm,
+        List<Lspchd> lspchdList = this.getLspchd(vendorId, assortId, purchaseNo, channelOrderNo, siteOrderNo, custNm, assortNm, purchaseStatus, brandNm,
                 startDt, endDt, purchaseGb, dealtypeCd);
 
         if(lspchdList.size() > 0){
@@ -580,7 +580,7 @@ public class JpaPurchaseService {
      * lspchd 조건 검색 쿼리로 lspchd의 리스트를 가져오는 함수
      * @return
      */
-    private List<Lspchd> getLspchd(String vendorId,String assortId, String purchaseNo, String channelOrderNo, String custNm, String assortNm,
+    private List<Lspchd> getLspchd(String vendorId,String assortId, String purchaseNo, String channelOrderNo, String siteOrderNo, String custNm, String assortNm,
                                    String purchaseStatus, String brandNm, LocalDate startDt, LocalDate endDt, String purchaseGb, String dealtypeCd) {
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
@@ -603,6 +603,7 @@ public class JpaPurchaseService {
                 "and (?6 is null or trim(?6)='' or ld.lspchm.purchaseGb=?6) " +
                 "and (?7 is null or trim(?7)='' or ld.lspchm.dealtypeCd=?7) " +
                 "and (?10 is null or trim(?10)='' or ld.purchaseNo=?10) " +
+                "and (?13 is null or trim(?13)='' or lm.siteOrderNo=?13) " +
                 "and (?11 is null or trim(?11)='' or tm.custNm like concat('%',?11,'%')) " +
                 "and (?12 is null or trim(?12)='' or ib.channelBrandNm like concat ('%',?12,'%')) " +
                 "and (?8 is null or trim(?8)='' or itm.itemNm like concat('%',?8,'%')) " +
@@ -611,7 +612,8 @@ public class JpaPurchaseService {
                 .setParameter(3,vendorId).setParameter(4,assortId)
                 .setParameter(5,purchaseStatus).setParameter(6,purchaseGb).setParameter(7,dealtypeCd)
                 .setParameter(8,assortNm).setParameter(9,channelOrderNo)
-                .setParameter(10, purchaseNo).setParameter(11, custNm).setParameter(12, brandNm);
+                .setParameter(10, purchaseNo).setParameter(11, custNm).setParameter(12, brandNm)
+                .setParameter(13, siteOrderNo);
 //        EntityGraph graph = em.getEntityGraph("Lspchd.purchaseList");
 //        query.setHint("javax.persistence.fetchgraph", graph);
         List<Lspchd> lspchdList = query.getResultList();

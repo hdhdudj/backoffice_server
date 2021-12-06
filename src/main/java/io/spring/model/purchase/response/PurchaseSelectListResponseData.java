@@ -127,7 +127,7 @@ public class PurchaseSelectListResponseData {
             this.orderSeq = lspchd.getOrderSeq();
             this.purchaseQty = lspchd.getPurchaseQty();
             this.purchaseUnitAmt = lspchd.getPurchaseUnitAmt();
-            this.siteOrderNo = lspchd.getSiteOrderNo();
+            this.siteOrderNo = lspchm.getSiteOrderNo();
         }
         // 발주리스트, 입고처리 화면 공통 요소
         private String purchaseNo; // 발주번호
