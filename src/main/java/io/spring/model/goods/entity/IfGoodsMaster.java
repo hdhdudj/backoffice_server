@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -150,9 +151,9 @@ public class IfGoodsMaster extends CommonProps implements Cloneable {
     private String stockFl;
     private String soldOutFl;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date salesStartYmd;
+    private LocalDateTime salesStartYmd;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date salesEndYmd;
+    private LocalDateTime salesEndYmd;
     private Float goodsPrice;
     private Float fixedPrice;
     private Float costPrice;

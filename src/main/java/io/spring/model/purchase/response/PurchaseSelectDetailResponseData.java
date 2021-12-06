@@ -124,5 +124,9 @@ public class PurchaseSelectDetailResponseData {
         private String material;
         @Value("${ftp.prefix_url}")
         private String imgServerUrl;
+
+        // 21-12-06 추가
+        private String custNm;
+        private String channelOrderNo;
     }
 }

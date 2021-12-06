@@ -26,6 +26,8 @@ public interface ItemsMapper {
     @Mapping(target = "custCategory", expression = "java(items.getCustCategory() == null? \"\" : items.getCustCategory())")
     @Mapping(target = "material", expression = "java(items.getMaterial() == null? \"\" : items.getMaterial())")
     @Mapping(target = "imgServerUrl", expression = "java(items.getImgServerUrl() == null? \"\" : items.getImgServerUrl())")
+    @Mapping(target = "custNm", expression = "java(items.getCustNm() == null? \"\" : items.getCustNm())")
+    @Mapping(target = "channelOrderNo", expression = "java(items.getChannelOrderNo() == null? \"\" : items.getChannelOrderNo())")
     @Mapping(target = "mdRrp", constant = "0f")
     @Mapping(target = "buySupplyDiscount", constant = "0f")
     @Mapping(target = "purchaseQty", constant = "0l")
