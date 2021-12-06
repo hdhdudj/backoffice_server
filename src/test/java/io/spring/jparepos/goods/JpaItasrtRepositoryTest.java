@@ -1,5 +1,6 @@
 package io.spring.jparepos.goods;
 
+import io.spring.enums.DeliveryMethod;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -40,6 +41,16 @@ class JpaItasrtRepositoryTest {
             String a = "\"java("+inputValNm+"."+method+"() == null? \\\"\\\" : "+inputValNm+"."+method+"())\"";
             String b = "@Mapping(target = \""+s+"\", expression = "+a+")";
             System.out.println(b);
+        }
+    }
+
+    @Test
+    public void enumTest(){
+        String arg = "001";
+        for(DeliveryMethod d : DeliveryMethod.values()){
+            if(d.getFieldName().equals(arg)){
+                System.out.println(d);
+            }
         }
     }
 }

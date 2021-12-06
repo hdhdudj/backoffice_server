@@ -1,5 +1,6 @@
 package io.spring.infrastructure.util;
 
+import io.spring.enums.DeliveryMethod;
 import io.spring.model.common.SetOptionInterface;
 import io.spring.model.goods.entity.Itvari;
 import lombok.extern.slf4j.Slf4j;
@@ -191,5 +192,17 @@ public class Utilities {
                 map.put(key, "");
             }
         }
+    }
+
+    public static String convertFieldNameToEnum(String arg){
+        if(arg == null){
+            return null;
+        }
+        for(DeliveryMethod d : DeliveryMethod.values()){
+            if(d.getFieldName().equals(arg)){
+                return d.toString();
+            }
+        }
+        return null;
     }
 }
