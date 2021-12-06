@@ -213,6 +213,7 @@ public class PurchaseController {
                                              @RequestParam @Nullable String assortId,
                                              @RequestParam @Nullable String purchaseNo,
                                              @RequestParam @Nullable String channelOrderNo,
+                                             @RequestParam @Nullable String siteOrderNo,
                                              @RequestParam @Nullable String custNm,
                                              @RequestParam @Nullable String assortNm,
                                              @RequestParam @Nullable String purchaseStatus,
@@ -224,7 +225,7 @@ public class PurchaseController {
                                              ){
         log.debug("get purchase list - jpa");
 
-        PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getPurchaseList(vendorId, assortId, purchaseNo, channelOrderNo, custNm, assortNm, purchaseStatus, brandNm,
+        PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getPurchaseList(vendorId, assortId, purchaseNo, channelOrderNo, siteOrderNo, custNm, assortNm, purchaseStatus, brandNm,
                 startDt, endDt, purchaseGb, dealtypeCd);
 
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectListResponseData);
