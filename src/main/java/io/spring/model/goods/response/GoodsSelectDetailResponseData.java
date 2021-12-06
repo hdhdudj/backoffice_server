@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.context.annotation.PropertySource;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -112,9 +113,9 @@ public class GoodsSelectDetailResponseData {
     private String assortColor;
     
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date sellStaDt;
+    private LocalDateTime sellStaDt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date sellEndDt;
+    private LocalDateTime sellEndDt;
     private Float mdRrp;
     private String mdTax;
     private String mdYear;

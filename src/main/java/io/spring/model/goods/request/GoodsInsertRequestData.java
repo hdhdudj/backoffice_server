@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -48,9 +50,9 @@ public class GoodsInsertRequestData {
 	private Float localSale; // itasrn에도 들어감
 	private String assortColor;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "Asia/Seoul")
-	private Date sellStaDt;
+	private LocalDateTime sellStaDt;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "Asia/Seoul")
-	private Date sellEndDt;
+	private LocalDateTime sellEndDt;
 	private Float mdRrp;
 	private String mdTax;
 	private String mdYear;

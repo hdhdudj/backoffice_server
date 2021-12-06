@@ -19,6 +19,7 @@ import io.spring.enums.TrdstOrderStatus;
 import io.spring.infrastructure.mapstruct.ItemsMapper;
 import io.spring.infrastructure.mapstruct.PurchaseSelectDetailResponseDataMapper;
 import io.spring.model.goods.entity.*;
+import io.spring.model.order.entity.TbMember;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -435,11 +436,14 @@ public class JpaPurchaseService {
     public PurchaseSelectDetailResponseData getPurchaseDetailPage(String purchaseNo) {
         List<Lspchd> lspchdList = em.createQuery("select ld from Lspchd ld " +
                 "left outer join fetch ld.lspchm lm " +
+                "left outer join fetch ld.tbOrderDetail tod " +
+                "left outer join fetch tod.tbOrderMaster tom " +
+                "left outer join fetch tom.tbMember tm " +
                 "left outer join fetch ld.ititmm im " +
                 "join fetch im.itasrt ita " +
                 "left join fetch ita.itaimg img " +
                 "where ld.purchaseNo=?1", Lspchd.class).setParameter(1,purchaseNo).getResultList();//jpaLspchmRepository.findById(purchaseNo).orElseGet(() -> null);//.get();
-        if(lspchdList == null){
+        if(lspchdList == null || lspchdList.size() == 0){
             log.debug("해당 발주번호에 해당하는 발주상세내역이 존재하지 않습니다.");
             return null;
         }
@@ -464,13 +468,15 @@ public class JpaPurchaseService {
             List<Itaimg> imgList = itasrt.getItaimg();
             imgList = imgList.stream().filter(x->x.getImageGb().equals(StringFactory.getGbOne())).collect(Collectors.toList());
             PurchaseSelectDetailResponseData.Items item = new PurchaseSelectDetailResponseData.Items(lspchd, ititmm, itasrt, imgList.size() == 0? null : imgList.get(0));
-            item = itemsMapper.nullToEmpty(item);
             Utilities.setOptionNames(item, itasrt.getItvariList()); // optionNm set
-			if (lspchd.getTbOrderDetail() != null) { // 주문발주인 경우
-				TbOrderDetail tbOrderDetail = lspchd.getTbOrderDetail();
+            if (lspchd.getTbOrderDetail() != null) { // 주문발주인 경우
+                TbOrderDetail tbOrderDetail = lspchd.getTbOrderDetail();
+                TbMember tbMember = tbOrderDetail.getTbOrderMaster().getTbMember();
                 item.setOrderId(tbOrderDetail.getOrderId());
                 item.setOrderSeq(tbOrderDetail.getOrderSeq());
                 item.setDeliMethod(tbOrderDetail.getDeliMethod());
+                item.setCustNm(tbMember.getCustNm());
+                item.setChannelOrderNo(tbOrderDetail.getChannelOrderNo());
             }
 
             List<Lspchb> lspchbList = lspchd.getLspchb();
@@ -480,6 +486,7 @@ public class JpaPurchaseService {
                     break;
                 }
             }
+            item = itemsMapper.nullToEmpty(item);
             itemsList.add(item);
         }
     }

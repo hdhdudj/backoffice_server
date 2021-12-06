@@ -14,6 +14,7 @@ import org.hibernate.engine.spi.PersistentAttributeInterceptor;
 import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -201,9 +202,9 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 	private String assortGrade;
 	private String assortColor;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date sellStaDt;
+	private LocalDateTime sellStaDt;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date sellEndDt;
+	private LocalDateTime sellEndDt;
 	private Float mdRrp;
 	private String mdTax;
 	private String mdYear;
