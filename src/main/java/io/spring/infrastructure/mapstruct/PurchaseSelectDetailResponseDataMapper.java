@@ -18,5 +18,7 @@ public interface PurchaseSelectDetailResponseDataMapper {
     @Mapping(target = "carrier", expression = "java(p.getCarrier() == null? \"\" : p.getCarrier())")
     @Mapping(target = "siteOrderNo", expression = "java(p.getSiteOrderNo() == null? \"\" : p.getSiteOrderNo())")
     @Mapping(target = "purchaseStatus", expression = "java(p.getPurchaseStatus() == null? \"\" : p.getPurchaseStatus())")
+    @Mapping(target = "piNo", expression = "java(p.getPiNo() == null? \"\" : p.getPiNo())")
+    @Mapping(target = "memo", expression = "java(p.getMemo() == null? \"\" : p.getMemo())")
     PurchaseSelectDetailResponseData nullToEmpty(PurchaseSelectDetailResponseData p);
 }

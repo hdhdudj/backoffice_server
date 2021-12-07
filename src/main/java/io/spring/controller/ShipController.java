@@ -166,7 +166,7 @@ public class ShipController {
                                              @RequestParam @Nullable String assortId,
                                              @RequestParam @Nullable String assortNm,
                                              @RequestParam @Nullable String channelId){
-		ShipIndicateListData shipIndicateListData = jpaShipService.getShipList2(startDt, endDt, shipId, assortId,
+		ShipIndicateListData shipIndicateListData = jpaShipService.getShipList(startDt, endDt, shipId, assortId,
 				assortNm, channelId, StringFactory.getStrD02(), "");
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
         return ResponseEntity.ok(res);

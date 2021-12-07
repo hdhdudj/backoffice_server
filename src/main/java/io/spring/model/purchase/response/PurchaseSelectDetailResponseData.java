@@ -37,6 +37,8 @@ public class PurchaseSelectDetailResponseData {
         this.siteOrderNo = lspchm.getSiteOrderNo();
         this.purchaseStatus = lspchm.getPurchaseStatus();
         this.dealtypeCd = lspchm.getDealtypeCd();
+        this.piNo = lspchm.getPiNo();
+        this.memo = lspchm.getMemo();
     }
 //    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
 //    @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -55,6 +57,9 @@ public class PurchaseSelectDetailResponseData {
     private String siteOrderNo;
     private String purchaseStatus;
     private List<Items> items;
+    // 21-12-07 추가
+    private String piNo;
+    private String memo;
 
     @Getter
     @Setter
