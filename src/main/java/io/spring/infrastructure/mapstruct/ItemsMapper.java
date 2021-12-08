@@ -28,9 +28,9 @@ public interface ItemsMapper {
     @Mapping(target = "imgServerUrl", expression = "java(items.getImgServerUrl() == null? \"\" : items.getImgServerUrl())")
     @Mapping(target = "custNm", expression = "java(items.getCustNm() == null? \"\" : items.getCustNm())")
     @Mapping(target = "channelOrderNo", expression = "java(items.getChannelOrderNo() == null? \"\" : items.getChannelOrderNo())")
-    @Mapping(target = "mdRrp", constant = "0f")
-    @Mapping(target = "buySupplyDiscount", constant = "0f")
-    @Mapping(target = "purchaseQty", constant = "0l")
-    @Mapping(target = "purchaseUnitAmt", constant = "0f")
+    @Mapping(target = "mdRrp", expression = "java(items.getMdRrp() == null? 0f : items.getMdRrp())")
+    @Mapping(target = "buySupplyDiscount", expression = "java(items.getBuySupplyDiscount() == null? 0f : items.getBuySupplyDiscount())")
+    @Mapping(target = "purchaseQty", expression = "java(items.getPurchaseQty() == null? 0l : items.getPurchaseQty())")
+    @Mapping(target = "purchaseUnitAmt", expression = "java(items.getPurchaseUnitAmt() == null? 0f : items.getPurchaseUnitAmt())")
     PurchaseSelectDetailResponseData.Items nullToEmpty(PurchaseSelectDetailResponseData.Items items);
 }

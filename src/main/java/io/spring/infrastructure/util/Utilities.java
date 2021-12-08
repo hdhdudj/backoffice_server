@@ -164,13 +164,13 @@ public class Utilities {
             return;
         }
         if(itvariList.size() > 0){
-            setOptionInterface.setOptionNm1(itvariList.get(0).getOptionNm());
+            setOptionInterface.setOptionNm1(itvariList.get(0) == null? "" : itvariList.get(0).getOptionNm());
         }
         if(itvariList.size() > 1){
-            setOptionInterface.setOptionNm2(itvariList.get(1).getOptionNm());
+            setOptionInterface.setOptionNm2(itvariList.get(1) == null? "" : itvariList.get(1).getOptionNm());
         }
         if(itvariList.size() > 2){
-            setOptionInterface.setOptionNm3(itvariList.get(2).getOptionNm());
+            setOptionInterface.setOptionNm3(itvariList.get(2) == null? "" : itvariList.get(2).getOptionNm());
         }
     }
 

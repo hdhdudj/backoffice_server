@@ -8,7 +8,7 @@ import org.mapstruct.Mapping;
 public interface PurchaseSelectDetailResponseDataMapper {
     @Mapping(target = "purchaseId", expression = "java(p.getPurchaseId() == null? \"\" : p.getPurchaseId())")
     @Mapping(target = "purchaseDt", expression = "java(p.getPurchaseDt() == null? \"\" : p.getPurchaseDt())")
-    @Mapping(target = "ownerId", expression = "java(p.getOwnerId() == null? \"\" : p.getOwnerId())")
+    @Mapping(target = "vendorId", expression = "java(p.getVendorId() == null? \"\" : p.getVendorId())")
     @Mapping(target = "purchaseRemark", expression = "java(p.getPurchaseRemark() == null? \"\" : p.getPurchaseRemark())")
     @Mapping(target = "storageId", expression = "java(p.getStorageId() == null? \"\" : p.getStorageId())")
     @Mapping(target = "terms", expression = "java(p.getTerms() == null? \"\" : p.getTerms())")

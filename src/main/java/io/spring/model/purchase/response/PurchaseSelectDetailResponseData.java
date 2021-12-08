@@ -27,7 +27,7 @@ public class PurchaseSelectDetailResponseData {
     public PurchaseSelectDetailResponseData(Lspchm lspchm){
         this.purchaseId = lspchm.getPurchaseNo();
         this.purchaseDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
-        this.ownerId = lspchm.getOwnerId();
+        this.vendorId = lspchm.getVendorId();
         this.purchaseRemark = lspchm.getPurchaseRemark();
         this.storageId = lspchm.getStoreCd();
         this.terms = lspchm.getTerms();
@@ -46,7 +46,7 @@ public class PurchaseSelectDetailResponseData {
     private String purchaseId;
     private String purchaseDt;
 //    private String purchaseVendorId; : ownerId로 수정
-    private String ownerId;
+    private String vendorId;
     private String purchaseRemark;
     private String storageId;
     private String terms;

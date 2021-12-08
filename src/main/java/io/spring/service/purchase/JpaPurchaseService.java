@@ -180,9 +180,9 @@ public class JpaPurchaseService {
         }
         Lspchm lspchm = jpaLspchmRepository.findByPurchaseNo(purchaseInsertRequestData.getPurchaseId()).orElseGet(() -> null);
         if(lspchm == null){ // insert
+            Lspchd lspchd = lspchdList.get(0);
             lspchm = new Lspchm(purchaseInsertRequestData);
             /// 임시
-            Lspchd lspchd = lspchdList.get(0);
             Itasrt itasrt = jpaItasrtRepository.findByAssortId(lspchd.getAssortId());
             lspchm.setStoreCd(itasrt.getStorageId());
             ///
