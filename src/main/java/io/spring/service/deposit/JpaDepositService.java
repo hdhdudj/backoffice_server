@@ -238,7 +238,7 @@ public class JpaDepositService {
             
 			lsdpsd.setOrderId(lspchd.getOrderId() == null ? null : lspchd.getOrderId());
 			lsdpsd.setOrderSeq(lspchd.getOrderSeq() == null ? null : lspchd.getOrderSeq());
-            lsdpsd.setDefectYn(deposit.getDefectYn().trim().equals("") || deposit.getDefectYn() == null? StringFactory.getGbTwo() : deposit.getDefectYn());
+            lsdpsd.setDefectYn(deposit.getDefectYn() == null || deposit.getDefectYn().trim().equals("")? StringFactory.getGbTwo() : deposit.getDefectYn());
 
 			lsdpsdList.add(lsdpsd);
 
