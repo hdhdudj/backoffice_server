@@ -27,7 +27,7 @@ public class PurchaseSelectDetailResponseData {
     public PurchaseSelectDetailResponseData(Lspchm lspchm){
         this.purchaseId = lspchm.getPurchaseNo();
         this.purchaseDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
-        this.ownerId = lspchm.getOwnerId();
+        this.vendorId = lspchm.getVendorId();
         this.purchaseRemark = lspchm.getPurchaseRemark();
         this.storageId = lspchm.getStoreCd();
         this.terms = lspchm.getTerms();
@@ -37,6 +37,8 @@ public class PurchaseSelectDetailResponseData {
         this.siteOrderNo = lspchm.getSiteOrderNo();
         this.purchaseStatus = lspchm.getPurchaseStatus();
         this.dealtypeCd = lspchm.getDealtypeCd();
+        this.piNo = lspchm.getPiNo();
+        this.memo = lspchm.getMemo();
     }
 //    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
 //    @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -44,7 +46,7 @@ public class PurchaseSelectDetailResponseData {
     private String purchaseId;
     private String purchaseDt;
 //    private String purchaseVendorId; : ownerId로 수정
-    private String ownerId;
+    private String vendorId;
     private String purchaseRemark;
     private String storageId;
     private String terms;
@@ -55,6 +57,9 @@ public class PurchaseSelectDetailResponseData {
     private String siteOrderNo;
     private String purchaseStatus;
     private List<Items> items;
+    // 21-12-07 추가
+    private String piNo;
+    private String memo;
 
     @Getter
     @Setter

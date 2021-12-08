@@ -1,5 +1,6 @@
 package io.spring.infrastructure.util;
 
+import io.spring.enums.DeliveryMethod;
 import io.spring.model.common.SetOptionInterface;
 import io.spring.model.goods.entity.Itvari;
 import lombok.extern.slf4j.Slf4j;
@@ -163,13 +164,13 @@ public class Utilities {
             return;
         }
         if(itvariList.size() > 0){
-            setOptionInterface.setOptionNm1(itvariList.get(0).getOptionNm());
+            setOptionInterface.setOptionNm1(itvariList.get(0) == null? "" : itvariList.get(0).getOptionNm());
         }
         if(itvariList.size() > 1){
-            setOptionInterface.setOptionNm2(itvariList.get(1).getOptionNm());
+            setOptionInterface.setOptionNm2(itvariList.get(1) == null? "" : itvariList.get(1).getOptionNm());
         }
         if(itvariList.size() > 2){
-            setOptionInterface.setOptionNm2(itvariList.get(2).getOptionNm());
+            setOptionInterface.setOptionNm3(itvariList.get(2) == null? "" : itvariList.get(2).getOptionNm());
         }
     }
 
@@ -191,5 +192,17 @@ public class Utilities {
                 map.put(key, "");
             }
         }
+    }
+
+    public static String convertFieldNameToEnum(String arg){
+        if(arg == null){
+            return null;
+        }
+        for(DeliveryMethod d : DeliveryMethod.values()){
+            if(d.getFieldName().equals(arg)){
+                return d.toString();
+            }
+        }
+        return null;
     }
 }

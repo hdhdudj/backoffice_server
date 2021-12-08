@@ -191,6 +191,9 @@ public class OrderController {
 	}
 
 
+	/**
+	 * 주문별주문리스트 가져오는 api
+	 */
 	@GetMapping(path = "/items")
 	// 주문일자,주문상태,주문번호,( 셀렉트방식으로 채널주문번호(기본값),주문자명,주문자휴대폰번호,주문자전화번호,수령자명,수령자휴대폰번호,수령자 전화번호,입금자명
 	public ResponseEntity getOrderList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
@@ -203,7 +206,7 @@ public class OrderController {
 			@RequestParam @Nullable String custTel,
 			@RequestParam @Nullable String deliNm,
 			@RequestParam @Nullable String deliHp,
-			@RequestParam @Nullable String deliTel // todo: 입금자명 추가
+			@RequestParam @Nullable String deliTel
 									   ) {
 
 		System.out.println("getOrderList");
@@ -256,6 +259,9 @@ public class OrderController {
 
 	}
 
+	/**
+	 * 상품별주문리스트 가져오는 api
+	 */
 	@GetMapping(path = "/goods/items")
 	public ResponseEntity getOrderDetailList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,

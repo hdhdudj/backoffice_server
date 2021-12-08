@@ -180,9 +180,9 @@ public class JpaPurchaseService {
         }
         Lspchm lspchm = jpaLspchmRepository.findByPurchaseNo(purchaseInsertRequestData.getPurchaseId()).orElseGet(() -> null);
         if(lspchm == null){ // insert
+            Lspchd lspchd = lspchdList.get(0);
             lspchm = new Lspchm(purchaseInsertRequestData);
             /// 임시
-            Lspchd lspchd = lspchdList.get(0);
             Itasrt itasrt = jpaItasrtRepository.findByAssortId(lspchd.getAssortId());
             lspchm.setStoreCd(itasrt.getStorageId());
             ///
@@ -468,7 +468,11 @@ public class JpaPurchaseService {
             List<Itaimg> imgList = itasrt.getItaimg();
             imgList = imgList.stream().filter(x->x.getImageGb().equals(StringFactory.getGbOne())).collect(Collectors.toList());
             PurchaseSelectDetailResponseData.Items item = new PurchaseSelectDetailResponseData.Items(lspchd, ititmm, itasrt, imgList.size() == 0? null : imgList.get(0));
-            Utilities.setOptionNames(item, itasrt.getItvariList()); // optionNm set
+            List<Itvari> itvariList = new ArrayList<>();
+            itvariList.add(ititmm.getItvari1());
+            itvariList.add(ititmm.getItvari2());
+            itvariList.add(ititmm.getItvari3());
+            Utilities.setOptionNames(item, itvariList); // optionNm set
             if (lspchd.getTbOrderDetail() != null) { // 주문발주인 경우
                 TbOrderDetail tbOrderDetail = lspchd.getTbOrderDetail();
                 TbMember tbMember = tbOrderDetail.getTbOrderMaster().getTbMember();
@@ -586,7 +590,7 @@ public class JpaPurchaseService {
         LocalDateTime end = endDt.atTime(23,59,59);
 //        purchaseNo = purchaseNo == null || purchaseNo.equals("")? "":" and d.depositNo='"+purchaseNo+"'";
 
-        Query query = em.createQuery("select ld from Lspchd ld " +
+        Query query = em.createQuery("select distinct(ld) from Lspchd ld " +
                 "join fetch ld.lspchm lm " +
                 "left outer join fetch ld.tbOrderDetail tod " +
                 "left outer join fetch tod.tbOrderMaster tom " +
