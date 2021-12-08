@@ -72,8 +72,6 @@ public class Lsdpsm extends CommonProps {
     private String depositType;
     private String storeCd;
     private String ownerId;
-    // 21-12-08 추가
-    private String memo;
 
     // 연관 관계
     @ManyToOne(fetch = FetchType.LAZY)

@@ -379,8 +379,7 @@ public class JpaDepositService {
     }
 
     /**
-     * 입고번호를 통해 입고번호 상세 정보를 가져오는 함수
-     * @return
+     * 입고내역 : 입고번호를 통해 입고번호 상세 정보를 가져오는 함수
      */
     public DepositSelectDetailResponseData getDetail(String depositNo){
         TypedQuery<Lsdpsd> query = em.createQuery("select d from Lsdpsd d " +
@@ -420,9 +419,12 @@ public class JpaDepositService {
      * 입고 상세 화면에서 물품 사진 구글드라이브 링크를 적은 메모를 넣어 저장하는 함수
      */
     public DepositSelectDetailRequestData updateDetail(DepositSelectDetailRequestData depositSelectDetailRequestData) {
-        Lsdpsm lsdpsm = jpaLsdpsmRepository.findByDepositNo(depositSelectDetailRequestData.getDepositNo());
-        lsdpsm.setMemo(depositSelectDetailRequestData.getMemo());
-        jpaLsdpsmRepository.save(lsdpsm);
+        List<DepositSelectDetailRequestData.Item> itemList = depositSelectDetailRequestData.getItems();
+        List<Lsdpsd> lsdpsdList = jpaLsdpsdRepository.findByDepositNo(depositSelectDetailRequestData.getDepositNo());
+        for (int i = 0; i < lsdpsdList.size(); i++) {
+            lsdpsdList.get(i).setMemo(itemList.get(i).getMemo());
+            jpaLsdpsdRepository.save(lsdpsdList.get(i));
+        }
         return depositSelectDetailRequestData;
     }
 
@@ -432,7 +434,7 @@ public class JpaDepositService {
      * assortNm은 like 검색
      */
 	public DepositSelectListResponseData getList(String vendorId, String assortId, String assortNm, LocalDate startDt,
-			LocalDate endDt, String storageId) {
+			LocalDate endDt, String storageId, String memo) {
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
         List<DepositSelectListResponseData.Deposit> depositList = new ArrayList<>();
@@ -476,7 +478,7 @@ public class JpaDepositService {
             depositList.add(deposit);
         }
 		DepositSelectListResponseData depositSelectListResponseData = new DepositSelectListResponseData(startDt, endDt,
-				assortId, assortNm, vendorId);
+				assortId, assortNm, vendorId, memo);
         depositSelectListResponseData.setDepositList(depositList);
         return depositSelectListResponseData;
     }

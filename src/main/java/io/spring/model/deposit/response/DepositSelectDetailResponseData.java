@@ -56,6 +56,7 @@ public class DepositSelectDetailResponseData {
             this.itemId = lsdpsd.getItemId();
             this.extraUnitcost = lsdpsd.getExtraUnitcost();
             this.purchaseGb = lsdpsd.getLspchd().getLspchm().getPurchaseGb();
+            this.memo = lsdpsd.getMemo();
         }
         private String depositNo;
         private String depositSeq;
@@ -80,5 +81,7 @@ public class DepositSelectDetailResponseData {
         private Long depositQty;
         private Float extraUnitcost;
         private String depositStatus;
+        // 21-12-08 추가
+        private String memo;
     }
 }

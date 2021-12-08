@@ -24,12 +24,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DepositSelectListResponseData {
-    public DepositSelectListResponseData(LocalDate startDt, LocalDate endDt, String assortId, String assortNm, String purchaseVendorId){
+    public DepositSelectListResponseData(LocalDate startDt, LocalDate endDt, String assortId, String assortNm, String purchaseVendorId, String memo){
         this.startDt = startDt;
         this.endDt = endDt;
         this.assortId = assortId;
         this.assortNm = assortNm;
 		this.vendorId = purchaseVendorId;
+        this.memo = memo;
     }
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -43,6 +44,8 @@ public class DepositSelectListResponseData {
     private String assortNm;
 	private String vendorId;
     private List<Deposit> depositList;
+    // 21-12-08 추가
+    private String memo;
 
     @Getter
     @Setter
