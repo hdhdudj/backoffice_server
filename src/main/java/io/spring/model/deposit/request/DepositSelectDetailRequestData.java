@@ -1,6 +1,4 @@
-package io.spring.model.deposit.response;
-
-import java.util.List;
+package io.spring.model.deposit.request;
 
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
@@ -11,30 +9,29 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 /**
  * 입고 - 입고내역 : 입고 내역 DTO
  */
 @Getter
 @Setter
-public class DepositSelectDetailResponseData {
-    public DepositSelectDetailResponseData(Lsdpsm lsdpsm){
+public class DepositSelectDetailRequestData {
+    public DepositSelectDetailRequestData(){
+
+    }
+    public DepositSelectDetailRequestData(Lsdpsm lsdpsm){
         this.depositNo = lsdpsm.getDepositNo();
         this.depositDt = Utilities.removeTAndTransToStr(lsdpsm.getDepositDt());
 //        this.storeCd = lsdpsm.getStoreCd();
 		this.vendorId = lsdpsm.getVendorId();
     }
     private String depositNo;
-//    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-//    @JsonSerialize(using = LocalDateTimeSerializer.class)
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private String depositDt;
 	private String vendorId;
-
     // 21-12-08 추가
     private String memo;
-//    private String storeCd;
-//    private String depositStatus;
-//    private String depositVendorId;
+
     private List<Item> items;
 
     @Getter
