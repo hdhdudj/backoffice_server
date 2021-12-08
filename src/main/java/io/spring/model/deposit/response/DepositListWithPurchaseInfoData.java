@@ -69,5 +69,7 @@ public class DepositListWithPurchaseInfoData {
         private Long availableQty; // Lsdpsp.purchasePlanQty - Lsdpsp.purchaseTakeQty
         private Long depositQty;
         private Float purchaseCost;
+        // 21-12-08 추가됨
+        private String defectYn;
     }
 }
