@@ -41,7 +41,7 @@ public class OrderMasterListResponseData {
 		this.optionNm2 = m.get("optionNm2") == null ? null : (String) m.get("optionNm2"); // 옵션2
 		this.orderStatus = m.get("orderStatus") == null ? null : (String) m.get("orderStatus"); // 주문상태
 		this.qty = m.get("qty") == null ? null : Long.parseLong(Integer.toString((Integer)m.get("qty"))); // 수량
-		this.goodsPrice = m.get("goodsPrice") == null ? null : ((BigDecimal) m.get("goodsPrice")).doubleValue(); // 금액
+		this.goodsPrice = m.get("goodsPrice") == null ? null : ((BigDecimal) m.get("goodsPrice")).doubleValue(); // 금액, 총상품가
 		this.deliPrice = m.get("deliPrice") == null ? null : ((BigDecimal) m.get("deliPrice")).doubleValue(); // 배송비
 		this.deliMethod = Utilities.convertFieldNameToEnum(m.get("deliMethod") == null ? null : (String) m.get("deliMethod")); // 배송방법
 		this.deliveryInfo = m.get("deliveryInfo") == null ? null : (String) m.get("deliveryInfo"); // 배송구분
@@ -52,15 +52,15 @@ public class OrderMasterListResponseData {
 		this.deliAddr = m.get("deliAddr") == null ? null : (String) m.get("deliAddr"); // 수령자 주소
 		this.goodsNm = (String) m.get("goodsNm"); // 주문상품명
 		this.totalGoodsPrice = ((BigDecimal) m.get("totalGoodsPrice")).doubleValue();
-		this.totalDeliveryCharge = ((BigDecimal) m.get("totalDeliveryCharge")).doubleValue();
+		this.totalDeliveryCharge = ((BigDecimal) m.get("totalDeliveryCharge")).doubleValue(); // 총배송비
 		this.totalPrice = ((BigDecimal) m.get("totalPrice")).doubleValue();
-		this.orderAmt = ((BigDecimal) m.get("orderAmt")).doubleValue();
-		
+		this.orderAmt = ((BigDecimal) m.get("orderAmt")).doubleValue(); // 결제금액
+
 		this.payGb = (String) m.get("payGb"); // 결제방법
 		this.payStatus = (String) m.get("payStatus");
 		
 		this.channelOrderNo = (String) m.get("channelOrderNo");
-		
+
 	}
 
 
