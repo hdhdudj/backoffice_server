@@ -512,7 +512,7 @@ public class JpaPurchaseService {
      * 입고 - 발주선택창 (입고처리 -> 발주조회 > 조회) : 조건을 넣고 조회했을 때 동작하는 함수 (Lspchm 기준의 list를 가져옴)
      */
 	public PurchaseListInDepositModalData getPurchaseMasterList(LocalDate startDt, LocalDate endDt,
-			String vendorId, String storageId) {
+			String vendorId, String storageId, String piNo) {
 		PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData(startDt,
 				endDt, vendorId, storageId);
         LocalDateTime start = startDt.atStartOfDay();
@@ -521,11 +521,13 @@ public class JpaPurchaseService {
                 " where m.purchaseDt between ?1 and ?2" +
 				" and (?3 is null or trim(?3)='' or m.vendorId=?3) "
 				+ " and (?4 is null or trim(?4)='' or m.storeCd=?4) "
+				+ " and (?5 is null or trim(?5)='' or m.piNo=?5) "
 				+
                 "and m.purchaseStatus in :statusArr", Lspchm.class);
         List<String> statusArr = Arrays.asList(StringFactory.getGbOne(), StringFactory.getGbThree()); // 01:발주 03:부분입고 04:완전입고 05:취소  A1:송금완료 A2:거래처선금입금 A3:거래처잔금입금
 		query.setParameter(1, start).setParameter(2, end).setParameter(3, vendorId).setParameter(4, storageId)
-                .setParameter("statusArr",statusArr);
+                .setParameter("statusArr",statusArr)
+                .setParameter(5, piNo);
         List<Lspchm> lspchmList = query.getResultList();
         List<PurchaseListInDepositModalData.Purchase> purchaseList = new ArrayList<>();
         for(Lspchm lspchm : lspchmList){
