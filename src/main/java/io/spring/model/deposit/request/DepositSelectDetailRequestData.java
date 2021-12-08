@@ -29,8 +29,6 @@ public class DepositSelectDetailRequestData {
     private String depositNo;
     private String depositDt;
 	private String vendorId;
-    // 21-12-08 추가
-    private String memo;
 
     private List<Item> items;
 
@@ -77,5 +75,7 @@ public class DepositSelectDetailRequestData {
         private Long depositQty;
         private Float extraUnitcost;
         private String depositStatus;
+        // 21-12-08 추가
+        private String memo;
     }
 }
