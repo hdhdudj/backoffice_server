@@ -125,6 +125,8 @@ public class Lsdpsd extends CommonProps implements Serializable {
 
 	private String orderId;
 	private String orderSeq;
+    // 21-12-08 추가
+    private String defectYn;
 
     // 연관 관계 lsdpsm
     @ManyToOne(fetch = FetchType.LAZY)

@@ -214,10 +214,10 @@ public class PurchaseController {
                                              @RequestParam @Nullable String purchaseNo,
                                              @RequestParam @Nullable String channelOrderNo,
                                              @RequestParam @Nullable String siteOrderNo,
-                                             @RequestParam @Nullable String custNm,
+                                             @RequestParam @Nullable String orderNm,
                                              @RequestParam @Nullable String assortNm,
                                              @RequestParam @Nullable String purchaseStatus,
-                                             @RequestParam @Nullable String brandNm,
+                                             @RequestParam @Nullable String brandId,
                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
                                              @RequestParam @Nullable String purchaseGb,
@@ -225,7 +225,7 @@ public class PurchaseController {
                                              ){
         log.debug("get purchase list - jpa");
 
-        PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getPurchaseList(vendorId, assortId, purchaseNo, channelOrderNo, siteOrderNo, custNm, assortNm, purchaseStatus, brandNm,
+        PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getPurchaseList(vendorId, assortId, purchaseNo, channelOrderNo, siteOrderNo, orderNm, assortNm, purchaseStatus, brandId,
                 startDt, endDt, purchaseGb, dealtypeCd);
 
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectListResponseData);

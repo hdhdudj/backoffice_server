@@ -541,13 +541,13 @@ public class JpaPurchaseService {
     /**
      * 발주리스트 화면 기준 리스트 가져오는 함수 (Lspchd 기준의 list를 가져옴)
      */
-    public PurchaseSelectListResponseData getPurchaseList(String vendorId,String assortId, String purchaseNo, String channelOrderNo, String siteOrderNo, String custNm, String assortNm,
-                                                          String purchaseStatus, String brandNm, LocalDate startDt, LocalDate endDt, String purchaseGb, String dealtypeCd) {
-        PurchaseSelectListResponseData purchaseSelectListResponseData = new PurchaseSelectListResponseData(vendorId, assortId, purchaseNo, channelOrderNo, custNm, assortNm, purchaseStatus, brandNm,
+    public PurchaseSelectListResponseData getPurchaseList(String vendorId, String assortId, String purchaseNo, String channelOrderNo, String siteOrderNo, String custNm, String assortNm,
+                                                          String purchaseStatus, String brandId, LocalDate startDt, LocalDate endDt, String purchaseGb, String dealtypeCd) {
+        PurchaseSelectListResponseData purchaseSelectListResponseData = new PurchaseSelectListResponseData(vendorId, assortId, purchaseNo, channelOrderNo, custNm, assortNm, purchaseStatus, brandId,
                 startDt, endDt, purchaseGb, dealtypeCd);
         List<PurchaseSelectListResponseData.Purchase> purchaseList = new ArrayList<>();
 
-        List<Lspchd> lspchdList = this.getLspchd(vendorId, assortId, purchaseNo, channelOrderNo, siteOrderNo, custNm, assortNm, purchaseStatus, brandNm,
+        List<Lspchd> lspchdList = this.getLspchd(vendorId, assortId, purchaseNo, channelOrderNo, siteOrderNo, custNm, assortNm, purchaseStatus, brandId,
                 startDt, endDt, purchaseGb, dealtypeCd);
 
         if(lspchdList.size() > 0){
@@ -585,7 +585,7 @@ public class JpaPurchaseService {
      * @return
      */
     private List<Lspchd> getLspchd(String vendorId,String assortId, String purchaseNo, String channelOrderNo, String siteOrderNo, String custNm, String assortNm,
-                                   String purchaseStatus, String brandNm, LocalDate startDt, LocalDate endDt, String purchaseGb, String dealtypeCd) {
+                                   String purchaseStatus, String brandId, LocalDate startDt, LocalDate endDt, String purchaseGb, String dealtypeCd) {
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
 //        purchaseNo = purchaseNo == null || purchaseNo.equals("")? "":" and d.depositNo='"+purchaseNo+"'";
@@ -601,7 +601,7 @@ public class JpaPurchaseService {
                 "left outer join fetch ita.itvariList iv " +
                 "where lm.purchaseDt between ?1 and ?2 " +
 //                "and (tod.statusCd in ('B01','C03') or lm.dealtypeCd='02') " +
-                "and (?3 is null or trim(?3)='' or ld.lspchm.ownerId=?3) " +
+                "and (?3 is null or trim(?3)='' or ld.lspchm.vendorId=?3) " +
                 "and (?4 is null or trim(?4)='' or ld.assortId=?4) "+
                 "and (?5 is null or trim(?5)='' or ld.lspchm.purchaseStatus=?5) "+
                 "and (?6 is null or trim(?6)='' or ld.lspchm.purchaseGb=?6) " +
@@ -609,14 +609,14 @@ public class JpaPurchaseService {
                 "and (?10 is null or trim(?10)='' or ld.purchaseNo=?10) " +
                 "and (?13 is null or trim(?13)='' or lm.siteOrderNo=?13) " +
                 "and (?11 is null or trim(?11)='' or tm.custNm like concat('%',?11,'%')) " +
-                "and (?12 is null or trim(?12)='' or ib.channelBrandNm like concat ('%',?12,'%')) " +
+                "and (?12 is null or trim(?12)='' or ib.brandId=?12) " +
                 "and (?8 is null or trim(?8)='' or itm.itemNm like concat('%',?8,'%')) " +
                 "and (?9 is null or trim(?9)='' or tod.channelOrderNo=?9)")
                 .setParameter(1, start).setParameter(2, end)
                 .setParameter(3,vendorId).setParameter(4,assortId)
                 .setParameter(5,purchaseStatus).setParameter(6,purchaseGb).setParameter(7,dealtypeCd)
                 .setParameter(8,assortNm).setParameter(9,channelOrderNo)
-                .setParameter(10, purchaseNo).setParameter(11, custNm).setParameter(12, brandNm)
+                .setParameter(10, purchaseNo).setParameter(11, custNm).setParameter(12, brandId)
                 .setParameter(13, siteOrderNo);
 //        EntityGraph graph = em.getEntityGraph("Lspchd.purchaseList");
 //        query.setHint("javax.persistence.fetchgraph", graph);
