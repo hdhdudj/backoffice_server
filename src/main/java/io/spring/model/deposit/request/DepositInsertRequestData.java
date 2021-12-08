@@ -19,6 +19,8 @@ public class DepositInsertRequestData {
     private String ownerId;
     private String vendorId;
     private List<Item> items;
+    // 21-12-08 추가
+    private String memo;
 
     @Getter
     @Setter

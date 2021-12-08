@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.spring.model.deposit.request.DepositSelectDetailRequestData;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -416,6 +417,16 @@ public class JpaDepositService {
     }
 
     /**
+     * 입고 상세 화면에서 물품 사진 구글드라이브 링크를 적은 메모를 넣어 저장하는 함수
+     */
+    public DepositSelectDetailRequestData updateDetail(DepositSelectDetailRequestData depositSelectDetailRequestData) {
+        Lsdpsm lsdpsm = jpaLsdpsmRepository.findByDepositNo(depositSelectDetailRequestData.getDepositNo());
+        lsdpsm.setMemo(depositSelectDetailRequestData.getMemo());
+        jpaLsdpsmRepository.save(lsdpsm);
+        return depositSelectDetailRequestData;
+    }
+
+    /**
      * 입고 리스트를 가져오는 함수 (입고 - 입고리스트)
      * assortId가 null이거나 ""면 검색 조건에 미포함
      * assortNm은 like 검색
@@ -758,6 +769,4 @@ public class JpaDepositService {
 		return ret;
 
 	}
-
-
 }

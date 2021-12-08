@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.spring.model.deposit.request.DepositSelectDetailRequestData;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -126,6 +127,17 @@ public class DepositController {
     public ResponseEntity getDepositDetailPage(@PathVariable String depositNo){
         DepositSelectDetailResponseData depositSelectDetailResponseData = jpaDepositService.getDetail(depositNo);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositSelectDetailResponseData);
+        return ResponseEntity.ok(res);
+    }
+
+    /**
+     *  입고 - 입고내역 : 저장 (메모 쓰고 저장하기)
+     */
+    @PostMapping(path="/items/update/{depositNo}")
+    public ResponseEntity updateDepositDetail(@PathVariable String depositNo, @RequestBody DepositSelectDetailRequestData depositSelectDetailRequestData){
+        depositSelectDetailRequestData.setDepositNo(depositNo);
+        depositSelectDetailRequestData = jpaDepositService.updateDetail(depositSelectDetailRequestData);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositSelectDetailRequestData);
         return ResponseEntity.ok(res);
     }
 
