@@ -329,7 +329,7 @@
 																				  and vvv.assort_id = eee.assort_id)
 							   else '000000' end order_vendor_id
 					from tb_order_detail tod
-					where status_cd in ('p1', 'B01')) aaa,
+					where status_cd in ('B01')) aaa,
 				   itasrt bbb,
 				   ititmm ccc,
 				   tb_order_master tom,
