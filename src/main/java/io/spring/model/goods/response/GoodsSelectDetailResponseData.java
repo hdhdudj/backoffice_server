@@ -1,9 +1,12 @@
 package io.spring.model.goods.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import io.spring.infrastructure.util.PropertyUtil;
+import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.entity.Itaimg;
 import io.spring.model.goods.entity.Itasrt;
 import lombok.AccessLevel;
@@ -20,8 +23,10 @@ import java.util.List;
 @Getter
 @Setter
 @PropertySource("classpath:application.properties")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GoodsSelectDetailResponseData {
+    public GoodsSelectDetailResponseData(){
+
+    }
     public GoodsSelectDetailResponseData(Itasrt itasrt){
         this.assortId = itasrt.getAssortId();
         this.assortNm = itasrt.getAssortNm();
@@ -50,8 +55,8 @@ public class GoodsSelectDetailResponseData {
         this.buyRrpIncrement = itasrt.getBuyRrpIncrement();
         
 
-        this.sellStaDt=itasrt.getSellStaDt();
-        this.sellEndDt=itasrt.getSellEndDt();
+        this.sellStaDt= Utilities.removeTAndTransToStr(itasrt.getSellStaDt());
+        this.sellEndDt=Utilities.removeTAndTransToStr(itasrt.getSellEndDt());
         
         
         this.asWidth=itasrt.getAsWidth();
@@ -111,11 +116,9 @@ public class GoodsSelectDetailResponseData {
     private Float localDeliFee;
 	private Float localSale; // itasrn�뿉�룄 �뱾�뼱媛�
     private String assortColor;
-    
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime sellStaDt;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime sellEndDt;
+
+    private String sellStaDt;
+    private String sellEndDt;
     private Float mdRrp;
     private String mdTax;
     private String mdYear;

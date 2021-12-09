@@ -106,7 +106,7 @@ public class GoodsController {
 		GoodsSelectDetailResponseData responseData = jpaGoodsService.getGoodsDetailPage(assortId);
 		LinkedList<String> categories = myBatisCommonService.findUpperCategory(responseData.getDispCategoryId());
 
-		responseData.setCategoryValue(categories);
+		responseData.setCategoryValue(categories == null? new LinkedList<>() : categories);
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), responseData);
 		if(responseData == null){
