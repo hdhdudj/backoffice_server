@@ -134,6 +134,10 @@ public class Utilities {
      * @return String
      */
     public static String removeTAndTransToStr(LocalDateTime localDateTime){
+        if(localDateTime == null){
+            log.debug("localDateTime이 null 입니다.");
+            return null;
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.KOREA);
         String strDate = localDateTime.format(formatter);
         return strDate.replace('T', ' ');

@@ -28,7 +28,7 @@ public class Ititmm extends CommonProps implements Serializable {
     public Ititmm(String assortId, GoodsInsertRequestData.Items items){
         this.assortId = assortId;
         this.shortYn = items.getShortYn();
-        this.addPrice = items.getAddPrice();
+        this.addPrice = items.getAddPrice() == null || items.getAddPrice().trim().equals("")? null : Float.parseFloat(items.getAddPrice());
     }
 
     public Ititmm(GoodsInsertRequestData goodsInsertRequestData){
