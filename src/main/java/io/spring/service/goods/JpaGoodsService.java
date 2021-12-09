@@ -1,6 +1,7 @@
 package io.spring.service.goods;
 
 import io.spring.dao.goods.MyBatisGoodsDao;
+import io.spring.infrastructure.mapstruct.GoodsSelectDetailResponseDataMapper;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.category.JpaIfCategoryRepository;
@@ -47,6 +48,8 @@ public class JpaGoodsService {
     private final FileService fileService;
 
     private final EntityManager em;
+
+    private final GoodsSelectDetailResponseDataMapper goodsSelectDetailResponseDataMapper;
 
     public Optional<Itasrt> findById(String goodsId) {
         Optional<Itasrt> goods = jpaItasrtRepository.findById(goodsId);
@@ -186,7 +189,7 @@ public class JpaGoodsService {
         itasrt.setAssortColor(goodsInsertRequestData.getAssortColor() == null || goodsInsertRequestData.getAssortColor().trim().equals("")? null : goodsInsertRequestData.getAssortColor());
 
 		itasrt.setDispCategoryId(goodsInsertRequestData.getDispCategoryId() == null || goodsInsertRequestData.getDispCategoryId().trim().equals("")? null : goodsInsertRequestData.getDispCategoryId());
-        itasrt.setCategoryId(getGodoCateCd(goodsInsertRequestData.getDispCategoryId()));
+        itasrt.setCategoryId(this.getGodoCateCd(goodsInsertRequestData.getDispCategoryId()));
 
         itasrt.setBrandId(goodsInsertRequestData.getBrandId() == null || goodsInsertRequestData.getBrandId().trim().equals("")? null : goodsInsertRequestData.getBrandId());
 
@@ -585,14 +588,13 @@ public class JpaGoodsService {
      * @return GoodsResponseData
      */
     public GoodsSelectDetailResponseData getGoodsDetailPage(String assortId) {
-        Itasrt itasrt = em.createQuery("select i from Itasrt i " +
+        Itasrt itasrt = em.createQuery("select distinct(i) from Itasrt i " +
                 "left outer join fetch i.cmvdmr cv " +
                 "left outer join fetch i.ifBrand ib " +
                 "left outer join fetch i.itvariList ivList " +
                 "where i.assortId=?1", Itasrt.class).setParameter(1,assortId).getSingleResult();//jpaItasrtRepository.findById(assortId).orElseThrow(() -> new ResourceNotFoundException());
     	
 //		System.out.println(itasrt);
-
         GoodsSelectDetailResponseData goodsSelectDetailResponseData = new GoodsSelectDetailResponseData(itasrt);
 
 		// 카테고리벨류
@@ -611,6 +613,8 @@ public class JpaGoodsService {
         goodsSelectDetailResponseData.setItems(itemsList);
         goodsSelectDetailResponseData.setUploadMainImage(uploadMainImageList);
         goodsSelectDetailResponseData.setUploadAddImage(uploadAddImageList);
+        goodsSelectDetailResponseData.setDeleteImage(new ArrayList<>());
+        goodsSelectDetailResponseData = goodsSelectDetailResponseDataMapper.nullToEmpty(goodsSelectDetailResponseData);
         return goodsSelectDetailResponseData;
     }
 

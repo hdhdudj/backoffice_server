@@ -61,10 +61,10 @@ public class Itvari extends CommonProps {
     private String variationGb;
     private String delYn;
 
-    // itasrt 연관 관계
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
-    private Itasrt itasrt;
+//    // itasrt 연관 관계
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+//    private Itasrt itasrt;
 
 //    // ititmm 연관 관계
 //    @OneToMany(fetch = FetchType.LAZY, targetEntity = Ititmm.class)
