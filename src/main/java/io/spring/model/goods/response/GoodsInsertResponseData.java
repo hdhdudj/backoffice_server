@@ -1,5 +1,6 @@
 package io.spring.model.goods.response;
 
+import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import lombok.*;
 
@@ -46,9 +47,23 @@ public class GoodsInsertResponseData {
 
     @Getter
     @Setter
-    public class Items{
+    public static class Items{
+        public Items(Ititmm ititmm){
+            this.variationSeq1 = ititmm.getVariationSeq1();
+            this.variationSeq2 = ititmm.getVariationSeq2();
+            this.variationSeq3 = ititmm.getVariationSeq3();
+            this.itemId = ititmm.getItemId();
+            // value는 바깥에서 set
+            this.addPrice = Float.toString(ititmm.getAddPrice());
+            this.shortYn = ititmm.getShortYn();
+        }
         private String itemId;
-        private String value;
+        private String variationValue1;
+        private String variationValue2;
+        private String variationValue3;
+        private String variationSeq1;
+        private String variationSeq2;
+        private String variationSeq3;
         private String addPrice;
         private String shortYn;
     }

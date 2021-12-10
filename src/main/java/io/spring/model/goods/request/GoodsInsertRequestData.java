@@ -1,8 +1,12 @@
 package io.spring.model.goods.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import io.spring.model.goods.entity.Ititmm;
+import io.spring.model.goods.entity.Itvari;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -20,23 +24,21 @@ public class GoodsInsertRequestData {
 	private String message;
 	// itasrt, itvari, itasrd 공통
 	private String assortId;
-	private Date regDt;
 	private String regId;
 	private String updId;
-	private Date updDt;
 
 	// itasrt
 	private String assortNm;
 	private String assortModel;
 	private String optionGbName;
-	private Float margin;
+	private String margin;
 	private String taxGb;
 	private String assortGb;
 	private String assortState;
-	private Float asWidth;
-	private Float asLength;
-	private Float asHeight;
-	private Float weight;
+	private String asWidth;
+	private String asLength;
+	private String asHeight;
+	private String weight;
 	private String origin;
 	private String shortageYn; // itasrn에도
 	private String brandId;
@@ -44,30 +46,32 @@ public class GoodsInsertRequestData {
 	private String siteGb;
 	private String asVendorId;
 	private String manufactureNm;
-	private Float deliPrice;
-	private Float localPrice;
-	private Float localDeliFee; 
-	private Float localSale; // itasrn에도 들어감
+	private String deliPrice;
+	private String localPrice;
+	private String localDeliFee;
+	private String localSale; // itasrn에도 들어감
 	private String assortColor;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "Asia/Seoul")
+	@JsonDeserialize(using = LocalDateDeserializer.class)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
 	private LocalDateTime sellStaDt;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "Asia/Seoul")
+	@JsonDeserialize(using = LocalDateDeserializer.class)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
 	private LocalDateTime sellEndDt;
-	private Float mdRrp;
+	private String mdRrp;
 	private String mdTax;
 	private String mdYear;
-	private Float mdMargin;
-	private Float mdVatrate;
-	private Float mdOfflinePrice;
-	private Float mdOnlinePrice;
-	private Float mdGoodsVatrate;
+	private String mdMargin;
+	private String mdVatrate;
+	private String mdOfflinePrice;
+	private String mdOnlinePrice;
+	private String mdGoodsVatrate;
 	private String buyWhere;
 	private String buyTax;
-	private Float buySupplyDiscount;
-	private Float buyRrpIncrement;
-	private Float buyExchangeRate;
+	private String buySupplyDiscount;
+	private String buyRrpIncrement;
+	private String buyExchangeRate;
 	private String sizeType;
-	private Float mdDiscountRate;
+	private String mdDiscountRate;
 	private String vendorId;
 	private String optionUseYn;
 
@@ -106,12 +110,17 @@ public class GoodsInsertRequestData {
 		private String variationValue1;
 		private String variationValue2;
 		private String variationValue3;
-		private Float addPrice;
+		private String addPrice;
 		private String shortYn;
 	}
 	@Getter
 	@Setter
 	public static class Attributes {
+		public Attributes(Itvari itvari){
+			this.seq = itvari.getSeq();
+			this.value = itvari.getOptionNm();
+			this.variationGb = itvari.getVariationGb();
+		}
 		private String seq;
 		private String value;
 		private String variationGb;

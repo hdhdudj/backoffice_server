@@ -36,14 +36,14 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 		this.assortId = goodsInsertRequestData.getAssortId();
 		this.assortNm = goodsInsertRequestData.getAssortNm();
 		this.assortModel = goodsInsertRequestData.getAssortModel();
-		this.margin = goodsInsertRequestData.getMargin();
+		this.margin = goodsInsertRequestData.getMargin().trim().equals("") || goodsInsertRequestData.getMargin() == null? null : Float.parseFloat(goodsInsertRequestData.getMargin());
 		this.taxGb = goodsInsertRequestData.getTaxGb();
 		this.assortGb = goodsInsertRequestData.getAssortGb();
 		this.assortState = goodsInsertRequestData.getAssortState();
-		this.asWidth = goodsInsertRequestData.getAsWidth();
-		this.asLength = goodsInsertRequestData.getAsLength();
-		this.asHeight = goodsInsertRequestData.getAsHeight();
-		this.weight = goodsInsertRequestData.getWeight();
+		this.asWidth = goodsInsertRequestData.getAsWidth().trim().equals("") || goodsInsertRequestData.getAsWidth() == null? null : Float.parseFloat(goodsInsertRequestData.getAsWidth());
+		this.asLength = goodsInsertRequestData.getAsLength().trim().equals("") || goodsInsertRequestData.getAsLength() == null? null : Float.parseFloat(goodsInsertRequestData.getAsLength());
+		this.asHeight = goodsInsertRequestData.getAsHeight().trim().equals("") || goodsInsertRequestData.getAsHeight() == null? null : Float.parseFloat(goodsInsertRequestData.getAsHeight());
+		this.weight = goodsInsertRequestData.getWeight().trim().equals("") || goodsInsertRequestData.getWeight() == null? null : Float.parseFloat(goodsInsertRequestData.getWeight());
 		this.origin = goodsInsertRequestData.getOrigin();
 		this.shortageYn = goodsInsertRequestData.getShortageYn();
 		this.brandId = goodsInsertRequestData.getBrandId();
@@ -51,35 +51,33 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 		this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
 		this.ownerId = goodsInsertRequestData.getAsVendorId();
 		this.manufactureNm = goodsInsertRequestData.getManufactureNm();
-		this.deliPrice = goodsInsertRequestData.getDeliPrice();
-		this.localPrice = goodsInsertRequestData.getLocalPrice();
-		this.localSale = goodsInsertRequestData.getLocalSale();
+		this.deliPrice = goodsInsertRequestData.getDeliPrice().trim().equals("") || goodsInsertRequestData.getDeliPrice() == null? null : Float.parseFloat(goodsInsertRequestData.getDeliPrice());
+		this.localPrice = goodsInsertRequestData.getLocalPrice().trim().equals("") || goodsInsertRequestData.getLocalPrice() == null? null : Float.parseFloat(goodsInsertRequestData.getLocalPrice());
+		this.localSale = goodsInsertRequestData.getLocalSale().trim().equals("") || goodsInsertRequestData.getLocalSale() == null? null : Float.parseFloat(goodsInsertRequestData.getLocalSale());
 	//	this.localDeliFee = goodsInsertRequestData.getLocalDeliFee();
 		this.assortColor = goodsInsertRequestData.getAssortColor();
 		this.sellStaDt = goodsInsertRequestData.getSellStaDt();
 		this.sellEndDt = goodsInsertRequestData.getSellEndDt();
 		this.taxGb = goodsInsertRequestData.getTaxGb();
-		this.mdRrp = goodsInsertRequestData.getMdRrp();
+		this.mdRrp = goodsInsertRequestData.getMdRrp().trim().equals("") || goodsInsertRequestData.getMdRrp() == null? null : Float.parseFloat(goodsInsertRequestData.getMdRrp());
 		this.mdTax = goodsInsertRequestData.getMdTax();
 		this.mdYear = goodsInsertRequestData.getMdYear();
-		this.mdMargin = goodsInsertRequestData.getMdMargin();
-		this.mdMargin = goodsInsertRequestData.getMdMargin();
-		this.mdVatrate = goodsInsertRequestData.getMdVatrate();
-		this.mdOfflinePrice = goodsInsertRequestData.getMdOfflinePrice();
-		this.mdOnlinePrice = goodsInsertRequestData.getMdOnlinePrice();
-		this.mdGoodsVatrate = goodsInsertRequestData.getMdGoodsVatrate();
+		this.mdMargin = goodsInsertRequestData.getMdMargin().trim().equals("") || goodsInsertRequestData.getMdMargin() == null? null : Float.parseFloat(goodsInsertRequestData.getMdMargin());
+		this.mdVatrate = goodsInsertRequestData.getMdVatrate().trim().equals("") || goodsInsertRequestData.getMdVatrate() == null? null : Float.parseFloat(goodsInsertRequestData.getMdVatrate());
+		this.mdOfflinePrice = goodsInsertRequestData.getMdOfflinePrice().trim().equals("") || goodsInsertRequestData.getMdOfflinePrice() == null? null : Float.parseFloat(goodsInsertRequestData.getMdOfflinePrice());
+		this.mdOnlinePrice = goodsInsertRequestData.getMdOnlinePrice().trim().equals("") || goodsInsertRequestData.getMdOnlinePrice() == null? null : Float.parseFloat(goodsInsertRequestData.getMdOnlinePrice());
+		this.mdGoodsVatrate = goodsInsertRequestData.getMdGoodsVatrate().trim().equals("") || goodsInsertRequestData.getMdGoodsVatrate() == null? null : Float.parseFloat(goodsInsertRequestData.getMdGoodsVatrate());
 		this.buyWhere = goodsInsertRequestData.getBuyWhere();
 		this.buyTax = goodsInsertRequestData.getBuyTax();
-		this.buySupplyDiscount = goodsInsertRequestData.getBuySupplyDiscount();
-		this.buyRrpIncrement = goodsInsertRequestData.getBuyRrpIncrement();
-		this.buyExchangeRate = goodsInsertRequestData.getBuyExchangeRate();
+		this.buySupplyDiscount = goodsInsertRequestData.getBuySupplyDiscount().trim().equals("") || goodsInsertRequestData.getBuySupplyDiscount() == null? null : Float.parseFloat(goodsInsertRequestData.getBuySupplyDiscount());
+		this.buyRrpIncrement = goodsInsertRequestData.getBuyRrpIncrement().trim().equals("") || goodsInsertRequestData.getBuyRrpIncrement() == null? null : Float.parseFloat(goodsInsertRequestData.getBuyRrpIncrement());
+		this.buyExchangeRate = goodsInsertRequestData.getBuyExchangeRate().trim().equals("") || goodsInsertRequestData.getBuyExchangeRate() == null? null : Float.parseFloat(goodsInsertRequestData.getBuyExchangeRate());
 //		this.sizeType = goodsInsertRequestData.getSizeType();
-		this.mdDiscountRate = goodsInsertRequestData.getMdDiscountRate();
+		this.mdDiscountRate = goodsInsertRequestData.getMdDiscountRate().trim().equals("") || goodsInsertRequestData.getMdDiscountRate() == null? null : Float.parseFloat(goodsInsertRequestData.getMdDiscountRate());
 		this.optionGbName = goodsInsertRequestData.getOptionGbName();
 		this.vendorId = goodsInsertRequestData.getVendorId();
 
 		this.optionUseYn = goodsInsertRequestData.getOptionUseYn();
-		
 	}
 
 	@Id
