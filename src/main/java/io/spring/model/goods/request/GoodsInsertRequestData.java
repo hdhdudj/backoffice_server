@@ -1,8 +1,13 @@
 package io.spring.model.goods.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import io.spring.model.goods.entity.Ititmm;
@@ -11,8 +16,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -20,6 +27,7 @@ import java.util.List;
 @Getter
 @Setter
 public class GoodsInsertRequestData {
+//	public GoodsInsertRequestData(){}
 	private String code;
 	private String message;
 	// itasrt, itvari, itasrd 공통
@@ -51,11 +59,13 @@ public class GoodsInsertRequestData {
 	private String localDeliFee;
 	private String localSale; // itasrn에도 들어감
 	private String assortColor;
-	@JsonDeserialize(using = LocalDateDeserializer.class)
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+//	@JsonSerialize(using = LocalDateTimeSerializer.class)
+	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ", timezone = "Asia/Seoul")
 	private LocalDateTime sellStaDt;
-	@JsonDeserialize(using = LocalDateDeserializer.class)
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+//	@JsonSerialize(using = LocalDateTimeSerializer.class)
+	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ", timezone = "Asia/Seoul")
 	private LocalDateTime sellEndDt;
 	private String mdRrp;
 	private String mdTax;
@@ -88,13 +98,14 @@ public class GoodsInsertRequestData {
 	}
 
 	// ititmm
-	@SerializedName("items")
-	@Expose
+//	@SerializedName("items")
+//	@Expose
 	private List<Items> items;
 
 	// itvari
-	@SerializedName("attributes")
-	@Expose
+//	@SerializedName("attributes")
+//	@Expose
+	@JsonProperty("attributes")
 	private List<Attributes> attributes;
 
 	// ititmm
@@ -116,6 +127,7 @@ public class GoodsInsertRequestData {
 	@Getter
 	@Setter
 	public static class Attributes {
+		public Attributes(){}
 		public Attributes(Itvari itvari){
 			this.seq = itvari.getSeq();
 			this.value = itvari.getOptionNm();

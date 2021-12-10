@@ -9,12 +9,14 @@ import io.spring.infrastructure.util.PropertyUtil;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.entity.Itaimg;
 import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.goods.entity.Itvari;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.context.annotation.PropertySource;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.LinkedList;
@@ -155,13 +157,13 @@ public class GoodsSelectDetailResponseData {
     }
 
     // ititmm
-    @SerializedName("items")
-    @Expose
+//    @SerializedName("items")
+//    @Expose
     private List<GoodsSelectDetailResponseData.Items> items;
 
     // itvari
-    @SerializedName("attributes")
-    @Expose
+//    @SerializedName("attributes")
+//    @Expose
     private List<GoodsSelectDetailResponseData.Attributes> attributes;
 
     // ititmm
@@ -230,7 +232,13 @@ public class GoodsSelectDetailResponseData {
 
     @Getter
     @Setter
-    public static class Attributes {
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class Attributes{
+        public Attributes(Itvari itvari){
+            this.seq = itvari.getSeq();
+            this.value = itvari.getOptionNm();
+            this.variationGb = itvari.getVariationGb();
+        }
         private String seq;
         private String value;
         private String variationGb;

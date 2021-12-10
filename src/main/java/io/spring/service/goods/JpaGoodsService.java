@@ -172,8 +172,8 @@ public class JpaGoodsService {
         for(Ititmm ititmm : ititmmList){
             GoodsInsertResponseData.Items items = new GoodsInsertResponseData.Items(ititmm);
             items.setVariationValue1(itvariList.stream().filter(x-> ititmm.getVariationSeq1().equals(x.getSeq())).collect(Collectors.toList()).get(0).getOptionNm());
-            items.setVariationValue2(itvariList.stream().filter(x-> ititmm.getVariationSeq2().equals(x.getSeq())).collect(Collectors.toList()).get(0).getOptionNm());
-            items.setVariationValue3(itvariList.stream().filter(x-> ititmm.getVariationSeq3().equals(x.getSeq())).collect(Collectors.toList()).get(0).getOptionNm());
+            items.setVariationValue2(ititmm.getVariationSeq2() == null ? "" : itvariList.stream().filter(x-> ititmm.getVariationSeq2().equals(x.getSeq())).collect(Collectors.toList()).get(0).getOptionNm());
+            items.setVariationValue3(ititmm.getVariationSeq3() == null ? "" : itvariList.stream().filter(x-> ititmm.getVariationSeq3().equals(x.getSeq())).collect(Collectors.toList()).get(0).getOptionNm());
             itemsList.add(items);
         }
         return itemsList;
@@ -319,25 +319,35 @@ public class JpaGoodsService {
     private List<Itasrd> saveItasrd(GoodsInsertRequestData goodsInsertRequestData) {
         List<GoodsInsertRequestData.Description> descriptionList = goodsInsertRequestData.getDescription();
         List<Itasrd> itasrdList = new ArrayList<>();
+        List<Itasrd> itasrdList1 = jpaItasrdRepository.findByAssortId(goodsInsertRequestData.getAssortId());//new Itasrd(goodsInsertRequestData);
         for (int i = 0; i < descriptionList.size() ; i++) {
-            Itasrd itasrd = new Itasrd(goodsInsertRequestData);
+            GoodsInsertRequestData.Description description = descriptionList.get(i);
+            List<Itasrd> itasrdList2 = itasrdList1.stream().filter(x->x.getOrdDetCd().equals(description.getOrdDetCd())).collect(Collectors.toList());
+            Itasrd itasrd = itasrdList2.size() > 0? itasrdList2.get(0) : null;
             String seq = descriptionList.get(i).getSeq();
-            if(seq == null || seq.trim().equals("")){ // insert
-                seq = jpaItasrdRepository.findMaxSeqByAssortId(goodsInsertRequestData.getAssortId());
-                if (seq == null || seq.trim().equals("")) { // insert -> 빈 테이블
-                    seq = StringFactory.getFourStartCd();//fourStartCd;
+//            if(seq == null || seq.trim().equals("")){ // insert
+            if(itasrd == null){ // insert
+                itasrd = new Itasrd(goodsInsertRequestData, description);
+//                if (seq == null || seq.trim().equals("")) { // insert -> 빈 테이블
+//                    seq = StringFactory.getFourStartCd();//fourStartCd;
+//                }
+//                else{ // insert -> 찬 테이블
+//                    seq = Utilities.plusOne(seq, 4);
+//                }
+                if(description.getOrdDetCd().equals(StringFactory.getGbOne())){
+                    seq = StringFactory.getFourStartCd(); // 0001
                 }
-                else{ // insert -> 찬 테이블
-                    seq = Utilities.plusOne(seq, 4);
+                else if(description.getOrdDetCd().equals(StringFactory.getGbTwo())){
+                    seq = StringFactory.getFourSecondCd(); // 0002
                 }
                 itasrd.setSeq(seq);
             }
             else{ // update
-                itasrd = jpaItasrdRepository.findByAssortIdAndSeq(goodsInsertRequestData.getAssortId(), seq);
+//                itasrd = jpaItasrdRepository.findByAssortIdAndSeq(goodsInsertRequestData.getAssortId(), seq);
+                itasrd.setOrdDetCd(descriptionList.get(i).getOrdDetCd());
+                itasrd.setMemo(descriptionList.get(i).getMemo());
+                itasrd.setTextHtmlGb(descriptionList.get(i).getTextHtmlGb());
             }
-            itasrd.setOrdDetCd(descriptionList.get(i).getOrdDetCd());
-            itasrd.setMemo(descriptionList.get(i).getMemo());
-            itasrd.setTextHtmlGb(descriptionList.get(i).getTextHtmlGb());
 //            jpaItasrdRepository.save(itasrd);
             em.persist(itasrd);
             itasrdList.add(itasrd);
@@ -709,10 +719,7 @@ public class JpaGoodsService {
             return attributesList;
         }
         for(Itvari itvari : itvariList){
-            GoodsSelectDetailResponseData.Attributes attr = new GoodsSelectDetailResponseData.Attributes();
-            attr.setSeq(itvari.getSeq());
-            attr.setValue(itvari.getOptionNm());
-            attr.setVariationGb(itvari.getOptionGb());
+            GoodsSelectDetailResponseData.Attributes attr = new GoodsSelectDetailResponseData.Attributes(itvari);
             attributesList.add(attr);
         }
         return attributesList;
