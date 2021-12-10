@@ -56,8 +56,8 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 		this.localSale = goodsInsertRequestData.getLocalSale().trim().equals("") || goodsInsertRequestData.getLocalSale() == null? null : Float.parseFloat(goodsInsertRequestData.getLocalSale());
 	//	this.localDeliFee = goodsInsertRequestData.getLocalDeliFee();
 		this.assortColor = goodsInsertRequestData.getAssortColor();
-		this.sellStaDt = goodsInsertRequestData.getSellStaDt();
-		this.sellEndDt = goodsInsertRequestData.getSellEndDt();
+		this.sellStaDt = goodsInsertRequestData.getSellStaDt();//.toLocalDateTime();
+		this.sellEndDt = goodsInsertRequestData.getSellEndDt();//.toLocalDateTime();
 		this.taxGb = goodsInsertRequestData.getTaxGb();
 		this.mdRrp = goodsInsertRequestData.getMdRrp().trim().equals("") || goodsInsertRequestData.getMdRrp() == null? null : Float.parseFloat(goodsInsertRequestData.getMdRrp());
 		this.mdTax = goodsInsertRequestData.getMdTax();

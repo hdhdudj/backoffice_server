@@ -54,7 +54,7 @@ public class GoodsInsertResponseData {
             this.variationSeq3 = ititmm.getVariationSeq3();
             this.itemId = ititmm.getItemId();
             // value는 바깥에서 set
-            this.addPrice = Float.toString(ititmm.getAddPrice());
+            this.addPrice = Float.toString(ititmm.getAddPrice() == null? null : ititmm.getAddPrice());
             this.shortYn = ititmm.getShortYn();
         }
         private String itemId;

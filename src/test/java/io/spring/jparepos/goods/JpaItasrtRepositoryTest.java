@@ -4,6 +4,7 @@ import io.spring.enums.DeliveryMethod;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
@@ -25,6 +26,14 @@ class JpaItasrtRepositoryTest {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.KOREA);
         String strDate = localDateTime.format(formatter).toString();
         System.out.println(strDate.replace('T', ' '));
+    }
+
+    @Test
+    public void dateTest2(){
+        String createdAt = "2018-03-29T16:44:46.000Z";
+        ZonedDateTime d = ZonedDateTime.parse(createdAt,
+                DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSXXX"));
+        System.out.println(d);
     }
 
     /**
