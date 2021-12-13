@@ -367,6 +367,7 @@ public class JpaGoodsService {
         }
         List<GoodsInsertRequestData.Attributes> attributes = goodsInsertRequestData.getAttributes();
         List<Itvari> itvariList = new ArrayList<>();
+        List<Itvari> existItvariList = jpaItvariRepository.findByAssortId(goodsInsertRequestData.getAssortId());
 
         for(GoodsInsertRequestData.Attributes attribute : attributes){
             String seq = attribute.getSeq();
@@ -394,6 +395,22 @@ public class JpaGoodsService {
         }
         return itvariList;
     }
+
+    /**
+     * seq의 최댓값을 반환하는 함수
+     */
+//    private <T> long calcMaxAvailableQty(List<T> list) {
+//        long maxShipIndicateQty = -1;
+//        for(T t : list){
+//            long shipIndicateQty = t.getShipIndicateQty() == null ? 0l : t.getShipIndicateQty();
+//            long qty = t.getQty() == null ? 0l : t.getQty();
+//            long availableQty = qty - shipIndicateQty;
+//            if(availableQty > maxShipIndicateQty){
+//                maxShipIndicateQty = availableQty;
+//            }
+//        }
+//        return maxShipIndicateQty;
+//    }
 
     /**
      * 21-06-11 Pecan
