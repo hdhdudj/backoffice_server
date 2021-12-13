@@ -11,8 +11,6 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import io.spring.model.deposit.request.DepositSelectDetailRequestData;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,12 +34,14 @@ import io.spring.model.deposit.entity.Lsdpsm;
 import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.deposit.entity.Lsdpss;
 import io.spring.model.deposit.request.DepositInsertRequestData;
+import io.spring.model.deposit.request.DepositSelectDetailRequestData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.deposit.response.DepositSelectDetailResponseData;
 import io.spring.model.deposit.response.DepositSelectListResponseData;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
+import io.spring.model.goods.idclass.ItitmcId;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.entity.Lspchd;
@@ -619,15 +619,39 @@ public class JpaDepositService {
     }
 
     private Ititmc saveItitmc(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData, LocalDateTime depositDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit) {
-        Ititmc ititmc = new Ititmc(storageId, depositDt, deposit);
 
-		ititmc.setVendorId(depositListWithPurchaseInfoData.getVendorId());
+		ItitmcId ititmcId = new ItitmcId(storageId, depositDt, deposit);
 
-		ititmc.setShipIndicateQty(0L);
-//		ititmc.setShipIndicateQty(0);
-        Itasrt itasrt = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());
-        ititmc.setOwnerId(itasrt.getOwnerId());
-        ititmc.setQty(deposit.getDepositQty());
+		System.out.println(ititmcId);
+
+		Ititmc ititmc = jpaItitmcRepository.findById(ititmcId).orElseGet(() -> null);
+
+
+		if (ititmc == null) {
+			ititmc = new Ititmc(storageId, depositDt, deposit);
+			ititmc.setVendorId(depositListWithPurchaseInfoData.getVendorId());
+
+			ititmc.setShipIndicateQty(0L);
+//			ititmc.setShipIndicateQty(0);
+			Itasrt itasrt = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());
+			ititmc.setOwnerId(itasrt.getOwnerId());
+			ititmc.setQty(deposit.getDepositQty());
+		} else {
+			ititmc.setQty(ititmc.getQty() + deposit.getDepositQty());
+			ititmc.setUpdId(depositListWithPurchaseInfoData.getRegId());
+
+			// ititmc.setUpdDt(new Date());
+
+		}
+
+		/*
+		 * ititmc.setVendorId(depositListWithPurchaseInfoData.getVendorId());
+		 * 
+		 * ititmc.setShipIndicateQty(0L); // ititmc.setShipIndicateQty(0); Itasrt itasrt
+		 * = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());
+		 * ititmc.setOwnerId(itasrt.getOwnerId());
+		 * ititmc.setQty(deposit.getDepositQty());
+		 */
         jpaItitmcRepository.save(ititmc);
         return ititmc;
     }
