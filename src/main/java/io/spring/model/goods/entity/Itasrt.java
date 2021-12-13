@@ -267,7 +267,7 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 	@JoinColumn(name = "brandId", referencedColumnName = "brandId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
-	@LazyToOne(value = LazyToOneOption.PROXY)
+	@LazyToOne(value = LazyToOneOption.NO_PROXY)
 //	@NotFound(action = NotFoundAction.IGNORE)
 	private IfBrand ifBrand;
 	public IfBrand getIfBrand() {
