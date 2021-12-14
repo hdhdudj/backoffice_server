@@ -92,6 +92,7 @@ public class OrderDetailResponseData {
 			this.statusCd = (String) map.get("statusCd");
 			this.assortId = (String) map.get("assortId");
 			this.itemId = (String) map.get("itemId");
+			this.goodsKey = Utilities.addDashInMiddle(this.assortId, this.itemId);
 			this.goodsNm = (String) map.get("goodsNm");
 			this.optionInfo = (String) map.get("optionInfo");
 			this.optionNm1 = (String) map.get("optionNm1");
@@ -116,6 +117,7 @@ public class OrderDetailResponseData {
 		private String statusCd; // 주문상태
 		private String assortId; // 품목코드
 		private String itemId; // 상품코드
+		private String goodsKey; // 품목코드-상품코드
 		private String goodsNm; // 상품명
 		private String optionInfo; // 제휴옵션정보
 		private String optionNm1; // 옵션1
