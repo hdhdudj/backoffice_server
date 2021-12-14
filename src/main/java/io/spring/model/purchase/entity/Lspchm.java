@@ -95,6 +95,8 @@ public class Lspchm extends CommonProps {
         this.carrier = purchaseInsertRequestData.getCarrier();
 
 		this.dealtypeCd = purchaseInsertRequestData.getDealtypeCd();
+        this.piNo = purchaseInsertRequestData.getPiNo();
+        this.memo = purchaseInsertRequestData.getMemo();
 
 		this.setRegId(purchaseInsertRequestData.getUserId());
         this.setUpdId(purchaseInsertRequestData.getUserId());
