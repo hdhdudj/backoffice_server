@@ -1,9 +1,11 @@
 package io.spring.model.order.response;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
+import io.spring.infrastructure.util.Utilities;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,8 +25,8 @@ public class OrderDetailResponseData {
 
 		this.channelGb = (String) map.get("channelGb");
 		this.orderId = (String) map.get("orderId");
-
-		this.orderDate = map.get("orderDate").toString().substring(0, 19);
+		LocalDateTime dateTime = (LocalDateTime)map.get("orderDate");
+		this.orderDate = map.get("orderDate") == null? null : Utilities.removeTAndTransToStr(dateTime).substring(0, 19); // 주문일자
 		this.channelOrderNo = (String) map.get("channelOrderNo");
 		this.custId = (int) map.get("custId");
 		this.custNm = (String) map.get("custNm");
