@@ -82,7 +82,7 @@ public class PurchaseSelectDetailResponseData {
             this.buySupplyDiscount = itasrt.getBuySupplyDiscount();
             this.deliMethod = itasrt.getDeliMth();
 
-            this.modelNo = ititmm.getModelNo();
+            this.modelNo = itasrt.getAssortModel() + (ititmm.getModelNo() == null || ititmm.getModelNo().trim().equals("")? "" : " "+ititmm.getModelNo());
             this.origin = itasrt.getOrigin();
             this.custCategory = itasrt.getCustCategory();
             this.material = ititmm.getMaterial();
