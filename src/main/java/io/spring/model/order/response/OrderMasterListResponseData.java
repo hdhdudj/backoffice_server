@@ -24,8 +24,6 @@ public class OrderMasterListResponseData {
 
 
 	public OrderMasterListResponseData(HashMap<String, Object> m) {
-
-
 		this.channelGb = (String) m.get("channelGb"); // 채널번호
 		LocalDateTime dateTime = (LocalDateTime)m.get("orderDate");
 		this.orderDate = m.get("orderDate") == null? null : Utilities.removeTAndTransToStr(dateTime).substring(0, 19); // 주문일자
@@ -106,6 +104,7 @@ public class OrderMasterListResponseData {
 	private String deliMethod;
 	private String deliveryInfo;
 	private String scmNo;
+	private String scmNm;
 	private String deliNm;
 	private String deliHp;
 	private String deliTel;
