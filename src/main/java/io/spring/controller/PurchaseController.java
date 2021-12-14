@@ -42,6 +42,7 @@ public class PurchaseController {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 
 		List<HashMap<String, Object>> responseData = myBatisPurchaseService.getOrderListByPurchaseVendor(param);
+
 		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
 		if (responseData == null) {
 			return null;
