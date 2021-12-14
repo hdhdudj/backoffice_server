@@ -1,11 +1,13 @@
 package io.spring.jparepos.goods;
 
 import io.spring.enums.DeliveryMethod;
+import io.spring.infrastructure.util.Utilities;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Locale;
 
 class JpaItasrtRepositoryTest {
@@ -24,16 +26,19 @@ class JpaItasrtRepositoryTest {
     public void dateTest(){
         LocalDateTime localDateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.KOREA);
-        String strDate = localDateTime.format(formatter).toString();
+        String strDate = localDateTime.format(formatter);
+        System.out.println(strDate);
         System.out.println(strDate.replace('T', ' '));
     }
 
     @Test
     public void dateTest2(){
-        String createdAt = "2018-03-29T16:44:46.000Z";
-        ZonedDateTime d = ZonedDateTime.parse(createdAt,
-                DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSXXX"));
-        System.out.println(d);
+        LocalDateTime ldt = LocalDateTime.of(2021, 12, 01, 10, 24, 00);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.KOREA);
+        String strDate = ldt.format(formatter);
+        String strDate2 = LocalDateTime.parse("2021-12-01 10:24:00", formatter).toString();
+        System.out.println(strDate);
+        System.out.println(strDate2);
     }
 
     /**

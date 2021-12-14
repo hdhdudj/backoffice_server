@@ -158,20 +158,16 @@ from (select aa.channel_gb channel_gb,
 		,tod.deli_method deliMethod
 		,tod.delivery_info deliveryInfo
 		,tod.scm_no scmNo
-		,tma.deli_nm deliNm
-		,tma.deli_hp deliHp
-		,tma.deli_tel deliTel
-		,tma.deli_addr1 deliAddr
 		,tom.total_goods_price totalGoodsPrice
 		,tom.total_delivery_charge  totalDeliveryCharge
 		,tom.total_goods_price +  tom.total_delivery_charge totalPrice
 		,tom.order_amt orderAmt
 		,tom.pay_gb payGb
 		,tom.pay_dt payDt
-		,tom.channel_order_no  channelOrderNo
 		,tma.deli_nm deliNm
 		,tma.deli_hp deliHp
 		,tma.deli_tel deliTel
+		,tma.deli_addr1 deliAddr
 		from tb_order_detail tod
 		inner join tb_order_master as tom
 		    on tom.order_id = tod.order_id

@@ -1,9 +1,13 @@
 package io.spring.model.order.response;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
 import io.spring.infrastructure.util.Utilities;
+import jdk.vm.ci.meta.Local;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +27,8 @@ public class OrderMasterListResponseData {
 
 
 		this.channelGb = (String) m.get("channelGb"); // 채널번호
-		this.orderDate = m.get("orderDate").toString().substring(0, 19); // 주문일자
+		LocalDateTime dateTime = (LocalDateTime)m.get("orderDate");
+		this.orderDate = m.get("orderDate") == null? null : Utilities.removeTAndTransToStr(dateTime).substring(0, 19); // 주문일자
 		this.orderId = (String) m.get("orderId"); // 주문번호
 		this.orderSeq = (String) m.get("orderSeq"); // 주문순번
 		this.orderKey = Utilities.addDashInMiddle(this.orderId, this.orderSeq);

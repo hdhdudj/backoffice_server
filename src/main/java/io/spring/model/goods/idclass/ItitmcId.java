@@ -1,13 +1,33 @@
 package io.spring.model.goods.idclass;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ItitmcId implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
+
+	public ItitmcId(String storageId, LocalDateTime depositDt, DepositListWithPurchaseInfoData.Deposit deposit) {
+		this.storageId = storageId;
+		this.assortId = deposit.getAssortId();
+		this.itemId = deposit.getItemId();
+		this.itemGrade = "11";
+		this.effStaDt = depositDt;
+		this.effEndDt = depositDt;
+	}
 
     private String storageId;
     private String assortId;
