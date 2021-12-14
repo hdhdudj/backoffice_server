@@ -72,5 +72,4 @@ public class MyBatisOrderService {
 		return orderDetailListResponse;
 
 	}
-
 }

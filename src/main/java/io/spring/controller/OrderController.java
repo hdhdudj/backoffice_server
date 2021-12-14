@@ -264,9 +264,17 @@ public class OrderController {
 	 */
 	@GetMapping(path = "/goods/items")
 	public ResponseEntity getOrderDetailList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
-			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
-			@RequestParam @Nullable String orderId, @RequestParam @Nullable String statusCd,
-			@RequestParam @Nullable String channelOrderNo) {
+	@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+	@RequestParam @Nullable String statusCd,
+	@RequestParam @Nullable String orderId,
+	@RequestParam @Nullable String channelOrderNo,
+	@RequestParam @Nullable String custNm,
+	@RequestParam @Nullable String custHp,
+	@RequestParam @Nullable String custTel,
+	@RequestParam @Nullable String deliNm,
+	@RequestParam @Nullable String deliHp,
+	@RequestParam @Nullable String deliTel
+									   ) {
 
 		System.out.println("getOrderDetailList");
 
@@ -283,22 +291,68 @@ public class OrderController {
 			LocalDateTime end = endDt.atTime(23, 59, 59);
 			map.put("endDt", end);
 		}
-
+		if (statusCd != null && !statusCd.equals("")) {
+			map.put("orderStatus", statusCd);
+		}
 		if (orderId != null && !orderId.equals("")) {
 			map.put("orderId", orderId);
 		}
-		if (statusCd != null && !statusCd.equals("")) {
-			map.put("statusCd", statusCd);
+		if (custNm != null && !custNm.equals("")) {
+			map.put("custNm", custNm);
 		}
-
+		if (custHp != null && !custHp.equals("")) {
+			map.put("custHp", custHp);
+		}
+		if (custTel != null && !custTel.equals("")) {
+			map.put("custTel", custTel);
+		}
+		if (deliNm != null && !deliNm.equals("")) {
+			map.put("deliNm", deliNm);
+		}
+		if (deliHp != null && !deliHp.equals("")) {
+			map.put("deliHp", deliHp);
+		}
+		if (deliTel != null && !deliTel.equals("")) {
+			map.put("deliTel", deliTel);
+		}
 		if (channelOrderNo != null && !channelOrderNo.equals("")) {
 			map.put("channelOrderNo", channelOrderNo);
 		}
 
-		List<OrderDetailListResponse> r = myBatisOrderService.getOrderDetailList(map);
+		List<OrderMasterListResponseData> r = myBatisOrderService.getOrderMasterList(map);
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
 		return ResponseEntity.ok(res);
+
+//		HashMap<String, Object> map = new HashMap<>();
+//
+//		if (startDt != null) {
+//
+//			LocalDateTime start = startDt.atStartOfDay();
+//
+//			map.put("startDt", start);
+//		}
+//		if (endDt != null) {
+//
+//			LocalDateTime end = endDt.atTime(23, 59, 59);
+//			map.put("endDt", end);
+//		}
+//
+//		if (orderId != null && !orderId.equals("")) {
+//			map.put("orderId", orderId);
+//		}
+//		if (statusCd != null && !statusCd.equals("")) {
+//			map.put("statusCd", statusCd);
+//		}
+//
+//		if (channelOrderNo != null && !channelOrderNo.equals("")) {
+//			map.put("channelOrderNo", channelOrderNo);
+//		}
+//
+//		List<OrderMasterListResponseData> r = myBatisOrderService.getOrderDetailList2(map);
+//
+//		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
+//		return ResponseEntity.ok(res);
 
 	}
 

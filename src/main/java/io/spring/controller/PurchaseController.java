@@ -42,6 +42,7 @@ public class PurchaseController {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 
 		List<HashMap<String, Object>> responseData = myBatisPurchaseService.getOrderListByPurchaseVendor(param);
+
 		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
 		if (responseData == null) {
 			return null;
@@ -123,7 +124,7 @@ public class PurchaseController {
     public ResponseEntity savePurchaseJpa(@RequestBody PurchaseInsertRequestData purchaseInsertRequestData){
         log.debug("insert purchase by jpa");
 
-		String purchaseNo = jpaPurchaseService.createPurchaseSquence(purchaseInsertRequestData);
+		String purchaseNo = jpaPurchaseService.createPurchaseSquence(null, purchaseInsertRequestData);
 
 		// jpaOrderService.updateStatusCd("O2106100714498480", "0001", "B02");
 
@@ -136,10 +137,10 @@ public class PurchaseController {
     }
 
     @PostMapping(path = "/{purchaseNo}/update") // update
-    public ResponseEntity savePurchaseJpa(@PathVariable("purchaseNo") String purchaseNo, @RequestBody PurchaseUpdateRequestData purchaseUpdateRequestData){
+    public ResponseEntity savePurchaseJpa(@PathVariable("purchaseNo") String purchaseNo, @RequestBody PurchaseInsertRequestData purchaseInsertRequestData){
         log.debug("update purchase by jpa");
 
-        String purchaseNo2 = jpaPurchaseService.updatePurchaseSquence(purchaseNo, purchaseUpdateRequestData);
+        String purchaseNo2 = jpaPurchaseService.createPurchaseSquence(purchaseNo, purchaseInsertRequestData);
 
         // jpaOrderService.updateStatusCd("O2106100714498480", "0001", "B02");
 
