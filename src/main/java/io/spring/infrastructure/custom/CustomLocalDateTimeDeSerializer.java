@@ -14,7 +14,7 @@ public class CustomLocalDateTimeDeSerializer extends JsonDeserializer<LocalDateT
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
-    public LocalDateTime deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+    public LocalDateTime deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         return LocalDateTime.parse(jsonParser.getText(), DATE_FORMAT);
     }
 }
