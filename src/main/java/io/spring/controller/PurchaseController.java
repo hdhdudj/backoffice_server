@@ -20,6 +20,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +67,9 @@ public class PurchaseController {
 		List<HashMap<String, Object>> responseData = myBatisPurchaseService.getOrderListByPurchaseVendorItem(param);
         for(HashMap<String, Object> map : responseData){
             Utilities.changeNullToEmpty(map);
+            if(map.get(StringFactory.getStrOrderDate()) != null){
+                map.put(StringFactory.getStrOrderDate(), Utilities.removeTAndTransToStr((LocalDateTime)map.get(StringFactory.getStrOrderDate())));
+            }
         }
 		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
 		if (responseData == null) {

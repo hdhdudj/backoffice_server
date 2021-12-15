@@ -136,6 +136,8 @@ public class StringFactory {
     @Getter
     private final static String strEndDt = "endDt";
     @Getter
+    private final static String strOrderDate = "orderDate";
+    @Getter
     private final static String strPurchaseVendorId = "purchaseVendorId";
     @Getter
     private final static String strAssortId = "assortId";
