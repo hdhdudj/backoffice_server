@@ -184,12 +184,12 @@
 		where 	1=1
 		
 		]]>
-	<if test='assortId != null'>
+	<if test='assortId != null and assortId.trim() != ""'>
 			 <![CDATA[		
 		and i.assort_id = #{assortId}
 			 ]]>
 			</if>
-	<if test='assortNm != null'>
+	<if test='assortNm != null and assortNm.trim() != ""'>
 			 <![CDATA[		
 		and i.assort_nm like CONCAT( '%',  #{assortNm}, '%') 
 			 ]]>
@@ -260,22 +260,22 @@
 			where 1=1
 			and i.assort_id = im.assort_id 
 			 ]]>
-			<if test='assortId != null'>
+			<if test='assortId != null and assortId.trim() != ""'>
 			 <![CDATA[		
 					and i.assort_id =#{assortId} 
 			 ]]>
 			</if>		
-			<if test='assortNm != null'>
+			<if test='assortNm != null and assortNm.trim() != ""'>
 			 <![CDATA[		
 				and i.assort_nm like CONCAT( '%',  #{assortNm}, '%') 
 			 ]]>
 			</if>		
-			<if test='vendorId != null'>
+			<if test='vendorId != null and vendorId.trim() != ""'>
 			 <![CDATA[		
 					and i.vendor_id =#{vendorId} 
 			 ]]>
 			</if>		
-			<if test='brandId != null'>
+			<if test='brandId != null and brandId.trim() != ""'>
 			 <![CDATA[		
 					and ib.brand_id =#{brandId}
 			 ]]>
@@ -284,7 +284,7 @@
 			) aaa
 			where 1=1
 			 ]]>
-			<if test='category != null'>
+			<if test='category != null and category.trim() != ""'>
 				 <![CDATA[		
 			and aaa.fullCatePathId like CONCAT( #{category}, '%')
 			]]>
@@ -338,12 +338,12 @@
 		where aa.storage_id = bb.storage_id 
 		 and aa.assort_id = cc.assort_id 
 		]]>
-			<if test='assortId != null'>
+			<if test='assortId != null and assortId.trim() != ""'>
 			 <![CDATA[		
 					and cc.assort_id =#{assortId} 
 			 ]]>
 			</if>			
-			<if test='storageId != null'>
+			<if test='storageId != null and storageId.trim() != ""'>
 			 <![CDATA[		
 					and bb.storage_id =#{storageId} 
 			 ]]>
