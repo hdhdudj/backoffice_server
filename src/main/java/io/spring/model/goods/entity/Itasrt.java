@@ -3,6 +3,7 @@ package io.spring.model.goods.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.vendor.entity.Cmvdmr;
@@ -56,8 +57,8 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 		this.localSale = goodsInsertRequestData.getLocalSale().trim().equals("") || goodsInsertRequestData.getLocalSale() == null? null : Float.parseFloat(goodsInsertRequestData.getLocalSale());
 	//	this.localDeliFee = goodsInsertRequestData.getLocalDeliFee();
 		this.assortColor = goodsInsertRequestData.getAssortColor();
-		this.sellStaDt = goodsInsertRequestData.getSellStaDt();//.toLocalDateTime();
-		this.sellEndDt = goodsInsertRequestData.getSellEndDt();//.toLocalDateTime();
+		this.sellStaDt = Utilities.strToLocalDateTime2(goodsInsertRequestData.getSellStaDt());//.toLocalDateTime();
+		this.sellEndDt = Utilities.strToLocalDateTime2(goodsInsertRequestData.getSellEndDt());//.toLocalDateTime();
 		this.taxGb = goodsInsertRequestData.getTaxGb();
 		this.mdRrp = goodsInsertRequestData.getMdRrp().trim().equals("") || goodsInsertRequestData.getMdRrp() == null? null : Float.parseFloat(goodsInsertRequestData.getMdRrp());
 		this.mdTax = goodsInsertRequestData.getMdTax();

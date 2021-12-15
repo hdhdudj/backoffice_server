@@ -120,6 +120,16 @@ public class Utilities {
     }
 
     /**
+     * String 날짜(yyyy-MM-dd HH:mm:ss 꼴)를 받아서 LocalDateTime으로 변환해 반환하는 함수
+     * @param strDt
+     * @return LocalDateTime
+     */
+    public static LocalDateTime strToLocalDateTime2(String strDt){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.KOREA);
+        return LocalDateTime.parse(strDt, formatter);
+    }
+
+    /**
      * 두 String 사이에 -를 넣어서 붙여서 반환하는 함수 (a,b) -> "a-b"
      */
     public static String addDashInMiddle(String a, String b){
