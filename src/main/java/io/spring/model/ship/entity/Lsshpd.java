@@ -4,18 +4,25 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
-import io.spring.model.deposit.entity.Lsdpsd;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
+import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.move.request.GoodsMoveSaveData;
@@ -60,6 +67,7 @@ public class Lsshpd extends CommonProps implements Serializable {
         this.oStorageId = tbOrderDetail.getStorageId();
         this.shipGb = StringFactory.getGbThree(); // 01:일반출고 03:주문이동지시 04:상품이동지시
     }
+
     // 상품이동지시 저장시 작동하는 생성자
     public Lsshpd(String shipId, String shipSeq, Ititmc ititmc, GoodsMoveSaveData.Goods goods, String userId) {
         this.shipId = shipId;
@@ -117,6 +125,7 @@ public class Lsshpd extends CommonProps implements Serializable {
     private Float localTax;
     private Float disPrice;
     private String oStorageId;
+	private String rackNo;
 
     // 연관관계 : lsshpm
     @OneToOne(fetch = FetchType.LAZY, targetEntity = Lsshpm.class)

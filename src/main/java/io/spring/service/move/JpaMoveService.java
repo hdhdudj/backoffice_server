@@ -15,10 +15,10 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
-import io.spring.enums.TrdstOrderStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import io.spring.enums.TrdstOrderStatus;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
@@ -59,6 +59,7 @@ import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import io.spring.model.ship.entity.Lsshps;
 import io.spring.service.purchase.JpaPurchaseService;
+import io.spring.service.stock.JpaStockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -84,6 +85,8 @@ public class JpaMoveService {
     private final JpaLsshpsRepository jpaLsshpsRepository;
 
 	private final JpaLsdpsmRepository jpaLsdpsmRepository;
+
+	private final JpaStockService jpaStockService;
 
     private final JpaPurchaseService jpaPurchaseService;
 	private final JpaTbOrderMasterRepository tbOrderMasterRepository;
@@ -351,24 +354,44 @@ public class JpaMoveService {
 
 		Ititmm ititmm = jpaItitmmRepository.findByAssortIdAndItemId(lsdpsd.getAssortId(), lsdpsd.getItemId());
 
-		List<Ititmc> ititmcList = ititmm.getItitmc();
+		// List<Ititmc> ititmcList = ititmm.getItitmc();
 
 		Lsdpsm lsdpsm = jpaLsdpsmRepository.findById(lsdpsd.getDepositNo()).orElse(null);
 		
+		HashMap<String, Object> p = new HashMap<String, Object>();
+
+		p.put("assortId", lsdpsd.getAssortId());
+		p.put("itemId", lsdpsd.getItemId());
+		p.put("effStaDt", lsdpsm.getDepositDt());
+		p.put("itemGrade", "11");
+		p.put("storageId", lsdpsm.getStoreCd());
+		p.put("rackNo", lsdpsd.getRackNo());
+		p.put("qty", lsdpsd.getDepositQty());
+
+		int r = jpaStockService.minusStockByOrder(p);
+
 		LocalDateTime depositDt = lsdpsm.getDepositDt();
 		String storageId = lsdpsm.getStoreCd();
-        String itemGrade = lsdpsd.getItemGrade();
-        ititmcList = ititmcList.stream().filter(x -> x.getEffEndDt().equals(depositDt)
-                && x.getStorageId().equals(storageId)
-                && x.getItemGrade().equals(itemGrade)).collect(Collectors.toList());
-        Ititmc ititmc = ititmcList.get(0);
-        // ititmc에서 shipIndicateQty 변경해주기
-        if(qty > ititmc.getQty() - ititmc.getShipIndicateQty()){
-            log.debug("이동가능 재고량이 부족합니다.");
-            return null;
-        }
-        ititmc.setShipIndicateQty(ititmc.getShipIndicateQty() + qty);
-        jpaItitmcRepository.save(ititmc);
+		String itemGrade = lsdpsd.getItemGrade();
+
+		Ititmc imc_storage = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(
+				p.get("assortId").toString(), p.get("itemId").toString(), p.get("storageId").toString(),
+				p.get("itemGrade").toString(), (LocalDateTime) p.get("effStaDt")
+
+		);
+
+		// ititmcList = ititmcList.stream().filter(x ->
+		// x.getEffEndDt().equals(depositDt)
+		// && x.getStorageId().equals(storageId)
+		// && x.getItemGrade().equals(itemGrade)).collect(Collectors.toList());
+		// Ititmc ititmc = ititmcList.get(0);
+		// // ititmc에서 shipIndicateQty 변경해주기
+		// if(qty > ititmc.getQty() - ititmc.getShipIndicateQty()){
+		// log.debug("이동가능 재고량이 부족합니다.");
+		// return null;
+		// }
+		// ititmc.setShipIndicateQty(ititmc.getShipIndicateQty() + qty);
+		// jpaItitmcRepository.save(ititmc);
 //        TbOrderMaster tbOrderMaster = lsdpsd.getLspchd().getLsdpsp().get(0).getTbOrderDetail().getTbOrderMaster();
 
 		// 구매수량하나씩 이동처리하지않고 row단위로 처리
@@ -391,7 +414,9 @@ public class JpaMoveService {
             jpaLsshpmRepository.save(lsshpm);
             // lsshpd 저장
             String shipSeq = StringFactory.getFourStartCd(); // 0001 하드코딩 //StringUtils.leftPad(Integer.toString(i + 1), 4,'0');
-            Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc, itasrt);
+			Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, imc_storage, itasrt);
+
+			lsshpd.setRackNo(lsdpsd.getRackNo());
 			lsshpd.setShipIndicateQty(qty);
             jpaLsshpdRepository.save(lsshpd);
             shipIdList.add(shipId);

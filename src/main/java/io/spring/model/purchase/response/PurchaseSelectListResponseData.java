@@ -2,7 +2,6 @@ package io.spring.model.purchase.response;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -10,7 +9,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
-import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
 import io.spring.model.deposit.entity.Lsdpsp;
@@ -164,5 +162,7 @@ public class PurchaseSelectListResponseData {
         private Long depositQty; // 입고수량
         private Float purchaseCost; // 발주금액
 		private String optionInfo;
+
+		private String rackNo = "900001";
     }
 }

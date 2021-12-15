@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.spring.model.deposit.request.DepositSelectDetailRequestData;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -21,6 +20,7 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.model.deposit.request.DepositInsertRequestData;
+import io.spring.model.deposit.request.DepositSelectDetailRequestData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.deposit.response.DepositSelectDetailResponseData;
 import io.spring.model.deposit.response.DepositSelectListResponseData;
@@ -88,6 +88,9 @@ public class DepositController {
 	public ResponseEntity createDepositListJpa(
 			@RequestBody DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) throws Exception {
         log.debug("입고처리 호출");
+
+		System.out.println(depositListWithPurchaseInfoData);
+
         List<String> messageList = new ArrayList<>();
         boolean flag = jpaDepositService.sequenceCreateDeposit(depositListWithPurchaseInfoData, messageList);
         ApiResponseMessage res = null;

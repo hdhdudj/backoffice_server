@@ -229,8 +229,11 @@ public class JpaDepositService {
                 continue;
             }
 
+
             String depositSeq = StringUtils.leftPad(Integer.toString(index), 4, '0');
             Lsdpsd lsdpsd = new Lsdpsd(depositListWithPurchaseInfoData, lsdpsm, depositSeq, deposit, imsiLsdpsp.get(0));
+
+			lsdpsd.setRackNo(deposit.getRackNo()); // 랙추가 2021-12-13
 
             Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(lsdpsd.getInputNo(), lsdpsd.getInputSeq());
 			// lspchd.setDepositNo(lsdpsd.getDepositNo());
@@ -578,7 +581,17 @@ public class JpaDepositService {
 					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
 
+
 			this.saveItitmc(depositListWithPurchaseInfoData, localDateTime, storageId, deposit);
+
+			// rack사용에 데이타가 있다면 데이타 입력
+
+			if (deposit.getRackNo() != null && deposit.getRackNo().trim().length() > 0) {
+				System.out.println(" deposit.getRackNo() => " + deposit.getRackNo());
+				this.saveRactItitmc(depositListWithPurchaseInfoData, localDateTime, deposit.getRackNo(), deposit);
+			}
+
+
         }
         depositListWithPurchaseInfoData.setDeposits(depositList);
         return lsdpspList;
@@ -655,6 +668,45 @@ public class JpaDepositService {
         jpaItitmcRepository.save(ititmc);
         return ititmc;
     }
+
+	private Ititmc saveRactItitmc(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData,
+			LocalDateTime depositDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit) {
+
+		ItitmcId ititmcId = new ItitmcId(storageId, depositDt, deposit);
+
+		System.out.println(ititmcId);
+
+		Ititmc ititmc = jpaItitmcRepository.findById(ititmcId).orElseGet(() -> null);
+
+		if (ititmc == null) {
+			ititmc = new Ititmc(storageId, depositDt, deposit);
+			ititmc.setVendorId(depositListWithPurchaseInfoData.getVendorId());
+
+			ititmc.setShipIndicateQty(0L);
+//			ititmc.setShipIndicateQty(0);
+			Itasrt itasrt = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());
+			ititmc.setOwnerId(itasrt.getOwnerId());
+			ititmc.setQty(deposit.getDepositQty());
+			ititmc.setStockGb("02");
+		} else {
+			ititmc.setQty(ititmc.getQty() + deposit.getDepositQty());
+			ititmc.setUpdId(depositListWithPurchaseInfoData.getRegId());
+
+			// ititmc.setUpdDt(new Date());
+
+		}
+
+		/*
+		 * ititmc.setVendorId(depositListWithPurchaseInfoData.getVendorId());
+		 * 
+		 * ititmc.setShipIndicateQty(0L); // ititmc.setShipIndicateQty(0); Itasrt itasrt
+		 * = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());
+		 * ititmc.setOwnerId(itasrt.getOwnerId());
+		 * ititmc.setQty(deposit.getDepositQty());
+		 */
+		jpaItitmcRepository.save(ititmc);
+		return ititmc;
+	}
 
 	private Ititmt saveItitmt(LocalDateTime purchaseDt, String storageId,
 			DepositListWithPurchaseInfoData.Deposit deposit, String dealTypeCd) throws Exception {
@@ -739,6 +791,7 @@ public class JpaDepositService {
 					if (itasrt2.getAssortGb().equals(StringFactory.getGbOne())) { // 직구
 
 						System.out.println("-----------------------수입------------------------------");
+						System.out.println("----------------------11 saveShipIndicateByDeposit----------------------");
 
 						// 입고창고와 주문의 창고가 같은경우 출고지시
 						List<String> r = jpaShipService.saveShipIndicateByDeposit(lsdpsd);
@@ -757,6 +810,9 @@ public class JpaDepositService {
 
 						if (tbOrderDetail.getStorageId().equals(lspchm.getStoreCd())) {
 							// 입고창고와 주문의 창고가 같은경우 출고지시
+							System.out.println(
+									"----------------------22 saveShipIndicateByDeposit----------------------");
+
 							List<String> r = jpaShipService.saveShipIndicateByDeposit(lsdpsd);
 							if (r.size() > 0) {
 								HashMap<String, Object> p = new HashMap<String, Object>();
@@ -768,8 +824,10 @@ public class JpaDepositService {
 							}
 						} else {
 							// 입고창고와 주문의 창고가 다른경우 이동지시
+							System.out.println("----------------------33 saveOrderMoveByDeposit----------------------");
 
 							List<String> r = jpaMoveService.saveOrderMoveByDeposit(lsdpsd);
+
 							if (r.size() > 0) {
 								HashMap<String, Object> p = new HashMap<String, Object>();
 

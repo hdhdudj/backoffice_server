@@ -71,5 +71,6 @@ public class DepositListWithPurchaseInfoData {
         private Float purchaseCost;
         // 21-12-08 추가됨
         private String defectYn;
+		private String rackNo;
     }
 }

@@ -129,6 +129,8 @@ public class Lsdpsd extends CommonProps implements Serializable {
     private String defectYn;
     private String memo;
 
+	private String rackNo;
+
     // 연관 관계 lsdpsm
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "depositNo", referencedColumnName="depositNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
