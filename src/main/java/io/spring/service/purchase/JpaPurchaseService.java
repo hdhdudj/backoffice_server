@@ -548,6 +548,47 @@ public class JpaPurchaseService {
     }
 
     /**
+     * 발주리스트 가져오기 (변경된 버전. Lspchm 기준으로)
+     */
+    public PurchaseListInDepositModalData getPurchaseMasterList2(LocalDate startDt, LocalDate endDt,
+                                                                 String siteOrderNo, String channelOrderNo, String brandId, String vendorId, String purchaseGb) {
+        PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData(startDt,
+                endDt, siteOrderNo, channelOrderNo, brandId, vendorId, purchaseGb);
+        LocalDateTime start = startDt.atStartOfDay();
+        LocalDateTime end = endDt.atTime(23,59,59);
+        Query query = em.createQuery("select distinct(ld) from Lspchd ld " +
+                        "join fetch ld.lspchm lm " +
+                        "left outer join fetch ld.tbOrderDetail tod " +
+                        "left outer join fetch tod.tbOrderMaster tom " +
+                        "left outer join fetch tom.tbMember tm " +
+                        "left outer join fetch ld.ititmm itm " +
+                        "left outer join fetch itm.itasrt ita " +
+                        "left outer join fetch ita.ifBrand ib " +
+                        "left outer join fetch ita.itvariList iv " +
+                        "where lm.purchaseDt between ?1 and ?2 " +
+//                "and (tod.statusCd in ('B01','C03') or lm.dealtypeCd='02') " +
+                        "and (?3 is null or trim(?3)='' or lm.siteOrderNo=?3) " +
+                        "and (?4 is null or trim(?4)='' or tod.channelOrderNo=?5)" +
+                        "and (?5 is null or trim(?5)='' or ib.brandId=?6) " +
+                        "and (?6 is null or trim(?6)='' or lm.vendorId=?7) " +
+                        "and (?7 is null or trim(?7)='' or lm.purchaseGb=?8) ", Lspchd.class)
+                .setParameter(1, start).setParameter(2, end)
+                .setParameter(3,siteOrderNo).setParameter(4,channelOrderNo)
+                .setParameter(5,brandId).setParameter(6,vendorId).setParameter(7,purchaseGb);
+//        List<String> statusArr = Arrays.asList(StringFactory.getGbOne(), StringFactory.getGbThree()); // 01:발주 03:부분입고 04:완전입고 05:취소  A1:송금완료 A2:거래처선금입금 A3:거래처잔금입금
+        List<Lspchm> lspchmList = query.getResultList();
+        List<PurchaseListInDepositModalData.Purchase> purchaseList = new ArrayList<>();
+        for(Lspchm lspchm : lspchmList){
+            PurchaseListInDepositModalData.Purchase purchase = new PurchaseListInDepositModalData.Purchase(lspchm);
+            purchaseList.add(purchase);
+        }
+        purchaseListInDepositModalData.setPurchases(purchaseList);
+//        PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData();
+//        return purchaseListInDepositModalData;
+        return purchaseListInDepositModalData;
+    }
+
+    /**
      * 발주리스트 화면 기준 리스트 가져오는 함수 (Lspchd 기준의 list를 가져옴)
      */
     public PurchaseSelectListResponseData getPurchaseList(String vendorId, String assortId, String purchaseNo, String channelOrderNo, String siteOrderNo, String custNm, String assortNm,
