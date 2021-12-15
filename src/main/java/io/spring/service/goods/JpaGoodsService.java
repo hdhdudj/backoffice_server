@@ -234,8 +234,8 @@ public class JpaGoodsService {
 		itasrt.setBuyExchangeRate(goodsInsertRequestData.getBuyExchangeRate() == null || goodsInsertRequestData.getBuyExchangeRate().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getBuyExchangeRate()));
 		itasrt.setBuyRrpIncrement(goodsInsertRequestData.getBuyRrpIncrement() == null || goodsInsertRequestData.getBuyRrpIncrement().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getBuyRrpIncrement()));
 
-		itasrt.setSellStaDt(Utilities.strToLocalDateTime2(goodsInsertRequestData.getSellStaDt()));
-		itasrt.setSellEndDt(Utilities.strToLocalDateTime2(goodsInsertRequestData.getSellEndDt()));
+		itasrt.setSellStaDt(goodsInsertRequestData.getSellStaDt());
+		itasrt.setSellEndDt(goodsInsertRequestData.getSellEndDt());
 
 		itasrt.setAsWidth(goodsInsertRequestData.getAsWidth() == null || goodsInsertRequestData.getAsWidth().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getAsWidth()));
 		itasrt.setAsLength(goodsInsertRequestData.getAsLength() == null || goodsInsertRequestData.getAsLength().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getAsLength()));

@@ -3,7 +3,9 @@ package io.spring.model.goods.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import io.spring.infrastructure.custom.CustomLocalDateTimeDeSerializer;
 import io.spring.model.goods.entity.Itvari;
 import lombok.Getter;
 import lombok.Setter;
@@ -48,8 +50,10 @@ public class GoodsInsertRequestData {
 	private String localDeliFee;
 	private String localSale; // itasrn에도 들어감
 	private String assortColor;
-	private String sellStaDt;
-	private String sellEndDt;
+	@JsonDeserialize(using = CustomLocalDateTimeDeSerializer.class)
+	private LocalDateTime sellStaDt;
+	@JsonDeserialize(using = CustomLocalDateTimeDeSerializer.class)
+	private LocalDateTime sellEndDt;
 	private String mdRrp;
 	private String mdTax;
 	private String mdYear;
