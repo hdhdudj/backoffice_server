@@ -1,11 +1,7 @@
 package io.spring.model.move.request;
 
 import java.time.LocalDate;
-<<<<<<< HEAD
 import java.time.LocalDateTime;
-import java.util.Date;
-=======
->>>>>>> 1b47cd5092b13dfe21ea956bbb27cdeacbe7e0a8
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
