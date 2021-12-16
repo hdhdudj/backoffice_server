@@ -65,12 +65,17 @@ public class JpaStockService {
 				p.get("itemGrade").toString(), (LocalDateTime) p.get("effStaDt")
 
 		);
-		// 의 재고를 조회함
-		Ititmc imc_rack = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(
-				p.get("assortId").toString(), p.get("itemId").toString(), p.get("rackNo").toString(),
-				p.get("itemGrade").toString(), (LocalDateTime) p.get("effStaDt")
 
-		);
+		Ititmc imc_rack = null;
+
+		if (p.get("rackNo") != null) {
+			// 의 재고를 조회함
+			imc_rack = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(
+					p.get("assortId").toString(), p.get("itemId").toString(), p.get("rackNo").toString(),
+					p.get("itemGrade").toString(), (LocalDateTime) p.get("effStaDt")
+
+			);
+		}
 		
 		if(imc_storage==null) {
 			throw new IllegalArgumentException("no stockQty check..");
@@ -163,12 +168,18 @@ public class JpaStockService {
 				p.get("itemGrade").toString(), (LocalDateTime) p.get("effStaDt")
 
 		);
-		// 의 재고를 조회함
-		Ititmc imc_rack = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(
-				p.get("assortId").toString(), p.get("itemId").toString(), p.get("rackNo").toString(),
-				p.get("itemGrade").toString(), (LocalDateTime) p.get("effStaDt")
 
-		);
+		Ititmc imc_rack = null;
+
+		if (p.get("rackNo") != null) {
+			// imc_rack의 재고를 조회함
+			imc_rack = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(
+					p.get("assortId").toString(), p.get("itemId").toString(), p.get("rackNo").toString(),
+					p.get("itemGrade").toString(), (LocalDateTime) p.get("effStaDt")
+
+			);
+		}
+
 
 		if (imc_storage == null) {
 			throw new IllegalArgumentException("no ShipStockQty check..");
