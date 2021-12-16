@@ -95,6 +95,7 @@ public class ShipIndicateSaveListResponseData {
 
 			this.optionNm1 = (String) map.get("optionNm1");
 			this.optionNm2 = (String) map.get("optionNm2");
+			this.optionNm3 = (String) map.get("optionNm3");
 
 		}
 
@@ -111,6 +112,7 @@ public class ShipIndicateSaveListResponseData {
         private String assortNm;
         private String optionNm1;
         private String optionNm2;
+        private String optionNm3;
         private Long availableQty;
         private Long qty;
 		private String shipId;

@@ -8,11 +8,13 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
+import org.hibernate.annotations.*;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.List;
 
@@ -26,7 +28,7 @@ public class Ititmm extends CommonProps implements Serializable {
     public Ititmm(String assortId, GoodsInsertRequestData.Items items){
         this.assortId = assortId;
         this.shortYn = items.getShortYn();
-        this.addPrice = items.getAddPrice();
+        this.addPrice = items.getAddPrice() == null || items.getAddPrice().trim().equals("")? null : Float.parseFloat(items.getAddPrice());
     }
 
     public Ititmm(GoodsInsertRequestData goodsInsertRequestData){
@@ -54,10 +56,21 @@ public class Ititmm extends CommonProps implements Serializable {
     private String variationSeq1;
     private String variationGb2;
     private String variationSeq2;
+    // 21-11-25 추가
+    private String variationGb3;
+    private String variationSeq3;
+    // 추가 끝
     private String setYn = StringFactory.getGbTwo(); // 02 하드코딩
     private String orderLmtYn;
     private Long orderLmtCnt;
     private Float addPrice = 0f; // 하드코딩
+
+    // 21-11-22 추가
+    private String delYn = StringFactory.getGbTwo(); // 02 하드코딩
+    // 21-12-02 추가
+    private String modelNo;
+    private String material;
+    private Float purchasePrice;
 
     // itasrt 연관 관계
     @ManyToOne(fetch = FetchType.LAZY)
@@ -81,6 +94,15 @@ public class Ititmm extends CommonProps implements Serializable {
             @JoinColumn(name = "variationSeq2", referencedColumnName="seq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
     })
     private Itvari itvari2;
+
+    // itvari 연관 관계 (일단 단방향) - 재질
+    @NotFound(action = NotFoundAction.IGNORE)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Itvari.class)
+    @JoinColumns({
+            @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+            @JoinColumn(name = "variationSeq3", referencedColumnName="seq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+    })
+    private Itvari itvari3;
 
     // ititmc 연관 관계 (일단 단방향) - 사이즈
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Ititmc.class)

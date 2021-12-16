@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.spring.model.deposit.request.DepositSelectDetailRequestData;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -58,9 +59,9 @@ public class DepositController {
     @GetMapping(path = "/purchase/items")
     public ResponseEntity getChoosePurchaseModalList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
                                                      @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
-			@RequestParam @Nullable String vendorId, @RequestParam @Nullable String storageId) {
+			@RequestParam @Nullable String vendorId, @RequestParam @Nullable String storageId, @RequestParam @Nullable String piNo) {
 		PurchaseListInDepositModalData purchaseListInDepositModalData = jpaPurchaseService
-				.getPurchaseMasterList(startDt, endDt, vendorId, storageId);
+				.getPurchaseMasterList(startDt, endDt, vendorId, storageId, piNo);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),purchaseListInDepositModalData);
         return ResponseEntity.ok(res);
     }
@@ -75,17 +76,17 @@ public class DepositController {
         PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getDepositPlanList(purchaseNo);
 
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectListResponseData);
-        if(res == null){
-            return null;
-        }
         return ResponseEntity.ok(res);
     }
 
     /**
-     * 입고처리 : 화면에서 입고수량 입력 후 저장을 눌렀을 때 타는 api (create)
-     */
+	 * 입고처리 : 화면에서 입고수량 입력 후 저장을 눌렀을 때 타는 api (create)
+	 * 
+	 * @throws Exception
+	 */
     @PostMapping(path="")
-    public ResponseEntity createDepositListJpa(@RequestBody DepositListWithPurchaseInfoData depositListWithPurchaseInfoData){
+	public ResponseEntity createDepositListJpa(
+			@RequestBody DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) throws Exception {
         log.debug("입고처리 호출");
         List<String> messageList = new ArrayList<>();
         boolean flag = jpaDepositService.sequenceCreateDeposit(depositListWithPurchaseInfoData, messageList);
@@ -130,6 +131,17 @@ public class DepositController {
     }
 
     /**
+     *  입고 - 입고내역 : 저장 (메모 쓰고 저장하기)
+     */
+    @PostMapping(path="/items/update/{depositNo}")
+    public ResponseEntity updateDepositDetail(@PathVariable String depositNo, @RequestBody DepositSelectDetailRequestData depositSelectDetailRequestData){
+        depositSelectDetailRequestData.setDepositNo(depositNo);
+        depositSelectDetailRequestData = jpaDepositService.updateDetail(depositSelectDetailRequestData);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositSelectDetailRequestData);
+        return ResponseEntity.ok(res);
+    }
+
+    /**
      * 입고 - 입고리스트 : 입고일자와 상품코드(빈칸이면 없이 검색)or상품명(like 검색)과 구매처 아이디를 받아 입고 리스트를 검색하는 api
      */
     @GetMapping(path = "/items")
@@ -137,10 +149,10 @@ public class DepositController {
                                          @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable LocalDate endDt,
                                          @RequestParam @Nullable String assortId,
                                          @RequestParam @Nullable String assortNm,
-			@RequestParam @Nullable String vendorId, @RequestParam @Nullable String storageId) {
+			@RequestParam @Nullable String vendorId, @RequestParam @Nullable String storageId, @RequestParam @Nullable String memo) {
 
 		DepositSelectListResponseData depositSelectListResponseData = jpaDepositService.getList(vendorId, assortId,
-				assortNm, startDt, endDt, storageId);
+				assortNm, startDt, endDt, storageId, memo);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositSelectListResponseData);
         return ResponseEntity.ok(res);
     }

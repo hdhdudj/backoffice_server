@@ -6,4 +6,5 @@ package io.spring.model.common;
 public interface SetOptionInterface {
     void setOptionNm1(String optionNm);
     void setOptionNm2(String optionNm);
+    void setOptionNm3(String optionNm);
 }

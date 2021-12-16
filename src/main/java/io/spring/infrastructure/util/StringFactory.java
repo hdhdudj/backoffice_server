@@ -19,6 +19,8 @@ public class StringFactory {
     @Getter
     private final static String fourStartCd = "0001";
     @Getter
+    private final static String fourSecondCd = "0002";
+    @Getter
     private final static String fiveStartCd = "00001";
     //    private final String nineStartCd = "000000001";
     @Getter
@@ -134,6 +136,8 @@ public class StringFactory {
     @Getter
     private final static String strEndDt = "endDt";
     @Getter
+    private final static String strOrderDate = "orderDate";
+    @Getter
     private final static String strPurchaseVendorId = "purchaseVendorId";
     @Getter
     private final static String strAssortId = "assortId";
@@ -163,4 +167,24 @@ public class StringFactory {
     public final static String strNotCompleteDeposit = "This purchase.dealtypeCd is 01, but this isn't complete deposit.";
     @Getter
     public final static String strInputQtyBig = "input qty is bigger than available qty.";
+
+    // 카카오 비즈메시지 탬플릿 고정값
+    @Getter
+    public final static String strTrdst = "Trdst";
+    @Getter
+    public final static String strUrlTrdst = "trdst.com";
+    @Getter
+    public final static String strOrder125 = "order_125";
+    @Getter
+    public final static String strOrder126 = "order_126";
+    @Getter
+    public final static String strUtf8 = "UTF-8";
+
+    // http 헤더용
+    @Getter
+    public final static String strContentType = "Content-Type";
+    @Getter
+    public final static String strContentTypeValue = "application/json;charset=UTF-8";
+    @Getter
+    public final static String strXSecretKey = "X-Secret-Key";
 }

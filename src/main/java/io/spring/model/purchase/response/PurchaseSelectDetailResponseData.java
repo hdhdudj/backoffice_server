@@ -2,13 +2,17 @@ package io.spring.model.purchase.response;
 
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
+import io.spring.model.goods.entity.Itaimg;
 import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.entity.Lspchm;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 
 import java.util.List;
 
@@ -18,11 +22,12 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
+@PropertySource("classpath:application.properties")
 public class PurchaseSelectDetailResponseData {
     public PurchaseSelectDetailResponseData(Lspchm lspchm){
         this.purchaseId = lspchm.getPurchaseNo();
         this.purchaseDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
-        this.ownerId = lspchm.getOwnerId();
+        this.vendorId = lspchm.getVendorId();
         this.purchaseRemark = lspchm.getPurchaseRemark();
         this.storageId = lspchm.getStoreCd();
         this.terms = lspchm.getTerms();
@@ -32,6 +37,8 @@ public class PurchaseSelectDetailResponseData {
         this.siteOrderNo = lspchm.getSiteOrderNo();
         this.purchaseStatus = lspchm.getPurchaseStatus();
         this.dealtypeCd = lspchm.getDealtypeCd();
+        this.piNo = lspchm.getPiNo();
+        this.memo = lspchm.getMemo();
     }
 //    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
 //    @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -39,7 +46,7 @@ public class PurchaseSelectDetailResponseData {
     private String purchaseId;
     private String purchaseDt;
 //    private String purchaseVendorId; : ownerId로 수정
-    private String ownerId;
+    private String vendorId;
     private String purchaseRemark;
     private String storageId;
     private String terms;
@@ -50,14 +57,21 @@ public class PurchaseSelectDetailResponseData {
     private String siteOrderNo;
     private String purchaseStatus;
     private List<Items> items;
+    // 21-12-07 추가
+    private String piNo;
+    private String memo;
 
     @Getter
     @Setter
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+//    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Items implements SetOptionInterface {
-        public Items(Lspchd lspchd, Itasrt itasrt){
+        public Items(){
+
+        }
+        public Items(Lspchd lspchd, Ititmm ititmm, Itasrt itasrt, Itaimg itaimg){
             this.assortId = lspchd.getAssortId();
             this.itemId = lspchd.getItemId();
+            this.itemKey = Utilities.addDashInMiddle(this.assortId, this.itemId);
             this.purchaseId = lspchd.getPurchaseNo();
             this.purchaseQty = lspchd.getPurchaseQty();
             this.purchaseUnitAmt = lspchd.getPurchaseUnitAmt();
@@ -67,6 +81,12 @@ public class PurchaseSelectDetailResponseData {
             this.mdRrp = itasrt.getMdRrp();
             this.buySupplyDiscount = itasrt.getBuySupplyDiscount();
             this.deliMethod = itasrt.getDeliMth();
+
+            this.modelNo = itasrt.getAssortModel() + (ititmm.getModelNo() == null || ititmm.getModelNo().trim().equals("")? "" : " "+ititmm.getModelNo());
+            this.origin = itasrt.getOrigin();
+            this.custCategory = itasrt.getCustCategory();
+            this.material = ititmm.getMaterial();
+            this.imagePath = itaimg == null? null : this.imgServerUrl + itaimg.getImagePath() + itaimg.getImageName();
         }
 //        public Items(Lspchd lspchd, TbOrderDetail tbOrderDetail, Itasrt itasrt){
 //            this.purchaseId = lspchd.getPurchaseNo();
@@ -88,15 +108,30 @@ public class PurchaseSelectDetailResponseData {
         private String orderSeq;
         private String assortNm;
         private String assortId;
+        private String itemId;
+        private String itemKey;
         private String optionNm1;
         private String optionNm2;
+        private String optionNm3;
         private String deliMethod;
         private Float mdRrp;
         private Float buySupplyDiscount;
-        private String itemId;
         private String purchaseSeq;
         private Long purchaseQty;
         private Float purchaseUnitAmt;
         private String purchaseStatus;
+
+        // 21-12-03 추가
+        private String imagePath;
+        private String modelNo;
+        private String origin;
+        private String custCategory;
+        private String material;
+        @Value("${ftp.prefix_url}")
+        private String imgServerUrl;
+
+        // 21-12-06 추가
+        private String custNm;
+        private String channelOrderNo;
     }
 }

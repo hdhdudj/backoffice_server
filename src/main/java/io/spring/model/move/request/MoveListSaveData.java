@@ -77,6 +77,7 @@ public class MoveListSaveData {
         private String assortNm;
         private String optionNm1;
         private String optionNm2;
+        private String optionNm3;
         private Long qty;
     }
 }

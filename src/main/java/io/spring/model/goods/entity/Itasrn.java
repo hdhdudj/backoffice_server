@@ -34,7 +34,7 @@ public class Itasrn extends CommonProps {
         this.historyGb = StringFactory.getGbOne(); // default 값 (01)
         this.ownerId = Utilities.getStringNo(null,StringFactory.getStrOne(),6); // 000001 하드코딩
         this.assortId = goodsInsertRequestData.getAssortId();
-        this.localSale = goodsInsertRequestData.getLocalSale();
+        this.localSale = goodsInsertRequestData.getLocalSale() == null || goodsInsertRequestData.getLocalSale().equals("")? null : Float.parseFloat(goodsInsertRequestData.getLocalSale());
         this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
     }
     @Id

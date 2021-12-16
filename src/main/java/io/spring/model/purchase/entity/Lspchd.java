@@ -12,12 +12,11 @@ import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -40,6 +39,11 @@ import lombok.Setter;
 @Table(name="lspchd")
 @IdClass(value = LspchdId.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NamedEntityGraph(
+    name = "Lspchd.purchaseList", attributeNodes = {
+    @NamedAttributeNode("lspchm"),@NamedAttributeNode("tbOrderDetail"), @NamedAttributeNode(value="ititmm", subgraph = "ititmm_itvari")
+}, subgraphs = {@NamedSubgraph(name="ititmm_itvari", attributeNodes = {@NamedAttributeNode("itvari1"), @NamedAttributeNode("itvari2")})}
+)
 public class Lspchd extends CommonProps implements Serializable {
     public Lspchd(Lspchd lspchd, String purchaseSeq){
         this.purchaseNo = lspchd.getPurchaseNo();
@@ -146,14 +150,15 @@ public class Lspchd extends CommonProps implements Serializable {
     /**
      * 입고예정재고가 있을 때 발주 데이터를 만드는 생성자
      */
-    public Lspchd(TbOrderDetail tbOrderDetail) {
+    public Lspchd(TbOrderDetail tbOrderDetail, Lspchd lspchd) {
         this.assortId = tbOrderDetail.getAssortId();
         this.itemId = tbOrderDetail.getItemId();
-        this.purchaseQty = tbOrderDetail.getQty();
-        this.purchaseItemAmt = tbOrderDetail.getGoodsPrice();
-        this.purchaseUnitAmt = this.purchaseItemAmt * (this.purchaseQty);
+		this.purchaseQty = tbOrderDetail.getQty(); // lspchd.getPurchaseQty();
+		this.purchaseUnitAmt = lspchd.getPurchaseUnitAmt();
+		this.purchaseItemAmt = (this.purchaseUnitAmt * (this.purchaseQty));
         this.itemGrade = StringFactory.getStrEleven(); // 11 하드코딩
         this.siteGb = StringFactory.getGbOne(); // 01 (고도몰) 하드코딩
+        this.ownerId = lspchd.getOwnerId();
 //        this.orderId = tbOrderDetail.getOrderId();
 //        this.orderSeq = tbOrderDetail.getOrderSeq();
     }
@@ -212,7 +217,7 @@ public class Lspchd extends CommonProps implements Serializable {
     private Lspchm lspchm;
 
     // 연관관계 : ititmm
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumns({
             @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
@@ -244,9 +249,7 @@ public class Lspchd extends CommonProps implements Serializable {
 	@JoinColumns({
 			@JoinColumn(name = "orderId", referencedColumnName = "orderId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
 			@JoinColumn(name = "orderSeq", referencedColumnName = "orderSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")) })
-	@OneToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
-	@NotFound(action = NotFoundAction.IGNORE)
 	private TbOrderDetail tbOrderDetail;
-
 }

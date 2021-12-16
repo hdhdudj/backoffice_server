@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import io.spring.enums.Scm;
 import org.springframework.stereotype.Service;
 
 import io.spring.dao.order.MyBatisOrderDao;
@@ -23,17 +24,29 @@ public class MyBatisOrderService {
 
 		List<HashMap<String, Object>> list = myBatisOrderDao.getOrderMasterList(map);
 
-		List<OrderMasterListResponseData> orderMasterListDataListResponse = new ArrayList<>();
+		List<OrderMasterListResponseData> orderMasterListDataListResponseList = new ArrayList<>();
 
 		for (HashMap<String, Object> o : list) {
 			OrderMasterListResponseData orderMasterListResponseData = new OrderMasterListResponseData(o);
-			orderMasterListDataListResponse.add(orderMasterListResponseData);
+			orderMasterListResponseData.setScmNm(this.matchScmNoToScmNm(orderMasterListResponseData.getScmNo()));
+			orderMasterListDataListResponseList.add(orderMasterListResponseData);
 		}
 
 
-		return orderMasterListDataListResponse;
+		return orderMasterListDataListResponseList;
 	}
 
+	/**
+	 * scmNo를 scmNm로 매칭시켜주는 함수
+	 */
+	private String matchScmNoToScmNm(String scmNo){
+		for(Scm key : Scm.values()){
+			if(key.getFieldName().equals(scmNo)){
+				return key.toString();
+			}
+		}
+		return null;
+	}
 
 	public OrderDetailResponseData getOrderDetail(HashMap<String, Object> map) {
 		
@@ -72,5 +85,4 @@ public class MyBatisOrderService {
 		return orderDetailListResponse;
 
 	}
-
 }

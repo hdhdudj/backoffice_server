@@ -1,15 +1,9 @@
 package io.spring.model.order.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
@@ -31,10 +25,10 @@ import lombok.ToString;
 @Table(name="tb_order_detail")
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"ititmm", "tbOrderMaster", "itasrt"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @IdClass(TbOrderDetailId.class)
-@EqualsAndHashCode(exclude = {"ititmm"}, callSuper = false)
+@EqualsAndHashCode(exclude = {"ititmm", "tbOrderMaster", "itasrt"}, callSuper = false)
 public class TbOrderDetail extends CommonProps
 {
     public TbOrderDetail(TbOrderMaster tbOrderMaster, Ititmm ititmm){
@@ -121,21 +115,19 @@ public class TbOrderDetail extends CommonProps
         @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
         @JoinColumn(name = "itemId", referencedColumnName = "itemId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
     })
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    @NotFound(action = NotFoundAction.IGNORE)
+//    @NotFound(action = NotFoundAction.IGNORE)
     private Ititmm ititmm; // ititmm 연관관계
 
     @JoinColumn(name="orderId", referencedColumnName = "orderId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    @NotFound(action = NotFoundAction.IGNORE)
     private TbOrderMaster tbOrderMaster; // tbOrderMaster 연관관계
 
     @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    @NotFound(action = NotFoundAction.IGNORE)
     private Itasrt itasrt; // itasrt 연관관계
 	/*
 	 * @JoinColumns({

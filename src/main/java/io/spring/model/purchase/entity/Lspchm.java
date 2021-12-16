@@ -95,6 +95,8 @@ public class Lspchm extends CommonProps {
         this.carrier = purchaseInsertRequestData.getCarrier();
 
 		this.dealtypeCd = purchaseInsertRequestData.getDealtypeCd();
+        this.piNo = purchaseInsertRequestData.getPiNo();
+        this.memo = purchaseInsertRequestData.getMemo();
 
 		this.setRegId(purchaseInsertRequestData.getUserId());
         this.setUpdId(purchaseInsertRequestData.getUserId());
@@ -110,7 +112,7 @@ public class Lspchm extends CommonProps {
 		this.purchaseStatus = StringFactory.getGbOne(); // 01 : 발주, 04 : 이동지시?, 05 : 취소 (04 하드코딩)
 //        this.purchaseRemark : 바깥 set
         this.siteGb = StringFactory.getGbOne(); // "01" 하드코딩
-		this.vendorId = "AAAAAA"; // "000000" 하드코딩
+		this.vendorId = "AAAAAA"; // todo : 아직 방식이 정해지지 않았음. (원건의 구매처를 넣을 수도 있고.. 임시 하드코딩)
 //        this.siteOrderNo : 바깥 set
 //        this.siteTrackNo : 바깥 set (?)
 //        this.localPrice : ?
@@ -192,11 +194,15 @@ public class Lspchm extends CommonProps {
         this.dealtypeCd = StringFactory.getGbThree(); // 03 (입고예정주문발주) 하드코딩
         this.siteOrderNo = tbOrderDetail.getChannelOrderNo();
         if(di.equals(DirectOrImport.direct)){ // 직구
-            this.purchaseGb = StringFactory.getGbOne(); // 01 (일반발주)
+            this.purchaseGb = di.getFieldName(); // 01 (일반발주)
         }
-        else { // 수입
+        else if(di.equals(DirectOrImport.purchase)) { // 수입, 일반발주
+            this.purchaseGb = di.getFieldName(); // 01 (일반발주)
         }
-        this.storeCd = itasrt.getStorageId();
+        else if(di.equals(DirectOrImport.move)){ // 수입, 이동요청
+            this.purchaseGb = di.getFieldName(); // 02 (이동요청)
+        }
+        this.storeCd = tbOrderDetail.getStorageId();
     }
 
     @Id
@@ -232,11 +238,16 @@ public class Lspchm extends CommonProps {
     private String delivery;
     private String payment;
     private String carrier;
+    // 21-11-11 추가된 컬럼
+    private LocalDateTime printDt;
+    private String purchaseEmail;
+    // 21-12-02 추가된 컬럼
+    private String piNo;
+    private String memo;
 
     // 연관관계 : lspchd
     @OneToMany
     @JsonIgnore
     @JoinColumn(name = "purchaseNo", referencedColumnName = "purchaseNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     private List<Lspchd> lspchdList;
-
 }

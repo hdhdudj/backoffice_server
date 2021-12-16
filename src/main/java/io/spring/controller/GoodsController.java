@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import io.spring.infrastructure.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -105,7 +106,7 @@ public class GoodsController {
 		GoodsSelectDetailResponseData responseData = jpaGoodsService.getGoodsDetailPage(assortId);
 		LinkedList<String> categories = myBatisCommonService.findUpperCategory(responseData.getDispCategoryId());
 
-		responseData.setCategoryValue(categories);
+		responseData.setCategoryValue(categories == null? new LinkedList<>() : categories);
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), responseData);
 		if(responseData == null){
@@ -189,6 +190,9 @@ public class GoodsController {
 		}
 
 		List<HashMap<String, Object>> responseData = goodsRepository.getGoodsItemListWithCategory(param);
+		for(HashMap<String, Object> map : responseData){
+			Utilities.changeNullToEmpty(map);
+		}
 		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
 		if (responseData == null) {
 			return null;
@@ -240,6 +244,16 @@ public class GoodsController {
 		if(responseData == null){
 			return null;
 		}
+		return ResponseEntity.ok(res);
+	}
+
+	@GetMapping(path="/batch-size-test")
+	public ResponseEntity batchSizeTest() {
+		log.debug("/goods/batch-size-test");
+
+		jpaGoodsService.batchSizeTest();
+		ApiResponseMessage res = new ApiResponseMessage("ok", "success", null);
+
 		return ResponseEntity.ok(res);
 	}
 }

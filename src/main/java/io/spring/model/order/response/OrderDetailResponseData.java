@@ -1,9 +1,11 @@
 package io.spring.model.order.response;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
+import io.spring.infrastructure.util.Utilities;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,11 +25,12 @@ public class OrderDetailResponseData {
 
 		this.channelGb = (String) map.get("channelGb");
 		this.orderId = (String) map.get("orderId");
-
-		this.orderDate = map.get("orderDate").toString().substring(0, 19);
+		LocalDateTime dateTime = (LocalDateTime)map.get("orderDate");
+		this.orderDate = map.get("orderDate") == null? null : Utilities.removeTAndTransToStr(dateTime).substring(0, 19); // 주문일자
 		this.channelOrderNo = (String) map.get("channelOrderNo");
 		this.custId = (int) map.get("custId");
 		this.custNm = (String) map.get("custNm");
+		this.custPcode = (String) map.get("custPcode");
 		this.custTel = (String) map.get("custTel");
 		this.custHp = (String) map.get("custHp");
 		this.custZipcode = (String) map.get("custZipcode");
@@ -55,6 +58,7 @@ public class OrderDetailResponseData {
 	private String channelOrderNo; // 제휴주문번호
 	private int custId; // 고객번호
 	private String custNm; // 주문자명
+	private String custPcode; // 개인고유통관번호
 	private String custTel; // 주문자 전화번호
 	private String custHp; // 주문자 휴대폰번호
 	private String custZipcode; // 주문자 우편번호
@@ -88,10 +92,12 @@ public class OrderDetailResponseData {
 			this.statusCd = (String) map.get("statusCd");
 			this.assortId = (String) map.get("assortId");
 			this.itemId = (String) map.get("itemId");
+			this.goodsKey = Utilities.addDashInMiddle(this.assortId, this.itemId);
 			this.goodsNm = (String) map.get("goodsNm");
 			this.optionInfo = (String) map.get("optionInfo");
 			this.optionNm1 = (String) map.get("optionNm1");
 			this.optionNm2 = (String) map.get("optionNm2");
+			this.optionNm3 = (String) map.get("optionNm3");
 			this.qty = Long.valueOf((int) map.get("qty"));
 			this.salePrice = ((BigDecimal) map.get("salePrice")).doubleValue();
 			this.deliveryInfo = (String) map.get("deliveryInfo");
@@ -111,10 +117,12 @@ public class OrderDetailResponseData {
 		private String statusCd; // 주문상태
 		private String assortId; // 품목코드
 		private String itemId; // 상품코드
+		private String goodsKey; // 품목코드-상품코드
 		private String goodsNm; // 상품명
 		private String optionInfo; // 제휴옵션정보
 		private String optionNm1; // 옵션1
 		private String optionNm2; // 옵션2
+		private String optionNm3; // 옵션3
 		private Long qty; // 수량
 		private double salePrice; // 판매가
 		private String deliveryInfo; // 제휴배송정보

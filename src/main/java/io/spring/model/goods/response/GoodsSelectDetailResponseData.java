@@ -1,17 +1,23 @@
 package io.spring.model.goods.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import io.spring.infrastructure.util.PropertyUtil;
+import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.entity.Itaimg;
 import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.goods.entity.Itvari;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.context.annotation.PropertySource;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,8 +25,10 @@ import java.util.List;
 @Getter
 @Setter
 @PropertySource("classpath:application.properties")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GoodsSelectDetailResponseData {
+    public GoodsSelectDetailResponseData(){
+
+    }
     public GoodsSelectDetailResponseData(Itasrt itasrt){
         this.assortId = itasrt.getAssortId();
         this.assortNm = itasrt.getAssortNm();
@@ -49,8 +57,8 @@ public class GoodsSelectDetailResponseData {
         this.buyRrpIncrement = itasrt.getBuyRrpIncrement();
         
 
-        this.sellStaDt=itasrt.getSellStaDt();
-        this.sellEndDt=itasrt.getSellEndDt();
+        this.sellStaDt= Utilities.removeTAndTransToStr(itasrt.getSellStaDt());
+        this.sellEndDt=Utilities.removeTAndTransToStr(itasrt.getSellEndDt());
         
         
         this.asWidth=itasrt.getAsWidth();
@@ -64,7 +72,7 @@ public class GoodsSelectDetailResponseData {
 		this.vendorId = itasrt.getVendorId();
 
 //		this.brandNm = (itasrt.getIfBrand() != null ? itasrt.getIfBrand().getBrandNm() : ""); 바깥에서 set
-		this.vendorNm = (itasrt.getCmvdmr() != null ? itasrt.getCmvdmr().getVdNm() : "");
+		this.vendorNm = (itasrt.getVendorId() != null && !itasrt.getVendorId().trim().equals("")? itasrt.getCmvdmr().getVdNm() : null);
 
 		this.optionUseYn = itasrt.getOptionUseYn();
 		
@@ -110,11 +118,9 @@ public class GoodsSelectDetailResponseData {
     private Float localDeliFee;
 	private Float localSale; // itasrn�뿉�룄 �뱾�뼱媛�
     private String assortColor;
-    
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date sellStaDt;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date sellEndDt;
+
+    private String sellStaDt;
+    private String sellEndDt;
     private Float mdRrp;
     private String mdTax;
     private String mdYear;
@@ -151,13 +157,13 @@ public class GoodsSelectDetailResponseData {
     }
 
     // ititmm
-    @SerializedName("items")
-    @Expose
+//    @SerializedName("items")
+//    @Expose
     private List<GoodsSelectDetailResponseData.Items> items;
 
     // itvari
-    @SerializedName("attributes")
-    @Expose
+//    @SerializedName("attributes")
+//    @Expose
     private List<GoodsSelectDetailResponseData.Attributes> attributes;
 
     // ititmm
@@ -168,12 +174,15 @@ public class GoodsSelectDetailResponseData {
         private String itemId;
 		private String seq1;
 		private String seq2;
+		private String seq3;
 		private String value1;
 		private String value2;
+		private String value3;
         private Float addPrice;
 		private String shortageYn;
 		private String status1;
 		private String status2;
+		private String status3;
     }
 
 	// image 愿��젴
@@ -223,7 +232,13 @@ public class GoodsSelectDetailResponseData {
 
     @Getter
     @Setter
-    public static class Attributes {
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class Attributes{
+        public Attributes(Itvari itvari){
+            this.seq = itvari.getSeq();
+            this.value = itvari.getOptionNm();
+            this.variationGb = itvari.getVariationGb();
+        }
         private String seq;
         private String value;
         private String variationGb;
