@@ -43,6 +43,13 @@ public class PurchaseListInDepositModalData {
 	// private String purchaseVendorId; : ownerId로 수정 --> vendorId로 수정
     private List<Purchase> purchases;
 
+    /**
+     * Lspchm 기준 목록으로 변경된 발주리스트 생성자
+     */
+    public PurchaseListInDepositModalData(LocalDate startDt, LocalDate endDt, String siteOrderNo, String orderNo, String brandId, String vendorId, String purchaseGb) {
+
+    }
+
     @Getter
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)

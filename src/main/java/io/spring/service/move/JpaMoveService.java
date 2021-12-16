@@ -1078,7 +1078,11 @@ public class JpaMoveService {
      * @return 이동내역 DTO 반환
      */
     public MovedDetailResponseData getMovedDetail(String shipId) {
-        List<Lsshpd> lsshpdList = jpaLsshpdRepository.findByShipId(shipId);
+        List<Lsshpd> lsshpdList = em.createQuery("select lsd from Lsshpd lsd " +
+                "join fetch lsd.itasrt ita " +
+                "join fetch lsd.lsshpm lsm " +
+                "join fetch ita.itvariList iv where lsd.shipId=?1", Lsshpd.class)
+                .setParameter(1, shipId).getResultList();
         // lsshpm의 shipStatus가 04(출고)인 놈만 남기기
         lsshpdList = lsshpdList.stream().filter(x->x.getLsshpm().getShipStatus().equals(StringFactory.getGbFour())).collect(Collectors.toList());
         if(lsshpdList.size() == 0){

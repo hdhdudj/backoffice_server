@@ -3,6 +3,7 @@ package io.spring.model.goods.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.vendor.entity.Cmvdmr;
@@ -267,7 +268,7 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 	@JoinColumn(name = "brandId", referencedColumnName = "brandId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
-	@LazyToOne(value = LazyToOneOption.PROXY)
+	@LazyToOne(value = LazyToOneOption.NO_PROXY)
 //	@NotFound(action = NotFoundAction.IGNORE)
 	private IfBrand ifBrand;
 	public IfBrand getIfBrand() {

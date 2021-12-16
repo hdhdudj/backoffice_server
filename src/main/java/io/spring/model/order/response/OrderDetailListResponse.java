@@ -1,8 +1,12 @@
 package io.spring.model.order.response;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.Locale;
 
+import io.spring.infrastructure.util.Utilities;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,33 +25,34 @@ public class OrderDetailListResponse {
 
 	public OrderDetailListResponse(HashMap<String, Object> map) {
 		this.channelGb = (String) map.get("channelGb");
-		this.orderDate = map.get("orderDate").toString().substring(0, 19);
-			this.orderId = (String) map.get("orderId");
-			this.orderSeq = (String) map.get("orderSeq");
-			this.orderKey = (String) map.get("orderKey");
-			this.statusCd = (String) map.get("statusCd");
-			this.custNm = (String) map.get("custNm");
-			this.assortId = (String) map.get("assortId");
-			this.itemId = (String) map.get("itemId");
-			this.goodsNm = (String) map.get("goodsNm");
-			this.optionInfo = (String) map.get("optionInfo");
-			this.optionNm1 = (String) map.get("optionNm1");
-			this.optionNm2 = (String) map.get("optionNm2");
-			this.optionNm3 = (String) map.get("optionNm3");
-			this.qty = Long.valueOf((int) map.get("qty"));
-			this.salePrice = ((BigDecimal) map.get("salePrice")).doubleValue();
+		LocalDateTime dateTime = (LocalDateTime)map.get("orderDate");
+		this.orderDate = map.get("orderDate") == null? null : Utilities.removeTAndTransToStr(dateTime).substring(0, 19); // 주문일자
+		this.orderId = (String) map.get("orderId");
+		this.orderSeq = (String) map.get("orderSeq");
+		this.orderKey = (String) map.get("orderKey");
+		this.statusCd = (String) map.get("statusCd");
+		this.custNm = (String) map.get("custNm");
+		this.assortId = (String) map.get("assortId");
+		this.itemId = (String) map.get("itemId");
+		this.goodsNm = (String) map.get("goodsNm");
+		this.optionInfo = (String) map.get("optionInfo");
+		this.optionNm1 = (String) map.get("optionNm1");
+		this.optionNm2 = (String) map.get("optionNm2");
+		this.optionNm3 = (String) map.get("optionNm3");
+		this.qty = Long.valueOf((int) map.get("qty"));
+		this.salePrice = ((BigDecimal) map.get("salePrice")).doubleValue();
 
-			this.deliPrice = ((BigDecimal) map.get("deliPrice")).doubleValue();
+		this.deliPrice = ((BigDecimal) map.get("deliPrice")).doubleValue();
 
-			this.dcSumPrice = ((BigDecimal) map.get("dcSumPrice")).doubleValue();
-			this.totalPrice = ((BigDecimal) map.get("totalPrice")).doubleValue();
+		this.dcSumPrice = ((BigDecimal) map.get("dcSumPrice")).doubleValue();
+		this.totalPrice = ((BigDecimal) map.get("totalPrice")).doubleValue();
 
-			this.listImageData = (String) map.get("listImageData");
+		this.listImageData = (String) map.get("listImageData");
 
-			this.channelOrderNo = (String) map.get("channelOrderNo");
-			this.channelOrderSeq = (String) map.get("channelOrderSeq");
+		this.channelOrderNo = (String) map.get("channelOrderNo");
+		this.channelOrderSeq = (String) map.get("channelOrderSeq");
 
-		}
+	}
 
 		private String channelGb;
 		// @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss",
