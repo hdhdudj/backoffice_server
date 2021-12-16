@@ -230,7 +230,7 @@ public class JpaShipService {
 			p.put("rackNo", lsdpsd.getRackNo());
 			p.put("qty", lsdpsd.getDepositQty());
 
-			int r = jpaStockService.minusStockByOrder(p);
+			int r = jpaStockService.minusIndicateStockByOrder(p);
 
 
 
@@ -590,6 +590,7 @@ public class JpaShipService {
             lsshpdList.add(lsshpd);
             // 2. 해당 tbOrderDetail statusCd 변경
             TbOrderDetail tbOrderDetail = lsshpd.getTbOrderDetail();
+
 			List<Ititmc> ititmcList = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdOrderByEffEndDtAsc(
 					tbOrderDetail.getAssortId(), tbOrderDetail.getItemId(), lsshpm.getStorageId());
             // 재고에서 출고 차감 계산
@@ -597,8 +598,7 @@ public class JpaShipService {
             if(ititmcList.size()==0){
                 log.debug("출고처리량 이상의 출고지시량을 가진 재고 세트가 없습니다.");
                 continue;
-            }
-            else {
+			} else {
 
 				List<HashMap<String, Object>> orderList = new ArrayList<HashMap<String, Object>>();
 				HashMap<String, Object> m = new HashMap<String, Object>();

@@ -368,7 +368,7 @@ public class JpaMoveService {
 		p.put("rackNo", lsdpsd.getRackNo());
 		p.put("qty", lsdpsd.getDepositQty());
 
-		int r = jpaStockService.minusStockByOrder(p);
+		int r = jpaStockService.minusIndicateStockByOrder(p);
 
 		LocalDateTime depositDt = lsdpsm.getDepositDt();
 		String storageId = lsdpsm.getStoreCd();

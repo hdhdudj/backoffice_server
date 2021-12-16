@@ -20,7 +20,6 @@ import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.service.common.JpaCommonService;
-import io.spring.service.move.JpaMoveService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,7 +30,6 @@ public class JpaStockService {
 
 	private final JpaCommonService jpaCommonService;
 	private final JpaLsdpspRepository jpaLsdpspRepository;
-	private final JpaMoveService jpaMoveService;
 	private final JpaLspchdRepository jpaLspchdRepository;
 	private final JpaSequenceDataRepository jpaSequenceDataRepository;
 	private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
@@ -47,7 +45,7 @@ public class JpaStockService {
 
 	private final EntityManager em;
 
-	public int minusStockByOrder(HashMap<String, Object> p) {
+	public int minusIndicateStockByOrder(HashMap<String, Object> p) {
 
 		System.out.println("----------------------minusStockByOrder----------------------");
 
@@ -152,6 +150,59 @@ public class JpaStockService {
 		// 2.랙의 재고차감
 
 		return 1;
+	}
+
+	// 출고처리하는로직을 만들어야함.
+	public int minusShipStockByOrder(HashMap<String, Object> p) {
+		System.out.println("----------------------minusShipStockByOrder----------------------");
+
+		long shipQty = (Long) p.get("qty");
+
+		Ititmc imc_storage = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(
+				p.get("assortId").toString(), p.get("itemId").toString(), p.get("storageId").toString(),
+				p.get("itemGrade").toString(), (LocalDateTime) p.get("effStaDt")
+
+		);
+		// 의 재고를 조회함
+		Ititmc imc_rack = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(
+				p.get("assortId").toString(), p.get("itemId").toString(), p.get("rackNo").toString(),
+				p.get("itemGrade").toString(), (LocalDateTime) p.get("effStaDt")
+
+		);
+
+		if (imc_storage == null) {
+			throw new IllegalArgumentException("no ShipStockQty check..");
+			// return -1;
+		} else {
+			// long shipAvailQty = imc_storage.getQty() - imc_storage.getShipIndicateQty();
+			// if (shipAvailQty < qty) { // ititmc에 있는 해당 상품 총량보다 주문량이 많은 경우
+			// log.debug("주문량이 출고가능 재고량보다 많습니다. 출고가능 재고량 : " + shipAvailQty + ", 주문량 : " +
+			// qty);
+			// return -1;
+			// }
+
+			long qty = imc_storage.getQty() == null ? 0l : imc_storage.getQty(); // ititmc 재고량
+			long shipIndQty = imc_storage.getShipIndicateQty() == null ? 0l : imc_storage.getShipIndicateQty(); // ititmc
+																												// 출고예정량
+			long canShipQty = qty - shipIndQty; // 출고가능량
+			if (canShipQty <= 0) { // 출고 불가
+				log.debug("주문량이 출고가능 재고량보다 많습니다. 출고가능 재고량 : " + canShipQty + ", 주문량 : " + shipQty);
+				log.debug("출고 또는 이동이 불가합니다.");
+				throw new IllegalArgumentException("no stockQty check..");
+				// return -1;
+			}
+			if (shipQty <= canShipQty) { // 이 차례에서 출고 완료 가능
+				imc_storage.setShipIndicateQty(shipIndQty + shipQty);
+				jpaItitmcRepository.save(imc_storage);
+
+			} else {
+				throw new IllegalArgumentException("stockQty check..");
+			}
+
+		}
+
+		return 1;
+
 	}
 
 }
