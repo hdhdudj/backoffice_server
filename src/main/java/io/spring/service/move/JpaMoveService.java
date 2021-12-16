@@ -527,7 +527,7 @@ public class JpaMoveService {
             long moveQty = goods.getMoveQty();
             // 1. 출고 data 생성
             Ititmc ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(goods.getAssortId(), goods.getItemId(),
-                    goods.getStorageId(), StringFactory.getStrEleven(), Utilities.dateToLocalDateTime(goods.getDepositDt()));
+                    goods.getStorageId(), StringFactory.getStrEleven(), goods.getDepositDt());
 
 			// 상품이동지시할떄 주문건의 수량을 뺴기위해서 넣은 로직인데 이동지시를 그전에 만드는걸로 로직을 변경하여 제외
 			// List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository
