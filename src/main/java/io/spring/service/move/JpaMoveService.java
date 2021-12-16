@@ -803,12 +803,39 @@ public class JpaMoveService {
 			// jpaItitmcRepository.findByAssortIdAndItemIdAndEffEndDtOrderByEffEndDtAsc(lsshpd.getAssortId(),
 			// lsshpd.getItemId(), lsshpd.getExcAppDt());
 
-			List<Ititmc> ititmcList = jpaItitmcRepository
-					.findByAssortIdAndItemIdAndEffEndDtAndStorageIdOrderByEffEndDtAsc(
-					lsshpd.getAssortId(), lsshpd.getItemId(), lsshpd.getExcAppDt(), lsshpm.getStorageId());
-            if(this.subItitmcQties(ititmcList, shipIndQty).size() == 0){
-                continue;
-            }
+            
+			// 주문이동지시랑 상품이동지시 처리에 대해서 재고 처리 방식을 일단 나눴음.
+			// 화면에서도 랙을 선택해서 출고지시하는부분이 있어야할거같음.
+
+			if (lsshpm.getShipOrderGb().equals(StringFactory.getGbTwo())) { // 01 주문, 02 상품
+				log.debug("주문이동처리가 아닌 상품이동지시입니다.");
+
+				List<Ititmc> ititmcList = jpaItitmcRepository
+						.findByAssortIdAndItemIdAndEffEndDtAndStorageIdOrderByEffEndDtAsc(lsshpd.getAssortId(),
+								lsshpd.getItemId(), lsshpd.getExcAppDt(), lsshpm.getStorageId());
+				if (this.subItitmcQties(ititmcList, shipIndQty).size() == 0) {
+					continue;
+				}
+
+			} else {
+
+				HashMap<String, Object> p = new HashMap<String, Object>();
+
+				p.put("assortId", lsshpd.getAssortId());
+				p.put("itemId", lsshpd.getItemId());
+				p.put("effStaDt", lsshpd.getExcAppDt());
+				p.put("itemGrade", "11");
+				p.put("storageId", lsshpm.getStorageId());
+				p.put("rackNo", lsshpd.getRackNo());
+				p.put("shipQty", shipIndQty);
+
+				int r = jpaStockService.minusShipStockByOrder(p);
+
+
+			}
+            
+            
+
 //            //
 //            // ititmt 수치 변경 (해외창고 입고시 생성된 ititmt의 tempIndicateQty와 tempQty에서 이동된 숫자만큼 차감, 국내창고 입고시 생성된 ititmt의 tempQty = 0)
 //            Ititmt ititmt1 = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndUpdDt(lsshpd.getAssortId(), lsshpd.getItemId(), lsshpd.getOStorageId(),

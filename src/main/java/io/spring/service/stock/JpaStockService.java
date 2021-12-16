@@ -156,7 +156,7 @@ public class JpaStockService {
 	public int minusShipStockByOrder(HashMap<String, Object> p) {
 		System.out.println("----------------------minusShipStockByOrder----------------------");
 
-		long shipQty = (Long) p.get("qty");
+		long shipQty = (Long) p.get("shipQty");
 
 		Ititmc imc_storage = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(
 				p.get("assortId").toString(), p.get("itemId").toString(), p.get("storageId").toString(),
@@ -183,21 +183,49 @@ public class JpaStockService {
 
 			long qty = imc_storage.getQty() == null ? 0l : imc_storage.getQty(); // ititmc 재고량
 			long shipIndQty = imc_storage.getShipIndicateQty() == null ? 0l : imc_storage.getShipIndicateQty(); // ititmc
-																												// 출고예정량
-			long canShipQty = qty - shipIndQty; // 출고가능량
-			if (canShipQty <= 0) { // 출고 불가
-				log.debug("주문량이 출고가능 재고량보다 많습니다. 출고가능 재고량 : " + canShipQty + ", 주문량 : " + shipQty);
+
+			if (shipIndQty < shipQty) {
+				log.debug("출고량이 출고지시수량보다 많습니다. 출고가능 재고량 : " + shipIndQty + ", 주문량 : " + shipQty);
 				log.debug("출고 또는 이동이 불가합니다.");
 				throw new IllegalArgumentException("no stockQty check..");
-				// return -1;
 			}
-			if (shipQty <= canShipQty) { // 이 차례에서 출고 완료 가능
-				imc_storage.setShipIndicateQty(shipIndQty + shipQty);
-				jpaItitmcRepository.save(imc_storage);
 
-			} else {
-				throw new IllegalArgumentException("stockQty check..");
+			if (qty < shipQty) {
+				log.debug("출고량이 재고수량보다 많습니다. 재고 재고량 : " + qty + ", 주문량 : " + shipQty);
+				log.debug("출고 또는 이동이 불가합니다.");
+				throw new IllegalArgumentException("no stockQty check..");
 			}
+
+			imc_storage.setShipIndicateQty(shipIndQty - shipQty);
+			imc_storage.setQty(qty - shipQty);
+
+			jpaItitmcRepository.save(imc_storage);
+
+		}
+
+		if (imc_rack == null) {
+			log.debug("해당건의 rackNo 정보없음");
+		} else {
+
+			long qty = imc_rack.getQty() == null ? 0l : imc_rack.getQty(); // ititmc 재고량
+			long shipIndQty = imc_rack.getShipIndicateQty() == null ? 0l : imc_rack.getShipIndicateQty(); // ititmc
+
+			if (shipIndQty < shipQty) {
+				log.debug("rack 출고량이 출고지시수량보다 많습니다. 출고가능 재고량 : " + shipIndQty + ", 주문량 : " + shipQty);
+				log.debug("출고 또는 이동이 불가합니다.");
+				throw new IllegalArgumentException("no stockQty check..");
+			}
+
+			if (qty < shipQty) {
+				log.debug("rack 출고량이 재고수량보다 많습니다. 재고 재고량 : " + qty + ", 주문량 : " + shipQty);
+				log.debug("출고 또는 이동이 불가합니다.");
+				throw new IllegalArgumentException("no stockQty check..");
+			}
+
+			imc_rack.setShipIndicateQty(shipIndQty - shipQty);
+			imc_rack.setQty(qty - shipQty);
+
+			jpaItitmcRepository.save(imc_rack);
 
 		}
 

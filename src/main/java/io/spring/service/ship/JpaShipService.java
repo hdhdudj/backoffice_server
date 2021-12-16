@@ -591,15 +591,53 @@ public class JpaShipService {
             // 2. 해당 tbOrderDetail statusCd 변경
             TbOrderDetail tbOrderDetail = lsshpd.getTbOrderDetail();
 
-			List<Ititmc> ititmcList = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdOrderByEffEndDtAsc(
-					tbOrderDetail.getAssortId(), tbOrderDetail.getItemId(), lsshpm.getStorageId());
-            // 재고에서 출고 차감 계산
-            ititmcList = jpaMoveService.subItitmcQties(ititmcList, ship.getQty()); // 주문량만큼 출고차감 (하나의 ititmc에서 모두 차감하므로 ititmcList에 값이 있다면 한 개만 들어있어야 함)
-            if(ititmcList.size()==0){
-                log.debug("출고처리량 이상의 출고지시량을 가진 재고 세트가 없습니다.");
-                continue;
-			} else {
+            
+        	if (lsshpm.getShipOrderGb().equals(StringFactory.getGbTwo())) { // 01 주문, 02 상품
+				log.debug(
+						"**********************************************상품출고처리입니다.확인이 필요합니다!***********************************");
+				// 여기를 타면 오류일거같은데!!정상적인 프로세스에서는 주문이 있을경우에만 출고처리가 가능.그외는 기타 출고
+				
+				
+				List<Ititmc> ititmcList = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdOrderByEffEndDtAsc(
+						tbOrderDetail.getAssortId(), tbOrderDetail.getItemId(), lsshpm.getStorageId());
+	            // 재고에서 출고 차감 계산
+	            ititmcList = jpaMoveService.subItitmcQties(ititmcList, ship.getQty()); // 주문량만큼 출고차감 (하나의 ititmc에서 모두 차감하므로 ititmcList에 값이 있다면 한 개만 들어있어야 함)
+	            if(ititmcList.size()==0){
+	                log.debug("출고처리량 이상의 출고지시량을 가진 재고 세트가 없습니다.");
+	                continue;
+				} else {
 
+					// 하나로 합쳐도 되지만 그냥 냅둠
+					List<HashMap<String, Object>> orderList = new ArrayList<HashMap<String, Object>>();
+					HashMap<String, Object> m = new HashMap<String, Object>();
+
+					m.put("order_id", lsshpd.getOrderId());
+					m.put("order_seq", lsshpd.getOrderSeq());
+
+					orderList.add(m);
+
+					this.changeStatusCdOfTbOrderDetail(orderList, "D02");
+
+					// tbOrderDetail.setStatusCd(StringFactory.getStrD02()); // D02 하드코딩
+					// jpaTbOrderDetailRepository.save(tbOrderDetail);
+	            }
+	        
+			} else {
+				log.debug("주문출고처리.");
+
+				HashMap<String, Object> p = new HashMap<String, Object>();
+
+				p.put("assortId", lsshpd.getAssortId());
+				p.put("itemId", lsshpd.getItemId());
+				p.put("effStaDt", lsshpd.getExcAppDt());
+				p.put("itemGrade", "11");
+				p.put("storageId", lsshpm.getStorageId());
+				p.put("rackNo", lsshpd.getRackNo());
+				p.put("shipQty",ship.getQty());
+
+				int r = jpaStockService.minusShipStockByOrder(p);
+
+				// 하나로 합쳐도 되지만 그냥 냅둠
 				List<HashMap<String, Object>> orderList = new ArrayList<HashMap<String, Object>>();
 				HashMap<String, Object> m = new HashMap<String, Object>();
 
@@ -609,11 +647,14 @@ public class JpaShipService {
 				orderList.add(m);
 
 				this.changeStatusCdOfTbOrderDetail(orderList, "D02");
+			
+				
 
-				// tbOrderDetail.setStatusCd(StringFactory.getStrD02()); // D02 하드코딩
-				// jpaTbOrderDetailRepository.save(tbOrderDetail);
-            }
-        }
+			}     
+            
+		}
+            
+		
         // 3. lss- 시리즈 찾아서 수정하고 꺾기
         for(Lsshpd lsshpd : lsshpdList){
             shipIdList.add(jpaMoveService.updateLssSeries(lsshpd));
