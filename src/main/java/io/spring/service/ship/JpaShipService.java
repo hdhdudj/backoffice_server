@@ -395,10 +395,10 @@ public class JpaShipService {
 		List<String> ret = new ArrayList<String>();
 
 		Lsshpm lsshpm = jpaLsshpmRepository.findById(ship.getShipId()).orElse(null);
-		Lsshpd lsshdd = jpaLsshpdRepository.findByShipIdAndShipSeq(ship.getShipId(), ship.getShipSeq());
+		Lsshpd lsshpd = jpaLsshpdRepository.findByShipIdAndShipSeq(ship.getShipId(), ship.getShipSeq());
 
 		lsshpm.setInstructDt(LocalDateTime.now());
-		lsshpm.setShipStatus("02");
+		lsshpm.setShipStatus(StringFactory.getGbTwo()); // 01 : 이동지시or출고지시, 02 : 이동지시or출고지시 접수, 04 : 출고
 
 		Lsshps lsshps = new Lsshps(lsshpm);
 		this.updateLsshps(lsshps);
@@ -424,7 +424,14 @@ public class JpaShipService {
     public ShipIndicateListData getShipList(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
                                             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
                                             String shipId, String assortId, String assortNm,
-			String channelId, String statusCd, String orderId) {
+			String channelId, String statusCd, String orderKey) {
+		String orderId = "";
+		String orderSeq = "";
+		if(orderId != null && !orderId.trim().equals("")){
+			String[] order = orderKey.split("-");
+			orderId = order[0];
+			orderSeq = order.length > 1? order[1]:orderSeq;
+		}
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
 		ShipIndicateListData shipIndicateListData = new ShipIndicateListData(start.toLocalDate(), end.toLocalDate(),
@@ -441,10 +448,12 @@ public class JpaShipService {
                         "and (?5 is null or trim(?5)='' or it.assortNm like concat('%', ?5, '%')) " +
 				"and (?6 is null or trim(?6)='' or lsd.ownerId=?6)" + "and lsm.shipStatus='02'"
 				+ "and (?7 is null or trim(?7)='' or lsd.orderId=?7)"
+				+ "and (?8 is null or trim(?7)='' or lsd.orderSeq=?8)"
                 ,Lsshpd.class);
         query.setParameter(1, start).setParameter(2, end)
                 .setParameter(3,assortId).setParameter(4,shipId)
-				.setParameter(5, assortNm).setParameter(6, channelId).setParameter(7, orderId);
+				.setParameter(5, assortNm).setParameter(6, channelId).setParameter(7, orderId)
+				.setParameter(8, orderSeq);
         List<Lsshpd> lsshpdList = query.getResultList();
         // 출고지시리스트 : C04, 출고처리리스트 : D01, 출고리스트 statusCd = D02인 애들만 남기기
         lsshpdList = lsshpdList.stream().filter(x->x.getTbOrderDetail().getStatusCd().equals(statusCd)).collect(Collectors.toList());
