@@ -3,9 +3,11 @@ package io.spring.controller;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.deposit.response.PurchaseListInDepositModalData;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import io.spring.model.purchase.request.PurchaseUpdateRequestData;
 import io.spring.model.purchase.response.PurchaseItemResponseData;
+import io.spring.model.purchase.response.PurchaseMasterListResponseData;
 import io.spring.model.purchase.response.PurchaseSelectDetailResponseData;
 import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
@@ -213,32 +215,45 @@ public class PurchaseController {
     /**
      * 발주 list get (발주리스트 화면)
      */
-    @GetMapping(path="/items")
-    public ResponseEntity getPurchaseListJpa(@RequestParam @Nullable String vendorId,
-                                             @RequestParam @Nullable String assortId,
-                                             @RequestParam @Nullable String purchaseNo,
-                                             @RequestParam @Nullable String channelOrderNo,
-                                             @RequestParam @Nullable String siteOrderNo,
-                                             @RequestParam @Nullable String orderNm,
-                                             @RequestParam @Nullable String assortNm,
-                                             @RequestParam @Nullable String purchaseStatus,
-                                             @RequestParam @Nullable String brandId,
-                                             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
-                                             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
-                                             @RequestParam @Nullable String purchaseGb,
-                                             @RequestParam @Nullable String dealtypeCd
-                                             ){
-        log.debug("get purchase list - jpa");
-
-        PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getPurchaseList(vendorId, assortId, purchaseNo, channelOrderNo, siteOrderNo, orderNm, assortNm, purchaseStatus, brandId,
-                startDt, endDt, purchaseGb, dealtypeCd);
-
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectListResponseData);
-        if(res == null){
-            return null;
-        }
+    @GetMapping(path = "/items")
+    public ResponseEntity getChoosePurchaseModalList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+                                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+                                                     @RequestParam @Nullable String siteOrderNo,
+                                                     @RequestParam @Nullable String channelOrderNo,
+                                                     @RequestParam @Nullable String brandId,
+                                                     @RequestParam @Nullable String vendorId,
+                                                     @RequestParam @Nullable String purchaseGb) {
+        PurchaseMasterListResponseData purchaseMasterListResponseData = jpaPurchaseService
+                .getPurchaseMasterList2(startDt, endDt, siteOrderNo, channelOrderNo, brandId, vendorId, purchaseGb);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),purchaseMasterListResponseData);
         return ResponseEntity.ok(res);
     }
+//    @GetMapping(path="/items")
+//    public ResponseEntity getPurchaseListJpa(@RequestParam @Nullable String vendorId,
+//                                             @RequestParam @Nullable String assortId,
+//                                             @RequestParam @Nullable String purchaseNo,
+//                                             @RequestParam @Nullable String channelOrderNo,
+//                                             @RequestParam @Nullable String siteOrderNo,
+//                                             @RequestParam @Nullable String orderNm,
+//                                             @RequestParam @Nullable String assortNm,
+//                                             @RequestParam @Nullable String purchaseStatus,
+//                                             @RequestParam @Nullable String brandId,
+//                                             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+//                                             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+//                                             @RequestParam @Nullable String purchaseGb,
+//                                             @RequestParam @Nullable String dealtypeCd
+//                                             ){
+//        log.debug("get purchase list - jpa");
+//
+//        PurchaseSelectListResponseData purchaseSelectListResponseData = jpaPurchaseService.getPurchaseList(vendorId, assortId, purchaseNo, channelOrderNo, siteOrderNo, orderNm, assortNm, purchaseStatus, brandId,
+//                startDt, endDt, purchaseGb, dealtypeCd);
+//
+//        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), purchaseSelectListResponseData);
+//        if(res == null){
+//            return null;
+//        }
+//        return ResponseEntity.ok(res);
+//    }
 
     // 발주 list get (mybatis) : 발주리스트 화면에서 검색 누르면 작동하는 api
     @GetMapping(path="/purchaselistmybatis")
