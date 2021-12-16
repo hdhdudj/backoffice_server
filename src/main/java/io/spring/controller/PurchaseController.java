@@ -1,31 +1,36 @@
 package io.spring.controller;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
-import io.spring.model.deposit.response.PurchaseListInDepositModalData;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import io.spring.model.purchase.request.PurchaseUpdateRequestData;
 import io.spring.model.purchase.response.PurchaseItemResponseData;
 import io.spring.model.purchase.response.PurchaseMasterListResponseData;
 import io.spring.model.purchase.response.PurchaseSelectDetailResponseData;
-import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.order.JpaOrderService;
 import io.spring.service.purchase.JpaPurchaseService;
 import io.spring.service.purchase.MyBatisPurchaseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/purchase")
@@ -223,6 +228,9 @@ public class PurchaseController {
                                                      @RequestParam @Nullable String brandId,
                                                      @RequestParam @Nullable String vendorId,
                                                      @RequestParam @Nullable String purchaseGb) {
+
+		System.out.println("getChoosePurchaseModalList");
+
         PurchaseMasterListResponseData purchaseMasterListResponseData = jpaPurchaseService
                 .getPurchaseMasterList2(startDt, endDt, siteOrderNo, channelOrderNo, brandId, vendorId, purchaseGb);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),purchaseMasterListResponseData);

@@ -47,7 +47,7 @@ public class JpaStockService {
 
 	public int minusIndicateStockByOrder(HashMap<String, Object> p) {
 
-		System.out.println("----------------------minusStockByOrder----------------------");
+		System.out.println("----------------------minusIndicateStockByOrder----------------------");
 
 		/*
 		 * p.get("assortId").toString() p.get("itemId").toString() p.get("effStaDt")

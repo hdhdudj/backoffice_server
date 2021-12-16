@@ -54,6 +54,7 @@ import io.spring.model.ship.entity.Lsshps;
 import io.spring.service.nhncloud.KakaoBizMessageService;
 import io.spring.service.nhncloud.SmsService;
 import io.spring.service.purchase.JpaPurchaseService;
+import io.spring.service.stock.JpaStockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -90,6 +91,8 @@ public class JpaOrderService {
 
     private final KakaoBizMessageService kakaoBizMessageService;
     private final SmsService smsService;
+
+	private final JpaStockService jpaStockService;
 
     // orderId, orderSeq를 받아 주문 상태를 변경해주는 함수
     @Transactional
@@ -448,7 +451,9 @@ public class JpaOrderService {
         long orderQty = tbOrderDetail.getQty();
         for(Ititmc ititmc : ititmcList){
             if(ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()){
+
                 ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
+
                 this.makeShipDataByDeposit(ititmc, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
                 return true;
             }

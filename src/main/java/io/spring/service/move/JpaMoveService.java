@@ -532,6 +532,22 @@ public class JpaMoveService {
         return ititmcList;
     }
 
+	/**
+	 * 상품이동지시 화면에서 검색에 맞는 Ititmc들을 가져오는 함수
+	 */
+	private List<Ititmc> getItitmc2(String storageId, String purchaseVendorId, String assortId, String assortNm) {
+		Query query = em
+				.createQuery("select ic from Ititmc ic " + "join fetch ic.itasrt it " + "join fetch it.ifBrand ib "
+						+ "join fetch it.itvariList iv " + "where " + "(?1 is null or trim(?1)='' or ic.storageId=?1) "
+						+ "and (?2 is null or trim(?2)='' or it.vendorId=?2) "
+						+ "and (?3 is null or trim(?3)='' or ic.assortId=?3) "
+						+ "and (?4 is null or trim(?4)='' or it.assortNm like concat('%',?4,'%'))");
+		query.setParameter(1, storageId).setParameter(2, purchaseVendorId).setParameter(3, assortId).setParameter(4,
+				assortNm);
+		List<Ititmc> ititmcList = query.getResultList();
+		return ititmcList;
+	}
+
     /**
      * 상품이동지시 저장 함수
      */

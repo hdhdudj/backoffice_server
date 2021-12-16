@@ -6,7 +6,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -15,22 +14,18 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
-import io.spring.enums.TrdstOrderStatus;
-import io.spring.infrastructure.mapstruct.ItemsMapper;
-import io.spring.infrastructure.mapstruct.PurchaseMasterListResponseDataMapper;
-import io.spring.infrastructure.mapstruct.PurchaseSelectDetailResponseDataMapper;
-import io.spring.model.goods.entity.*;
-import io.spring.model.order.entity.TbMember;
-import io.spring.model.purchase.response.PurchaseMasterListResponseData;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.spring.enums.DirectOrImport;
+import io.spring.enums.TrdstOrderStatus;
+import io.spring.infrastructure.mapstruct.ItemsMapper;
+import io.spring.infrastructure.mapstruct.PurchaseMasterListResponseDataMapper;
+import io.spring.infrastructure.mapstruct.PurchaseSelectDetailResponseDataMapper;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.jparepos.common.JpaCmstgmRepository;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.deposit.JpaLsdpspRepository;
 import io.spring.jparepos.goods.JpaItasrtRepository;
@@ -42,9 +37,16 @@ import io.spring.jparepos.purchase.JpaLspchdRepository;
 import io.spring.jparepos.purchase.JpaLspchmRepository;
 import io.spring.jparepos.purchase.JpaLspchsRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
+import io.spring.model.common.entity.Cmstgm;
 import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.deposit.response.PurchaseListInDepositModalData;
+import io.spring.model.goods.entity.Itaimg;
+import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.goods.entity.Ititmm;
+import io.spring.model.goods.entity.Ititmt;
+import io.spring.model.goods.entity.Itvari;
 import io.spring.model.goods.idclass.ItitmtId;
+import io.spring.model.order.entity.TbMember;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
 import io.spring.model.purchase.entity.Lspchb;
@@ -52,7 +54,7 @@ import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.entity.Lspchm;
 import io.spring.model.purchase.entity.Lspchs;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
-import io.spring.model.purchase.request.PurchaseUpdateRequestData;
+import io.spring.model.purchase.response.PurchaseMasterListResponseData;
 import io.spring.model.purchase.response.PurchaseSelectDetailResponseData;
 import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.model.ship.entity.Lsshpd;
@@ -75,6 +77,8 @@ public class JpaPurchaseService {
     private final JpaCommonService jpaCommonService;
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
+
+	private final JpaCmstgmRepository jpaCmstgmRepository;
 
 	private final JpaLsshpmRepository jpaLsshpmRepository;
 
@@ -712,6 +716,18 @@ public class JpaPurchaseService {
             long planQty = lsdpsp.getPurchasePlanQty() == null? 0l:lsdpsp.getPurchasePlanQty();
             long takeQty = lsdpsp.getPurchaseTakeQty() == null? 0l:lsdpsp.getPurchaseTakeQty();
             purchase.setAvailableQty(planQty - takeQty);
+
+            String rackNo ="";
+            
+            List<Cmstgm> l =jpaCmstgmRepository.findByUpStorageIdAndDefaultYnAndDelYn(lspchm.getStoreCd().toString(),"01", "02");
+
+			if (l.size() > 0) {
+				rackNo = l.get(0).getStorageId();
+			} else {
+				rackNo = "xxxxxx";
+			}
+
+			purchase.setRackNo(rackNo);
 
             purchaseList.add(purchase);
         }

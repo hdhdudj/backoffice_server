@@ -235,10 +235,9 @@ public class JpaShipService {
 
 
 			// 창고의 재고를 조회함
-			// Ititmc imc_storage =
-			// jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(
-//					tbOrderDetail.getAssortId(), tbOrderDetail.getItemId(), lsdpsm.getStoreCd(), "11",
-			// lsdpsm.getDepositDt()
+			 Ititmc imc_storage =  jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(
+						tbOrderDetail.getAssortId(), tbOrderDetail.getItemId(), lsdpsm.getStoreCd(), "11",
+						lsdpsm.getDepositDt());
 
 //			);
 			// 의 재고를 조회함
@@ -265,7 +264,7 @@ public class JpaShipService {
 			// }
 			// 2. 출고 data 생성
 			// todo 출고지시데이타에 rack이 들어가야함.
-			String shipId = this.makeShipDataByDeposit(null, lsdpsd, tbOrderDetail,
+			String shipId = this.makeShipDataByDeposit(imc_storage, lsdpsd, tbOrderDetail,
 					StringFactory.getGbOne()); // 01 :
 																													// 이동지시or출고지시,
 																													// 04

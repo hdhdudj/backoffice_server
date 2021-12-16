@@ -1,7 +1,6 @@
 package io.spring.model.move.request;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -62,9 +61,12 @@ public class OrderMoveSaveData {
         private String assortId;
         private String itemId;
 		// lsshpm
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'hh:mm:ss", timezone = "Asia/Seoul")
-		private LocalDateTime receiptDt;
 
+		// 오류
+		// @JsonFormat(shape = JsonFormat.Shape.STRING, pattern =
+		// "yyyy-MM-dd'T'hh:mm:ss", timezone = "Asia/Seoul")
+		// private LocalDateTime receiptDt;
+		private String receiptDt;
         // tbOrderDetail
         private String orderId;
         private String orderSeq;
