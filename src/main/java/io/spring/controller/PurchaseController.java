@@ -7,6 +7,7 @@ import io.spring.model.deposit.response.PurchaseListInDepositModalData;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import io.spring.model.purchase.request.PurchaseUpdateRequestData;
 import io.spring.model.purchase.response.PurchaseItemResponseData;
+import io.spring.model.purchase.response.PurchaseMasterListResponseData;
 import io.spring.model.purchase.response.PurchaseSelectDetailResponseData;
 import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
@@ -218,13 +219,13 @@ public class PurchaseController {
     public ResponseEntity getChoosePurchaseModalList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
                                                      @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
                                                      @RequestParam @Nullable String siteOrderNo,
-                                                     @RequestParam @Nullable String orderNo,
+                                                     @RequestParam @Nullable String channelOrderNo,
                                                      @RequestParam @Nullable String brandId,
                                                      @RequestParam @Nullable String vendorId,
                                                      @RequestParam @Nullable String purchaseGb) {
-        PurchaseListInDepositModalData purchaseListInDepositModalData = jpaPurchaseService
-                .getPurchaseMasterList2(startDt, endDt, siteOrderNo, orderNo, brandId, vendorId, purchaseGb);
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),purchaseListInDepositModalData);
+        PurchaseMasterListResponseData purchaseMasterListResponseData = jpaPurchaseService
+                .getPurchaseMasterList2(startDt, endDt, siteOrderNo, channelOrderNo, brandId, vendorId, purchaseGb);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),purchaseMasterListResponseData);
         return ResponseEntity.ok(res);
     }
 //    @GetMapping(path="/items")

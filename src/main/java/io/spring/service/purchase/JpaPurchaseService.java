@@ -20,6 +20,7 @@ import io.spring.infrastructure.mapstruct.ItemsMapper;
 import io.spring.infrastructure.mapstruct.PurchaseSelectDetailResponseDataMapper;
 import io.spring.model.goods.entity.*;
 import io.spring.model.order.entity.TbMember;
+import io.spring.model.purchase.response.PurchaseMasterListResponseData;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -550,9 +551,9 @@ public class JpaPurchaseService {
     /**
      * 발주리스트 가져오기 (변경된 버전. Lspchm 기준으로)
      */
-    public PurchaseListInDepositModalData getPurchaseMasterList2(LocalDate startDt, LocalDate endDt,
+    public PurchaseMasterListResponseData getPurchaseMasterList2(LocalDate startDt, LocalDate endDt,
                                                                  String siteOrderNo, String channelOrderNo, String brandId, String vendorId, String purchaseGb) {
-        PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData(startDt,
+        PurchaseMasterListResponseData purchaseMasterListResponseData = new PurchaseMasterListResponseData(startDt,
                 endDt, siteOrderNo, channelOrderNo, brandId, vendorId, purchaseGb);
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
@@ -568,24 +569,30 @@ public class JpaPurchaseService {
                         "where lm.purchaseDt between ?1 and ?2 " +
 //                "and (tod.statusCd in ('B01','C03') or lm.dealtypeCd='02') " +
                         "and (?3 is null or trim(?3)='' or lm.siteOrderNo=?3) " +
-                        "and (?4 is null or trim(?4)='' or tod.channelOrderNo=?5)" +
-                        "and (?5 is null or trim(?5)='' or ib.brandId=?6) " +
-                        "and (?6 is null or trim(?6)='' or lm.vendorId=?7) " +
-                        "and (?7 is null or trim(?7)='' or lm.purchaseGb=?8) ", Lspchd.class)
+                        "and (?4 is null or trim(?4)='' or tod.channelOrderNo=?4)" +
+                        "and (?5 is null or trim(?5)='' or ib.brandId=?5) " +
+                        "and (?6 is null or trim(?6)='' or lm.vendorId=?6) " +
+                        "and (?7 is null or trim(?7)='' or lm.purchaseGb=?7)", Lspchd.class)
                 .setParameter(1, start).setParameter(2, end)
                 .setParameter(3,siteOrderNo).setParameter(4,channelOrderNo)
                 .setParameter(5,brandId).setParameter(6,vendorId).setParameter(7,purchaseGb);
 //        List<String> statusArr = Arrays.asList(StringFactory.getGbOne(), StringFactory.getGbThree()); // 01:발주 03:부분입고 04:완전입고 05:취소  A1:송금완료 A2:거래처선금입금 A3:거래처잔금입금
-        List<Lspchm> lspchmList = query.getResultList();
-        List<PurchaseListInDepositModalData.Purchase> purchaseList = new ArrayList<>();
-        for(Lspchm lspchm : lspchmList){
-            PurchaseListInDepositModalData.Purchase purchase = new PurchaseListInDepositModalData.Purchase(lspchm);
+        List<Lspchd> lspchdList = query.getResultList();
+        List<String> purchaseNoList = new ArrayList<>();
+        List<PurchaseMasterListResponseData.Purchase> purchaseList = new ArrayList<>();
+        for(Lspchd lspchd : lspchdList){
+            Lspchm lspchm = lspchd.getLspchm();
+            if(purchaseNoList.contains(lspchm.getPurchaseNo())){
+               continue;
+            }
+            purchaseNoList.add(lspchm.getPurchaseNo());
+            PurchaseMasterListResponseData.Purchase purchase = new PurchaseMasterListResponseData.Purchase(lspchm);
             purchaseList.add(purchase);
         }
-        purchaseListInDepositModalData.setPurchases(purchaseList);
+        purchaseMasterListResponseData.setPurchases(purchaseList);
 //        PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData();
 //        return purchaseListInDepositModalData;
-        return purchaseListInDepositModalData;
+        return purchaseMasterListResponseData;
     }
 
     /**
