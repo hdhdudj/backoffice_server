@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import io.spring.enums.TrdstOrderStatus;
 import io.spring.model.ship.response.ShipListDataResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -375,7 +376,7 @@ public class JpaShipService {
     public ShipIndicateListData getShipList(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
                                             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
                                             String shipId, String assortId, String assortNm,
-			String channelId, String statusCd, String orderKey) {
+			String channelId, String statusCd, String orderKey, String shipStatus) {
 		String orderId = "";
 		String orderSeq = "";
 		if(orderId != null && !orderId.trim().equals("")){
@@ -397,14 +398,14 @@ public class JpaShipService {
                         "and (?3 is null or trim(?3)='' or td.assortId=?3) " +
                         "and (?4 is null or trim(?4)='' or lsd.shipId=?4) " +
                         "and (?5 is null or trim(?5)='' or it.assortNm like concat('%', ?5, '%')) " +
-				"and (?6 is null or trim(?6)='' or lsd.ownerId=?6)" + "and lsm.shipStatus='02'"
+				"and (?6 is null or trim(?6)='' or lsd.ownerId=?6)" + "and lsm.shipStatus=:shipStatus "
 				+ "and (?7 is null or trim(?7)='' or lsd.orderId=?7)"
 				+ "and (?8 is null or trim(?7)='' or lsd.orderSeq=?8)"
                 ,Lsshpd.class);
         query.setParameter(1, start).setParameter(2, end)
                 .setParameter(3,assortId).setParameter(4,shipId)
 				.setParameter(5, assortNm).setParameter(6, channelId).setParameter(7, orderId)
-				.setParameter(8, orderSeq);
+				.setParameter(8, orderSeq).setParameter("shipStatus", shipStatus);
         List<Lsshpd> lsshpdList = query.getResultList();
         // 출고지시리스트 : C04, 출고처리리스트 : D01, 출고리스트 statusCd = D02인 애들만 남기기
         lsshpdList = lsshpdList.stream().filter(x->x.getTbOrderDetail().getStatusCd().equals(statusCd)).collect(Collectors.toList());
@@ -568,7 +569,7 @@ public class JpaShipService {
 
 				orderList.add(m);
 
-				this.changeStatusCdOfTbOrderDetail(orderList, "D02");
+				this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.D02.toString());
 
 				// tbOrderDetail.setStatusCd(StringFactory.getStrD02()); // D02 하드코딩
 				// jpaTbOrderDetailRepository.save(tbOrderDetail);
