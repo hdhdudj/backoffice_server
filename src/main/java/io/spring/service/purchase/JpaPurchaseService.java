@@ -17,6 +17,7 @@ import javax.persistence.TypedQuery;
 
 import io.spring.enums.TrdstOrderStatus;
 import io.spring.infrastructure.mapstruct.ItemsMapper;
+import io.spring.infrastructure.mapstruct.PurchaseMasterListResponseDataMapper;
 import io.spring.infrastructure.mapstruct.PurchaseSelectDetailResponseDataMapper;
 import io.spring.model.goods.entity.*;
 import io.spring.model.order.entity.TbMember;
@@ -82,6 +83,7 @@ public class JpaPurchaseService {
 
     private final ItemsMapper itemsMapper;
     private final PurchaseSelectDetailResponseDataMapper purchaseSelectDetailResponseDataMapper;
+    private final PurchaseMasterListResponseDataMapper purchaseMasterListResponseDataMapper;
 
     private final EntityManager em;
 
@@ -587,9 +589,11 @@ public class JpaPurchaseService {
             }
             purchaseNoList.add(lspchm.getPurchaseNo());
             PurchaseMasterListResponseData.Purchase purchase = new PurchaseMasterListResponseData.Purchase(lspchm);
+            purchase = purchaseMasterListResponseDataMapper.nullToEmpty(purchase);
             purchaseList.add(purchase);
         }
         purchaseMasterListResponseData.setPurchases(purchaseList);
+        purchaseMasterListResponseData = purchaseMasterListResponseDataMapper.nullToEmpty(purchaseMasterListResponseData);
 //        PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData();
 //        return purchaseListInDepositModalData;
         return purchaseMasterListResponseData;
