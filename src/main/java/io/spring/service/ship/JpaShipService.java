@@ -512,7 +512,7 @@ public class JpaShipService {
      * 출고 - 출고내역 : shipId를 받아 출고내역을 반환
      */
     public ShipItemListData getShipIndicateDetailList(String shipId) {
-        Lsshpm lsshpm = jpaLsshpmRepository.findByShipId(shipId);
+		Lsshpm lsshpm = jpaLsshpmRepository.findByShipId(shipId);
         ShipItemListData shipItemListData = new ShipItemListData(lsshpm);
         TbOrderMaster tbOrderMaster = lsshpm.getTbOrderMaster();
         shipItemListData.setOrderDt(Utilities.removeTAndTransToStr(tbOrderMaster.getOrderDate()));
