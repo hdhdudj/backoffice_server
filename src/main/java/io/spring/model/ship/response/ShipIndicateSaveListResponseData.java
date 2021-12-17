@@ -60,7 +60,7 @@ public class ShipIndicateSaveListResponseData {
 		public Ship(TbOrderDetail tbOrderDetail) {
 			TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
 			Itasrt itasrt = tbOrderDetail.getItasrt();
-			TbMember tbMember = tbOrderMaster.getTbMember();
+//			TbMember tbMember = tbOrderMaster.getTbMember();
 			this.orderDt = Utilities.removeTAndTransToStr(tbOrderDetail.getTbOrderMaster().getOrderDate());
 			this.assortGb = itasrt.getAssortGb();
 			this.orderId = tbOrderDetail == null ? null : tbOrderDetail.getOrderId();
@@ -69,7 +69,7 @@ public class ShipIndicateSaveListResponseData {
 			this.deliMethod = tbOrderDetail == null ? null : tbOrderDetail.getDeliMethod();
 			this.assortId = tbOrderDetail == null ? null : tbOrderDetail.getAssortId();
 			this.itemId = tbOrderDetail == null ? null : tbOrderDetail.getItemId();
-			this.custNm = tbMember == null ? null : tbMember.getCustNm();
+			this.custNm = tbOrderMaster.getReceiverName();//tbMember == null ? null : tbMember.getCustNm();
 			this.assortNm = itasrt.getAssortNm();
 //        this.availableQty =
 			this.qty = 0l;
