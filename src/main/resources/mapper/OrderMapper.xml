@@ -5,10 +5,12 @@
 	<select id="selectOrderListByCondition" resultType="HashMap">
 
 		<![CDATA[
-select dd.*, cc.cust_nm cust_nm, cc.cust_tel cust_tel
+select dd.*, dd.cust_nm cust_nm, dd.cust_tel cust_tel
 from (select aa.channel_gb channel_gb,
              aa.order_date,
              aa.order_id,
+             aa.receiver_name cust_nm,
+             aa.receiver_tel cust_tel,
              aa.cust_id cust_id,
              bb.status_cd,
              bb.assort_id,
@@ -71,8 +73,8 @@ from (select aa.channel_gb channel_gb,
 		,aa.order_date
 		,aa.order_id
 		,bb.status_cd
-		,cc.cust_nm
-		,cc.cust_tel
+		,aa.receiver_name
+		,aa.receiver_tel
 		,bb.assort_id
 		,bb.goods_nm
 		,bb.option_info
@@ -108,17 +110,17 @@ from (select aa.channel_gb channel_gb,
 		</if>
 		<if test='custNm != null'>
 			<![CDATA[
-				and cc.cust_nm like CONCAT(#{custNm},'%' )
+				and aa.receiver_name like CONCAT(#{custNm},'%' )
 			]]>
 		</if>
 		<if test='custTel != null'>
 			<![CDATA[
-				and  cc.cust_tel = #{custTel}
+				and  aa.receiver_tel = #{custTel}
 			]]>
 		</if>
 		<if test='custHp != null'>
 			<![CDATA[
-				and cc.cust_hp = #{custHp}
+				and aa.receiver_tel = #{custHp}
 			]]>
 		</if>
 
@@ -141,10 +143,10 @@ from (select aa.channel_gb channel_gb,
 		end payStatus
 		,tom.channel_order_no channelOrderNo 
 		,tod.channel_order_seq channelOrderSeq
-		 ,tm.cust_id custId
-		 ,tm.cust_nm custNm
-		 ,tm.cust_nm custHp
-		 ,tm.cust_nm custTel
+		 ,tom.cust_id custId
+		 ,tom.receiver_name custNm
+		 ,tom.receiver_tel custHp
+		 ,tom.receiver_tel custTel
 		 ,tod.goods_nm goodsNm
 		 ,ita.assort_id assortId
 		 ,itm.item_id itemId
@@ -195,17 +197,17 @@ from (select aa.channel_gb channel_gb,
 		</if>
 	<if test='custNm != null'>
 			<![CDATA[
-				and tm.cust_nm like CONCAT(#{custNm},'%' )
+				and tom.receiver_name like CONCAT(#{custNm},'%' )
 			]]>
 		</if>
 		<if test='custHp != null'>
 		<![CDATA[
-				and tm.cust_hp = #{custHp}
+				and tom.receiver_tel = #{custHp}
 			]]>
 		</if>
 		<if test='custTel != null'>
 			<![CDATA[
-				and tm.cust_tel = #{custTel}
+				and tom.receiver_tel = #{custTel}
 			]]>
 		</if>
 		<if test='deliNm != null'>
@@ -249,9 +251,9 @@ from (select aa.channel_gb channel_gb,
 		,tom.channel_order_no channelOrderNo
 		,tod.channel_order_seq channelOrderSeq
 		 ,tm.cust_id custId
-		 ,tm.cust_nm custNm
-		 ,tm.cust_nm custHp
-		 ,tm.cust_nm custTel
+		 ,tom.receiver_name custNm
+		 ,tom.receiver_tel custHp
+		 ,tom.receiver_tel custTel
 		 ,tod.goods_nm goodsNm
 		 ,ita.assort_id assortId
 		 ,itm.item_id itemId
@@ -302,17 +304,17 @@ from (select aa.channel_gb channel_gb,
 		</if>
 		<if test='custNm != null'>
 			<![CDATA[
-				and tm.cust_nm like CONCAT(#{custNm},'%' )
+				and tom.receiver_name like CONCAT(#{custNm},'%' )
 			]]>
 		</if>
 		<if test='custHp != null'>
 			<![CDATA[
-				and tm.cust_hp = #{custHp}
+				and tom.receiver_tel = #{custHp}
 			]]>
 		</if>
 		<if test='custTel != null'>
 			<![CDATA[
-				and tm.cust_tel = #{custTel}
+				and tom.receiver_tel = #{custTel}
 			]]>
 		</if>
 		<if test='deliNm != null'>
@@ -350,12 +352,12 @@ from (select aa.channel_gb channel_gb,
 		,tom.channel_order_no channelOrderNo
 		,tom.cust_id custId
 		,tom.cust_pcode custPcode
-		,tm.cust_nm  custNm
-		,tm.cust_tel  custTel
-		,tm.cust_hp custHp
+		,tom.receiver_name  custNm
+		,tom.receiver_tel  custTel
+		,tom.receiver_tel custHp
 		,tm.cust_zipcode  custZipcode
-		,tm.cust_addr1  custAddr1
-		,tm.cust_addr2 custAddr2
+		,tom.receiver_addr1  custAddr1
+		,tom.receiver_addr2 custAddr2
 		,tma.deli_nm  deliNm
 		,tma.deli_tel  deliTel
 		,tma.deli_hp  deliHp
@@ -453,7 +455,7 @@ select aa.channel_gb channelGb
 		,bb.order_seq orderSeq
 		,concat(bb.order_id,'-',bb.order_seq) orderKey
 		,bb.status_cd statusCd
-		,cc.cust_nm custNm
+		,aa.receiver_name custNm
 		,bb.assort_id assortId
 		,bb.item_id  itemId
 		,bb.goods_nm goodsNm
@@ -489,10 +491,8 @@ select aa.channel_gb channelGb
 		,bb.channel_order_seq  channelOrderSeq		
 		from tb_order_master aa
 		,tb_order_detail bb
-		,tb_member cc
 		where 1=1
 		and aa.order_id = bb.order_id
-		and aa.cust_id = cc.cust_id
 		and aa.order_date between #{startDt} and  #{endDt}
 		
 
