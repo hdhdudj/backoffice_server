@@ -483,49 +483,58 @@ public class JpaOrderService {
      * Ititmc list를 loop 돌면서 qty 관련 계산
      */
     private boolean loopItitmc(List<Ititmc> ititmcList, TbOrderDetail tbOrderDetail){
-        long orderQty = tbOrderDetail.getQty();
-        for(Ititmc ititmc : ititmcList){
-            if(ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()){
 
-                ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
-
-                this.makeShipDataByDeposit(ititmc, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
-                return true;
-            }
-        }
-        return false;
+		throw new IllegalArgumentException("loopItitmc use ititmc");
+//
+//    	
+//        long orderQty = tbOrderDetail.getQty();
+//        for(Ititmc ititmc : ititmcList){
+//            if(ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()){
+//
+//                ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
+//
+//                this.makeShipDataByDeposit(ititmc, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
+//                return true;
+//            }
+//        }
+//        return false;
     }
 
 	/**
 	 * Ititmc list를 loop 돌면서 qty 관련 계산
 	 */
 	private boolean loopItitmcByDomestic(List<Ititmc> ititmcList, TbOrderDetail tbOrderDetail) {
-		long orderQty = tbOrderDetail.getQty();
-		for (Ititmc ititmc : ititmcList) {
-			if (ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()) {
-				ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
-				this.makeDomesticShipDataByDeposit(ititmc, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
-				return true;
-			}
-		}
-		return false;
+		throw new IllegalArgumentException("loopItitmcByDomestic use ititmc");
+
+//		
+//		long orderQty = tbOrderDetail.getQty();
+//		for (Ititmc ititmc : ititmcList) {
+//			if (ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()) {
+//				ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
+//				this.makeDomesticShipDataByDeposit(ititmc, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
+//				return true;
+//			}
+//		}
+//		return false;
 	}
 
 	/**
 	 * Ititmc list를 loop 돌면서 qty 관련 계산
 	 */
 	private boolean loopItitmcByMove(List<Ititmc> ititmcList, TbOrderDetail tbOrderDetail) {
-		// 해외입고건은 이동지시 생성
 
-		long orderQty = tbOrderDetail.getQty();
-		for (Ititmc ititmc : ititmcList) {
-			if (ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()) {
-				ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
-				this.makeMoveDataByDeposit(ititmc, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
-				return true;
-			}
-		}
-		return false;
+		throw new IllegalArgumentException("loopItitmcByMove use ititmc");
+//		// 해외입고건은 이동지시 생성
+//
+//		long orderQty = tbOrderDetail.getQty();
+//		for (Ititmc ititmc : ititmcList) {
+//			if (ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()) {
+//				ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
+//				this.makeMoveDataByDeposit(ititmc, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
+//				return true;
+//			}
+//		}
+//		return false;
 	}
 
 	/**

@@ -725,33 +725,35 @@ public class JpaMoveService {
      * 상품이동지시 저장시 ititmc의 qty 값을 변경 (출고에서도 사용)
      */
     public List<Ititmc> calcItitmcQty(List<Ititmc> ititmcList, long shipQty) {
-        List<Ititmc> newItitmcList = new ArrayList<>();
-        long ititmcShipIndQty = this.getItitmcShipIndQtyByStream(ititmcList);
-        long ititmcQty = this.getItitmcQtyByStream(ititmcList);
-        if(ititmcQty - ititmcShipIndQty < shipQty){
-            return newItitmcList;
-        }
-        for(Ititmc ititmc : ititmcList){
-            long qty = ititmc.getQty() == null? 0l:ititmc.getQty(); // ititmc 재고량
-            long shipIndQty = ititmc.getShipIndicateQty() == null? 0l:ititmc.getShipIndicateQty(); // ititmc 출고예정량
-            long canShipQty = qty - shipIndQty; // 출고가능량
-            if(canShipQty <= 0){ // 출고 불가
-                log.debug("출고 또는 이동이 불가합니다.");
-                continue;
-            }
-            if(shipQty <= canShipQty){ // 이 차례에서 출고 완료 가능
-                ititmc.setShipIndicateQty(shipIndQty + shipQty);
-                jpaItitmcRepository.save(ititmc);
-                newItitmcList.add(ititmc);
-                break;
-            }
-//            else{ // 이 차례에선 출고 풀로 했는데 아직도 출고해야 할 양이 남음
-//                shipQty -= canShipQty;
-//                ititmc.setShipIndicateQty(qty);
-//                jpaItitmcRepository.save(ititmc);
+		throw new IllegalArgumentException("calcItitmcQty use ititmc");
+
+//        List<Ititmc> newItitmcList = new ArrayList<>();
+//        long ititmcShipIndQty = this.getItitmcShipIndQtyByStream(ititmcList);
+//        long ititmcQty = this.getItitmcQtyByStream(ititmcList);
+//        if(ititmcQty - ititmcShipIndQty < shipQty){
+//            return newItitmcList;
+//        }
+//        for(Ititmc ititmc : ititmcList){
+//            long qty = ititmc.getQty() == null? 0l:ititmc.getQty(); // ititmc 재고량
+//            long shipIndQty = ititmc.getShipIndicateQty() == null? 0l:ititmc.getShipIndicateQty(); // ititmc 출고예정량
+//            long canShipQty = qty - shipIndQty; // 출고가능량
+//            if(canShipQty <= 0){ // 출고 불가
+//                log.debug("출고 또는 이동이 불가합니다.");
+//                continue;
 //            }
-        }
-        return newItitmcList;
+//            if(shipQty <= canShipQty){ // 이 차례에서 출고 완료 가능
+//                ititmc.setShipIndicateQty(shipIndQty + shipQty);
+//                jpaItitmcRepository.save(ititmc);
+//                newItitmcList.add(ititmc);
+//                break;
+//            }
+////            else{ // 이 차례에선 출고 풀로 했는데 아직도 출고해야 할 양이 남음
+////                shipQty -= canShipQty;
+////                ititmc.setShipIndicateQty(qty);
+////                jpaItitmcRepository.save(ititmc);
+////            }
+//        }
+//        return newItitmcList;
     }
 
     /**
@@ -1174,32 +1176,35 @@ public class JpaMoveService {
      * 상품이동지시 저장시 ititmc의 qty 값을 차감해주는 함수
      */
     public List<Ititmc> subItitmcQties(List<Ititmc> ititmcList, long shipQty) {
-        List<Ititmc> newItitmcList = new ArrayList<>();
-        long ititmcShipIndQty = this.getItitmcShipIndQtyByStream(ititmcList);
-//        long ititmcQty = this.getItitmcQtyByStream(ititmcList);
-        if(ititmcShipIndQty < shipQty){
-            log.debug("재고량이 맞지 않아 출고가 불가합니다.");
-            return newItitmcList;
-        }
-        for(Ititmc ititmc : ititmcList){
-            long qty = ititmc.getQty() == null? 0l:ititmc.getQty(); // ititmc 재고량
-            long shipIndQty = ititmc.getShipIndicateQty() == null? 0l:ititmc.getShipIndicateQty(); // ititmc 출고예정량
-//            long canShipQty = qty - shipIndQty; // 출고가능량
-            if(shipIndQty < shipQty){ // 출고 불가
-                continue;
-            }
-            else { // 이 차례에서 출고 완료 가능
-                ititmc.setShipIndicateQty(shipIndQty - shipQty);
-                ititmc.setQty(qty - shipQty);
-                jpaItitmcRepository.save(ititmc);
-                newItitmcList.add(ititmc);
-                break;
-            }
-        }
-        if(newItitmcList.size() == 0){
-           log.debug("재고량이 맞지 않아 출고가 불가합니다.");
-        }
-        return newItitmcList;
+
+		throw new IllegalArgumentException("subItitmcQties use ititmc");
+
+//        List<Ititmc> newItitmcList = new ArrayList<>();
+//        long ititmcShipIndQty = this.getItitmcShipIndQtyByStream(ititmcList);
+////        long ititmcQty = this.getItitmcQtyByStream(ititmcList);
+//        if(ititmcShipIndQty < shipQty){
+//            log.debug("재고량이 맞지 않아 출고가 불가합니다.");
+//            return newItitmcList;
+//        }
+//        for(Ititmc ititmc : ititmcList){
+//            long qty = ititmc.getQty() == null? 0l:ititmc.getQty(); // ititmc 재고량
+//            long shipIndQty = ititmc.getShipIndicateQty() == null? 0l:ititmc.getShipIndicateQty(); // ititmc 출고예정량
+////            long canShipQty = qty - shipIndQty; // 출고가능량
+//            if(shipIndQty < shipQty){ // 출고 불가
+//                continue;
+//            }
+//            else { // 이 차례에서 출고 완료 가능
+//                ititmc.setShipIndicateQty(shipIndQty - shipQty);
+//                ititmc.setQty(qty - shipQty);
+//                jpaItitmcRepository.save(ititmc);
+//                newItitmcList.add(ititmc);
+//                break;
+//            }
+//        }
+//        if(newItitmcList.size() == 0){
+//           log.debug("재고량이 맞지 않아 출고가 불가합니다.");
+//        }
+//        return newItitmcList;
     }
 
 

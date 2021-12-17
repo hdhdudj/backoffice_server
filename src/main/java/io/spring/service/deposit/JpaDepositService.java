@@ -41,7 +41,6 @@ import io.spring.model.deposit.response.DepositSelectListResponseData;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
-import io.spring.model.goods.idclass.ItitmcId;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.entity.Lspchd;
@@ -633,79 +632,83 @@ public class JpaDepositService {
 
     private Ititmc saveItitmc(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData, LocalDateTime depositDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit) {
 
-		ItitmcId ititmcId = new ItitmcId(storageId, depositDt, deposit);
-
-		System.out.println(ititmcId);
-
-		Ititmc ititmc = jpaItitmcRepository.findById(ititmcId).orElseGet(() -> null);
-
-
-		if (ititmc == null) {
-			ititmc = new Ititmc(storageId, depositDt, deposit);
-			ititmc.setVendorId(depositListWithPurchaseInfoData.getVendorId());
-
-			ititmc.setShipIndicateQty(0L);
-//			ititmc.setShipIndicateQty(0);
-			Itasrt itasrt = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());
-			ititmc.setOwnerId(itasrt.getOwnerId());
-			ititmc.setQty(deposit.getDepositQty());
-		} else {
-			ititmc.setQty(ititmc.getQty() + deposit.getDepositQty());
-			ititmc.setUpdId(depositListWithPurchaseInfoData.getRegId());
-
-			// ititmc.setUpdDt(new Date());
-
-		}
-
-		/*
-		 * ititmc.setVendorId(depositListWithPurchaseInfoData.getVendorId());
-		 * 
-		 * ititmc.setShipIndicateQty(0L); // ititmc.setShipIndicateQty(0); Itasrt itasrt
-		 * = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());
-		 * ititmc.setOwnerId(itasrt.getOwnerId());
-		 * ititmc.setQty(deposit.getDepositQty());
-		 */
-        jpaItitmcRepository.save(ititmc);
-        return ititmc;
+		throw new IllegalArgumentException("saveItitmc use ititmc");
+//
+//		ItitmcId ititmcId = new ItitmcId(storageId, depositDt, deposit);
+//
+//		System.out.println(ititmcId);
+//
+//		Ititmc ititmc = jpaItitmcRepository.findById(ititmcId).orElseGet(() -> null);
+//
+//
+//		if (ititmc == null) {
+//			ititmc = new Ititmc(storageId, depositDt, deposit);
+//			ititmc.setVendorId(depositListWithPurchaseInfoData.getVendorId());
+//
+//			ititmc.setShipIndicateQty(0L);
+////			ititmc.setShipIndicateQty(0);
+//			Itasrt itasrt = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());
+//			ititmc.setOwnerId(itasrt.getOwnerId());
+//			ititmc.setQty(deposit.getDepositQty());
+//		} else {
+//			ititmc.setQty(ititmc.getQty() + deposit.getDepositQty());
+//			ititmc.setUpdId(depositListWithPurchaseInfoData.getRegId());
+//
+//			// ititmc.setUpdDt(new Date());
+//
+//		}
+//
+//		/*
+//		 * ititmc.setVendorId(depositListWithPurchaseInfoData.getVendorId());
+//		 * 
+//		 * ititmc.setShipIndicateQty(0L); // ititmc.setShipIndicateQty(0); Itasrt itasrt
+//		 * = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());
+//		 * ititmc.setOwnerId(itasrt.getOwnerId());
+//		 * ititmc.setQty(deposit.getDepositQty());
+//		 */
+//        jpaItitmcRepository.save(ititmc);
+//        return ititmc;
     }
 
 	private Ititmc saveRactItitmc(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData,
 			LocalDateTime depositDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit) {
 
-		ItitmcId ititmcId = new ItitmcId(storageId, depositDt, deposit);
+		throw new IllegalArgumentException("saveItitmc use ititmc");
 
-		System.out.println(ititmcId);
-
-		Ititmc ititmc = jpaItitmcRepository.findById(ititmcId).orElseGet(() -> null);
-
-		if (ititmc == null) {
-			ititmc = new Ititmc(storageId, depositDt, deposit);
-			ititmc.setVendorId(depositListWithPurchaseInfoData.getVendorId());
-
-			ititmc.setShipIndicateQty(0L);
-//			ititmc.setShipIndicateQty(0);
-			Itasrt itasrt = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());
-			ititmc.setOwnerId(itasrt.getOwnerId());
-			ititmc.setQty(deposit.getDepositQty());
-			ititmc.setStockGb("02");
-		} else {
-			ititmc.setQty(ititmc.getQty() + deposit.getDepositQty());
-			ititmc.setUpdId(depositListWithPurchaseInfoData.getRegId());
-
-			// ititmc.setUpdDt(new Date());
-
-		}
-
-		/*
-		 * ititmc.setVendorId(depositListWithPurchaseInfoData.getVendorId());
-		 * 
-		 * ititmc.setShipIndicateQty(0L); // ititmc.setShipIndicateQty(0); Itasrt itasrt
-		 * = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());
-		 * ititmc.setOwnerId(itasrt.getOwnerId());
-		 * ititmc.setQty(deposit.getDepositQty());
-		 */
-		jpaItitmcRepository.save(ititmc);
-		return ititmc;
+//		ItitmcId ititmcId = new ItitmcId(storageId, depositDt, deposit);
+//
+//		System.out.println(ititmcId);
+//
+//		Ititmc ititmc = jpaItitmcRepository.findById(ititmcId).orElseGet(() -> null);
+//
+//		if (ititmc == null) {
+//			ititmc = new Ititmc(storageId, depositDt, deposit);
+//			ititmc.setVendorId(depositListWithPurchaseInfoData.getVendorId());
+//
+//			ititmc.setShipIndicateQty(0L);
+////			ititmc.setShipIndicateQty(0);
+//			Itasrt itasrt = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());
+//			ititmc.setOwnerId(itasrt.getOwnerId());
+//			ititmc.setQty(deposit.getDepositQty());
+//			ititmc.setStockGb("02");
+//		} else {
+//			ititmc.setQty(ititmc.getQty() + deposit.getDepositQty());
+//			ititmc.setUpdId(depositListWithPurchaseInfoData.getRegId());
+//
+//			// ititmc.setUpdDt(new Date());
+//
+//		}
+//
+//		/*
+//		 * ititmc.setVendorId(depositListWithPurchaseInfoData.getVendorId());
+//		 * 
+//		 * ititmc.setShipIndicateQty(0L); // ititmc.setShipIndicateQty(0); Itasrt itasrt
+//		 * = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());
+//		 * ititmc.setOwnerId(itasrt.getOwnerId());
+//		 * ititmc.setQty(deposit.getDepositQty());
+//		 */
+//		jpaItitmcRepository.save(ititmc);
+//		return ititmc;
 	}
 
 	private Ititmt saveItitmt(LocalDateTime purchaseDt, String storageId,
