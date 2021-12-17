@@ -377,6 +377,7 @@ public class JpaShipService {
                                             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
                                             String shipId, String assortId, String assortNm,
 			String channelId, String statusCd, String orderKey, String shipStatus) {
+
 		String orderId = "";
 		String orderSeq = "";
 		if(orderId != null && !orderId.trim().equals("")){
@@ -405,7 +406,7 @@ public class JpaShipService {
         query.setParameter(1, start).setParameter(2, end)
                 .setParameter(3,assortId).setParameter(4,shipId)
 				.setParameter(5, assortNm).setParameter(6, channelId).setParameter(7, orderId)
-				.setParameter(8, orderSeq).setParameter("shipStatus", shipStatus);
+				.setParameter(8, orderSeq).setParameter(StringFactory.getStrShipStatus(), shipStatus);
         List<Lsshpd> lsshpdList = query.getResultList();
         // 출고지시리스트 : C04, 출고처리리스트 : D01, 출고리스트 statusCd = D02인 애들만 남기기
         lsshpdList = lsshpdList.stream().filter(x->x.getTbOrderDetail().getStatusCd().equals(statusCd)).collect(Collectors.toList());

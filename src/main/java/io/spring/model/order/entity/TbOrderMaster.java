@@ -48,6 +48,12 @@ public class TbOrderMaster extends CommonProps {
     // 21-09-28 추가된 컬럼
     private String payGb; // 결제방법
 
+    // 21-12-17 추가된 컬럼
+    private String receiverName;
+    private String receiverTel;
+    private String receiverAddr1;
+    private String receiverAddr2;
+
     @JoinColumn(name = "custId", referencedColumnName = "custId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
