@@ -1153,19 +1153,19 @@ public class JpaPurchaseService {
 			// lspchm.setSiteOrderNo(tbOrderMaster.getChannelOrderNo());
 			// lspchm.setPurchaseGb(StringFactory.getGbTwo()); // 이동지시의 경우 02 로 처리
 
-			String OStorageId = "";
+            String OStorageId = "";
 
-			// lspchm insert
-			if (lsshpm.getShipOrderGb().equals("01")) {
-				// 주문이동지시
-				OStorageId = tbOrderDetail.getStorageId();
-			} else if (lsshpm.getShipOrderGb().equals("02")) {
-				// 상품이동지시
-				OStorageId = lsshpm.getOStorageId();
-			}
+            // lspchm insert
+            if (lsshpm.getShipOrderGb().equals("01")) {
+                // 주문이동지시
+                OStorageId = tbOrderDetail.getStorageId();
+            } else if (lsshpm.getShipOrderGb().equals("02")) {
+                // 상품이동지시
+                OStorageId = lsshpm.getOStorageId();
+            }
 
-			lspchm.setStoreCd(OStorageId); // 도착지
-			lspchm.setOStoreCd(lsshpm.getStorageId()); //출발지
+            lspchm.setStoreCd(OStorageId); // 도착지
+            lspchm.setOStoreCd(lsshpm.getStorageId()); //출발지
 
 			// lsdpsd.getLsdpsm().getStoreCd();
 
@@ -1204,13 +1204,13 @@ public class JpaPurchaseService {
 			// lsdpsp.setLspchd(lspchd);
 			jpaLsdpspRepository.save(lsdpsp);
 
-			if (lsshpm.getShipOrderGb().equals("01")) {
-				// 주문이동지시
-				lspchm.setStoreCd(tbOrderDetail.getStorageId()); // 도착지
-			} else if (lsshpm.getShipOrderGb().equals("02")) {
-				// 상품이동지시
-				lspchm.setStoreCd(lsshpm.getOStorageId());
-			}
+//			if (lsshpm.getShipOrderGb().equals("01")) {
+//				// 주문이동지시
+//				lspchm.setStoreCd(tbOrderDetail.getStorageId()); // 도착지
+//			} else if (lsshpm.getShipOrderGb().equals("02")) {
+//				// 상품이동지시
+//				lspchm.setStoreCd(lsshpm.getOStorageId());
+//			}
 
 			// ititmt qty update
 			Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(
