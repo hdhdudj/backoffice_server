@@ -10,6 +10,8 @@ public interface JpaCmstgmRepository extends JpaRepository<Cmstgm, String> {
 
 	List<Cmstgm> findByUpStorageIdAndDefaultYnAndDelYn(String upStorageId, String defaultYn, String delYn);
 
+	
+
 	/*
 	 * 
 	 * public interface JpaIfCategoryRepository extends JpaRepository<IfCategory,

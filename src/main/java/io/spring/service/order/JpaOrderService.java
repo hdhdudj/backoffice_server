@@ -246,8 +246,19 @@ public class JpaOrderService {
         String statusCd = null;
         // 1. 해외재고 있을 가능성이 있음
         if(sumOfDomQty - sumOfDomShipIndQty - tbOrderDetail.getQty() >= 0){
-            isStockExist = this.loopItitmc(domItitmc, tbOrderDetail);
-            statusCd = isStockExist? StringFactory.getStrC04() : statusCd; // 국내입고완료(해외지만 거기서 바로 쏘므로) : C04
+			// isStockExist = this.loopItitmc(domItitmc, tbOrderDetail); //20211217
+
+			// 국내재고 있는경우 랙에서 지시수량 차감 ,창고에서 지시수량 차감
+			Ititmc im = jpaStockService.checkStockWhenDirect(goodsStorageId, assortId, itemId, tbOrderDetail.getQty());
+
+			// 지시수량 차감처리가 되었다면 출고지시데이타 생성
+			if (im != null) {
+				this.makeShipDataByDeposit(im, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
+			}
+
+			
+			// 재고처리가 제대로 되었다면 주문상태 업데이트
+			statusCd = im != null ? StringFactory.getStrC04() : statusCd; // 국내입고완료(해외지만 거기서 바로 쏘므로) : C04
 			// this.getLsdpsdListByGoodsInfo(tbOrderDetail).get(0); // 숫자 맞는 상품입고와 그 입고에 연결된
 			// 상품발주에 orderId와 orderSeq 적어넣기
         }
@@ -366,8 +377,21 @@ public class JpaOrderService {
         String statusCd = null;
         // 1. 국내재고가 있을 가능성이 있음
         if(sumOfDomQty - sumOfDomShipIndQty - tbOrderDetail.getQty() >= 0){
-			boolean isDomStockExist = this.loopItitmcByDomestic(domItitmc, tbOrderDetail);
-            statusCd = isDomStockExist? StringFactory.getStrC04() : statusCd; // 국내(현지)입고완료 : C04
+
+			Ititmc im = jpaStockService.checkStockWhenImport(domesticStorageId, assortId, itemId,
+					tbOrderDetail.getQty());
+
+			// 지시수량 차감처리가 되었다면 출고지시데이타 생성
+			if (im != null) {
+				this.makeDomesticShipDataByDeposit(im, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
+			}
+
+			statusCd = im != null ? StringFactory.getStrC04() : statusCd;
+
+			// boolean isDomStockExist = this.loopItitmcByDomestic(domItitmc,
+			// tbOrderDetail);
+			// statusCd = isDomStockExist? StringFactory.getStrC04() : statusCd; //
+			// 국내(현지)입고완료 : C04
         }
         // 2. 국내입고예정 재고가 있을 가능성이 있음
         if(statusCd == null && sumOfDomTempQty - sumOfDomTempIndQty - tbOrderDetail.getQty() >= 0){
@@ -375,8 +399,19 @@ public class JpaOrderService {
         }
         // 3. 해외재고가 있을 가능성이 있음
         if(statusCd == null && sumOfOvrsQty - sumOfOvrsShipIndQty - tbOrderDetail.getQty() >= 0){
-			this.loopItitmcByMove(ovrsItitmc, tbOrderDetail);
-            statusCd = StringFactory.getStrC01(); // 해외입고완료 : C01
+
+			Ititmc im = jpaStockService.checkStockWhenImport(overseaStorageId, assortId, itemId,
+					tbOrderDetail.getQty());
+
+			// 지시수량 차감처리가 되었다면 출고지시데이타 생성
+			if (im != null) {
+				this.makeMoveDataByDeposit(im, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
+			}
+
+			statusCd = im != null ? StringFactory.getStrC01() : statusCd;
+
+			// this.loopItitmcByMove(ovrsItitmc, tbOrderDetail);
+			// statusCd = StringFactory.getStrC01(); // 해외입고완료 : C01
         }
         // 4. 해외입고예정 재고가 있을 가능성이 있음
         if(statusCd == null && sumOfOvrsTempQty - sumOfOvrsTempIndQty - tbOrderDetail.getQty() >= 0){

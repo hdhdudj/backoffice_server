@@ -2,11 +2,14 @@ package io.spring.service.stock;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.springframework.stereotype.Service;
 
+import io.spring.jparepos.common.JpaCmstgmRepository;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.deposit.JpaLsdpsmRepository;
 import io.spring.jparepos.deposit.JpaLsdpspRepository;
@@ -18,6 +21,7 @@ import io.spring.jparepos.purchase.JpaLspchdRepository;
 import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
+import io.spring.model.common.entity.Cmstgm;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.service.common.JpaCommonService;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +42,7 @@ public class JpaStockService {
 	private final JpaLsshpdRepository jpaLsshpdRepository;
 	private final JpaItitmcRepository jpaItitmcRepository;
 	private final JpaLsdpsmRepository jpaLsdpsmRepository;
+	private final JpaCmstgmRepository jpaCmstgmRepository;
 
 	private final JpaTbOrderMasterRepository tbOrderMasterRepository;
 	private final JpaTbOrderDetailRepository tbOrderDetailRepository;
@@ -241,6 +246,157 @@ public class JpaStockService {
 		}
 
 		return 1;
+
+	}
+
+	public Ititmc checkStockWhenDirect(String storageId, String assortId, String itemId, Long orderQty) {
+
+		System.out.println("checkStockWhenDirect");
+
+		Query query = em.createQuery("select ic from Ititmc ic " + "join fetch ic.cmstgm cm " + "where "
+				+ "(?1 is null or trim(?1)='' or cm.upStorageId=?1) "
+
+				+ "and (?2 is null or trim(?2)='' or ic.assortId=?2) "
+				+ "and (?3 is null or trim(?3)='' or ic.itemId=?3) "
+
+				+ "and ic.qty > 0 and ic.itemGrade='11'" + "order by ic.assortId,ic.itemId,ic.effStaDt ");
+		query.setParameter(1, storageId).setParameter(2, assortId).setParameter(3, itemId);
+		List<Ititmc> ititmcList = query.getResultList();
+
+		Ititmc ititmc =null;
+		
+		for (Ititmc o : ititmcList) {
+
+			long qty = o.getQty() == null ? 0 : o.getQty();
+			long indicateQty = o.getShipIndicateQty() == null ? 0 : o.getShipIndicateQty();
+
+
+
+			if (qty >= orderQty + indicateQty) {
+
+				o.setShipIndicateQty(orderQty + indicateQty);
+
+				jpaItitmcRepository.save(o);
+
+				ititmc = o;
+				
+				break;
+				
+				// this.makeShipDataByDeposit(ititmc, tbOrderDetail, StringFactory.getGbOne());
+				// // 01 (출고지시) 하드코딩
+				// return o;
+			}
+
+		}
+		
+		if (ititmc == null) {
+			log.debug("20201 rack 출고지시수량이 주문수량보다 적음");
+			throw new IllegalArgumentException("no stockQty check..");
+			// return null;
+		}
+
+		Ititmc ititmc_store = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(assortId,
+				itemId, storageId, "11", ititmc.getEffEndDt());
+		
+		if (ititmc_store == null) {
+			log.debug("20202 store 출고지시수량이 주문수량보다 적음");
+			throw new IllegalArgumentException("no stockQty check..");
+			// return null;
+		}
+
+
+		long qty = ititmc_store.getQty() == null ? 0 : ititmc_store.getQty();
+		long indicateQty = ititmc_store.getShipIndicateQty() == null ? 0 : ititmc_store.getShipIndicateQty();
+
+		if (qty >= orderQty + indicateQty) {
+
+			ititmc_store.setShipIndicateQty(orderQty + indicateQty);
+			jpaItitmcRepository.save(ititmc_store);
+		} else {
+			log.debug("20203 store 출고지시수량이 주문수량보다 적음");
+			throw new IllegalArgumentException("no stockQty check..");
+		}
+
+
+		return ititmc_store;
+	}
+
+	public Ititmc checkStockWhenImport(String storageId, String assortId, String itemId, Long orderQty) {
+
+		System.out.println("checkStockWhenImport");
+		System.out.println("storageId =>" + storageId);
+		System.out.println("assortId =>" + assortId);
+		System.out.println("itemId =>" + itemId);
+
+		Query query = em.createQuery("select ic from Ititmc ic " + "join fetch ic.cmstgm cm " + "where "
+				+ "(?1 is null or trim(?1)='' or cm.upStorageId=?1) "
+
+				+ "and (?2 is null or trim(?2)='' or ic.assortId=?2) "
+				+ "and (?3 is null or trim(?3)='' or ic.itemId=?3) "
+
+				+ "and ic.qty > 0 and ic.itemGrade='11'" + "order by ic.assortId,ic.itemId,ic.effStaDt ");
+		query.setParameter(1, storageId).setParameter(2, assortId).setParameter(3, itemId);
+		List<Ititmc> ititmcList = query.getResultList();
+
+		Ititmc ititmc = null;
+
+		for (Ititmc o : ititmcList) {
+			System.out.println(o);
+			long qty = o.getQty() == null ? 0 : o.getQty();
+			long indicateQty = o.getShipIndicateQty() == null ? 0 : o.getShipIndicateQty();
+
+
+			if (qty >= orderQty + indicateQty) {
+
+				o.setShipIndicateQty(orderQty + indicateQty);
+
+				jpaItitmcRepository.save(o);
+
+				ititmc = o;
+
+				break;
+
+				// this.makeShipDataByDeposit(ititmc, tbOrderDetail, StringFactory.getGbOne());
+				// // 01 (출고지시) 하드코딩
+				// return o;
+			}
+
+		}
+
+		if (ititmc == null) {
+			log.debug("20301 rack 출고지시수량이 주문수량보다 적음");
+			throw new IllegalArgumentException("no stockQty check..");
+			// return null;
+		}
+
+		Ititmc ititmc_store = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(assortId,
+				itemId, storageId, "11", ititmc.getEffEndDt());
+
+		if (ititmc_store == null) {
+			log.debug("20302 store 출고지시수량이 주문수량보다 적음");
+			throw new IllegalArgumentException("no stockQty check..");
+			// return null;
+		}
+
+
+		long qty = ititmc_store.getQty() == null ? 0 : ititmc_store.getQty();
+		long indicateQty = ititmc_store.getShipIndicateQty() == null ? 0 : ititmc_store.getShipIndicateQty();
+
+		if (qty >= orderQty + indicateQty) {
+
+			ititmc_store.setShipIndicateQty(orderQty + indicateQty);
+			jpaItitmcRepository.save(ititmc_store);
+		} else {
+			log.debug("20303 store 출고지시수량이 주문수량보다 적음");
+			throw new IllegalArgumentException("no stockQty check..");
+		}
+
+		return ititmc_store;
+	}
+
+	public String getUpStorageId(String rackNo) {
+		Cmstgm cm = jpaCmstgmRepository.findById(rackNo).orElse(null);
+		return cm == null ? "" : cm.getUpStorageId();
 
 	}
 

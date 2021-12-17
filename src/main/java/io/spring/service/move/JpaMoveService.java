@@ -428,7 +428,7 @@ public class JpaMoveService {
      * 상품 선택창 : 상품이동지시 상품추가 모달에서 상품을 선택하고 확인을 눌렀을 때 리스트를 반환
      */
     public GoodsModalListResponseData getGoodsList(String storageId, String purchaseVendorId, String assortId, String assortNm) {
-        List<Ititmc> ititmcList = this.getItitmc(storageId, purchaseVendorId, assortId, assortNm);
+		List<Ititmc> ititmcList = this.getItitmc2(storageId, purchaseVendorId, assortId, assortNm);
         List<GoodsModalListResponseData.Goods> goodsList = new ArrayList<>();
         GoodsModalListResponseData goodsModalListResponseData = new GoodsModalListResponseData(storageId, purchaseVendorId, assortId, assortNm);
         for(Ititmc ititmc : ititmcList){
@@ -535,13 +535,18 @@ public class JpaMoveService {
 	/**
 	 * 상품이동지시 화면에서 검색에 맞는 Ititmc들을 가져오는 함수
 	 */
-	private List<Ititmc> getItitmc2(String storageId, String purchaseVendorId, String assortId, String assortNm) {
+	public List<Ititmc> getItitmc2(String storageId, String purchaseVendorId, String assortId, String assortNm) {
+
+		// 랙재고를 가져옴.
+
 		Query query = em
 				.createQuery("select ic from Ititmc ic " + "join fetch ic.itasrt it " + "join fetch it.ifBrand ib "
-						+ "join fetch it.itvariList iv " + "where " + "(?1 is null or trim(?1)='' or ic.storageId=?1) "
+						+ "join fetch it.itvariList iv " + "join fetch ic.cmstgm cm " + "where "
+						+ "(?1 is null or trim(?1)='' or cm.upStorageId=?1) "
 						+ "and (?2 is null or trim(?2)='' or it.vendorId=?2) "
 						+ "and (?3 is null or trim(?3)='' or ic.assortId=?3) "
-						+ "and (?4 is null or trim(?4)='' or it.assortNm like concat('%',?4,'%'))");
+						+ "and (?4 is null or trim(?4)='' or it.assortNm like concat('%',?4,'%')) and ic.qty > 0 "
+						+ "order by ic.assortId,ic.effStaDt ");
 		query.setParameter(1, storageId).setParameter(2, purchaseVendorId).setParameter(3, assortId).setParameter(4,
 				assortNm);
 		List<Ititmc> ititmcList = query.getResultList();
@@ -567,31 +572,41 @@ public class JpaMoveService {
 
             long moveQty = goods.getMoveQty();
             // 1. 출고 data 생성
-            Ititmc ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(goods.getAssortId(), goods.getItemId(),
-                    goods.getStorageId(), StringFactory.getStrEleven(), Utilities.dateToLocalDateTime(goods.getDepositDt()));
-
-			// 상품이동지시할떄 주문건의 수량을 뺴기위해서 넣은 로직인데 이동지시를 그전에 만드는걸로 로직을 변경하여 제외
-			// List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository
-			// .findByAssortIdAndItemId(ititmc.getAssortId(), ititmc.getItemId()).stream()
-			// .filter(x ->
-			// x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList());
-
-			// System.out.println(goods);
-
-			// System.out.println(tbOrderDetailList);
-
-			// long qtyOfC01 = tbOrderDetailList.size();
-			long qtyOfC01 = 0;
-            long qty = ititmc.getQty() == null? 0l:ititmc.getQty();
-            long shipIndicateQty = ititmc.getShipIndicateQty() == null? 0l:ititmc.getShipIndicateQty();
-            if(goods.getMoveQty() > qty - shipIndicateQty - qtyOfC01){
-                log.debug("입력량이 이동가능량보다 큽니다.");
-                continue;
-            }
+            
+            
             if(goods.getMoveQty() == 0){
                 log.debug("입력량이 0이어서 저장되지 않습니다.");
                 continue;
             }
+            
+
+			String StorageId = jpaStockService.getUpStorageId(goods.getStorageId());
+			String rackNo = goods.getStorageId();
+   
+            
+			Ititmc ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(
+					goods.getAssortId(), goods.getItemId(), rackNo, StringFactory.getStrEleven(),
+					Utilities.dateToLocalDateTime(goods.getDepositDt()));
+//
+//			// 상품이동지시할떄 주문건의 수량을 뺴기위해서 넣은 로직인데 이동지시를 그전에 만드는걸로 로직을 변경하여 제외
+//			// List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository
+//			// .findByAssortIdAndItemId(ititmc.getAssortId(), ititmc.getItemId()).stream()
+//			// .filter(x ->
+//			// x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList());
+//
+//			// System.out.println(goods);
+//
+//			// System.out.println(tbOrderDetailList);
+//
+//			// long qtyOfC01 = tbOrderDetailList.size();
+//			long qtyOfC01 = 0;
+//            long qty = ititmc.getQty() == null? 0l:ititmc.getQty();
+//            long shipIndicateQty = ititmc.getShipIndicateQty() == null? 0l:ititmc.getShipIndicateQty();
+//            if(goods.getMoveQty() > qty - shipIndicateQty - qtyOfC01){
+//                log.debug("입력량이 이동가능량보다 큽니다.");
+//                continue;
+//            }
+
             // 1-0. Lsshpm 생성
             String shipId = this.getShipId();
 			Lsshpm lsshpm = new Lsshpm("04", shipId, goodsMoveSaveData);
@@ -600,15 +615,20 @@ public class JpaMoveService {
 			lsshpm.setInstructDt(LocalDateTime.now()); // 이동지시일자 셋팅
 			lsshpm.setShipStatus("02"); // 이동지시상태로 변경 01 은 이동지시접수
 
-            // 1-1. ititmc 값 변경
-            if(lsshpm != null){
-                ititmc.setShipIndicateQty(shipIndicateQty + moveQty);
-                ititmc.setUpdId(goodsMoveSaveData.getUserId());
-                jpaItitmcRepository.save(ititmc);
-            }
+//            // 1-1. ititmc 값 변경
+//            if(lsshpm != null){
+//                ititmc.setShipIndicateQty(shipIndicateQty + moveQty);
+//                ititmc.setUpdId(goodsMoveSaveData.getUserId());
+//                jpaItitmcRepository.save(ititmc);
+//            }
+			
+			
             String shipSeq = StringFactory.getFourStartCd(); // 0001 하드코딩 //StringUtils.leftPad(Integer.toString(index),4,'0');
             // 1-2. Lsshpd 생성
             Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, ititmc, goods, regId);
+
+			lsshpd.setRackNo(rackNo);
+
             lsshpd.setOStorageId(goodsMoveSaveData.getOStorageId());
             lsshpd.setShipIndicateQty(moveQty);
             lsshpm.setChannelId(goods.getChannelId()); // vendorId는 바깥에서 set
@@ -620,6 +640,21 @@ public class JpaMoveService {
             jpaLsshpsRepository.save(lsshps);
 
             shipIdList.add(shipId);
+
+
+			// 재고차감처리
+			HashMap<String, Object> p = new HashMap<String, Object>();
+
+			p.put("assortId", goods.getAssortId());
+			p.put("itemId", goods.getItemId());
+			p.put("effStaDt", Utilities.dateToLocalDateTime(goods.getDepositDt()));
+			p.put("itemGrade", "11");
+			p.put("storageId", StorageId);
+			p.put("rackNo", rackNo);
+			p.put("qty", moveQty);
+
+			jpaStockService.minusIndicateStockByOrder(p);
+
 
 			// 2. 발주 data 생성 이동 //발주데이타는 이동처리에서 만드므로 처리안함.
 //            jpaPurchaseService.makePurchaseDataFromGoodsMoveSave(regId, purchaseDt, lsshpm, lsshpd);
@@ -638,6 +673,7 @@ public class JpaMoveService {
 		// 상품이동지시의 경우 이동지시에 걸려있는상황에서 발주가 없으면 ititmc 에만 데이타가 있는거기 떄문에 신규주문에 대한 처리가 안됨 그래서
 		// 상품발주는 이동발주를 이동지시와 같이 처리함,
         jpaPurchaseService.makePurchaseDataFromOrderMoveSave2(lsshpdList);
+
 
         return shipIdList;
     }
@@ -822,34 +858,45 @@ public class JpaMoveService {
             
 			// 주문이동지시랑 상품이동지시 처리에 대해서 재고 처리 방식을 일단 나눴음.
 			// 화면에서도 랙을 선택해서 출고지시하는부분이 있어야할거같음.
+//20211217
+//			if (lsshpm.getShipOrderGb().equals(StringFactory.getGbTwo())) { // 01 주문, 02 상품
+//				log.debug("주문이동처리가 아닌 상품이동지시입니다.");
+//
+//				List<Ititmc> ititmcList = jpaItitmcRepository
+//						.findByAssortIdAndItemIdAndEffEndDtAndStorageIdOrderByEffEndDtAsc(lsshpd.getAssortId(),
+//								lsshpd.getItemId(), lsshpd.getExcAppDt(), lsshpm.getStorageId());
+//				if (this.subItitmcQties(ititmcList, shipIndQty).size() == 0) {
+//					continue;
+//				}
+//
+//			} else {
+//
+//				HashMap<String, Object> p = new HashMap<String, Object>();
+//
+//				p.put("assortId", lsshpd.getAssortId());
+//				p.put("itemId", lsshpd.getItemId());
+//				p.put("effStaDt", lsshpd.getExcAppDt());
+//				p.put("itemGrade", "11");
+//				p.put("storageId", lsshpm.getStorageId());
+//				p.put("rackNo", lsshpd.getRackNo());
+//				p.put("shipQty", shipIndQty);
+//
+//				int r = jpaStockService.minusShipStockByOrder(p);
+//
+//
+//			}
 
-			if (lsshpm.getShipOrderGb().equals(StringFactory.getGbTwo())) { // 01 주문, 02 상품
-				log.debug("주문이동처리가 아닌 상품이동지시입니다.");
+			HashMap<String, Object> p = new HashMap<String, Object>();
 
-				List<Ititmc> ititmcList = jpaItitmcRepository
-						.findByAssortIdAndItemIdAndEffEndDtAndStorageIdOrderByEffEndDtAsc(lsshpd.getAssortId(),
-								lsshpd.getItemId(), lsshpd.getExcAppDt(), lsshpm.getStorageId());
-				if (this.subItitmcQties(ititmcList, shipIndQty).size() == 0) {
-					continue;
-				}
+			p.put("assortId", lsshpd.getAssortId());
+			p.put("itemId", lsshpd.getItemId());
+			p.put("effStaDt", lsshpd.getExcAppDt());
+			p.put("itemGrade", "11");
+			p.put("storageId", lsshpm.getStorageId());
+			p.put("rackNo", lsshpd.getRackNo());
+			p.put("shipQty", shipIndQty);
 
-			} else {
-
-				HashMap<String, Object> p = new HashMap<String, Object>();
-
-				p.put("assortId", lsshpd.getAssortId());
-				p.put("itemId", lsshpd.getItemId());
-				p.put("effStaDt", lsshpd.getExcAppDt());
-				p.put("itemGrade", "11");
-				p.put("storageId", lsshpm.getStorageId());
-				p.put("rackNo", lsshpd.getRackNo());
-				p.put("shipQty", shipIndQty);
-
-				int r = jpaStockService.minusShipStockByOrder(p);
-
-
-			}
-            
+			int r = jpaStockService.minusShipStockByOrder(p);
             
 
 //            //

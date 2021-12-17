@@ -1,7 +1,19 @@
 package io.spring.model.goods.entity;
 
+import java.time.LocalDateTime;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.model.common.entity.Cmstgm;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
@@ -10,13 +22,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
+import lombok.ToString;
 
 @Entity
 @Getter
 @Setter
+@ToString
 @Table(name="ititmc")
 @IdClass(ItitmcId.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -75,4 +86,9 @@ public class Ititmc extends CommonProps {
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Itasrt.class)
     @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     private Itasrt itasrt;
+
+	@ManyToOne(fetch = FetchType.LAZY, targetEntity = Cmstgm.class)
+	@JoinColumn(name = "storageId", referencedColumnName = "storageId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+	private Cmstgm cmstgm;
+
 }
