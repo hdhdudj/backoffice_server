@@ -15,6 +15,7 @@ import org.hibernate.engine.spi.PersistentAttributeInterceptor;
 import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
@@ -31,7 +32,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Itasrt extends CommonProps implements PersistentAttributeInterceptable{
+public class Itasrt extends CommonProps implements PersistentAttributeInterceptable, Serializable {
 
 	public Itasrt(GoodsInsertRequestData goodsInsertRequestData){
 		this.assortId = goodsInsertRequestData.getAssortId();

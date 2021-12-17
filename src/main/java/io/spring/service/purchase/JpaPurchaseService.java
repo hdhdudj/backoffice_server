@@ -485,11 +485,12 @@ public class JpaPurchaseService {
             Utilities.setOptionNames(item, itvariList); // optionNm set
             if (lspchd.getLspchm().getDealtypeCd().equals(StringFactory.getGbOne()) && ((lspchd.getOrderId() != null && !lspchd.getOrderId().trim().equals("")) && lspchd.getOrderSeq() != null && !lspchd.getOrderSeq().trim().equals(""))) { // 주문발주인 경우
                 TbOrderDetail tbOrderDetail = lspchd.getTbOrderDetail();
-                TbMember tbMember = tbOrderDetail.getTbOrderMaster().getTbMember();
+//                TbMember tbMember = tbOrderDetail.getTbOrderMaster().getTbMember();
                 item.setOrderId(tbOrderDetail.getOrderId());
                 item.setOrderSeq(tbOrderDetail.getOrderSeq());
                 item.setDeliMethod(tbOrderDetail.getDeliMethod());
-                item.setCustNm(tbMember.getCustNm());
+                item.setCustNm(tbOrderDetail.getTbOrderMaster().getReceiverName());
+//                item.setCustNm(tbMember.getCustNm());
                 item.setChannelOrderNo(tbOrderDetail.getChannelOrderNo());
             }
 
