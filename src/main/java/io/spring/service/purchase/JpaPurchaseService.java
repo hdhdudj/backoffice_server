@@ -709,7 +709,7 @@ public class JpaPurchaseService {
             Itasrt itasrt = lsdpsp.getItasrt();//lsdpsp.getTbOrderDetail().getItasrt();//.getLsdpsd().getItasrt();
             PurchaseSelectListResponseData.Purchase purchase = new PurchaseSelectListResponseData.Purchase(lspchm, lsdpsp, itasrt);
             Lspchd lspchd = lsdpsp.getLspchd();
-            if(lspchd.getOrderId() != null && !lspchd.getOrderId().trim().equals("") || lspchd.getOrderSeq() != null && !lspchd.getOrderSeq().trim().equals("")){
+            if(lspchd.getOrderId() != null && !lspchd.getOrderId().trim().equals("") && lspchd.getOrderSeq() != null && !lspchd.getOrderSeq().trim().equals("")){
                 purchase.setCustNm(lspchd.getTbOrderDetail().getTbOrderMaster().getReceiverName());
             }
             Utilities.setOptionNames(purchase, itasrt.getItvariList());
