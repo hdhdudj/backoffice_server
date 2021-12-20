@@ -543,6 +543,7 @@ public class JpaPurchaseService {
         List<PurchaseListInDepositModalData.Purchase> purchaseList = new ArrayList<>();
         for(Lspchm lspchm : lspchmList){
            PurchaseListInDepositModalData.Purchase purchase = new PurchaseListInDepositModalData.Purchase(lspchm);
+           purchase.setItems(this.getPurchaseDetailPage(lspchm.getPurchaseNo()).getItems());
            purchaseList.add(purchase);
         }
         purchaseListInDepositModalData.setPurchases(purchaseList);
