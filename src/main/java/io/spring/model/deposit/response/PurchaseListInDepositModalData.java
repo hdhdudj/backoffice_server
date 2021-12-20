@@ -11,6 +11,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.purchase.entity.Lspchm;
+import io.spring.model.purchase.response.PurchaseSelectDetailResponseData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -77,5 +78,7 @@ public class PurchaseListInDepositModalData {
         private String purchaseStatus;
         private String siteOrderNo; // 해외주문번호
         private String siteTrackNo; // 해외트래킹번호
+        // 21-12-20 추가
+        private List<PurchaseSelectDetailResponseData.Items> items;
     }
 }
