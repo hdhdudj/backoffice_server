@@ -390,6 +390,7 @@ public class JpaOrderService {
 
     /**
      * Ititmt list를 loop 돌면서 qty 관련 계산
+     * 10-21 수정 : 해당 주문 이상의 숫자를 가진 ititmt가 존재해야 함.
      */
     private String loopItitmt(List<Ititmt> ititmtList, TbOrderDetail tbOrderDetail, DirectOrImport di) {
 
@@ -400,6 +401,7 @@ public class JpaOrderService {
         boolean isStockCandidateExist = false;
         long orderQty = tbOrderDetail.getQty();
         String goodsStorageId = null;
+
         for(Ititmt ititmt : ititmtList){
             if(ititmt.getTempQty() >= orderQty + ititmt.getTempIndicateQty()){
 				ititmt.setTempQty(ititmt.getTempQty() - orderQty);
@@ -446,6 +448,7 @@ public class JpaOrderService {
      */
     private boolean loopItitmc(List<Ititmc> ititmcList, TbOrderDetail tbOrderDetail){
         long orderQty = tbOrderDetail.getQty();
+        boolean isBigOneExist = false;
         for(Ititmc ititmc : ititmcList){
             if(ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()){
                 ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
@@ -741,18 +744,18 @@ public class JpaOrderService {
         return sum;
     }
 
-//    public TbOrderDetail getNullTest(String orderId, String orderSeq) {
-//        List<TbOrderDetail> tbOrderDetail = em.createQuery("select t from TbOrderDetail t " +
-//                "join fetch t.itasrt " +
-//                "where t.orderId in (?1) and t.orderSeq=?2", TbOrderDetail.class)
-//                .setParameter(1, Arrays.asList(new String[]{"O00020410"}))//, "O00020410"O00025071
-//                .setParameter(2,orderSeq).getResultList();
-//
-//        if(tbOrderDetail.get(0).getItasrt() == null){
-//            System.out.println("널입니다.");
-//        }
-//        return tbOrderDetail.get(0);
-//    }
+    public TbOrderDetail getNullTest(String orderId, String orderSeq) {
+        TbOrderDetail tbOrderDetail = em.createQuery("select t from TbOrderDetail t " +
+                "left join fetch t.itasrt " +
+                "where t.orderId=?1 and t.orderSeq=?2", TbOrderDetail.class)
+                .setParameter(1, orderId)//, "O00020410"O00025071
+                .setParameter(2,orderSeq).getSingleResult();
+
+        if(tbOrderDetail.getItasrt() == null){
+            System.out.println("널입니다.");
+        }
+        return tbOrderDetail;
+    }
 
     private enum ItitmcQty{
         QTY, SHIPINDQTY
