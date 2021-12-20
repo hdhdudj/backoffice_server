@@ -594,7 +594,7 @@ public class JpaPurchaseService {
             purchase = purchaseMasterListResponseDataMapper.nullToEmpty(purchase);
             purchaseList.add(purchase);
         }
-        purchaseMasterListResponseData.setPurchaseList(purchaseList);
+        purchaseMasterListResponseData.setPurchases(purchaseList);
         purchaseMasterListResponseData = purchaseMasterListResponseDataMapper.nullToEmpty(purchaseMasterListResponseData);
 //        PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData();
 //        return purchaseListInDepositModalData;
