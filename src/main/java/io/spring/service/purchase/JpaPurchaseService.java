@@ -485,11 +485,12 @@ public class JpaPurchaseService {
             Utilities.setOptionNames(item, itvariList); // optionNm set
             if (lspchd.getLspchm().getDealtypeCd().equals(StringFactory.getGbOne()) && ((lspchd.getOrderId() != null && !lspchd.getOrderId().trim().equals("")) && lspchd.getOrderSeq() != null && !lspchd.getOrderSeq().trim().equals(""))) { // 주문발주인 경우
                 TbOrderDetail tbOrderDetail = lspchd.getTbOrderDetail();
-                TbMember tbMember = tbOrderDetail.getTbOrderMaster().getTbMember();
+//                TbMember tbMember = tbOrderDetail.getTbOrderMaster().getTbMember();
                 item.setOrderId(tbOrderDetail.getOrderId());
                 item.setOrderSeq(tbOrderDetail.getOrderSeq());
                 item.setDeliMethod(tbOrderDetail.getDeliMethod());
-                item.setCustNm(tbMember.getCustNm());
+                item.setCustNm(tbOrderDetail.getTbOrderMaster().getReceiverName());
+//                item.setCustNm(tbMember.getCustNm());
                 item.setChannelOrderNo(tbOrderDetail.getChannelOrderNo());
             }
 
@@ -707,6 +708,10 @@ public class JpaPurchaseService {
             }
             Itasrt itasrt = lsdpsp.getItasrt();//lsdpsp.getTbOrderDetail().getItasrt();//.getLsdpsd().getItasrt();
             PurchaseSelectListResponseData.Purchase purchase = new PurchaseSelectListResponseData.Purchase(lspchm, lsdpsp, itasrt);
+            Lspchd lspchd = lsdpsp.getLspchd();
+            if(lspchd.getOrderId() != null && !lspchd.getOrderId().trim().equals("") || lspchd.getOrderSeq() != null && !lspchd.getOrderSeq().trim().equals("")){
+                purchase.setCustNm(lspchd.getTbOrderDetail().getTbOrderMaster().getReceiverName());
+            }
             Utilities.setOptionNames(purchase, itasrt.getItvariList());
 
             long planQty = lsdpsp.getPurchasePlanQty() == null? 0l:lsdpsp.getPurchasePlanQty();
@@ -1152,19 +1157,19 @@ public class JpaPurchaseService {
 			// lspchm.setSiteOrderNo(tbOrderMaster.getChannelOrderNo());
 			// lspchm.setPurchaseGb(StringFactory.getGbTwo()); // 이동지시의 경우 02 로 처리
 
-			String OStorageId = "";
+            String OStorageId = "";
 
-			// lspchm insert
-			if (lsshpm.getShipOrderGb().equals("01")) {
-				// 주문이동지시
-				OStorageId = tbOrderDetail.getStorageId();
-			} else if (lsshpm.getShipOrderGb().equals("02")) {
-				// 상품이동지시
-				OStorageId = lsshpm.getOStorageId();
-			}
+            // lspchm insert
+            if (lsshpm.getShipOrderGb().equals("01")) {
+                // 주문이동지시
+                OStorageId = tbOrderDetail.getStorageId();
+            } else if (lsshpm.getShipOrderGb().equals("02")) {
+                // 상품이동지시
+                OStorageId = lsshpm.getOStorageId();
+            }
 
-			lspchm.setStoreCd(OStorageId); // 도착지
-			lspchm.setOStoreCd(lsshpm.getStorageId()); //출발지
+            lspchm.setStoreCd(OStorageId); // 도착지
+            lspchm.setOStoreCd(lsshpm.getStorageId()); //출발지
 
 			// lsdpsd.getLsdpsm().getStoreCd();
 
@@ -1203,13 +1208,13 @@ public class JpaPurchaseService {
 			// lsdpsp.setLspchd(lspchd);
 			jpaLsdpspRepository.save(lsdpsp);
 
-			if (lsshpm.getShipOrderGb().equals("01")) {
-				// 주문이동지시
-				lspchm.setStoreCd(tbOrderDetail.getStorageId()); // 도착지
-			} else if (lsshpm.getShipOrderGb().equals("02")) {
-				// 상품이동지시
-				lspchm.setStoreCd(lsshpm.getOStorageId());
-			}
+//			if (lsshpm.getShipOrderGb().equals("01")) {
+//				// 주문이동지시
+//				lspchm.setStoreCd(tbOrderDetail.getStorageId()); // 도착지
+//			} else if (lsshpm.getShipOrderGb().equals("02")) {
+//				// 상품이동지시
+//				lspchm.setStoreCd(lsshpm.getOStorageId());
+//			}
 
 			// ititmt qty update
 			Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(

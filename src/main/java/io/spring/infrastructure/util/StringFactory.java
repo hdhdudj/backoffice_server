@@ -158,6 +158,8 @@ public class StringFactory {
     @Getter
     public final static String strShipSeqNum = "shipSeqNum";
     @Getter
+    public final static String strShipStatus = "shipStatus";
+    @Getter
     public final static String strDealtypeCd = "dealtypeCd";
 
     // 에러 메시지
