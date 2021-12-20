@@ -416,15 +416,6 @@ public class JpaShipService {
             ShipIndicateListData.Ship ship = new ShipIndicateListData.Ship(lsshpd.getTbOrderDetail(), lsshpm, lsshpd);
             // option set
             Utilities.setOptionNames(ship, lsshpd.getTbOrderDetail().getItasrt().getItvariList());
-//            List<Itvari> itvariList = lsshpd.getTbOrderDetail().getItasrt().getItvariList();
-//            if(itvariList.size() > 0){
-//                Itvari itvari1 = itvariList.get(0);
-//                ship.setOptionNm1(itvari1.getOptionNm());
-//            }
-//            if(itvariList.size() > 1){
-//                Itvari itvari2 = itvariList.get(1);
-//                ship.setOptionNm2(itvari2.getOptionNm());
-//            }
             // 출고지시 qty 설정 == 1l
             ship.setQty(lsshpd.getShipIndicateQty());
             shipList.add(ship);

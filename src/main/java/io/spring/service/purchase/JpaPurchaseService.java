@@ -543,6 +543,7 @@ public class JpaPurchaseService {
         List<PurchaseListInDepositModalData.Purchase> purchaseList = new ArrayList<>();
         for(Lspchm lspchm : lspchmList){
            PurchaseListInDepositModalData.Purchase purchase = new PurchaseListInDepositModalData.Purchase(lspchm);
+           purchase.setItems(this.getPurchaseDetailPage(lspchm.getPurchaseNo()).getItems());
            purchaseList.add(purchase);
         }
         purchaseListInDepositModalData.setPurchases(purchaseList);
@@ -593,7 +594,7 @@ public class JpaPurchaseService {
             purchase = purchaseMasterListResponseDataMapper.nullToEmpty(purchase);
             purchaseList.add(purchase);
         }
-        purchaseMasterListResponseData.setPurchases(purchaseList);
+        purchaseMasterListResponseData.setPurchaseList(purchaseList);
         purchaseMasterListResponseData = purchaseMasterListResponseDataMapper.nullToEmpty(purchaseMasterListResponseData);
 //        PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData();
 //        return purchaseListInDepositModalData;
@@ -709,7 +710,7 @@ public class JpaPurchaseService {
             Itasrt itasrt = lsdpsp.getItasrt();//lsdpsp.getTbOrderDetail().getItasrt();//.getLsdpsd().getItasrt();
             PurchaseSelectListResponseData.Purchase purchase = new PurchaseSelectListResponseData.Purchase(lspchm, lsdpsp, itasrt);
             Lspchd lspchd = lsdpsp.getLspchd();
-            if(lspchd.getOrderId() != null && !lspchd.getOrderId().trim().equals("") || lspchd.getOrderSeq() != null && !lspchd.getOrderSeq().trim().equals("")){
+            if(lspchd.getOrderId() != null && !lspchd.getOrderId().trim().equals("") && lspchd.getOrderSeq() != null && !lspchd.getOrderSeq().trim().equals("")){
                 purchase.setCustNm(lspchd.getTbOrderDetail().getTbOrderMaster().getReceiverName());
             }
             Utilities.setOptionNames(purchase, itasrt.getItvariList());
