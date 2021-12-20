@@ -164,5 +164,7 @@ public class PurchaseSelectListResponseData {
         private Long depositQty; // 입고수량
         private Float purchaseCost; // 발주금액
 		private String optionInfo;
+        // 21-12-20 추가
+        private String custNm;
     }
 }
