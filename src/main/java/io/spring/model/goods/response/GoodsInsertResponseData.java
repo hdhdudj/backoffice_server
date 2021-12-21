@@ -20,6 +20,7 @@ public class GoodsInsertResponseData {
         this.manufactureNm = goodsInsertRequestData.getManufactureNm();
         this.assortModel = goodsInsertRequestData.getAssortModel();
         this.taxGb = goodsInsertRequestData.getTaxGb();
+        this.margin = goodsInsertRequestData.getMargin();
         this.description = goodsInsertRequestData.getDescription();
         this.attributesList = attributesList;
         this.itemsList = itemsList;
@@ -33,6 +34,9 @@ public class GoodsInsertResponseData {
     private String manufactureNm;
     private String assortModel;
     private String taxGb;
+    // 21-12-21 추가
+    private String margin;
+
     private List<GoodsInsertRequestData.Description> description;
     private List<Attributes> attributesList;
     private List<Items> itemsList;
