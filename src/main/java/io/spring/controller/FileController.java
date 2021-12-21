@@ -1,5 +1,23 @@
 package io.spring.controller;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.exception.ResourceNotFoundException;
@@ -10,11 +28,6 @@ import io.spring.service.file.FileService;
 import io.spring.service.goods.JpaGoodsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -26,6 +39,19 @@ public class FileController {
 	private final FileService fileService ;
 	private final JpaGoodsService jpaGoodsService ;
 	
+	@GetMapping(path = "/godoImage", produces = MediaType.IMAGE_JPEG_VALUE)
+	public @ResponseBody byte[] getGodoImage() throws IOException {
+
+		// https://trdst.hgodo.com/product_data/goods/editor/201222/melampo_terra_image4752536-960x960_102001.jpg
+
+		InputStream input = new URL(
+				"https://trdst.hgodo.com/data/editor/goods/200615/mathieu-challieres-demi-grande-voliere_165826.jpg")
+						.openStream();
+
+		return IOUtils.toByteArray(input);
+
+	}
+
 	@PostMapping("/uploadFile")
     public ResponseEntity uploadFile(@RequestParam("imageGb") String imageGb,@RequestParam("file") MultipartFile file) {
        // String fileName = service.storeFile(file);
