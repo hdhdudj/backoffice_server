@@ -27,11 +27,13 @@ import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.idclass.LspchdId;
+import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import io.spring.model.ship.entity.Lsshpd;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
 
 @Entity
@@ -78,10 +80,19 @@ public class Lspchd extends CommonProps implements Serializable {
         this.setShipSeq = lspchd.getSetShipSeq();
         this.siteOrderNo = lspchd.getSiteOrderNo();
     }
-    public Lspchd(String purchaseNo, String purchaseSeq){
+    public Lspchd(String purchaseNo, String purchaseSeq, PurchaseInsertRequestData.Items item){
         this.purchaseNo = purchaseNo;
         this.purchaseSeq = purchaseSeq;
         this.itemGrade = StringFactory.getStrEleven();
+
+        this.purchaseQty = item.getPurchaseQty();
+        this.purchaseUnitAmt = item.getPurchaseUnitAmt();
+        this.assortId = (item.getAssortId());
+        this.itemId = (item.getItemId());
+        this.orderId = (item.getOrderId());
+        this.orderSeq = (item.getOrderSeq());
+        this.siteGb = (StringFactory.getGbOne()); // 01 하드코딩
+        this.ownerId = (StringUtils.leftPad(StringFactory.getStrOne(), 6, '0')); // 000001 하드코딩
     }
 
     /**
