@@ -141,7 +141,12 @@ public class PurchaseSelectDetailResponseData {
         private String custTel;
         private String receiverNm;
         private String receiverTel;
+        private String receiverHp;
         private String receiverAddr1;
         private String receiverAddr2;
+        private String receiverZonecode;
+        private String receiverZipcode;
+        private String orderMemo;
+        private String brandNm;
     }
 }

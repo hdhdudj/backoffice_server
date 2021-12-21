@@ -440,8 +440,9 @@ public class JpaPurchaseService {
                 "left outer join fetch tod.tbOrderMaster tom " +
                 "left outer join fetch tom.tbMember tm " +
                 "left outer join fetch ld.ititmm im " +
-                "join fetch im.itasrt ita " +
-                "left join fetch ita.itaimg img " +
+                "left outer join fetch im.itasrt ita " +
+                "left outer join fetch ita.ifBrand ib " +
+                "left outer join fetch ita.itaimg img " +
                 "where ld.purchaseNo=?1", Lspchd.class).setParameter(1,purchaseNo).getResultList();//jpaLspchmRepository.findById(purchaseNo).orElseGet(() -> null);//.get();
         if(lspchdList == null || lspchdList.size() == 0){
             log.debug("해당 발주번호에 해당하는 발주상세내역이 존재하지 않습니다.");
@@ -481,7 +482,14 @@ public class JpaPurchaseService {
                 item.setDeliMethod(tbOrderDetail.getDeliMethod());
                 item.setCustNm(tbOrderDetail.getTbOrderMaster().getReceiverName());
                 item.setReceiverNm(tbOrderDetail.getTbOrderMaster().getReceiverName());
-                item.setReceiverNm(tbOrderDetail.getTbOrderMaster().getReceiverName());
+                item.setReceiverTel(tbOrderDetail.getTbOrderMaster().getReceiverTel());
+                item.setReceiverHp(tbOrderDetail.getTbOrderMaster().getReceiverHp());
+                item.setReceiverAddr1(tbOrderDetail.getTbOrderMaster().getReceiverAddr1());
+                item.setReceiverAddr2(tbOrderDetail.getTbOrderMaster().getReceiverAddr2());
+                item.setReceiverZipcode(tbOrderDetail.getTbOrderMaster().getReceiverZipcode());
+                item.setReceiverZonecode(tbOrderDetail.getTbOrderMaster().getReceiverZonecode());
+                item.setOrderMemo(tbOrderDetail.getTbOrderMaster().getOrderMemo());
+                item.setBrandNm(itasrt.getIfBrand() == null? "" : itasrt.getIfBrand().getBrandNm());
 //                item.setCustNm(tbMember.getCustNm());
                 item.setChannelOrderNo(tbOrderDetail.getChannelOrderNo());
             }
