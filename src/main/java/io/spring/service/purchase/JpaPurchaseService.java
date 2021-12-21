@@ -263,29 +263,19 @@ public class JpaPurchaseService {
                 else {
                     purchaseSeq = Utilities.plusOne(purchaseSeq, 4);
                 }
-                lspchd = new Lspchd(purchaseInsertRequestData.getPurchaseId(), purchaseSeq);
+                lspchd = new Lspchd(purchaseInsertRequestData.getPurchaseId(), purchaseSeq, item);
                 lspchd.setRegId(purchaseInsertRequestData.getUserId());
-                lspchd.setUpdId(purchaseInsertRequestData.getUserId());
+//                lspchd.setUpdId(purchaseInsertRequestData.getUserId());
             }
 
-            lspchd.setPurchaseQty(item.getPurchaseQty());
             lspchd.setPurchaseUnitAmt(item.getPurchaseUnitAmt());
-            if(item.getPurchaseQty()== null || item.getPurchaseUnitAmt() == null){
+            if(lspchd.getPurchaseQty()== null || item.getPurchaseUnitAmt() == null){
                 log.debug("purchaseQty 또는 purchaseUnitAmt가 null 입니다.");
                 lspchd.setPurchaseItemAmt(null);
             }
             else{
-                lspchd.setPurchaseItemAmt(item.getPurchaseQty()*item.getPurchaseUnitAmt());
+                lspchd.setPurchaseItemAmt(lspchd.getPurchaseQty()*item.getPurchaseUnitAmt());
             }
-			lspchd.setOrderId(item.getOrderId());
-			lspchd.setOrderSeq(item.getOrderSeq());
-            lspchd.setAssortId(item.getAssortId());
-            lspchd.setItemId(item.getItemId());
-			lspchd.setOrderId(item.getOrderId());
-			lspchd.setOrderSeq(item.getOrderSeq());
-			lspchd.setSiteGb(StringFactory.getGbOne()); // 01 하드코딩
-			lspchd.setOwnerId(StringUtils.leftPad(StringFactory.getStrOne(), 6, '0')); // 000001 하드코딩
-
             lspchd.setUpdId(purchaseInsertRequestData.getUserId());
 
             jpaLspchdRepository.save(lspchd);
@@ -354,12 +344,12 @@ public class JpaPurchaseService {
                 purchaseInsertRequestData.setDepositPlanId(null);
             }
             else{ // update
-                lsdpsp.setPurchaseNo(purchaseInsertRequestData.getPurchaseId());
-                lsdpsp.setPurchaseSeq(items.getPurchaseSeq());
-                lsdpsp.setPurchasePlanQty(items.getPurchaseQty());//(items.getPurchaseQty() + lsdpsp.getPurchasePlanQty());
-                lsdpsp.setAssortId(items.getAssortId());
-                lsdpsp.setItemId(items.getItemId());
-                lsdpsp.setPlanStatus(purchaseInsertRequestData.getPlanStatus());
+//                lsdpsp.setPurchaseNo(purchaseInsertRequestData.getPurchaseId());
+//                lsdpsp.setPurchaseSeq(items.getPurchaseSeq());
+//                lsdpsp.setPurchasePlanQty(items.getPurchaseQty());//(items.getPurchaseQty() + lsdpsp.getPurchasePlanQty());
+//                lsdpsp.setAssortId(items.getAssortId());
+//                lsdpsp.setItemId(items.getItemId());
+//                lsdpsp.setPlanStatus(purchaseInsertRequestData.getPlanStatus());
                 lsdpsp.setUpdId(purchaseInsertRequestData.getUserId());
             }
             

@@ -20,18 +20,8 @@ import java.util.Date;
 @Setter
 @IdClass(IfGoodsMasterId.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(exclude = "uploadStatus")
+@EqualsAndHashCode(exclude = "uploadStatus", callSuper = false)
 public class IfGoodsMaster extends CommonProps implements Cloneable {
-    @Override
-    public IfGoodsMaster clone() {
-        try {
-            return (IfGoodsMaster) super.clone();
-        } catch (CloneNotSupportedException e) {
-            // Cloneable을 구현했기 때문에 이 블록이 실행되는 일은 없다.
-            return null;
-        }
-    }
-
     public IfGoodsMaster(Itasrt itasrt, Itasrn itasrn, Itasrd itasrd){
         // itasrt
         this.channelGb = StringFactory.getGbOne(); // 01 하드코딩
