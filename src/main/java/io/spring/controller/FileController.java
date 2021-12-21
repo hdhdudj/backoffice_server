@@ -8,6 +8,7 @@ import java.util.Base64;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,6 +40,20 @@ public class FileController {
 	private final FileService fileService ;
 	private final JpaGoodsService jpaGoodsService ;
 	
+	@GetMapping(path = "/godoImage2", produces = MediaType.IMAGE_JPEG_VALUE)
+	public @ResponseBody byte[] getGodoImage2() throws IOException {
+		System.out.println("godoImage");
+		// https://trdst.hgodo.com/product_data/goods/editor/201222/melampo_terra_image4752536-960x960_102001.jpg
+
+		String url = "https://trdst.hgodo.com/data/editor/goods/200615/mathieu-challieres-demi-grande-voliere_165826.jpg";
+
+		InputStream input = new URL(url).openStream();
+
+
+		return IOUtils.toByteArray(input);
+
+	}
+
 	@GetMapping(path = "/godoImage")
 	public @ResponseBody String getGodoImage() throws IOException {
 		System.out.println("godoImage");
