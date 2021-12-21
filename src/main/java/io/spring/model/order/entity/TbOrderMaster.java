@@ -53,6 +53,9 @@ public class TbOrderMaster extends CommonProps {
     private String receiverTel;
     private String receiverAddr1;
     private String receiverAddr2;
+    // 21-12-21 추가된 컬럼
+    private String receiverZipcode;
+    private String receiverZonecode;
 
     @JoinColumn(name = "custId", referencedColumnName = "custId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
     @ManyToOne(fetch = FetchType.LAZY)

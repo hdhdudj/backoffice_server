@@ -480,6 +480,8 @@ public class JpaPurchaseService {
                 item.setOrderSeq(tbOrderDetail.getOrderSeq());
                 item.setDeliMethod(tbOrderDetail.getDeliMethod());
                 item.setCustNm(tbOrderDetail.getTbOrderMaster().getReceiverName());
+                item.setReceiverNm(tbOrderDetail.getTbOrderMaster().getReceiverName());
+                item.setReceiverNm(tbOrderDetail.getTbOrderMaster().getReceiverName());
 //                item.setCustNm(tbMember.getCustNm());
                 item.setChannelOrderNo(tbOrderDetail.getChannelOrderNo());
             }

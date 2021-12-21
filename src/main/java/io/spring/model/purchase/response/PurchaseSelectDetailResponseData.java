@@ -87,6 +87,9 @@ public class PurchaseSelectDetailResponseData {
             this.custCategory = itasrt.getCustCategory();
             this.material = ititmm.getMaterial();
             this.imagePath = itaimg == null? null : this.imgServerUrl + itaimg.getImagePath() + itaimg.getImageName();
+
+            // 21-12-21 추가 (입고처리 발주선택창에 붙는 디테일 리스트에 필요한 애들)
+
         }
 //        public Items(Lspchd lspchd, TbOrderDetail tbOrderDetail, Itasrt itasrt){
 //            this.purchaseId = lspchd.getPurchaseNo();
@@ -133,5 +136,12 @@ public class PurchaseSelectDetailResponseData {
         // 21-12-06 추가
         private String custNm;
         private String channelOrderNo;
+
+        // 21-12-21 추가 (입고처리 발주선택창에 붙는 디테일 리스트에 필요한 애들)
+        private String custTel;
+        private String receiverNm;
+        private String receiverTel;
+        private String receiverAddr1;
+        private String receiverAddr2;
     }
 }
