@@ -31,7 +31,7 @@ public class PurchaseMasterListResponseData {
     private String brandId;
     private String vendorId;
     private String purchaseGb;
-    private List<Purchase> purchaseList;
+    private List<Purchase> purchases;
 
     @Getter
     @Setter

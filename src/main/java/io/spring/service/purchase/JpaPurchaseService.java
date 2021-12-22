@@ -263,29 +263,19 @@ public class JpaPurchaseService {
                 else {
                     purchaseSeq = Utilities.plusOne(purchaseSeq, 4);
                 }
-                lspchd = new Lspchd(purchaseInsertRequestData.getPurchaseId(), purchaseSeq);
+                lspchd = new Lspchd(purchaseInsertRequestData.getPurchaseId(), purchaseSeq, item);
                 lspchd.setRegId(purchaseInsertRequestData.getUserId());
-                lspchd.setUpdId(purchaseInsertRequestData.getUserId());
+//                lspchd.setUpdId(purchaseInsertRequestData.getUserId());
             }
 
-            lspchd.setPurchaseQty(item.getPurchaseQty());
             lspchd.setPurchaseUnitAmt(item.getPurchaseUnitAmt());
-            if(item.getPurchaseQty()== null || item.getPurchaseUnitAmt() == null){
+            if(lspchd.getPurchaseQty()== null || item.getPurchaseUnitAmt() == null){
                 log.debug("purchaseQty 또는 purchaseUnitAmt가 null 입니다.");
                 lspchd.setPurchaseItemAmt(null);
             }
             else{
-                lspchd.setPurchaseItemAmt(item.getPurchaseQty()*item.getPurchaseUnitAmt());
+                lspchd.setPurchaseItemAmt(lspchd.getPurchaseQty()*item.getPurchaseUnitAmt());
             }
-			lspchd.setOrderId(item.getOrderId());
-			lspchd.setOrderSeq(item.getOrderSeq());
-            lspchd.setAssortId(item.getAssortId());
-            lspchd.setItemId(item.getItemId());
-			lspchd.setOrderId(item.getOrderId());
-			lspchd.setOrderSeq(item.getOrderSeq());
-			lspchd.setSiteGb(StringFactory.getGbOne()); // 01 하드코딩
-			lspchd.setOwnerId(StringUtils.leftPad(StringFactory.getStrOne(), 6, '0')); // 000001 하드코딩
-
             lspchd.setUpdId(purchaseInsertRequestData.getUserId());
 
             jpaLspchdRepository.save(lspchd);
@@ -354,12 +344,12 @@ public class JpaPurchaseService {
                 purchaseInsertRequestData.setDepositPlanId(null);
             }
             else{ // update
-                lsdpsp.setPurchaseNo(purchaseInsertRequestData.getPurchaseId());
-                lsdpsp.setPurchaseSeq(items.getPurchaseSeq());
-                lsdpsp.setPurchasePlanQty(items.getPurchaseQty());//(items.getPurchaseQty() + lsdpsp.getPurchasePlanQty());
-                lsdpsp.setAssortId(items.getAssortId());
-                lsdpsp.setItemId(items.getItemId());
-                lsdpsp.setPlanStatus(purchaseInsertRequestData.getPlanStatus());
+//                lsdpsp.setPurchaseNo(purchaseInsertRequestData.getPurchaseId());
+//                lsdpsp.setPurchaseSeq(items.getPurchaseSeq());
+//                lsdpsp.setPurchasePlanQty(items.getPurchaseQty());//(items.getPurchaseQty() + lsdpsp.getPurchasePlanQty());
+//                lsdpsp.setAssortId(items.getAssortId());
+//                lsdpsp.setItemId(items.getItemId());
+//                lsdpsp.setPlanStatus(purchaseInsertRequestData.getPlanStatus());
                 lsdpsp.setUpdId(purchaseInsertRequestData.getUserId());
             }
             
@@ -450,8 +440,9 @@ public class JpaPurchaseService {
                 "left outer join fetch tod.tbOrderMaster tom " +
                 "left outer join fetch tom.tbMember tm " +
                 "left outer join fetch ld.ititmm im " +
-                "join fetch im.itasrt ita " +
-                "left join fetch ita.itaimg img " +
+                "left outer join fetch im.itasrt ita " +
+                "left outer join fetch ita.ifBrand ib " +
+                "left outer join fetch ita.itaimg img " +
                 "where ld.purchaseNo=?1", Lspchd.class).setParameter(1,purchaseNo).getResultList();//jpaLspchmRepository.findById(purchaseNo).orElseGet(() -> null);//.get();
         if(lspchdList == null || lspchdList.size() == 0){
             log.debug("해당 발주번호에 해당하는 발주상세내역이 존재하지 않습니다.");
@@ -490,6 +481,15 @@ public class JpaPurchaseService {
                 item.setOrderSeq(tbOrderDetail.getOrderSeq());
                 item.setDeliMethod(tbOrderDetail.getDeliMethod());
                 item.setCustNm(tbOrderDetail.getTbOrderMaster().getReceiverName());
+                item.setReceiverNm(tbOrderDetail.getTbOrderMaster().getReceiverName());
+                item.setReceiverTel(tbOrderDetail.getTbOrderMaster().getReceiverTel());
+                item.setReceiverHp(tbOrderDetail.getTbOrderMaster().getReceiverHp());
+                item.setReceiverAddr1(tbOrderDetail.getTbOrderMaster().getReceiverAddr1());
+                item.setReceiverAddr2(tbOrderDetail.getTbOrderMaster().getReceiverAddr2());
+                item.setReceiverZipcode(tbOrderDetail.getTbOrderMaster().getReceiverZipcode());
+                item.setReceiverZonecode(tbOrderDetail.getTbOrderMaster().getReceiverZonecode());
+                item.setOrderMemo(tbOrderDetail.getTbOrderMaster().getOrderMemo());
+                item.setBrandNm(itasrt.getIfBrand() == null? "" : itasrt.getIfBrand().getBrandNm());
 //                item.setCustNm(tbMember.getCustNm());
                 item.setChannelOrderNo(tbOrderDetail.getChannelOrderNo());
             }
@@ -594,7 +594,7 @@ public class JpaPurchaseService {
             purchase = purchaseMasterListResponseDataMapper.nullToEmpty(purchase);
             purchaseList.add(purchase);
         }
-        purchaseMasterListResponseData.setPurchaseList(purchaseList);
+        purchaseMasterListResponseData.setPurchases(purchaseList);
         purchaseMasterListResponseData = purchaseMasterListResponseDataMapper.nullToEmpty(purchaseMasterListResponseData);
 //        PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData();
 //        return purchaseListInDepositModalData;

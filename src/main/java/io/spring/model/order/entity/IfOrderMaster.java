@@ -63,6 +63,10 @@ public class IfOrderMaster {
     private Float totalCouponGoodsMileage;
     private Float totalCouponOrderMileage;
 
+    // 21-12-21
+    private String receiverHp; // 수취자 폰
+    private String orderHp; // 주문자 폰
+
     @Override
     public String toString(){
         return "ifNo : " + ifNo + ", channelOrderNo : " + channelOrderNo + ", ifStatus : " + ifStatus;

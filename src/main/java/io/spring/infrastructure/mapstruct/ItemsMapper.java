@@ -32,5 +32,15 @@ public interface ItemsMapper {
     @Mapping(target = "buySupplyDiscount", expression = "java(items.getBuySupplyDiscount() == null? 0f : items.getBuySupplyDiscount())")
     @Mapping(target = "purchaseQty", expression = "java(items.getPurchaseQty() == null? 0l : items.getPurchaseQty())")
     @Mapping(target = "purchaseUnitAmt", expression = "java(items.getPurchaseUnitAmt() == null? 0f : items.getPurchaseUnitAmt())")
+    @Mapping(target = "custTel", expression = "java(items.getCustTel() == null? \"\" : items.getCustTel())")
+    @Mapping(target = "receiverNm", expression = "java(items.getReceiverNm() == null? \"\" : items.getReceiverNm())")
+    @Mapping(target = "receiverTel", expression = "java(items.getReceiverTel() == null? \"\" : items.getReceiverTel())")
+    @Mapping(target = "receiverAddr1", expression = "java(items.getReceiverAddr1() == null? \"\" : items.getReceiverAddr1())")
+    @Mapping(target = "receiverAddr2", expression = "java(items.getReceiverAddr2() == null? \"\" : items.getReceiverAddr2())")
+    @Mapping(target = "receiverZonecode", expression = "java(items.getReceiverZonecode() == null? \"\" : items.getReceiverZonecode())")
+    @Mapping(target = "receiverZipcode", expression = "java(items.getReceiverZipcode() == null? \"\" : items.getReceiverZipcode())")
+    @Mapping(target = "orderMemo", expression = "java(items.getOrderMemo() == null? \"\" : items.getOrderMemo())")
+    @Mapping(target = "brandNm", expression = "java(items.getBrandNm() == null? \"\" : items.getBrandNm())")
+    @Mapping(target = "receiverHp", expression = "java(items.getReceiverHp() == null? \"\" : items.getReceiverHp())")
     PurchaseSelectDetailResponseData.Items nullToEmpty(PurchaseSelectDetailResponseData.Items items);
 }
