@@ -73,7 +73,7 @@ public class Ititmm extends CommonProps implements Serializable {
     private Float purchasePrice;
 
     // itasrt 연관 관계
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Itasrt.class)
     @JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     private Itasrt itasrt;
 

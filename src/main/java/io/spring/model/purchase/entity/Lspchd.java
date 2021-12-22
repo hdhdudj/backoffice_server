@@ -24,6 +24,7 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.deposit.entity.Lsdpsp;
+import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.idclass.LspchdId;

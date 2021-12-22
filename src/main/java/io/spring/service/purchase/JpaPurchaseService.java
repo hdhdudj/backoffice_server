@@ -16,11 +16,8 @@ import io.spring.infrastructure.mapstruct.ItemsMapper;
 import io.spring.infrastructure.mapstruct.PurchaseMasterListResponseDataMapper;
 import io.spring.infrastructure.mapstruct.PurchaseSelectDetailResponseDataMapper;
 import io.spring.model.goods.entity.*;
-import io.spring.model.order.entity.TbMember;
 import io.spring.model.purchase.response.PurchaseMasterListResponseData;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,7 +45,6 @@ import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.entity.Lspchm;
 import io.spring.model.purchase.entity.Lspchs;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
-import io.spring.model.purchase.request.PurchaseUpdateRequestData;
 import io.spring.model.purchase.response.PurchaseSelectDetailResponseData;
 import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.model.ship.entity.Lsshpd;
@@ -481,6 +477,7 @@ public class JpaPurchaseService {
             Utilities.setOptionNames(item, itvariList); // optionNm set
             if (lspchd.getLspchm().getDealtypeCd().equals(StringFactory.getGbOne()) && ((lspchd.getOrderId() != null && !lspchd.getOrderId().trim().equals("")) && lspchd.getOrderSeq() != null && !lspchd.getOrderSeq().trim().equals(""))) { // 주문발주인 경우
                 TbOrderDetail tbOrderDetail = lspchd.getTbOrderDetail();
+                IfBrand ifBrand = itasrt.getIfBrand();
 //                TbMember tbMember = tbOrderDetail.getTbOrderMaster().getTbMember();
                 item.setOrderId(tbOrderDetail.getOrderId());
                 item.setOrderSeq(tbOrderDetail.getOrderSeq());
@@ -494,7 +491,7 @@ public class JpaPurchaseService {
                 item.setReceiverZipcode(tbOrderDetail.getTbOrderMaster().getReceiverZipcode());
                 item.setReceiverZonecode(tbOrderDetail.getTbOrderMaster().getReceiverZonecode());
                 item.setOrderMemo(tbOrderDetail.getTbOrderMaster().getOrderMemo());
-                item.setBrandNm(itasrt.getIfBrand() == null? "" : itasrt.getIfBrand().getBrandNm());
+                item.setBrandNm(ifBrand == null? "" : ifBrand.getBrandNm());
 //                item.setCustNm(tbMember.getCustNm());
                 item.setChannelOrderNo(tbOrderDetail.getChannelOrderNo());
             }
@@ -550,8 +547,8 @@ public class JpaPurchaseService {
                 "left outer join fetch im.itvari1 iv1 " +
                 "left outer join fetch im.itvari2 iv2 " +
                 "left outer join fetch im.itvari3 iv3 " +
-                "left outer join fetch im.itasrt ita " +
-                "left outer join fetch ita.ifBrand ib " +
+                "join fetch im.itasrt ita " +
+//                "left outer join fetch ita.ifBrand ib " +
                 "where lm.purchaseDt between ?1 and ?2 " +
                 "and (?3 is null or trim(?3)='' or lm.vendorId=?3) "
                 + "and (?4 is null or trim(?4)='' or lm.storeCd=?4) "
@@ -575,7 +572,8 @@ public class JpaPurchaseService {
         List<PurchaseListInDepositModalData.Purchase> purchaseList = new ArrayList<>();
         for(Lspchm lspchm : lspchmList){
             PurchaseListInDepositModalData.Purchase purchase = new PurchaseListInDepositModalData.Purchase(lspchm);
-            List<PurchaseSelectDetailResponseData.Items> itemsList = this.makeItemsList(lspchdList);
+            List<PurchaseSelectDetailResponseData.Items> itemsList = this.makeItemsList(lspchdList.stream().filter(x->x.getPurchaseNo().equals(lspchm.getPurchaseNo()))
+                    .collect(Collectors.toList()));
             purchase.setItems(itemsList);
             purchaseList.add(purchase);
         }

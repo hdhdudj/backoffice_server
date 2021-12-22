@@ -27,6 +27,7 @@ import java.util.Set;
  *  ITASRT : 상품 정보 table
  */
 
+@DynamicUpdate
 @Entity
 @Table(name = "itasrt")
 @Getter
