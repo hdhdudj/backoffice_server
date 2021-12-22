@@ -548,7 +548,7 @@ public class JpaPurchaseService {
                 "left outer join fetch im.itvari2 iv2 " +
                 "left outer join fetch im.itvari3 iv3 " +
                 "join fetch im.itasrt ita " +
-//                "left outer join fetch ita.ifBrand ib " +
+                "left outer join fetch ita.ifBrand ib " +
                 "where lm.purchaseDt between ?1 and ?2 " +
                 "and (?3 is null or trim(?3)='' or lm.vendorId=?3) "
                 + "and (?4 is null or trim(?4)='' or lm.storeCd=?4) "
