@@ -458,6 +458,62 @@ public class JpaPurchaseService {
         return itemsList;
     }
 
+     /**
+     * 이미지 주소가 itaimg를 바라보고 있는 버전
+     */
+//    private void makePurchaseItem(List<PurchaseSelectDetailResponseData.Items> itemsList, List<Lspchd> lspchdList) {
+//        for(Lspchd lspchd : lspchdList){
+//            Ititmm ititmm = lspchd.getItitmm();
+//            Itasrt itasrt = ititmm.getItasrt();
+//            List<Itaimg> imgList = itasrt.getItaimg();
+//            if(imgList != null){
+//                imgList = imgList.stream().filter(x->x.getImageGb().equals(StringFactory.getGbOne())).collect(Collectors.toList());
+//            }
+//            else {
+//                imgList = new ArrayList<>();
+//            }
+//            PurchaseSelectDetailResponseData.Items item = new PurchaseSelectDetailResponseData.Items(lspchd, ititmm, itasrt, imgList.size() == 0? null : imgList.get(0));
+//            List<Itvari> itvariList = new ArrayList<>();
+//            itvariList.add(ititmm.getItvari1());
+//            itvariList.add(ititmm.getItvari2());
+//            itvariList.add(ititmm.getItvari3());
+//            Utilities.setOptionNames(item, itvariList); // optionNm set
+//            if (lspchd.getLspchm().getDealtypeCd().equals(StringFactory.getGbOne()) && ((lspchd.getOrderId() != null && !lspchd.getOrderId().trim().equals("")) && lspchd.getOrderSeq() != null && !lspchd.getOrderSeq().trim().equals(""))) { // 주문발주인 경우
+//                TbOrderDetail tbOrderDetail = lspchd.getTbOrderDetail();
+//                IfBrand ifBrand = itasrt.getIfBrand();
+////                TbMember tbMember = tbOrderDetail.getTbOrderMaster().getTbMember();
+//                item.setOrderId(tbOrderDetail.getOrderId());
+//                item.setOrderSeq(tbOrderDetail.getOrderSeq());
+//                item.setDeliMethod(tbOrderDetail.getDeliMethod());
+//                item.setCustNm(tbOrderDetail.getTbOrderMaster().getReceiverName());
+//                item.setReceiverNm(tbOrderDetail.getTbOrderMaster().getReceiverName());
+//                item.setReceiverTel(tbOrderDetail.getTbOrderMaster().getReceiverTel());
+//                item.setReceiverHp(tbOrderDetail.getTbOrderMaster().getReceiverHp());
+//                item.setReceiverAddr1(tbOrderDetail.getTbOrderMaster().getReceiverAddr1());
+//                item.setReceiverAddr2(tbOrderDetail.getTbOrderMaster().getReceiverAddr2());
+//                item.setReceiverZipcode(tbOrderDetail.getTbOrderMaster().getReceiverZipcode());
+//                item.setReceiverZonecode(tbOrderDetail.getTbOrderMaster().getReceiverZonecode());
+//                item.setOrderMemo(tbOrderDetail.getTbOrderMaster().getOrderMemo());
+//                item.setBrandNm(ifBrand == null? "" : ifBrand.getBrandNm());
+////                item.setCustNm(tbMember.getCustNm());
+//                item.setChannelOrderNo(tbOrderDetail.getChannelOrderNo());
+//            }
+//
+//            List<Lspchb> lspchbList = lspchd.getLspchb();
+//            for(Lspchb lspchb : lspchbList){
+//                if(lspchb.getEffEndDt().compareTo(LocalDateTime.parse(StringFactory.getDoomDay(), DateTimeFormatter.ofPattern(StringFactory.getDateFormat()))) == 0){
+//                    item.setPurchaseStatus(lspchb.getPurchaseStatus());
+//                    break;
+//                }
+//            }
+//            item = itemsMapper.nullToEmpty(item);
+//            itemsList.add(item);
+//        }
+//    }
+
+    /**
+     * 이미지 주소가 itasrt의 이미지 주소를 바라보도록
+     */
     private void makePurchaseItem(List<PurchaseSelectDetailResponseData.Items> itemsList, List<Lspchd> lspchdList) {
         for(Lspchd lspchd : lspchdList){
             Ititmm ititmm = lspchd.getItitmm();
@@ -482,14 +538,14 @@ public class JpaPurchaseService {
                 item.setOrderId(tbOrderDetail.getOrderId());
                 item.setOrderSeq(tbOrderDetail.getOrderSeq());
                 item.setDeliMethod(tbOrderDetail.getDeliMethod());
-                item.setCustNm(tbOrderDetail.getTbOrderMaster().getReceiverName());
-                item.setReceiverNm(tbOrderDetail.getTbOrderMaster().getReceiverName());
-                item.setReceiverTel(tbOrderDetail.getTbOrderMaster().getReceiverTel());
-                item.setReceiverHp(tbOrderDetail.getTbOrderMaster().getReceiverHp());
-                item.setReceiverAddr1(tbOrderDetail.getTbOrderMaster().getReceiverAddr1());
-                item.setReceiverAddr2(tbOrderDetail.getTbOrderMaster().getReceiverAddr2());
-                item.setReceiverZipcode(tbOrderDetail.getTbOrderMaster().getReceiverZipcode());
-                item.setReceiverZonecode(tbOrderDetail.getTbOrderMaster().getReceiverZonecode());
+                item.setCustNm(tbOrderDetail.getTbOrderMaster().getTbMember().getCustNm());
+                item.setReceiverNm(tbOrderDetail.getTbOrderMaster().getTbMemberAddress().getDeliNm());
+                item.setReceiverTel(tbOrderDetail.getTbOrderMaster().getTbMemberAddress().getDeliTel());
+                item.setReceiverHp(tbOrderDetail.getTbOrderMaster().getTbMemberAddress().getDeliHp());
+                item.setReceiverAddr1(tbOrderDetail.getTbOrderMaster().getTbMemberAddress().getDeliAddr1());
+                item.setReceiverAddr2(tbOrderDetail.getTbOrderMaster().getTbMemberAddress().getDeliAddr2());
+                item.setReceiverZipcode(tbOrderDetail.getTbOrderMaster().getTbMemberAddress().getDeliZipcode());
+                item.setReceiverZonecode(tbOrderDetail.getTbOrderMaster().getTbMemberAddress().getDeliZonecode());
                 item.setOrderMemo(tbOrderDetail.getTbOrderMaster().getOrderMemo());
                 item.setBrandNm(ifBrand == null? "" : ifBrand.getBrandNm());
 //                item.setCustNm(tbMember.getCustNm());
@@ -507,6 +563,7 @@ public class JpaPurchaseService {
             itemsList.add(item);
         }
     }
+
 
     /**
      * 발주사후(발주관리, 발주내역) 페이지에서 purchaseStatus를 변경해주는 함수 (A1:송금완료 A2:거래처선금입금 A3:거래처잔금입금)
@@ -742,7 +799,7 @@ public class JpaPurchaseService {
             PurchaseSelectListResponseData.Purchase purchase = new PurchaseSelectListResponseData.Purchase(lspchm, lsdpsp, itasrt);
             Lspchd lspchd = lsdpsp.getLspchd();
             if(lspchd.getOrderId() != null && !lspchd.getOrderId().trim().equals("") && lspchd.getOrderSeq() != null && !lspchd.getOrderSeq().trim().equals("")){
-                purchase.setCustNm(lspchd.getTbOrderDetail().getTbOrderMaster().getReceiverName());
+                purchase.setCustNm(lspchd.getTbOrderDetail().getTbOrderMaster().getOrderName());
             }
             Utilities.setOptionNames(purchase, itasrt.getItvariList());
 

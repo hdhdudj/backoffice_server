@@ -69,7 +69,7 @@ public class ShipIndicateSaveListResponseData {
 			this.deliMethod = tbOrderDetail == null ? null : tbOrderDetail.getDeliMethod();
 			this.assortId = tbOrderDetail == null ? null : tbOrderDetail.getAssortId();
 			this.itemId = tbOrderDetail == null ? null : tbOrderDetail.getItemId();
-			this.custNm = tbOrderMaster.getReceiverName();//tbMember == null ? null : tbMember.getCustNm();
+			this.custNm = tbOrderMaster.getTbMemberAddress().getDeliNm();//tbMember == null ? null : tbMember.getCustNm();
 			this.assortNm = itasrt.getAssortNm();
 //        this.availableQty =
 			this.qty = 0l;
