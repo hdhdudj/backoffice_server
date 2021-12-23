@@ -27,6 +27,7 @@ import java.util.Set;
  *  ITASRT : 상품 정보 table
  */
 
+@DynamicUpdate
 @Entity
 @Table(name = "itasrt")
 @Getter
@@ -223,6 +224,12 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 	private String optionUseYn;
 	// 21-12-02 컬럼 추가
 	private String custCategory;
+	// 21-12-23 추가
+	private String listImageData;
+	private String addGoodsYn;
+	private String addOptionNm;
+	private String addImageUrl;
+	private Long stockCnt;
 
 	//// 다른 테이블과 엮으면 나오는 프로퍼티들
 	@JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))

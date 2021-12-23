@@ -61,7 +61,7 @@ public class DepositController {
                                                      @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
 			@RequestParam @Nullable String vendorId, @RequestParam @Nullable String storageId, @RequestParam @Nullable String piNo) {
 		PurchaseListInDepositModalData purchaseListInDepositModalData = jpaPurchaseService
-				.getPurchaseMasterList(startDt, endDt, vendorId, storageId, piNo);
+				.getPurchaseMasterListWithDetails(startDt, endDt, vendorId, storageId, piNo);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),purchaseListInDepositModalData);
         return ResponseEntity.ok(res);
     }

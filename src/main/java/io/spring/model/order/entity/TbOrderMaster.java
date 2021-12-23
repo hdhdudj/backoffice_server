@@ -49,14 +49,24 @@ public class TbOrderMaster extends CommonProps {
     private String payGb; // 결제방법
 
     // 21-12-17 추가된 컬럼
-    private String receiverName;
-    private String receiverTel;
-    private String receiverAddr1;
-    private String receiverAddr2;
+    private String orderName;
+    private String orderAddr1;
+    private String orderAddr2;
+    // 21-12-21 추가된 컬럼
+    private String orderZipcode;
+    private String orderZonecode;
+    private String orderTel; // 주문자 전화
+    private String orderHp; // 주문자 폰
 
     @JoinColumn(name = "custId", referencedColumnName = "custId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
 //    @NotFound(action = NotFoundAction.IGNORE)
     private TbMember tbMember; // tbMember 연관관계
+
+    @JoinColumn(name = "deliId", referencedColumnName = "deliId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+//    @NotFound(action = NotFoundAction.IGNORE)
+    private TbMemberAddress tbMemberAddress; // tbMemberAddress 연관관계
 }
