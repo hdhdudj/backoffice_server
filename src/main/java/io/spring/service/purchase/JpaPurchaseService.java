@@ -15,6 +15,7 @@ import io.spring.enums.TrdstOrderStatus;
 import io.spring.infrastructure.mapstruct.ItemsMapper;
 import io.spring.infrastructure.mapstruct.PurchaseMasterListResponseDataMapper;
 import io.spring.infrastructure.mapstruct.PurchaseSelectDetailResponseDataMapper;
+import io.spring.jparepos.goods.JpaIfBrandRepository;
 import io.spring.model.goods.entity.*;
 import io.spring.model.purchase.response.PurchaseMasterListResponseData;
 import org.apache.commons.lang3.StringUtils;
@@ -67,6 +68,7 @@ public class JpaPurchaseService {
     private final JpaCommonService jpaCommonService;
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
+    private final JpaIfBrandRepository jpaIfBrandRepository;
 
 	private final JpaLsshpmRepository jpaLsshpmRepository;
 
@@ -426,7 +428,7 @@ public class JpaPurchaseService {
      * @return
      */
     public PurchaseSelectDetailResponseData getPurchaseDetailPage(String purchaseNo) {
-        List<Lspchd> lspchdList = em.createQuery("select distinct(ld) from Lspchd ld " +
+        List<Lspchd> lspchdList = em.createQuery("select ld from Lspchd ld " +
                 "left outer join fetch ld.lspchm lm " +
                 "left outer join fetch ld.lspchb lb " +
                 "left outer join fetch ld.tbOrderDetail tod " +
@@ -445,16 +447,16 @@ public class JpaPurchaseService {
             return null;
         }
         Lspchm lspchm = lspchdList.get(0).getLspchm();
-        List<PurchaseSelectDetailResponseData.Items> itemsList = this.makeItemsList(lspchdList);
+        List<PurchaseSelectDetailResponseData.Items> itemsList = this.makeItemsList(null, lspchdList);
         PurchaseSelectDetailResponseData purchaseSelectDetailResponseData = new PurchaseSelectDetailResponseData(lspchm);
         purchaseSelectDetailResponseData.setItems(itemsList);
         purchaseSelectDetailResponseData = purchaseSelectDetailResponseDataMapper.nullToEmpty(purchaseSelectDetailResponseData);
         return purchaseSelectDetailResponseData;
     }
 
-    private List<PurchaseSelectDetailResponseData.Items> makeItemsList(List<Lspchd> lspchdList) {
+    private List<PurchaseSelectDetailResponseData.Items> makeItemsList(List<IfBrand> brandList, List<Lspchd> lspchdList) {
         List<PurchaseSelectDetailResponseData.Items> itemsList = new ArrayList<>();
-        this.makePurchaseItem(itemsList, lspchdList);
+        this.makePurchaseItem(brandList, itemsList, lspchdList);
         return itemsList;
     }
 
@@ -514,7 +516,7 @@ public class JpaPurchaseService {
     /**
      * 이미지 주소가 itasrt의 이미지 주소를 바라보도록
      */
-    private void makePurchaseItem(List<PurchaseSelectDetailResponseData.Items> itemsList, List<Lspchd> lspchdList) {
+    private void makePurchaseItem(List<IfBrand> brandList, List<PurchaseSelectDetailResponseData.Items> itemsList, List<Lspchd> lspchdList) {
         for(Lspchd lspchd : lspchdList){
             Ititmm ititmm = lspchd.getItitmm();
             Itasrt itasrt = ititmm.getItasrt();
@@ -533,7 +535,7 @@ public class JpaPurchaseService {
             Utilities.setOptionNames(item, itvariList); // optionNm set
             if (lspchd.getLspchm().getDealtypeCd().equals(StringFactory.getGbOne()) && ((lspchd.getOrderId() != null && !lspchd.getOrderId().trim().equals("")) && lspchd.getOrderSeq() != null && !lspchd.getOrderSeq().trim().equals(""))) { // 주문발주인 경우
                 TbOrderDetail tbOrderDetail = lspchd.getTbOrderDetail();
-                IfBrand ifBrand = itasrt.getIfBrand();
+//                IfBrand ifBrand = itasrt.getIfBrand();
 //                TbMember tbMember = tbOrderDetail.getTbOrderMaster().getTbMember();
                 item.setOrderId(tbOrderDetail.getOrderId());
                 item.setOrderSeq(tbOrderDetail.getOrderSeq());
@@ -547,7 +549,8 @@ public class JpaPurchaseService {
                 item.setReceiverZipcode(tbOrderDetail.getTbOrderMaster().getTbMemberAddress().getDeliZipcode());
                 item.setReceiverZonecode(tbOrderDetail.getTbOrderMaster().getTbMemberAddress().getDeliZonecode());
                 item.setOrderMemo(tbOrderDetail.getTbOrderMaster().getOrderMemo());
-                item.setBrandNm(ifBrand == null? "" : ifBrand.getBrandNm());
+                item.setBrandNm(itasrt.getBrandId());
+//                item.setBrandNm(ifBrand == null? "" : ifBrand.getBrandNm());
 //                item.setCustNm(tbMember.getCustNm());
                 item.setChannelOrderNo(tbOrderDetail.getChannelOrderNo());
             }
@@ -561,6 +564,14 @@ public class JpaPurchaseService {
             }
             item = itemsMapper.nullToEmpty(item);
             itemsList.add(item);
+        }
+
+        if(brandList != null){
+            for(PurchaseSelectDetailResponseData.Items item : itemsList){
+                List<IfBrand> ifBrandList1 = brandList.stream().filter(x->x.getBrandId().equals(item.getBrandNm())).collect(Collectors.toList());
+                IfBrand ifBrand = ifBrandList1.size() == 0? null : ifBrandList1.get(0);
+                item.setBrandNm(ifBrand == null? "" : ifBrand.getBrandNm());
+            }
         }
     }
 
@@ -582,18 +593,11 @@ public class JpaPurchaseService {
      * 입고 - 발주선택창 (입고처리 -> 발주조회 > 조회) : 조건을 넣고 조회했을 때 동작하는 함수 (Lspchm 기준의 list를 가져오는데 각 마스터 정보 밑에 내역 정보가 딸려옴. 엑셀 출력을 위함.)
      */
 	public PurchaseListInDepositModalData getPurchaseMasterListWithDetails(LocalDate startDt, LocalDate endDt,
-                                                                           String vendorId, String storageId, String piNo) {
+                                                                           String vendorId, String storageId, String piNo, String siteOrderNo) {
 		PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData(startDt,
 				endDt, vendorId, storageId);
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
-//        TypedQuery<Lspchm> query = em.createQuery("select m from Lspchm m" +
-//                " where m.purchaseDt between ?1 and ?2" +
-//				" and (?3 is null or trim(?3)='' or m.vendorId=?3) "
-//				+ " and (?4 is null or trim(?4)='' or m.storeCd=?4) "
-//				+ " and (?5 is null or trim(?5)='' or m.piNo=?5) "
-//				+
-//                "and m.purchaseStatus in :statusArr", Lspchm.class);
         TypedQuery<Lspchd> query = em.createQuery("select distinct(ld) from Lspchd ld " +
                 "join fetch ld.lspchm lm " +
                 "join fetch ld.lspchb lb " +
@@ -611,26 +615,30 @@ public class JpaPurchaseService {
                 "and (?3 is null or trim(?3)='' or lm.vendorId=?3) "
                 + "and (?4 is null or trim(?4)='' or lm.storeCd=?4) "
                 + "and (?5 is null or trim(?5)='' or lm.piNo=?5) "
-                +
-                "and lm.purchaseStatus in :statusArr", Lspchd.class);
+                + "and (?6 is null or trim(?6)='' or lm.siteOrderNo=?6) "
+                + "and lm.purchaseStatus in :statusArr", Lspchd.class);
         List<String> statusArr = Arrays.asList(StringFactory.getGbOne(), StringFactory.getGbThree()); // 01:발주 03:부분입고 04:완전입고 05:취소  A1:송금완료 A2:거래처선금입금 A3:거래처잔금입금
 		query.setParameter(1, start).setParameter(2, end).setParameter(3, vendorId).setParameter(4, storageId)
-                .setParameter("statusArr",statusArr)
+                .setParameter("statusArr",statusArr).setParameter(6, siteOrderNo)
                 .setParameter(5, piNo);
         List<Lspchd> lspchdList = query.getResultList();
         List<Lspchm> lspchmList = new ArrayList<>();
+        List<String> brandIdList = new ArrayList<>();
         Set<String> purchaseNoSet = new HashSet<>();
         for(Lspchd lspchd : lspchdList){
+            brandIdList.add(lspchd.getItitmm().getItasrt().getBrandId());
             if(purchaseNoSet.contains(lspchd.getPurchaseNo())){
                continue;
             }
             lspchmList.add(lspchd.getLspchm());
             purchaseNoSet.add(lspchd.getPurchaseNo());
         }
+        List<IfBrand> ifBrandList = jpaIfBrandRepository.findByBrandIdListByChannelIdAndBrandIdList(StringFactory.getGbOne(), brandIdList);
         List<PurchaseListInDepositModalData.Purchase> purchaseList = new ArrayList<>();
+
         for(Lspchm lspchm : lspchmList){
             PurchaseListInDepositModalData.Purchase purchase = new PurchaseListInDepositModalData.Purchase(lspchm);
-            List<PurchaseSelectDetailResponseData.Items> itemsList = this.makeItemsList(lspchdList.stream().filter(x->x.getPurchaseNo().equals(lspchm.getPurchaseNo()))
+            List<PurchaseSelectDetailResponseData.Items> itemsList = this.makeItemsList(ifBrandList, lspchdList.stream().filter(x->x.getPurchaseNo().equals(lspchm.getPurchaseNo()))
                     .collect(Collectors.toList()));
             purchase.setItems(itemsList);
             purchaseList.add(purchase);
