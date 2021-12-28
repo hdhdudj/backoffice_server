@@ -13,6 +13,7 @@ import javax.persistence.TypedQuery;
 
 import io.spring.enums.TrdstOrderStatus;
 import io.spring.model.ship.response.ShipListDataResponse;
+import jdk.vm.ci.meta.Local;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
@@ -373,10 +374,10 @@ public class JpaShipService {
      * 출고지시리스트 화면인지 출고처리 화면인지는 statusCd로 구분됨.
      * (C04 : 출고지시리스트 화면, D01 : 출고처리 화면)
      */
-    public ShipIndicateListData getShipList(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
-                                            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
-                                            String shipId, String assortId, String assortNm,
-			String channelId, String statusCd, String orderKey, String shipStatus) {
+    public ShipIndicateListData getShipIndList(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+											   @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+											   String shipId, String assortId, String assortNm,
+											   String channelId, String statusCd, String orderKey, String shipStatus) {
 
 		String orderId = "";
 		String orderSeq = "";
@@ -424,6 +425,22 @@ public class JpaShipService {
         return shipIndicateListData;
     }
 
+	/**
+	 *	출고 - 출고리스트
+	 */
+	public ShipListDataResponse getShipList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String vendorId, String statusCd, String orderKey, String shipStatus) {
+		ShipListDataResponse shipListDataResponse = new ShipListDataResponse(startDt, endDt, shipId, assortId, assortNm, vendorId);
+		LocalDateTime start = startDt.atStartOfDay();
+		LocalDateTime end = endDt.atTime(23,59,59);
+		List<Lsshpd> lsshpdList = jpaLsshpdRepository.findShipList(start, end, shipId, assortId, assortNm, vendorId, statusCd);
+		List<ShipListDataResponse.Ship> shipList = new ArrayList<>();
+		for(Lsshpd l : lsshpdList){
+			ShipListDataResponse.Ship ship = new ShipListDataResponse.Ship(l);
+			shipList.add(ship);
+		}
+		shipListDataResponse.setShips(shipList);
+		return shipListDataResponse;
+	}
 //	/**
 //	 * 출고 : 출고지시리스트 화면, 출고처리 화면에서 list를 불러오는 함수 출고지시리스트 화면인지 출고처리 화면인지는 statusCd로 구분됨.
 //	 * (C04 : 출고지시리스트 화면, D01 : 출고처리 화면)
@@ -460,8 +477,8 @@ public class JpaShipService {
 //		}
 //		shipIndicateListData.setShips(shipList);
 //		return shipIndicateListData;
-//	}
 
+//	}
 	/**
 	 * 출고 : 출고리스트 화면에서 검색 후 list를 불러오는 함수.
 	 */
@@ -496,6 +513,7 @@ public class JpaShipService {
 //		}
 //		shipListDataResponse.setShips(shipList);
 //		return shipListDataResponse;
+
 //	}
 
     /**
