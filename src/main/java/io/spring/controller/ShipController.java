@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
+import io.spring.enums.TrdstOrderStatus;
 import io.spring.model.ship.response.ShipListDataResponse;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -166,7 +167,7 @@ public class ShipController {
                                              @RequestParam @Nullable String assortNm,
                                              @RequestParam @Nullable String vendorId){
 		ShipListDataResponse shipListDataResponse = jpaShipService.getShipList(startDt, endDt, shipId, assortId,
-				assortNm, vendorId, StringFactory.getStrD02(), "", StringFactory.getGbFour());
+				assortNm, vendorId, TrdstOrderStatus.D02.toString(), "", StringFactory.getGbFour());
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipListDataResponse);
         return ResponseEntity.ok(res);
     }
