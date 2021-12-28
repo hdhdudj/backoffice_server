@@ -86,7 +86,7 @@ public class PurchaseSelectDetailResponseData {
             this.origin = itasrt.getOrigin();
             this.custCategory = itasrt.getCustCategory();
             this.material = ititmm.getMaterial();
-            this.imagePath = itaimg == null? null : this.imgServerUrl + itaimg.getImagePath() + itaimg.getImageName();
+            this.imagePath = itasrt.getListImageData();
 
             // 21-12-21 추가 (입고처리 발주선택창에 붙는 디테일 리스트에 필요한 애들)
 
