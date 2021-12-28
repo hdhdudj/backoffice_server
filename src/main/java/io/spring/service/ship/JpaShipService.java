@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 import io.spring.enums.TrdstOrderStatus;
+import io.spring.infrastructure.mapstruct.ShipListDataResponseMapper;
 import io.spring.model.ship.response.ShipListDataResponse;
 import jdk.vm.ci.meta.Local;
 import org.apache.commons.lang3.StringUtils;
@@ -74,6 +75,8 @@ public class JpaShipService {
 	private final JpaTbOrderHistoryRepository tbOrderHistoryrRepository;
 
     private final EntityManager em;
+
+	private final ShipListDataResponseMapper shipListDataResponseMapper;
 
     /**
      * 출고지시 화면에서 조건검색하면 리스트를 반환해주는 함수
@@ -442,9 +445,11 @@ public class JpaShipService {
 		List<ShipListDataResponse.Ship> shipList = new ArrayList<>();
 		for(Lsshpd l : lsshpdList){
 			ShipListDataResponse.Ship ship = new ShipListDataResponse.Ship(l);
+			ship = shipListDataResponseMapper.nullToEmpty(ship);
 			shipList.add(ship);
 		}
 		shipListDataResponse.setShips(shipList);
+		shipListDataResponse = shipListDataResponseMapper.nullToEmpty(shipListDataResponse);
 		return shipListDataResponse;
 	}
 //	/**

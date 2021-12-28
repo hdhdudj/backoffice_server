@@ -25,8 +25,8 @@ import java.util.List;
 */
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShipListDataResponse {
+    public ShipListDataResponse(){}
     public ShipListDataResponse(LocalDate start, LocalDate end, String shipId, String assortId, String assortNm, String vendorId)
     {
         this.startDt = start;
@@ -48,8 +48,8 @@ public class ShipListDataResponse {
 
     @Setter
     @Getter
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Ship{
+        public Ship(){}
         public Ship(Lsshpd lsshpd){
             TbOrderDetail tod = lsshpd.getTbOrderDetail();
             TbOrderMaster tom = tod.getTbOrderMaster();
