@@ -167,7 +167,7 @@ public class ShipController {
                                              @RequestParam @Nullable String assortNm,
                                              @RequestParam @Nullable String vendorId){
 		ShipListDataResponse shipListDataResponse = jpaShipService.getShipList(startDt, endDt, shipId, assortId,
-				assortNm, vendorId, TrdstOrderStatus.D02.toString(), "", StringFactory.getGbFour());
+				assortNm, vendorId, TrdstOrderStatus.D02.toString(), StringFactory.getGbFour());
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipListDataResponse);
         return ResponseEntity.ok(res);
     }
