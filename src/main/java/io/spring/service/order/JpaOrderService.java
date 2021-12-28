@@ -1,7 +1,10 @@
 package io.spring.service.order;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -771,6 +774,7 @@ public class JpaOrderService {
         smsService.sendSmsMessage(body, td);
     }
 
+
 	@Transactional
 	public boolean saveGoodsIfoption(String orderId, String orderSeq, String assortId, String channelGoodsNo,
 			String channelOptionSno) {
@@ -865,6 +869,86 @@ public class JpaOrderService {
 
 
 	}
+
+	@Transactional
+	public boolean cancelOrder(List<HashMap<String, Object>> p) {
+
+		Date today = new Date();
+
+		LocalDateTime todayLDT = Instant.ofEpochMilli(today.getTime()).atZone(ZoneId.of("Asia/Seoul"))
+				.toLocalDateTime();
+
+		for (HashMap<String, Object> o : p) {
+			System.out.println(o);
+
+			TbOrderDetail od = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(o.get("orderId").toString(),
+					o.get("orderSeq").toString());
+
+			if (od.getQty() == (Long) o.get("cancelQty")) {
+				
+				
+				updateOrderStatusCd(o.get("orderId").toString(),
+						o.get("orderSeq").toString(), "X01");
+				
+
+			}
+
+
+
+		}
+
+
+		return true;
+	}
+/*
+	private void addOrderDetail(HashMap<String, Object> p) {
+		orderId
+		orderSeq
+		statusCd
+		assortGb
+		assortId
+		itemId
+		goodsNm
+		optionInfo
+		qty
+		goodsPrice
+		salePrice
+		goodsDcPrice
+		memberDcPrice
+		couponDcPrice
+		adminDcPrice
+		dcSumPrice
+		deliPrice
+		deliMethod
+		channelOrderNo
+		channelOrderSeq
+		regId
+		regDt
+		updId
+		updDt
+		storageId
+		lastGb
+		lastCategoryId
+		optionTextInfo
+		listImageData
+		optionPrice
+		optionTextPrice
+		deliveryInfo
+		parentOrderSeq
+		scmNo
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	}
+
+	*/
+
 }
 
 

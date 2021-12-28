@@ -2,6 +2,7 @@ package io.spring.controller;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,9 +24,9 @@ import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.order.entity.OrderStock;
 import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.order.request.CancelOrderRequestData;
 import io.spring.model.order.request.OrderOptionRequestData;
 import io.spring.model.order.request.OrderStockMngInsertRequestData;
-import io.spring.model.order.response.OrderDetailListResponse;
 import io.spring.model.order.response.OrderDetailResponseData;
 import io.spring.model.order.response.OrderMasterListResponseData;
 import io.spring.service.common.JpaCommonService;
@@ -417,6 +418,42 @@ public class OrderController {
 
 		res = new ApiResponseMessage<String>("SUCCESS", "", "");
 
+		return ResponseEntity.ok(res);
+
+	}
+
+	@PostMapping(path = "/items/{orderId}/cancel")
+	public ResponseEntity cancelOrder(@PathVariable String orderId, @RequestBody CancelOrderRequestData param) {
+
+		System.out.println("cancelOrder");
+
+		String userId = param.getUserId();
+
+		List<HashMap<String, Object>> l = new ArrayList<HashMap<String, Object>>();
+
+		for (CancelOrderRequestData.Item o : param.getItems()) {
+			HashMap<String, Object> m = new HashMap<String, Object>();
+
+			m.put("orderId", o.getOrderId());
+			m.put("orderSeq", o.getOrderSeq());
+			m.put("cancelGb", o.getCancelGb());
+			m.put("cancelMsg", o.getCancelMsg());
+			m.put("cancelQty", o.getCancelQty());
+			m.put("userId", userId);
+
+			l.add(m);
+		}
+
+		// HashMap
+
+		// param
+
+		// TbOrderDetail t = jpaOrderService.getNullTest(orderId, orderSeq);
+
+		// List<OrderMasterListResponseData> r = myBatisOrderService.get(map);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), "");
+//		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), t);
 		return ResponseEntity.ok(res);
 
 	}
