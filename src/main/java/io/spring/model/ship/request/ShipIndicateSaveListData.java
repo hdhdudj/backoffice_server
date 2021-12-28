@@ -43,7 +43,7 @@ public class ShipIndicateSaveListData {
     public static class Ship{
         public Ship(TbOrderDetail tbOrderDetail) {
             TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
-            Itasrt itasrt = tbOrderDetail.getItasrt();
+            Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
             TbMember tbMember = tbOrderMaster.getTbMember();
             this.orderDt = Utilities.localDateTimeToDate(tbOrderDetail.getTbOrderMaster().getOrderDate());
             this.orderId = tbOrderDetail.getOrderId();

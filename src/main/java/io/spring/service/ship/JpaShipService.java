@@ -94,7 +94,7 @@ public class JpaShipService {
             ShipIndicateSaveListResponseData.Ship ship = new ShipIndicateSaveListResponseData.Ship(tbOrderDetail);
             ship.setAvailableQty(availableQty);
             shipList.add(ship);
-            Utilities.setOptionNames(ship, tbOrderDetail.getItasrt().getItvariList());
+            Utilities.setOptionNames(ship, tbOrderDetail.getItitmm().getItasrt().getItvariList());
 //            List<Itvari> itvariList = tbOrderDetail.getItasrt().getItvariList();
 //            if(itvariList.size() > 0){
 //                Itvari itvari1 = itvariList.get(0);
@@ -136,7 +136,8 @@ public class JpaShipService {
         // tbOrderDetailList 중 statusCd가 C04인 애들 or statusCd가 C01이면서 assortGb가 01인 애만 가져오기
         TypedQuery<TbOrderDetail> query = em.createQuery("select td from TbOrderDetail td " +
                 "join fetch td.tbOrderMaster to " +
-                "join fetch td.itasrt it " +
+                "join fetch td.ititmm itm " +
+                "join fetch itm.itasrt it " +
                 "where to.orderDate between ?1 and ?2 " +
                 "and (?3 is null or trim(?3)='' or td.assortId=?3) "+
                 "and (?4 is null or trim(?4)='' or it.vendorId=?4) "+
@@ -285,7 +286,7 @@ public class JpaShipService {
     private String makeShipData(Ititmc ititmc, ShipIndicateSaveListData.Ship ship, TbOrderDetail tbOrderDetail, String shipStatus) {
         String shipId = this.getShipId();
 
-        Itasrt itasrt = tbOrderDetail.getItasrt();
+        Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
         // lsshpm 저장
 		Lsshpm lsshpm = new Lsshpm("01", shipId, itasrt, tbOrderDetail);
         lsshpm.setShipStatus(shipStatus); // 01 : 이동지시or출고지시, 04 : 출고
@@ -312,7 +313,7 @@ public class JpaShipService {
 	private String makeShipDataByDeposit(Ititmc ititmc, Lsdpsd lsdpsd, TbOrderDetail tbOrderDetail, String shipStatus) {
 		String shipId = this.getShipId();
 
-		Itasrt itasrt = tbOrderDetail.getItasrt();
+		Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
 		// lsshpm 저장
 		Lsshpm lsshpm = new Lsshpm("01", shipId, itasrt, tbOrderDetail);
 
@@ -398,7 +399,8 @@ public class JpaShipService {
         TypedQuery<Lsshpd> query = em.createQuery("select lsd from Lsshpd lsd " +
                         "join fetch lsd.lsshpm lsm " +
                         "join fetch lsd.tbOrderDetail td " +
-                        "join fetch td.itasrt it "+
+                        "join fetch td.ititmm im "+
+                        "join fetch im.itasrt it "+
 				"where lsm.instructDt between ?1 and ?2 " +
                         "and (?3 is null or trim(?3)='' or td.assortId=?3) " +
                         "and (?4 is null or trim(?4)='' or lsd.shipId=?4) " +
@@ -419,7 +421,7 @@ public class JpaShipService {
             Lsshpm lsshpm = lsshpd.getLsshpm();
             ShipIndicateListData.Ship ship = new ShipIndicateListData.Ship(lsshpd.getTbOrderDetail(), lsshpm, lsshpd);
             // option set
-            Utilities.setOptionNames(ship, lsshpd.getTbOrderDetail().getItasrt().getItvariList());
+            Utilities.setOptionNames(ship, lsshpd.getTbOrderDetail().getItitmm().getItasrt().getItvariList());
             // 출고지시 qty 설정 == 1l
             ship.setQty(lsshpd.getShipIndicateQty());
             shipList.add(ship);
@@ -542,7 +544,7 @@ public class JpaShipService {
         for(Lsshpd lsshpd:lsshpdList){
             ShipItemListData.Ship ship = new ShipItemListData.Ship(lsshpd);
             // option
-			Utilities.setOptionNames(ship, lsshpd.getTbOrderDetail().getItasrt().getItvariList());
+			Utilities.setOptionNames(ship, lsshpd.getTbOrderDetail().getItitmm().getItasrt().getItvariList());
             shipList.add(ship);
         }
         shipItemListData.setShips(shipList);

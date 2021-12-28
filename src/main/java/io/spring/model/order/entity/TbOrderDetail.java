@@ -131,10 +131,10 @@ public class TbOrderDetail extends CommonProps
     @JsonIgnore
     private TbOrderMaster tbOrderMaster; // tbOrderMaster 연관관계
 
-    @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
-    private Itasrt itasrt; // itasrt 연관관계
+//    @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JsonIgnore
+//    private Itasrt itasrt; // itasrt 연관관계
 //
 //    @JoinColumns(
 //            {

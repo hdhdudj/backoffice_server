@@ -54,8 +54,8 @@ public class ShipListDataResponse {
             TbOrderDetail tod = lsshpd.getTbOrderDetail();
             TbOrderMaster tom = tod.getTbOrderMaster();
             TbMemberAddress tma = tom.getTbMemberAddress();
-            Itasrt itasrt = tod.getItasrt();
             Ititmm ititmm = tod.getItitmm();
+            Itasrt itasrt = ititmm.getItasrt();
             Itvari itvari1 = ititmm.getItvari1();
             Itvari itvari2 = ititmm.getItvari2();
             Itvari itvari3 = ititmm.getItvari3();

@@ -59,9 +59,10 @@ public class DepositController {
     @GetMapping(path = "/purchase/items")
     public ResponseEntity getChoosePurchaseModalList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
                                                      @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
-			@RequestParam @Nullable String vendorId, @RequestParam @Nullable String storageId, @RequestParam @Nullable String piNo) {
+			@RequestParam @Nullable String vendorId, @RequestParam @Nullable String storageId, @RequestParam @Nullable String piNo
+            , @Nullable @RequestParam String siteOrderNo) {
 		PurchaseListInDepositModalData purchaseListInDepositModalData = jpaPurchaseService
-				.getPurchaseMasterListWithDetails(startDt, endDt, vendorId, storageId, piNo);
+				.getPurchaseMasterListWithDetails(startDt, endDt, vendorId, storageId, piNo, siteOrderNo);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),purchaseListInDepositModalData);
         return ResponseEntity.ok(res);
     }

@@ -59,7 +59,7 @@ public class ShipIndicateSaveListResponseData {
 		// 사용안함 2021-10-18 jb
 		public Ship(TbOrderDetail tbOrderDetail) {
 			TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
-			Itasrt itasrt = tbOrderDetail.getItasrt();
+			Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
 //			TbMember tbMember = tbOrderMaster.getTbMember();
 			this.orderDt = Utilities.removeTAndTransToStr(tbOrderDetail.getTbOrderMaster().getOrderDate());
 			this.assortGb = itasrt.getAssortGb();

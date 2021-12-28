@@ -277,7 +277,6 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	@LazyToOne(value = LazyToOneOption.NO_PROXY)
-//	@NotFound(action = NotFoundAction.IGNORE)
 	private IfBrand ifBrand;
 	public IfBrand getIfBrand() {
 		if (interceptor!=null) {

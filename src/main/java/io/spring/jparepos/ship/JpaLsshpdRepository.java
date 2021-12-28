@@ -21,8 +21,8 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
             "join fetch lsshpd.tbOrderDetail tod " +
             "join fetch tod.tbOrderMaster tom " +
             "join fetch tom.tbMemberAddress tma " +
-            "join fetch tod.itasrt ita " +
             "join fetch tod.ititmm itm " +
+            "join fetch itm.itasrt ita " +
             "join fetch itm.itvari1 iv1 " +
             "left outer join fetch itm.itvari2 iv2 " +
             "left outer join fetch itm.itvari3 iv3 " +
