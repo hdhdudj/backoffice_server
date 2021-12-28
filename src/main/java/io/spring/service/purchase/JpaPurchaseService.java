@@ -3,7 +3,13 @@ package io.spring.service.purchase;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -11,17 +17,15 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
-import io.spring.enums.TrdstOrderStatus;
-import io.spring.infrastructure.mapstruct.ItemsMapper;
-import io.spring.infrastructure.mapstruct.PurchaseMasterListResponseDataMapper;
-import io.spring.infrastructure.mapstruct.PurchaseSelectDetailResponseDataMapper;
-import io.spring.model.goods.entity.*;
-import io.spring.model.purchase.response.PurchaseMasterListResponseData;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.spring.enums.DirectOrImport;
+import io.spring.enums.TrdstOrderStatus;
+import io.spring.infrastructure.mapstruct.ItemsMapper;
+import io.spring.infrastructure.mapstruct.PurchaseMasterListResponseDataMapper;
+import io.spring.infrastructure.mapstruct.PurchaseSelectDetailResponseDataMapper;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
@@ -37,6 +41,12 @@ import io.spring.jparepos.purchase.JpaLspchsRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.deposit.response.PurchaseListInDepositModalData;
+import io.spring.model.goods.entity.IfBrand;
+import io.spring.model.goods.entity.Itaimg;
+import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.goods.entity.Ititmm;
+import io.spring.model.goods.entity.Ititmt;
+import io.spring.model.goods.entity.Itvari;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
@@ -45,6 +55,7 @@ import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.entity.Lspchm;
 import io.spring.model.purchase.entity.Lspchs;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
+import io.spring.model.purchase.response.PurchaseMasterListResponseData;
 import io.spring.model.purchase.response.PurchaseSelectDetailResponseData;
 import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.model.ship.entity.Lsshpd;
@@ -1494,4 +1505,43 @@ public class JpaPurchaseService {
         depositPlanId = StringUtils.leftPad(depositPlanId,9,'0');
         return depositPlanId;
     }
+
+	@Transactional
+	public boolean cancelOrderPurchase(HashMap<String, Object> param) {
+
+		String orderId = param.get("orderId").toString();
+		String orderSeq = param.get("orderSeq").toString();
+		String cancelGb = param.get("cancelGb").toString();
+		String cancelMsg = param.get("cancelMsg").toString();
+
+
+		List<Lspchd> l = jpaLspchdRepository.findItemByOrderIdAndOrderSeq(orderId, orderSeq);
+
+		if (l.size() != 1) {
+			System.out.println("발주데이타 이상!!!");
+
+			return false;
+		}
+
+		Lspchd o = l.get(0);
+
+		for (Lspchd o : l) {
+			System.out.println(o.getPurchaseNo() + "-" + o.getPurchaseSeq());
+		}
+
+		// 주문번호
+		// 주문순변
+		// 취소코드
+		// 취소메세지
+
+//주문번호에 해당하는 발주조회
+		// 해당발주 디테일 취소
+		// 입고예정취소
+		// ititmt취소
+		// 해당발주의 발주번호기준 마스터 데이타 확인 디테일모두 취소라면 마스터도 취소
+		// 주문상태 업데이트
+
+		return true;
+	}
+
 }
