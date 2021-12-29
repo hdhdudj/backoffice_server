@@ -421,8 +421,8 @@ public class OrderController {
 
 	}
 
-	@PostMapping(path = "/items/{orderId}/{orderSeq}/cancel")
-	public ResponseEntity cancelOrder(@PathVariable String orderId, @PathVariable String orderSeq,
+	@PostMapping(path = "/items/cancel")
+	public ResponseEntity cancelOrder(
 			@RequestBody CancelOrderRequestData param) {
 
 //CancelOrderRequestData
@@ -442,15 +442,21 @@ public class OrderController {
 			m.put("orderSeq", o.getOrderSeq());
 			m.put("cancelGb", o.getCancelGb());
 			m.put("cancelMsg", o.getCancelMsg());
-			m.put("cancelQty", o.getCancelQty());
-			m.put("ifCancelGb", o.getIfCancelGb());
+			// m.put("cancelQty", o.getCancelQty());
+			// m.put("ifCancelGb", o.getIfCancelGb());
+			m.put("seq", o.getSeq());
 			m.put("userId", userId);
 
-			boolean r = jpaOrderService.cancelOrder(m);
-			System.out.println(r);
-			if (r == false) {
-				chk = "error";
+			if (o.getChannelGb().equals("01")) {
+				boolean r = jpaOrderService.cancelGodoOrder(m);
+				System.out.println(r);
+				if (r == false) {
+					chk = "error";
+				}
+			} else {
+				System.out.println("다른채널 처리");
 			}
+
 			// l.add(m);
 		}
 

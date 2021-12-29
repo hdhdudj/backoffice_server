@@ -887,7 +887,7 @@ public class JpaOrderService {
 	}
 
 	@Transactional
-	public boolean cancelOrder(HashMap<String, Object> p) {
+	public boolean cancelGodoOrder(HashMap<String, Object> p) {
 
 //		m.put("orderId", o.getOrderId());
 //		m.put("orderSeq", o.getOrderSeq());
@@ -900,6 +900,8 @@ public class JpaOrderService {
 		String seq = p.get("seq").toString();
 
 		IfOrderCancel ioc = jpaIfOrderCancelRepository.findById(seq).orElse(null);
+
+		System.out.println(ioc.getIfNo());
 
 		if (ioc == null || !ioc.getIfStatus().equals("01")) {
 			System.out.println("취소요청데이타 이상!!!");
@@ -926,7 +928,7 @@ public class JpaOrderService {
 			
 			IfOrderMaster iom = jpaIfOrderMasterRepository.findByChannelOrderNo(iod.getChannelOrderNo());
 
-			String ifCancelGb = p.get("ifCancelGb").toString();
+			String ifCancelGb = ioc.getIfCancelGb().toString();
 
 			if (od.getStatusCd().equals("B01") || od.getStatusCd().equals("B02") || od.getStatusCd().equals("A01")) {
 				if (od.getStatusCd().equals("B02")) {
@@ -1023,9 +1025,12 @@ public class JpaOrderService {
 
 				}
 
+				System.out.println("z05");
 				ioc.setIfStatus("02");
 				jpaIfOrderCancelRepository.save(ioc);
 			} else {
+
+				System.out.println("z06");
 				ioc.setIfStatus("99");
 				jpaIfOrderCancelRepository.save(ioc);
 			}
