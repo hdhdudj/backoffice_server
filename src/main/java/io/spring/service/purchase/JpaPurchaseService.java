@@ -601,49 +601,32 @@ public class JpaPurchaseService {
 				endDt, vendorId, storageId);
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
-        TypedQuery<Lsshpd> query = em.createQuery("select distinct(lsd) from Lsshpd lsd " +
-                "join fetch lsd.lsshpm lsm " +
-                "join fetch lsd.lspchd ld " +
-                "join fetch ld.lspchm lm " +
-                "join fetch ld.lspchb lb " +
-                "left outer join fetch ld.tbOrderDetail tod " +
-                "left outer join fetch tod.tbOrderMaster tom " +
-                "left outer join fetch tom.tbMember tm " +
-                "left outer join fetch tom.tbMemberAddress tma " +
-                "left outer join fetch ld.ititmm im " +
-                "left outer join fetch im.itvari1 iv1 " +
-                "left outer join fetch im.itvari2 iv2 " +
-                "left outer join fetch im.itvari3 iv3 " +
-                "join fetch im.itasrt ita " +
-                "left outer join fetch ita.ifBrand ib " +
-                "where lm.purchaseDt between ?1 and ?2 " +
-                "and (?3 is null or trim(?3)='' or lm.vendorId=?3) "
-                + "and (?4 is null or trim(?4)='' or lm.storeCd=?4) "
-                + "and (?5 is null or trim(?5)='' or lm.piNo=?5) "
-                + "and (?6 is null or trim(?6)='' or lm.siteOrderNo=?6) "
-                + "and (?7 is null or trim(?7)='' or lsm.blNo=?7) "
-                + "and lm.purchaseStatus in :statusArr", Lsshpd.class);
         List<String> statusArr = Arrays.asList(StringFactory.getGbOne(), StringFactory.getGbThree()); // 01:발주 03:부분입고 04:완전입고 05:취소  A1:송금완료 A2:거래처선금입금 A3:거래처잔금입금
-		// 해외입고처리
-        jpaLspchdRepository.findPurchaseList();
-        // 국내입고처리
-        jpaLsshpdRepository.findPurchaseList(start, end, vendorId, storageId, blNo, statusArr);
-
-        query.setParameter(1, start).setParameter(2, end).setParameter(3, vendorId).setParameter(4, storageId)
-                .setParameter("statusArr",statusArr).setParameter(6, siteOrderNo)
-                .setParameter(5, piNo).setParameter(7, blNo);
-        List<Lsshpd> lsshpdList = query.getResultList();
-        List<Lspchd> lspchdList = new ArrayList<>();
+        List<Lspchd> lspchdList;
+        List<Lsshpd> lsshpdList;
         Set<Lspchd> purchaseSet = new HashSet<>();
+        if(storageId.equals("000002")){ // 해외입고처리
+            lspchdList = jpaLspchdRepository.findPurchaseList(start, end, vendorId, storageId, piNo, siteOrderNo, statusArr);
+        }
+        else if(storageId.equals("000001")){ // 국내입고처리
+            lsshpdList = jpaLsshpdRepository.findPurchaseList(start, end, vendorId, storageId, blNo, statusArr);
+            lspchdList = new ArrayList<>();
+            for(Lsshpd lsshpd : lsshpdList){
+                if(purchaseSet.contains(lsshpd.getPurchaseNo()+lsshpd.getPurchaseSeq())){
+                    continue;
+                }
+                lspchdList.add(lsshpd.getLspchd());
+            }
+        }
+        else{
+            log.debug("storageId가 유효하지 않습니다.");
+            return null;
+        }
+
         List<Lspchm> lspchmList = new ArrayList<>();
         List<String> brandIdList = new ArrayList<>();
         Set<String> purchaseNoSet = new HashSet<>();
-        for(Lsshpd lsshpd : lsshpdList){
-            if(purchaseSet.contains(lsshpd.getPurchaseNo()+lsshpd.getPurchaseSeq())){
-                continue;
-            }
-            lspchdList.add(lsshpd.getLspchd());
-        }
+
         for(Lspchd lspchd : lspchdList){
             if(purchaseNoSet.contains(lspchd.getPurchaseNo())){
                 continue;
@@ -654,7 +637,7 @@ public class JpaPurchaseService {
             lspchmList.add(lspchd.getLspchm());
             purchaseNoSet.add(lspchd.getPurchaseNo());
         }
-        List<IfBrand> ifBrandList = jpaIfBrandRepository.findByBrandIdListByChannelIdAndBrandIdList(StringFactory.getGbOne(), brandIdList);
+        List<IfBrand> ifBrandList = brandIdList.size() > 0? jpaIfBrandRepository.findByBrandIdListByChannelIdAndBrandIdList(StringFactory.getGbOne(), brandIdList) : null;
         List<PurchaseListInDepositModalData.Purchase> purchaseList = new ArrayList<>();
 
         for(Lspchm lspchm : lspchmList){
