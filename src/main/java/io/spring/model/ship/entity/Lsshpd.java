@@ -117,6 +117,10 @@ public class Lsshpd extends CommonProps implements Serializable {
     private Float localTax;
     private Float disPrice;
     private String oStorageId;
+    // 21-12-29 컬럼 추가
+    private String purchaseNo;
+    private String purchaseSeq;
+    private String blNo;
 
     // 연관관계 : lsshpm
     @OneToOne(fetch = FetchType.LAZY, targetEntity = Lsshpm.class)
