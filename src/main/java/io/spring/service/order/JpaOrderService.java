@@ -33,6 +33,7 @@ import io.spring.jparepos.order.JpaOrderLogRepository;
 import io.spring.jparepos.order.JpaOrderStockRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.order.JpaTbOrderHistoryRepository;
+import io.spring.jparepos.order.JpaTbOrderMasterRepository;
 import io.spring.jparepos.purchase.JpaLspchbRepository;
 import io.spring.jparepos.purchase.JpaLspchdRepository;
 import io.spring.jparepos.ship.JpaLsshpdRepository;
@@ -47,10 +48,12 @@ import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.entity.Tmitem;
 import io.spring.model.order.entity.IfOrderDetail;
+import io.spring.model.order.entity.IfOrderMaster;
 import io.spring.model.order.entity.OrderLog;
 import io.spring.model.order.entity.OrderStock;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
+import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.order.request.OrderStockMngInsertRequestData;
 import io.spring.model.purchase.entity.Lspchb;
 import io.spring.model.purchase.entity.Lspchd;
@@ -95,6 +98,8 @@ public class JpaOrderService {
 	private final JpaIfOrderDetailRepository jpaIfOrderDetailRepository;
 
 	private final JpaIfOrderMasterRepository jpaIfOrderMasterRepository;
+
+	private final JpaTbOrderMasterRepository jpaTbOrderMasterRepository;
 
     private final EntityManager em;
 
@@ -899,10 +904,12 @@ public class JpaOrderService {
 			TbOrderDetail od = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(p.get("orderId").toString(),
 					p.get("orderSeq").toString());
 
+			TbOrderMaster om = jpaTbOrderMasterRepository.findById(p.get("orderId").toString()).orElse(null);
+
 			IfOrderDetail iod = jpaIfOrderDetailRepository
 					.findByChannelOrderNoAndChannelOrderSeq(od.getChannelOrderNo(), od.getChannelOrderSeq());
 			
-			
+			IfOrderMaster iom = jpaIfOrderMasterRepository.findByChannelOrderNo(iod.getChannelOrderNo());
 
 			String ifCancelGb = p.get("ifCancelGb").toString();
 
@@ -938,6 +945,24 @@ public class JpaOrderService {
 
 				od.setDcSumPrice(goodsDcPrice + memberDcPrice + couponDcPrice + adminDcPrice);
 
+				om.setOrderAmt(iom.getPayAmt());
+				om.setReceiptAmt(iom.getPayAmt());
+				om.setTotalGoodsPrice(iom.getTotalGoodsPrice());
+				om.setTotalDeliveryCharge(iom.getTotalDeliveryCharge());
+				om.setTotalGoodsDcPrice(iom.getTotalGoodsDcPrice());
+				om.setTotalMemberDcPrice(iom.getTotalMemberDcPrice());
+				om.setTotalMemberOverlapDcPrice(iom.getTotalMemberOverlapDcPrice());
+				om.setTotalCouponGoodsDcPrice(iom.getTotalCouponGoodsDcPrice());
+				om.setTotalCouponOrderDcPrice(iom.getTotalCouponOrderDcPrice());
+				om.setTotalCouponDeliveryDcPrice(iom.getTotalCouponDeliveryDcPrice());
+				om.setTotalMileage(iom.getTotalMileage());
+				om.setTotalGoodsMileage(iom.getTotalGoodsMileage());
+				om.setTotalMemberMileage(iom.getTotalMemberMileage());
+				om.setTotalCouponGoodsMileage(iom.getTotalCouponGoodsMileage());
+				om.setTotalCouponOrderMileage(iom.getTotalCouponOrderMileage());
+
+				jpaTbOrderDetailRepository.save(od);
+				jpaTbOrderMasterRepository.save(om);
 
 				}
 
