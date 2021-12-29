@@ -202,7 +202,7 @@ public class MoveController {
                                       @RequestParam @Nullable String assortId,
                                       @RequestParam @Nullable String assortNm,
                                       @RequestParam @Nullable String storageId,
-                                      @RequestParam @Nullable String deliMethod){
+                                      @RequestParam @Nullable String deliMethod) {
         MoveListResponseData moveListResponseData = jpaMoveService.getMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, deliMethod);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveListResponseData);
         return ResponseEntity.ok(res);

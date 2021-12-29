@@ -1,5 +1,6 @@
 package io.spring.model.ship.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -131,6 +132,8 @@ public class Lsshpm extends CommonProps {
 
 		}
 
+        // todo : 12-29에 추가된 새로운 컬럼 값 설정해줘야 함
+
         super.setRegId(goodsMoveSaveData.getUserId());
         super.setUpdId(goodsMoveSaveData.getUserId());
     }
@@ -172,6 +175,13 @@ public class Lsshpm extends CommonProps {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date uploadDt;
     private String blNo;
+    // 21-12-29 added column
+    private LocalDateTime shipmentDt; // 선적일자
+    private LocalDateTime estiArrvTm; // 도착예정일자
+    private String movementKd; // 운송형태
+    private String containerKd; // 컨테이너 종류
+    private Long containerQty; // 컨테이너 수량
+
 
     // 연관관계 : Lsshpd
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Lsshpd.class)
