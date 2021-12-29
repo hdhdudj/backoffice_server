@@ -593,7 +593,8 @@ public class JpaPurchaseService {
      * 입고 - 발주선택창 (입고처리 -> 발주조회 > 조회) : 조건을 넣고 조회했을 때 동작하는 함수 (Lspchm 기준의 list를 가져오는데 각 마스터 정보 밑에 내역 정보가 딸려옴. 엑셀 출력을 위함.)
      */
 	public PurchaseListInDepositModalData getPurchaseMasterListWithDetails(LocalDate startDt, LocalDate endDt,
-                                                                           String vendorId, String storageId, String piNo, String siteOrderNo) {
+                                                                           String vendorId, String storageId, String piNo, String siteOrderNo
+    , String blNo) {
 		PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData(startDt,
 				endDt, vendorId, storageId);
         LocalDateTime start = startDt.atStartOfDay();
@@ -616,11 +617,12 @@ public class JpaPurchaseService {
                 + "and (?4 is null or trim(?4)='' or lm.storeCd=?4) "
                 + "and (?5 is null or trim(?5)='' or lm.piNo=?5) "
                 + "and (?6 is null or trim(?6)='' or lm.siteOrderNo=?6) "
+                + "and (?7 is null or trim(?7)='' or ld.blNo=?7) "
                 + "and lm.purchaseStatus in :statusArr", Lspchd.class);
         List<String> statusArr = Arrays.asList(StringFactory.getGbOne(), StringFactory.getGbThree()); // 01:발주 03:부분입고 04:완전입고 05:취소  A1:송금완료 A2:거래처선금입금 A3:거래처잔금입금
 		query.setParameter(1, start).setParameter(2, end).setParameter(3, vendorId).setParameter(4, storageId)
                 .setParameter("statusArr",statusArr).setParameter(6, siteOrderNo)
-                .setParameter(5, piNo);
+                .setParameter(5, piNo).setParameter(7, blNo);
         List<Lspchd> lspchdList = query.getResultList();
         List<Lspchm> lspchmList = new ArrayList<>();
         List<String> brandIdList = new ArrayList<>();
