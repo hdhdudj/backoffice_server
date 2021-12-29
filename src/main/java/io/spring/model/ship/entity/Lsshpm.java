@@ -177,7 +177,7 @@ public class Lsshpm extends CommonProps {
     private String blNo;
     // 21-12-29 added column
     private LocalDateTime shipmentDt; // 선적일자
-    private LocalDateTime estiArrTm; // 도착예정일자
+    private LocalDateTime estiArrvTm; // 도착예정일자
     private String movementKd; // 운송형태
     private String containerKd; // 컨테이너 종류
     private Long containerQty; // 컨테이너 수량
