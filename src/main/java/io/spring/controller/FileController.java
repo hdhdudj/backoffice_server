@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -23,23 +24,13 @@ import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.exception.ResourceNotFoundException;
 import io.spring.model.file.FileVo;
+import io.spring.model.file.request.GodoImageRequestData;
 import io.spring.model.file.response.FileUploadFileResponseData;
 import io.spring.model.goods.entity.Itaimg;
 import io.spring.service.file.FileService;
 import io.spring.service.goods.JpaGoodsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Base64;
 
 @Slf4j
 @RestController
@@ -65,12 +56,24 @@ public class FileController {
 
 	}
 
-	@GetMapping(path = "/godoImage")
-	public @ResponseBody String getGodoImage() throws IOException {
+	@PostMapping(path = "/godoImage")
+	public @ResponseBody String getGodoImage(@RequestBody GodoImageRequestData data) throws IOException {
+
+		System.out.println("getGodoImage");
+
+		String url = data.getUrl();
+
+		System.out.println(url);
+
+		if (url.equals("") || url == null) {
+			return "";
+		}
+
 		System.out.println("godoImage");
 		// https://trdst.hgodo.com/product_data/goods/editor/201222/melampo_terra_image4752536-960x960_102001.jpg
 
-		String url ="https://trdst.hgodo.com/data/editor/goods/200615/mathieu-challieres-demi-grande-voliere_165826.jpg";
+		// String url
+		// ="https://trdst.hgodo.com/data/editor/goods/200615/mathieu-challieres-demi-grande-voliere_165826.jpg";
 		
 		InputStream input = new URL(url).openStream();
 

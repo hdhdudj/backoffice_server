@@ -12,7 +12,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 import io.spring.enums.TrdstOrderStatus;
+import io.spring.infrastructure.mapstruct.ShipListDataResponseMapper;
 import io.spring.model.ship.response.ShipListDataResponse;
+import jdk.vm.ci.meta.Local;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
@@ -74,6 +76,8 @@ public class JpaShipService {
 
     private final EntityManager em;
 
+	private final ShipListDataResponseMapper shipListDataResponseMapper;
+
     /**
      * 출고지시 화면에서 조건검색하면 리스트를 반환해주는 함수
      */
@@ -90,7 +94,7 @@ public class JpaShipService {
             ShipIndicateSaveListResponseData.Ship ship = new ShipIndicateSaveListResponseData.Ship(tbOrderDetail);
             ship.setAvailableQty(availableQty);
             shipList.add(ship);
-            Utilities.setOptionNames(ship, tbOrderDetail.getItasrt().getItvariList());
+            Utilities.setOptionNames(ship, tbOrderDetail.getItitmm().getItasrt().getItvariList());
 //            List<Itvari> itvariList = tbOrderDetail.getItasrt().getItvariList();
 //            if(itvariList.size() > 0){
 //                Itvari itvari1 = itvariList.get(0);
@@ -132,7 +136,8 @@ public class JpaShipService {
         // tbOrderDetailList 중 statusCd가 C04인 애들 or statusCd가 C01이면서 assortGb가 01인 애만 가져오기
         TypedQuery<TbOrderDetail> query = em.createQuery("select td from TbOrderDetail td " +
                 "join fetch td.tbOrderMaster to " +
-                "join fetch td.itasrt it " +
+                "join fetch td.ititmm itm " +
+                "join fetch itm.itasrt it " +
                 "where to.orderDate between ?1 and ?2 " +
                 "and (?3 is null or trim(?3)='' or td.assortId=?3) "+
                 "and (?4 is null or trim(?4)='' or it.vendorId=?4) "+
@@ -281,7 +286,7 @@ public class JpaShipService {
     private String makeShipData(Ititmc ititmc, ShipIndicateSaveListData.Ship ship, TbOrderDetail tbOrderDetail, String shipStatus) {
         String shipId = this.getShipId();
 
-        Itasrt itasrt = tbOrderDetail.getItasrt();
+        Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
         // lsshpm 저장
 		Lsshpm lsshpm = new Lsshpm("01", shipId, itasrt, tbOrderDetail);
         lsshpm.setShipStatus(shipStatus); // 01 : 이동지시or출고지시, 04 : 출고
@@ -308,7 +313,7 @@ public class JpaShipService {
 	private String makeShipDataByDeposit(Ititmc ititmc, Lsdpsd lsdpsd, TbOrderDetail tbOrderDetail, String shipStatus) {
 		String shipId = this.getShipId();
 
-		Itasrt itasrt = tbOrderDetail.getItasrt();
+		Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
 		// lsshpm 저장
 		Lsshpm lsshpm = new Lsshpm("01", shipId, itasrt, tbOrderDetail);
 
@@ -373,10 +378,10 @@ public class JpaShipService {
      * 출고지시리스트 화면인지 출고처리 화면인지는 statusCd로 구분됨.
      * (C04 : 출고지시리스트 화면, D01 : 출고처리 화면)
      */
-    public ShipIndicateListData getShipList(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
-                                            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
-                                            String shipId, String assortId, String assortNm,
-			String channelId, String statusCd, String orderKey, String shipStatus) {
+    public ShipIndicateListData getShipIndList(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+											   @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+											   String shipId, String assortId, String assortNm,
+											   String channelId, String statusCd, String orderKey, String shipStatus) {
 
 		String orderId = "";
 		String orderSeq = "";
@@ -394,7 +399,8 @@ public class JpaShipService {
         TypedQuery<Lsshpd> query = em.createQuery("select lsd from Lsshpd lsd " +
                         "join fetch lsd.lsshpm lsm " +
                         "join fetch lsd.tbOrderDetail td " +
-                        "join fetch td.itasrt it "+
+                        "join fetch td.ititmm im "+
+                        "join fetch im.itasrt it "+
 				"where lsm.instructDt between ?1 and ?2 " +
                         "and (?3 is null or trim(?3)='' or td.assortId=?3) " +
                         "and (?4 is null or trim(?4)='' or lsd.shipId=?4) " +
@@ -415,7 +421,7 @@ public class JpaShipService {
             Lsshpm lsshpm = lsshpd.getLsshpm();
             ShipIndicateListData.Ship ship = new ShipIndicateListData.Ship(lsshpd.getTbOrderDetail(), lsshpm, lsshpd);
             // option set
-            Utilities.setOptionNames(ship, lsshpd.getTbOrderDetail().getItasrt().getItvariList());
+            Utilities.setOptionNames(ship, lsshpd.getTbOrderDetail().getItitmm().getItasrt().getItvariList());
             // 출고지시 qty 설정 == 1l
             ship.setQty(lsshpd.getShipIndicateQty());
             shipList.add(ship);
@@ -424,6 +430,31 @@ public class JpaShipService {
         return shipIndicateListData;
     }
 
+	/**
+	 *	출고 - 출고리스트
+	 */
+	public ShipListDataResponse getShipList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String vendorId, String statusCd,String shipStatus) {
+		ShipListDataResponse shipListDataResponse = new ShipListDataResponse(startDt, endDt, shipId, assortId, assortNm, vendorId);
+		String shipId2 = "";
+		String shipSeq = "";
+		if(shipId != null && !shipId.trim().equals("")){
+			String[] shipIdArr = shipId.split("-");
+			shipId2 = shipIdArr.length > 1? shipIdArr[0] : shipId;
+			shipSeq = shipIdArr.length > 1? shipIdArr[1] : "";
+		}
+		LocalDateTime start = startDt.atStartOfDay();
+		LocalDateTime end = endDt.atTime(23,59,59);
+		List<Lsshpd> lsshpdList = jpaLsshpdRepository.findShipList(start, end, shipId2, shipSeq, assortId, assortNm, vendorId, statusCd);
+		List<ShipListDataResponse.Ship> shipList = new ArrayList<>();
+		for(Lsshpd l : lsshpdList){
+			ShipListDataResponse.Ship ship = new ShipListDataResponse.Ship(l);
+			ship = shipListDataResponseMapper.nullToEmpty(ship);
+			shipList.add(ship);
+		}
+		shipListDataResponse.setShips(shipList);
+		shipListDataResponse = shipListDataResponseMapper.nullToEmpty(shipListDataResponse);
+		return shipListDataResponse;
+	}
 //	/**
 //	 * 출고 : 출고지시리스트 화면, 출고처리 화면에서 list를 불러오는 함수 출고지시리스트 화면인지 출고처리 화면인지는 statusCd로 구분됨.
 //	 * (C04 : 출고지시리스트 화면, D01 : 출고처리 화면)
@@ -460,8 +491,8 @@ public class JpaShipService {
 //		}
 //		shipIndicateListData.setShips(shipList);
 //		return shipIndicateListData;
-//	}
 
+//	}
 	/**
 	 * 출고 : 출고리스트 화면에서 검색 후 list를 불러오는 함수.
 	 */
@@ -496,6 +527,7 @@ public class JpaShipService {
 //		}
 //		shipListDataResponse.setShips(shipList);
 //		return shipListDataResponse;
+
 //	}
 
     /**
@@ -512,7 +544,7 @@ public class JpaShipService {
         for(Lsshpd lsshpd:lsshpdList){
             ShipItemListData.Ship ship = new ShipItemListData.Ship(lsshpd);
             // option
-			Utilities.setOptionNames(ship, lsshpd.getTbOrderDetail().getItasrt().getItvariList());
+			Utilities.setOptionNames(ship, lsshpd.getTbOrderDetail().getItitmm().getItasrt().getItvariList());
             shipList.add(ship);
         }
         shipItemListData.setShips(shipList);

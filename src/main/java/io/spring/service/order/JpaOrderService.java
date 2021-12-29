@@ -100,7 +100,7 @@ public class JpaOrderService {
                 em.createQuery("select td from TbOrderDetail td " +
                                 "join fetch td.tbOrderMaster tm " +
                                 "left join fetch td.ititmm it " +
-                                "left join fetch td.itasrt itasrt " +
+                                "left join fetch it.itasrt itasrt " +
                                 "where td.orderId = ?1" +
                                 "and td.orderSeq = ?2 "
                         , TbOrderDetail.class);
@@ -114,11 +114,11 @@ public class JpaOrderService {
             log.debug("There is no ititmm of orderId : " + orderId + " and orderSeq : " + orderSeq);
             return;
         }
-        else if(tbOrderDetail.getItasrt() == null){
+        else if(tbOrderDetail.getItitmm().getItasrt() == null){
             log.debug("There is no itasrt of orderId : " + orderId + " and orderSeq : " + orderSeq);
             return;
         }
-        Itasrt itasrt = tbOrderDetail.getItasrt();
+        Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
         String prevStatus = tbOrderDetail.getStatusCd();
 //        TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
         String assortGb = itasrt.getAssortGb();
@@ -146,7 +146,7 @@ public class JpaOrderService {
 		log.debug("in changeOrderStatus ; orderId : " + orderId + ", orderSeq : " + orderSeq);
 		TypedQuery<TbOrderDetail> query = em.createQuery(
 				"select td from TbOrderDetail td " + "join fetch td.tbOrderMaster tm " + "left join fetch td.ititmm it "
-						+ "left join fetch td.itasrt itasrt " + "where td.orderId = ?1" + "and td.orderSeq = ?2 ",
+						+ "left join fetch it.itasrt itasrt " + "where td.orderId = ?1" + "and td.orderSeq = ?2 ",
 				TbOrderDetail.class);
 		query.setParameter(1, orderId).setParameter(2, orderSeq);
 		TbOrderDetail tbOrderDetail = query.getSingleResult();
@@ -498,7 +498,7 @@ public class JpaOrderService {
 	private String makeMoveDataByDeposit(Ititmc ititmc, TbOrderDetail tbOrderDetail, String shipStatus) {
 		String shipId = this.getShipId();
 
-		Itasrt itasrt = tbOrderDetail.getItasrt();
+		Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
 		// lsshpm 저장
 		Lsshpm lsshpm = new Lsshpm("03", shipId, itasrt, tbOrderDetail);
 
@@ -535,7 +535,7 @@ public class JpaOrderService {
     private String makeShipDataByDeposit(Ititmc ititmc, TbOrderDetail tbOrderDetail, String shipStatus) {
         String shipId = this.getShipId();
 
-        Itasrt itasrt = tbOrderDetail.getItasrt();
+        Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
         // lsshpm 저장
         Lsshpm lsshpm = new Lsshpm("01", shipId, itasrt, tbOrderDetail);
 
@@ -571,7 +571,7 @@ public class JpaOrderService {
 	private String makeDomesticShipDataByDeposit(Ititmc ititmc, TbOrderDetail tbOrderDetail, String shipStatus) {
 		String shipId = this.getShipId();
 
-		Itasrt itasrt = tbOrderDetail.getItasrt();
+		Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
 		// lsshpm 저장
 		Lsshpm lsshpm = new Lsshpm("01", shipId, itasrt, tbOrderDetail);
 
@@ -746,12 +746,13 @@ public class JpaOrderService {
 
     public TbOrderDetail getNullTest(String orderId, String orderSeq) {
         TbOrderDetail tbOrderDetail = em.createQuery("select t from TbOrderDetail t " +
-                "left join fetch t.itasrt " +
+                "left join fetch t.ititmm im " +
+                "left join fetch im.itasrt " +
                 "where t.orderId=?1 and t.orderSeq=?2", TbOrderDetail.class)
                 .setParameter(1, orderId)//, "O00020410"O00025071
                 .setParameter(2,orderSeq).getSingleResult();
 
-        if(tbOrderDetail.getItasrt() == null){
+        if(tbOrderDetail.getItitmm().getItasrt() == null){
             System.out.println("널입니다.");
         }
         return tbOrderDetail;

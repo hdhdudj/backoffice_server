@@ -67,4 +67,11 @@ class JpaItasrtRepositoryTest {
             }
         }
     }
+
+    @Test
+    public void stringSplitTest(){
+        String arg1 = "O00015672-0001";
+        String arg2 = "O00015672";
+        System.out.println(arg2.split("-")[0]);
+    }
 }

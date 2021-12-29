@@ -185,7 +185,7 @@ public class Lspchm extends CommonProps {
      *  입고예정재고가 있을 때 그에 따른 발주 데이터를 만드는 생성자
      */
     public Lspchm(TbOrderDetail tbOrderDetail, DirectOrImport di) {
-        Itasrt itasrt = tbOrderDetail.getItasrt();
+        Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
         this.purchaseDt = LocalDateTime.now();
         this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
         this.purchaseStatus = StringFactory.getGbOne(); // 01 하드코딩
