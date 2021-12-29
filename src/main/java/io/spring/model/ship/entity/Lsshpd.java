@@ -89,6 +89,10 @@ public class Lsshpd extends CommonProps implements Serializable {
         super.setRegId(userId);
         super.setUpdId(userId);
     }
+    // 출고지시 저장시 실행되는 생성자
+//    public Lsshpd(){
+//
+//    }
     @Id
     private String shipId;
     @Id

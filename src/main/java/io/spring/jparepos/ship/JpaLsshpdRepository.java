@@ -17,7 +17,7 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
 
     List<Lsshpd> findByShipId(String shipId);
 
-    @Query("select lsshpd from Lsshpd lsshpd " +
+    @Query("select distinct(lsshpd) from Lsshpd lsshpd " +
             "join fetch lsshpd.tbOrderDetail tod " +
             "join fetch tod.tbOrderMaster tom " +
             "join fetch tom.tbMemberAddress tma " +

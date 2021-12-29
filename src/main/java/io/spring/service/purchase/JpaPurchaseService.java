@@ -622,6 +622,19 @@ public class JpaPurchaseService {
             log.debug("storageId가 유효하지 않습니다.");
             return null;
         }
+        List<Lspchd> filteredLspchdList = new ArrayList<>();
+        for(Lspchd lspchd : lspchdList){
+            if(lspchd.getOrderId() == null || lspchd.getOrderId().trim().equals("")){
+                continue;
+            }
+            if(storageId.equals("000001") && lspchd.getTbOrderDetail().getStatusCd().equals(TrdstOrderStatus.C03.toString())){ // 국내입고처리 발주선택창일 때
+                filteredLspchdList.add(lspchd);
+            }
+            else if(storageId.equals("000002") && lspchd.getTbOrderDetail().getStatusCd().equals(TrdstOrderStatus.B02.toString())){ // 해외입고처리 발주선택창일 때
+                filteredLspchdList.add(lspchd);
+            }
+        }
+        lspchdList = filteredLspchdList;
 
         List<Lspchm> lspchmList = new ArrayList<>();
         List<String> brandIdList = new ArrayList<>();
