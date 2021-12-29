@@ -1150,6 +1150,23 @@ public class JpaPurchaseService {
         Lspchb newLspchb = new Lspchb(lspchb);
         lspchb.setEffEndDt(LocalDateTime.now());
         newLspchb.setPurchaseStatus(status);
+		jpaLspchbRepository.save(lspchb);
+        jpaLspchbRepository.save(newLspchb);
+
+        return newLspchb;
+    }
+
+	/**
+     * lspchd -> lspchb의 status를 이력 꺾기 업데이트 해주는 함수
+     */
+    private Lspchb updateLspchbdStatus(Lspchd lspchd, String status){
+		Lspchb lspchb = jpaLspchbRepository.findByPurchaseNoAndPurchaseSeqAndEffEndDt(lspchd.getPurchaseNo(),
+				lspchd.getPurchaseSeq(), LocalDateTime.parse(StringFactory.getDoomDay(),
+						DateTimeFormatter.ofPattern(StringFactory.getDateFormat())));
+        Lspchb newLspchb = new Lspchb(lspchb);
+        lspchb.setEffEndDt(LocalDateTime.now());
+        newLspchb.setPurchaseStatus(status);
+		jpaLspchbRepository.save(lspchb);
         jpaLspchbRepository.save(newLspchb);
 
         return newLspchb;
@@ -1169,6 +1186,46 @@ public class JpaPurchaseService {
         return newLspchs;
     }
     
+	private Lspchm cancelPurchaseStatusOfLspchm(Lspchm lspchm) {
+//      Lspchm newLspchm = new Lspchm(lspchm);
+
+		List<Lspchb> lspchbList = jpaLspchbRepository.findByPurchaseNoAndEffEndDt(lspchm.getPurchaseNo(), LocalDateTime
+				.parse(StringFactory.getDoomDay(), DateTimeFormatter.ofPattern(StringFactory.getDateFormat())));
+
+		System.out.println("lspchbList ==> " + lspchbList.size());
+
+		// x -> x.getPurchaseStatus().equals("04")
+		Stream<Lspchb> l05 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("05"));
+
+		String purchaseStatus = "";
+		if (lspchbList.size() == l05.count()) {
+			purchaseStatus = "05";
+			lspchm.setPurchaseStatus(purchaseStatus);
+
+			System.out.println("lspchm ==> " + lspchm);
+
+			jpaLspchmRepository.save(lspchm);
+			updateLspchsStatus(lspchm, purchaseStatus);
+
+		}
+
+		return lspchm;
+
+		/*
+		 * if(lspchbList.stream().filter(x->StringFactory.getGbFour().equals(x.
+		 * getPurchaseStatus())).collect(Collectors.toList()).size() ==
+		 * lspchbList.size()){ lspchm.setPurchaseStatus(StringFactory.getGbFour());
+		 * System.out.println("changePurchaseStatusOfLspchm" +
+		 * StringFactory.getGbFour()); } else{ for(Lspchb lspchb : lspchbList){
+		 * if(lspchb.getPurchaseStatus().equals(StringFactory.getGbThree())){
+		 * lspchm.setPurchaseStatus(StringFactory.getGbThree());
+		 * System.out.println("changePurchaseStatusOfLspchm" +
+		 * StringFactory.getGbThree()); // jpaLspchmRepository.save(newLspchm); break; }
+		 * } }
+		 */
+
+
+	}
 
     /**
      * lspchb 목록을 받아 해당하는 lspchm의 purchaseStatus를 변경해주는 함수
@@ -1180,13 +1237,14 @@ public class JpaPurchaseService {
 		System.out.println("lspchbList ==> " + lspchbList.size());
 
 		// x -> x.getPurchaseStatus().equals("04")
+		Stream<Lspchb> l05 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("05"));
 		Stream<Lspchb> l04 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("04"));
 		Stream<Lspchb> l01 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("01"));
 		
 		String purchaseStatus = "";
-		if (lspchbList.size() == l04.count()) {
+		if (lspchbList.size() == (l04.count() + l05.count())) {
 			purchaseStatus = "04";
-		} else if (lspchbList.size() == l01.count()) {
+		} else if (lspchbList.size() == (l01.count() + l05.count())) {
 			purchaseStatus = "01";
 		} else {
 			purchaseStatus = "03";
@@ -1506,15 +1564,20 @@ public class JpaPurchaseService {
         return depositPlanId;
     }
 
-	@Transactional
+//	@Transactional
 	public boolean cancelOrderPurchase(HashMap<String, Object> param) {
+
+		// 주문번호
+		// 주문순변
+		// 취소코드
+		// 취소메세지
 
 		String orderId = param.get("orderId").toString();
 		String orderSeq = param.get("orderSeq").toString();
 		String cancelGb = param.get("cancelGb").toString();
 		String cancelMsg = param.get("cancelMsg").toString();
 
-
+		//주문번호에 해당하는 발주조회
 		List<Lspchd> l = jpaLspchdRepository.findItemByOrderIdAndOrderSeq(orderId, orderSeq);
 
 		if (l.size() != 1) {
@@ -1524,22 +1587,75 @@ public class JpaPurchaseService {
 		}
 
 		Lspchd o = l.get(0);
+		Lspchm lspchm = jpaLspchmRepository.findByPurchaseNo(o.getPurchaseNo()).orElse(null);
 
-		for (Lspchd o : l) {
-			System.out.println(o.getPurchaseNo() + "-" + o.getPurchaseSeq());
+		
+		List<Lsdpsp> l2 = jpaLsdpspRepository.findItemByPurchaseNoAndPurchaseSeq(o.getPurchaseNo(), o.getPurchaseSeq());
+
+		Lsdpsp lp = null;
+		
+		if(l2.size()!=1) {
+			System.out.println("입고예정데이타 건수이상!!!");
+			throw new RuntimeException("입고예정데이타 건수이상!!!.");
+			// return false;
+		}else {
+			lp = l2.get(0);
+			
+			if(! lp.getPlanStatus().equals("01")) {
+				System.out.println("입고예정데이타 상태이상!!!");
+				throw new RuntimeException("입고예정데이타 상태이상!!!.");
+				// return false;
+			}
+		}
+		
+		// 해당발주 디테일 취소
+		
+		updateLspchbdStatus(o,"05");
+
+		
+		// 입고예정취소
+		lp.setPlanStatus("05");
+		lp.setPurchasePlanQty(0L);
+		lp.setPurchaseTakeQty(0L);
+
+		jpaLsdpspRepository.save(lp);
+
+		// ititmt취소
+
+		// ititmt qty update
+		Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(o.getAssortId(),
+				o.getItemId(), lspchm.getStoreCd(), StringFactory.getStrEleven(), lspchm.getPurchaseDt());
+
+		if (ititmt == null) {
+			System.out.println("입고예정 재고없음");
+			throw new RuntimeException("입고예정 재고없음");
+			// return false;
 		}
 
-		// 주문번호
-		// 주문순변
-		// 취소코드
-		// 취소메세지
+		Long tempIndQty = ititmt.getTempIndicateQty() == null ? 0L : ititmt.getTempIndicateQty();
 
-//주문번호에 해당하는 발주조회
-		// 해당발주 디테일 취소
-		// 입고예정취소
-		// ititmt취소
+		Long tempQty = ititmt.getTempQty() == null ? 0L : ititmt.getTempQty();
+
+		if (tempIndQty == 0 || tempIndQty == 0) {
+			System.out.println("입고예정 재고수량 이상");
+			throw new RuntimeException("입고예정 재고수량 이상");
+			// return false;
+		}
+
+		ititmt.setTempIndicateQty(tempIndQty - o.getPurchaseQty());
+		ititmt.setTempQty(tempQty - o.getPurchaseQty());
+
+
+		jpaItitmtRepository.save(ititmt);
+
 		// 해당발주의 발주번호기준 마스터 데이타 확인 디테일모두 취소라면 마스터도 취소
+		cancelPurchaseStatusOfLspchm(lspchm);
+
+
 		// 주문상태 업데이트
+		this.updateOrderStatusCd(o.getOrderId(), o.getOrderSeq(), StringFactory.getStrB01());
+
+
 
 		return true;
 	}

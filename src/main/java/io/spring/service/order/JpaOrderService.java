@@ -27,6 +27,8 @@ import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.goods.JpaItitmmRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
 import io.spring.jparepos.goods.JpaTmitemRepository;
+import io.spring.jparepos.order.JpaIfOrderDetailRepository;
+import io.spring.jparepos.order.JpaIfOrderMasterRepository;
 import io.spring.jparepos.order.JpaOrderLogRepository;
 import io.spring.jparepos.order.JpaOrderStockRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
@@ -44,6 +46,7 @@ import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.entity.Tmitem;
+import io.spring.model.order.entity.IfOrderDetail;
 import io.spring.model.order.entity.OrderLog;
 import io.spring.model.order.entity.OrderStock;
 import io.spring.model.order.entity.TbOrderDetail;
@@ -88,6 +91,10 @@ public class JpaOrderService {
 	private final JpaTmitemRepository jpaTmitemRepository;
 
 	private final JpaItitmmRepository jpaItitmmRepository;
+
+	private final JpaIfOrderDetailRepository jpaIfOrderDetailRepository;
+
+	private final JpaIfOrderMasterRepository jpaIfOrderMasterRepository;
 
     private final EntityManager em;
 
@@ -871,83 +878,91 @@ public class JpaOrderService {
 	}
 
 	@Transactional
-	public boolean cancelOrder(List<HashMap<String, Object>> p) {
+	public boolean cancelOrder(HashMap<String, Object> p) {
+
+//		m.put("orderId", o.getOrderId());
+//		m.put("orderSeq", o.getOrderSeq());
+//		m.put("cancelGb", o.getCancelGb());
+//		m.put("cancelMsg", o.getCancelMsg());
+//		m.put("cancelQty", o.getCancelQty());
+//		m.put("ifCancelGb", o.getIfCancelGb());
+//		m.put("userId", userId);
 
 		Date today = new Date();
 
 		LocalDateTime todayLDT = Instant.ofEpochMilli(today.getTime()).atZone(ZoneId.of("Asia/Seoul"))
 				.toLocalDateTime();
 
-		for (HashMap<String, Object> o : p) {
-			System.out.println(o);
 
-			TbOrderDetail od = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(o.get("orderId").toString(),
-					o.get("orderSeq").toString());
 
-			if (od.getQty() == (Long) o.get("cancelQty")) {
-				
-				
-				updateOrderStatusCd(o.get("orderId").toString(),
-						o.get("orderSeq").toString(), "X01");
-				
+
+			TbOrderDetail od = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(p.get("orderId").toString(),
+					p.get("orderSeq").toString());
+
+			IfOrderDetail iod = jpaIfOrderDetailRepository
+					.findByChannelOrderNoAndChannelOrderSeq(od.getChannelOrderNo(), od.getChannelOrderSeq());
+			
+			
+
+			String ifCancelGb = p.get("ifCancelGb").toString();
+
+			if (od.getStatusCd().equals("B01") || od.getStatusCd().equals("B02") || od.getStatusCd().equals("A01")) {
+				if (od.getStatusCd().equals("B02")) {
+					boolean r = jpaPurchaseService.cancelOrderPurchase(p);
+
+					System.out.println(r);
+
+				}
+
+				if (ifCancelGb.equals("01")) {
+					// 주문취소
+					updateOrderStatusCd(p.get("orderId").toString(), p.get("orderSeq").toString(), "X01");
+				} else if (ifCancelGb.equals("02")) {
+					// 상품수량변경
+				//	Long qty = 
+				od.setQty(iod.getGoodsCnt());
+
+				od.setGoodsPrice(iod.getFixedPrice());
+				od.setSalePrice(iod.getGoodsPrice());
+				od.setGoodsDcPrice(iod.getGoodsDcPrice());
+				od.setMemberDcPrice(iod.getMemberDcPrice());
+				od.setCouponDcPrice(iod.getCouponDcPrice());
+				// od.setDcSumPrice(iod.getDc);
+				od.setDeliPrice(iod.getDeliPrice());
+				od.setOptionPrice(iod.getOptionPrice());
+
+				float goodsDcPrice = iod.getGoodsDcPrice() == null ? 0 : iod.getGoodsDcPrice();
+				float memberDcPrice = iod.getMemberDcPrice() == null ? 0 : iod.getMemberDcPrice();
+				float couponDcPrice = iod.getCouponDcPrice() == null ? 0 : iod.getCouponDcPrice();
+				float adminDcPrice = iod.getAdminDcPrice() == null ? 0 : iod.getAdminDcPrice();
+
+				od.setDcSumPrice(goodsDcPrice + memberDcPrice + couponDcPrice + adminDcPrice);
+
+
+				}
 
 			}
+			
+
+
+			// if (od.getQty() == (Long) o.get("cancelQty")) {
+			//
+				// iforderDetail의 데이타로 데이타 수정
+
+				//
+
+				updateOrderStatusCd(p.get("orderId").toString(), p.get("orderSeq").toString(), "X01");
+				
+
+				// }
 
 
 
-		}
 
 
 		return true;
 	}
-/*
-	private void addOrderDetail(HashMap<String, Object> p) {
-		orderId
-		orderSeq
-		statusCd
-		assortGb
-		assortId
-		itemId
-		goodsNm
-		optionInfo
-		qty
-		goodsPrice
-		salePrice
-		goodsDcPrice
-		memberDcPrice
-		couponDcPrice
-		adminDcPrice
-		dcSumPrice
-		deliPrice
-		deliMethod
-		channelOrderNo
-		channelOrderSeq
-		regId
-		regDt
-		updId
-		updDt
-		storageId
-		lastGb
-		lastCategoryId
-		optionTextInfo
-		listImageData
-		optionPrice
-		optionTextPrice
-		deliveryInfo
-		parentOrderSeq
-		scmNo
-		
-		
-		
-		
-		
-		
-		
-		
-		
-	}
 
-	*/
 
 }
 

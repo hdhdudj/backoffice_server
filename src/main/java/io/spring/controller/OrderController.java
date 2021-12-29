@@ -2,7 +2,6 @@ package io.spring.controller;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -422,14 +421,17 @@ public class OrderController {
 
 	}
 
-	@PostMapping(path = "/items/{orderId}/cancel")
-	public ResponseEntity cancelOrder(@PathVariable String orderId, @RequestBody CancelOrderRequestData param) {
+	@PostMapping(path = "/items/{orderId}/{orderSeq}/cancel")
+	public ResponseEntity cancelOrder(@PathVariable String orderId, @PathVariable String orderSeq,
+			@RequestBody CancelOrderRequestData param) {
+
+//CancelOrderRequestData
 
 		System.out.println("cancelOrder");
 
 		String userId = param.getUserId();
 
-		List<HashMap<String, Object>> l = new ArrayList<HashMap<String, Object>>();
+		// List<HashMap<String, Object>> l = new ArrayList<HashMap<String, Object>>();
 
 		for (CancelOrderRequestData.Item o : param.getItems()) {
 			HashMap<String, Object> m = new HashMap<String, Object>();
@@ -439,9 +441,12 @@ public class OrderController {
 			m.put("cancelGb", o.getCancelGb());
 			m.put("cancelMsg", o.getCancelMsg());
 			m.put("cancelQty", o.getCancelQty());
+			m.put("ifCancelGb", o.getIfCancelGb());
 			m.put("userId", userId);
 
-			l.add(m);
+			jpaOrderService.cancelOrder(m);
+
+			// l.add(m);
 		}
 
 		// HashMap

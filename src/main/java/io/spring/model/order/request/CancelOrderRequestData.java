@@ -14,7 +14,7 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class CancelOrderRequestData {
 
-	private String orderId;
+
 	private String userId;
 	private List<Item> items;
 
@@ -26,6 +26,7 @@ public class CancelOrderRequestData {
 		private String cancelGb;
 		private String cancelMsg;
 		private Long cancelQty;
+		private String ifCancelGb;// 01 주문취소 02 수량변경
 	}
 
 }
