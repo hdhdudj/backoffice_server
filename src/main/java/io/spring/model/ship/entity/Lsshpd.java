@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.*;
 
 import io.spring.model.deposit.entity.Lsdpsd;
+import io.spring.model.purchase.entity.Lspchd;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -88,6 +89,10 @@ public class Lsshpd extends CommonProps implements Serializable {
         super.setRegId(userId);
         super.setUpdId(userId);
     }
+    // 출고지시 저장시 실행되는 생성자
+//    public Lsshpd(){
+//
+//    }
     @Id
     private String shipId;
     @Id
@@ -117,6 +122,10 @@ public class Lsshpd extends CommonProps implements Serializable {
     private Float localTax;
     private Float disPrice;
     private String oStorageId;
+    // 21-12-29 컬럼 추가
+    private String purchaseNo;
+    private String purchaseSeq;
+    private String blNo;
 
     // 연관관계 : lsshpm
     @OneToOne(fetch = FetchType.LAZY, targetEntity = Lsshpm.class)
@@ -134,16 +143,8 @@ public class Lsshpd extends CommonProps implements Serializable {
     @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
     @OneToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-//    @NotFound(action = NotFoundAction.IGNORE)
     private Itasrt itasrt; // itasrt 연관관계
-//
-//    // 연관관계 : Lspchd
-//    @OneToMany(fetch = FetchType.LAZY, targetEntity = Lspchd.class)
-//    @JoinColumns({
-//            @JoinColumn(name = "depositId", referencedColumnName = "depositId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
-//            @JoinColumn(name = "depositSeq", referencedColumnName = "depositSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
-//    })
-//    private List<Lspchd> lspchdList;
+
     @JoinColumns({
             @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
             @JoinColumn(name = "itemId", referencedColumnName = "itemId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
@@ -152,4 +153,12 @@ public class Lsshpd extends CommonProps implements Serializable {
     @JsonIgnore
 //    @NotFound(action = NotFoundAction.IGNORE)
     private List<Lsdpsd> lsdpsdList; // itasrt 연관관계
+
+    @JoinColumns({
+            @JoinColumn(name = "purchaseNo", referencedColumnName = "purchaseNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+            @JoinColumn(name = "purchaseSeq", referencedColumnName = "purchaseSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+    })
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Lspchd lspchd; // lspchd 연관관계
 }

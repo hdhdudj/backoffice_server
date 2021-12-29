@@ -572,7 +572,7 @@ public class JpaMoveService {
             lsshpd.setShipIndicateQty(moveQty);
             lsshpm.setChannelId(goods.getChannelId()); // vendorId는 바깥에서 set
             lsshpdList.add(lsshpd);
-            jpaLsshpdRepository.save(lsshpd);
+//            jpaLsshpdRepository.save(lsshpd);
             // 1-3. Lsshps 생성
             Lsshps lsshps = new Lsshps(lsshpm, regId);
             jpaLsshpmRepository.save(lsshpm);
@@ -935,7 +935,6 @@ public class JpaMoveService {
         lsshpdList = lsshpdList.stream().filter(x->x.getShipGb().equals(StringFactory.getGbThree())||x.getShipGb().equals(StringFactory.getGbFour())).collect(Collectors.toList());
         if(lsshpdList.size()==0){
             log.debug("조건에 맞는 이동지시 데이터가 존재하지 않습니다.");
-//            return null;
         }
         MoveListResponseData moveListResponseData = new MoveListResponseData(startDt, endDt, shipId, assortId, assortNm, storageId, deliMethod);
         List<MoveListResponseData.Move> moveList = new ArrayList<>();

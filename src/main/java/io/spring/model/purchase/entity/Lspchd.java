@@ -215,8 +215,6 @@ public class Lspchd extends CommonProps implements Serializable {
     private String setShipId;
     private String setShipSeq;
     private String siteOrderNo;
-    // 21-12-29 추가
-    private String blNo;
 
     // 연관관계 : lspchb
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Lspchb.class)
