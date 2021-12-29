@@ -625,7 +625,7 @@ public class JpaPurchaseService {
                 + "and lm.purchaseStatus in :statusArr", Lsshpd.class);
         List<String> statusArr = Arrays.asList(StringFactory.getGbOne(), StringFactory.getGbThree()); // 01:발주 03:부분입고 04:완전입고 05:취소  A1:송금완료 A2:거래처선금입금 A3:거래처잔금입금
 		// 해외입고처리
-
+        jpaLspchdRepository.findPurchaseList();
         // 국내입고처리
         jpaLsshpdRepository.findPurchaseList(start, end, vendorId, storageId, blNo, statusArr);
 

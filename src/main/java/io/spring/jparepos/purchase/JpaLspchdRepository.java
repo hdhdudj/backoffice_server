@@ -16,4 +16,10 @@ public interface JpaLspchdRepository extends JpaRepository<Lspchd, LspchdId> {
     String findMaxPurchaseSeqByPurchaseNo(String purchaseNo);
 
     Lspchd findByPurchaseNoAndPurchaseSeq(String purchaseNo, String purchaseSeq);
+
+    /**
+     * 해외입고처리 - 발주선택창 조회 쿼리
+     */
+    @Query("")
+    List<Lspchd> findPurchaseList();
 }
