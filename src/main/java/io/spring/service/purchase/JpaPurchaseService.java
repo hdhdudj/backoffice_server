@@ -593,7 +593,8 @@ public class JpaPurchaseService {
      * 입고 - 발주선택창 (입고처리 -> 발주조회 > 조회) : 조건을 넣고 조회했을 때 동작하는 함수 (Lspchm 기준의 list를 가져오는데 각 마스터 정보 밑에 내역 정보가 딸려옴. 엑셀 출력을 위함.)
      */
 	public PurchaseListInDepositModalData getPurchaseMasterListWithDetails(LocalDate startDt, LocalDate endDt,
-                                                                           String vendorId, String storageId, String piNo, String siteOrderNo) {
+                                                                           String vendorId, String storageId, String piNo, String siteOrderNo
+    , String blNo) {
 		PurchaseListInDepositModalData purchaseListInDepositModalData = new PurchaseListInDepositModalData(startDt,
 				endDt, vendorId, storageId);
         LocalDateTime start = startDt.atStartOfDay();
@@ -616,12 +617,27 @@ public class JpaPurchaseService {
                 + "and (?4 is null or trim(?4)='' or lm.storeCd=?4) "
                 + "and (?5 is null or trim(?5)='' or lm.piNo=?5) "
                 + "and (?6 is null or trim(?6)='' or lm.siteOrderNo=?6) "
+                + "and (?7 is null or trim(?7)='' or ld.blNo=?7) "
+//                + "and tod.statusCd in (?8, ?9) "
                 + "and lm.purchaseStatus in :statusArr", Lspchd.class);
         List<String> statusArr = Arrays.asList(StringFactory.getGbOne(), StringFactory.getGbThree()); // 01:발주 03:부분입고 04:완전입고 05:취소  A1:송금완료 A2:거래처선금입금 A3:거래처잔금입금
 		query.setParameter(1, start).setParameter(2, end).setParameter(3, vendorId).setParameter(4, storageId)
                 .setParameter("statusArr",statusArr).setParameter(6, siteOrderNo)
-                .setParameter(5, piNo);
+                .setParameter(5, piNo).setParameter(7, blNo);
         List<Lspchd> lspchdList = query.getResultList();
+        List<Lspchd> filteredLspchdList = new ArrayList<>();
+        for(Lspchd lspchd : lspchdList){
+            if(lspchd.getOrderId() == null || lspchd.getOrderId().trim().equals("")){
+                continue;
+            }
+            if(storageId.equals("000001") && lspchd.getTbOrderDetail().getStatusCd().equals(TrdstOrderStatus.C03.toString())){ // 국내입고처리 발주선택창일 때
+                filteredLspchdList.add(lspchd);
+            }
+            else if(storageId.equals("000002") && lspchd.getTbOrderDetail().getStatusCd().equals(TrdstOrderStatus.B02.toString())){ // 해외입고처리 발주선택창일 때
+                filteredLspchdList.add(lspchd);
+            }
+        }
+        lspchdList = filteredLspchdList;
         List<Lspchm> lspchmList = new ArrayList<>();
         List<String> brandIdList = new ArrayList<>();
         Set<String> purchaseNoSet = new HashSet<>();
@@ -629,13 +645,14 @@ public class JpaPurchaseService {
             if(purchaseNoSet.contains(lspchd.getPurchaseNo())){
                 continue;
             }
-            if(!brandIdList.contains(lspchd.getItitmm().getItasrt().getBrandId())){
+            System.out.println();
+            if(lspchd.getItitmm().getItasrt().getBrandId() != null && !brandIdList.contains(lspchd.getItitmm().getItasrt().getBrandId())){
                 brandIdList.add(lspchd.getItitmm().getItasrt().getBrandId());
             }
             lspchmList.add(lspchd.getLspchm());
             purchaseNoSet.add(lspchd.getPurchaseNo());
         }
-        List<IfBrand> ifBrandList = jpaIfBrandRepository.findByBrandIdListByChannelIdAndBrandIdList(StringFactory.getGbOne(), brandIdList);
+        List<IfBrand> ifBrandList = brandIdList.size() > 0 ? jpaIfBrandRepository.findByBrandIdListByChannelIdAndBrandIdList(StringFactory.getGbOne(), brandIdList) : null;
         List<PurchaseListInDepositModalData.Purchase> purchaseList = new ArrayList<>();
 
         for(Lspchm lspchm : lspchmList){

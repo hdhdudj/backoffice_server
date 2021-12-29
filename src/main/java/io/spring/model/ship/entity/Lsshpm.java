@@ -37,7 +37,7 @@ import lombok.Setter;
 @Table(name = "lsshpm")
 public class Lsshpm extends CommonProps {
     /**
-     * 상품이동지시 저장, 주문이동처리 저장,출고 시 실행되는 생성자
+     * 주문이동처리 저장,출고 시 실행되는 생성자
      */
 	public Lsshpm(String shipGb, String shipId, Itasrt itasrt, TbOrderDetail tbOrderDetail) {
         this.shipId = shipId;
