@@ -1582,8 +1582,8 @@ public class JpaPurchaseService {
 
 		if (l.size() != 1) {
 			System.out.println("발주데이타 이상!!!");
-
-			return false;
+			throw new RuntimeException("발주데이타 이상!!!.");
+			// return false;
 		}
 
 		Lspchd o = l.get(0);

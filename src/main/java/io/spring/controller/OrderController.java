@@ -433,6 +433,8 @@ public class OrderController {
 
 		// List<HashMap<String, Object>> l = new ArrayList<HashMap<String, Object>>();
 
+		String chk = "";
+
 		for (CancelOrderRequestData.Item o : param.getItems()) {
 			HashMap<String, Object> m = new HashMap<String, Object>();
 
@@ -444,10 +446,14 @@ public class OrderController {
 			m.put("ifCancelGb", o.getIfCancelGb());
 			m.put("userId", userId);
 
-			jpaOrderService.cancelOrder(m);
-
+			boolean r = jpaOrderService.cancelOrder(m);
+			System.out.println(r);
+			if (r == false) {
+				chk = "error";
+			}
 			// l.add(m);
 		}
+
 
 		// HashMap
 
@@ -457,7 +463,14 @@ public class OrderController {
 
 		// List<OrderMasterListResponseData> r = myBatisOrderService.get(map);
 
-		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), "");
+		ApiResponseMessage res = null;
+
+		if (chk.equals("error")) {
+			res = new ApiResponseMessage(StringFactory.getStrOk(), "error", "");
+		} else {
+			res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), "");
+		}
+
 //		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), t);
 		return ResponseEntity.ok(res);
 

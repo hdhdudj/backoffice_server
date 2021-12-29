@@ -21,12 +21,13 @@ public class CancelOrderRequestData {
 	@Getter
 	@Setter
 	public static class Item {
+		private String seq;
 		private String orderId;
 		private String orderSeq;
 		private String cancelGb;
 		private String cancelMsg;
 		private Long cancelQty;
-		private String ifCancelGb;// 01 주문취소 02 수량변경
+		private String ifCancelGb;// 01 주문취소 02 수량변경 03 취소및 수량변경
 	}
 
 }

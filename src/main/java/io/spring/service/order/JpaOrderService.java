@@ -27,6 +27,7 @@ import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.goods.JpaItitmmRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
 import io.spring.jparepos.goods.JpaTmitemRepository;
+import io.spring.jparepos.order.JpaIfOrderCancelRepository;
 import io.spring.jparepos.order.JpaIfOrderDetailRepository;
 import io.spring.jparepos.order.JpaIfOrderMasterRepository;
 import io.spring.jparepos.order.JpaOrderLogRepository;
@@ -47,6 +48,7 @@ import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.entity.Tmitem;
+import io.spring.model.order.entity.IfOrderCancel;
 import io.spring.model.order.entity.IfOrderDetail;
 import io.spring.model.order.entity.IfOrderMaster;
 import io.spring.model.order.entity.OrderLog;
@@ -100,6 +102,8 @@ public class JpaOrderService {
 	private final JpaIfOrderMasterRepository jpaIfOrderMasterRepository;
 
 	private final JpaTbOrderMasterRepository jpaTbOrderMasterRepository;
+
+	private final JpaIfOrderCancelRepository jpaIfOrderCancelRepository;
 
     private final EntityManager em;
 
@@ -893,6 +897,17 @@ public class JpaOrderService {
 //		m.put("ifCancelGb", o.getIfCancelGb());
 //		m.put("userId", userId);
 
+		String seq = p.get("seq").toString();
+
+		IfOrderCancel ioc = jpaIfOrderCancelRepository.findById(seq).orElse(null);
+
+		if (ioc == null || !ioc.getIfStatus().equals("01")) {
+			System.out.println("취소요청데이타 이상!!!");
+			throw new RuntimeException("취소요청데이타 이상!!!.");
+		}
+
+		// jpaIfOrderCancelRepository.
+
 		Date today = new Date();
 
 		LocalDateTime todayLDT = Instant.ofEpochMilli(today.getTime()).atZone(ZoneId.of("Asia/Seoul"))
@@ -964,23 +979,57 @@ public class JpaOrderService {
 				jpaTbOrderDetailRepository.save(od);
 				jpaTbOrderMasterRepository.save(om);
 
-				}
+			} else if (ifCancelGb.equals("03")) {
+				// 상품수량변경,주문취소
+				// Long qty =
+				od.setQty(iod.getGoodsCnt());
 
-			}
-			
+				od.setGoodsPrice(iod.getFixedPrice());
+				od.setSalePrice(iod.getGoodsPrice());
+				od.setGoodsDcPrice(iod.getGoodsDcPrice());
+				od.setMemberDcPrice(iod.getMemberDcPrice());
+				od.setCouponDcPrice(iod.getCouponDcPrice());
+				// od.setDcSumPrice(iod.getDc);
+				od.setDeliPrice(iod.getDeliPrice());
+				od.setOptionPrice(iod.getOptionPrice());
 
+				float goodsDcPrice = iod.getGoodsDcPrice() == null ? 0 : iod.getGoodsDcPrice();
+				float memberDcPrice = iod.getMemberDcPrice() == null ? 0 : iod.getMemberDcPrice();
+				float couponDcPrice = iod.getCouponDcPrice() == null ? 0 : iod.getCouponDcPrice();
+				float adminDcPrice = iod.getAdminDcPrice() == null ? 0 : iod.getAdminDcPrice();
 
-			// if (od.getQty() == (Long) o.get("cancelQty")) {
-			//
-				// iforderDetail의 데이타로 데이타 수정
+				od.setDcSumPrice(goodsDcPrice + memberDcPrice + couponDcPrice + adminDcPrice);
 
-				//
+				om.setOrderAmt(iom.getPayAmt());
+				om.setReceiptAmt(iom.getPayAmt());
+				om.setTotalGoodsPrice(iom.getTotalGoodsPrice());
+				om.setTotalDeliveryCharge(iom.getTotalDeliveryCharge());
+				om.setTotalGoodsDcPrice(iom.getTotalGoodsDcPrice());
+				om.setTotalMemberDcPrice(iom.getTotalMemberDcPrice());
+				om.setTotalMemberOverlapDcPrice(iom.getTotalMemberOverlapDcPrice());
+				om.setTotalCouponGoodsDcPrice(iom.getTotalCouponGoodsDcPrice());
+				om.setTotalCouponOrderDcPrice(iom.getTotalCouponOrderDcPrice());
+				om.setTotalCouponDeliveryDcPrice(iom.getTotalCouponDeliveryDcPrice());
+				om.setTotalMileage(iom.getTotalMileage());
+				om.setTotalGoodsMileage(iom.getTotalGoodsMileage());
+				om.setTotalMemberMileage(iom.getTotalMemberMileage());
+				om.setTotalCouponGoodsMileage(iom.getTotalCouponGoodsMileage());
+				om.setTotalCouponOrderMileage(iom.getTotalCouponOrderMileage());
+
+				jpaTbOrderDetailRepository.save(od);
+				jpaTbOrderMasterRepository.save(om);
 
 				updateOrderStatusCd(p.get("orderId").toString(), p.get("orderSeq").toString(), "X01");
-				
 
-				// }
+				}
 
+				ioc.setIfStatus("02");
+				jpaIfOrderCancelRepository.save(ioc);
+			} else {
+				ioc.setIfStatus("99");
+				jpaIfOrderCancelRepository.save(ioc);
+			}
+			
 
 
 
