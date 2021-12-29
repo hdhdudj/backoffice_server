@@ -183,7 +183,7 @@ public class JpaShipService {
 			}
 		}
 
-		this.changeStatusCdOfTbOrderDetail(orderList, "D01");
+		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.D01.toString());
 
         return shipIdList;
     }

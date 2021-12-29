@@ -132,6 +132,8 @@ public class Lsshpm extends CommonProps {
 
 		}
 
+        // todo : 12-29에 추가된 새로운 컬럼 값 설정해줘야 함
+
         super.setRegId(goodsMoveSaveData.getUserId());
         super.setUpdId(goodsMoveSaveData.getUserId());
     }

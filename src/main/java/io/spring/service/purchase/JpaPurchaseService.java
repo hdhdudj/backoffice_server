@@ -16,6 +16,7 @@ import io.spring.infrastructure.mapstruct.ItemsMapper;
 import io.spring.infrastructure.mapstruct.PurchaseMasterListResponseDataMapper;
 import io.spring.infrastructure.mapstruct.PurchaseSelectDetailResponseDataMapper;
 import io.spring.jparepos.goods.JpaIfBrandRepository;
+import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.model.goods.entity.*;
 import io.spring.model.purchase.response.PurchaseMasterListResponseData;
 import org.apache.commons.lang3.StringUtils;
@@ -70,6 +71,7 @@ public class JpaPurchaseService {
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
     private final JpaIfBrandRepository jpaIfBrandRepository;
 
+	private final JpaLsshpdRepository jpaLsshpdRepository;
 	private final JpaLsshpmRepository jpaLsshpmRepository;
 
 	private final JpaTbOrderDetailRepository tbOrderDetailRepository;
@@ -599,7 +601,9 @@ public class JpaPurchaseService {
 				endDt, vendorId, storageId);
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
-        TypedQuery<Lspchd> query = em.createQuery("select distinct(ld) from Lspchd ld " +
+        TypedQuery<Lsshpd> query = em.createQuery("select distinct(lsd) from Lsshpd lsd " +
+                "join fetch lsd.lsshpm lsm " +
+                "join fetch lsd.lspchd ld " +
                 "join fetch ld.lspchm lm " +
                 "join fetch ld.lspchb lb " +
                 "left outer join fetch ld.tbOrderDetail tod " +
@@ -617,16 +621,24 @@ public class JpaPurchaseService {
                 + "and (?4 is null or trim(?4)='' or lm.storeCd=?4) "
                 + "and (?5 is null or trim(?5)='' or lm.piNo=?5) "
                 + "and (?6 is null or trim(?6)='' or lm.siteOrderNo=?6) "
-                + "and (?7 is null or trim(?7)='' or ld.blNo=?7) "
-                + "and lm.purchaseStatus in :statusArr", Lspchd.class);
+                + "and (?7 is null or trim(?7)='' or lsm.blNo=?7) "
+                + "and lm.purchaseStatus in :statusArr", Lsshpd.class);
         List<String> statusArr = Arrays.asList(StringFactory.getGbOne(), StringFactory.getGbThree()); // 01:발주 03:부분입고 04:완전입고 05:취소  A1:송금완료 A2:거래처선금입금 A3:거래처잔금입금
 		query.setParameter(1, start).setParameter(2, end).setParameter(3, vendorId).setParameter(4, storageId)
                 .setParameter("statusArr",statusArr).setParameter(6, siteOrderNo)
                 .setParameter(5, piNo).setParameter(7, blNo);
-        List<Lspchd> lspchdList = query.getResultList();
+        List<Lsshpd> lsshpdList = query.getResultList();
+        List<Lspchd> lspchdList = new ArrayList<>();
+        Set<Lspchd> purchaseSet = new HashSet<>();
         List<Lspchm> lspchmList = new ArrayList<>();
         List<String> brandIdList = new ArrayList<>();
         Set<String> purchaseNoSet = new HashSet<>();
+        for(Lsshpd lsshpd : lsshpdList){
+            if(purchaseSet.contains(lsshpd.getPurchaseNo()+lsshpd.getPurchaseSeq())){
+                continue;
+            }
+            lspchdList.add(lsshpd.getLspchd());
+        }
         for(Lspchd lspchd : lspchdList){
             if(purchaseNoSet.contains(lspchd.getPurchaseNo())){
                 continue;
@@ -1294,6 +1306,11 @@ public class JpaPurchaseService {
 			// }
 			Lspchd lspchd = new Lspchd(purchaseNo, purchaseSeq, lsshpd, tbOrderDetail);
 			Lspchb lspchb = new Lspchb(lspchd, "1");
+
+            lsshpd.setPurchaseNo(lspchd.getPurchaseNo());
+            lsshpd.setPurchaseSeq(lspchd.getPurchaseSeq());
+
+            jpaLsshpdRepository.save(lsshpd);
 
 			jpaLspchmRepository.save(lspchm);
 			jpaLspchsRepository.save(lspchs);
