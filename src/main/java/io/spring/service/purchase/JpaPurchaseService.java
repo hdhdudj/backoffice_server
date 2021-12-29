@@ -626,9 +626,11 @@ public class JpaPurchaseService {
         List<String> brandIdList = new ArrayList<>();
         Set<String> purchaseNoSet = new HashSet<>();
         for(Lspchd lspchd : lspchdList){
-            brandIdList.add(lspchd.getItitmm().getItasrt().getBrandId());
             if(purchaseNoSet.contains(lspchd.getPurchaseNo())){
-               continue;
+                continue;
+            }
+            if(!brandIdList.contains(lspchd.getItitmm().getItasrt().getBrandId())){
+                brandIdList.add(lspchd.getItitmm().getItasrt().getBrandId());
             }
             lspchmList.add(lspchd.getLspchm());
             purchaseNoSet.add(lspchd.getPurchaseNo());
