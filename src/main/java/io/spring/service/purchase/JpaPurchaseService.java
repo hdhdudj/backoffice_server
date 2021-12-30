@@ -427,7 +427,7 @@ public class JpaPurchaseService {
      * @return
      */
     public PurchaseSelectDetailResponseData getPurchaseDetailPage(String purchaseNo) {
-        List<Lspchd> lspchdList = em.createQuery("select ld from Lspchd ld " +
+        List<Lspchd> lspchdList = em.createQuery("select distinct (ld) from Lspchd ld " +
                 "left outer join fetch ld.lspchm lm " +
                 "left outer join fetch ld.lspchb lb " +
                 "left outer join fetch ld.tbOrderDetail tod " +
