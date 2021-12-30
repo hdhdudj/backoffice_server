@@ -248,8 +248,8 @@ public class JpaPurchaseService {
             jpaLspchsRepository.save(lspchs);
         }
         else{ // update
-            lspchs = this.updateLspchs(lspchm.getPurchaseNo(), purchaseInsertRequestData.getPurchaseStatus());
             lspchs.setUpdId(purchaseInsertRequestData.getUserId());
+            lspchs = this.updateLspchs(lspchs, lspchm.getPurchaseNo(), purchaseInsertRequestData.getPurchaseStatus());
         }
         return lspchs;
     }
@@ -1083,17 +1083,15 @@ public class JpaPurchaseService {
      * lspchs 업뎃 (꺾고 새 row 추가)
      * @return
      */
-    private Lspchs updateLspchs(String purchaseNo, String purchaseStatus) {
-        Date doomDay = Utilities.getStringToDate(StringFactory.getDoomDay());
-        Lspchs lspchs = jpaLspchsRepository.findByPurchaseNoAndEffEndDt(purchaseNo, Utilities.dateToLocalDateTime(doomDay));
-        lspchs.setEffEndDt(LocalDateTime.now());
-        Lspchs newLspchs = new Lspchs(lspchs);
-        newLspchs.setPurchaseNo(this.getPurchaseNo());
+    private Lspchs updateLspchs(Lspchs oldLspchs, String purchaseNo, String purchaseStatus) {
+        oldLspchs.setEffEndDt(LocalDateTime.now());
+        Lspchs newLspchs = new Lspchs(oldLspchs);
+        newLspchs.setPurchaseNo(purchaseNo);
         newLspchs.setPurchaseStatus(purchaseStatus);
-        jpaLspchsRepository.save(lspchs);
+        jpaLspchsRepository.save(oldLspchs);
         jpaLspchsRepository.save(newLspchs);
 
-        return lspchs;
+        return oldLspchs;
     }
 
     /**
