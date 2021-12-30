@@ -1,6 +1,7 @@
 package io.spring.model.move.response;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -85,5 +86,15 @@ public class MoveCompletedLIstReponseData {
         private String optionNm2;
         private String optionNm3;
         private Long qty;
+        // 12-21-30 추가된 컬럼
+        private String orderId;
+        private String orderSeq;
+        private String orderKey;
+        private LocalDate shipmentDt;
+        private String blNo;
+        private String movementKd;
+        private LocalDate estiArrvTm;
+        private String containerKd;
+        private Long containerQty;
     }
 }
