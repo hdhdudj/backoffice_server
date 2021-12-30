@@ -26,6 +26,7 @@ import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.request.CancelOrderRequestData;
 import io.spring.model.order.request.OrderOptionRequestData;
 import io.spring.model.order.request.OrderStockMngInsertRequestData;
+import io.spring.model.order.response.CancelOrderListResponse;
 import io.spring.model.order.response.OrderDetailResponseData;
 import io.spring.model.order.response.OrderMasterListResponseData;
 import io.spring.service.common.JpaCommonService;
@@ -478,6 +479,37 @@ public class OrderController {
 		}
 
 //		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), t);
+		return ResponseEntity.ok(res);
+
+	}
+
+	@GetMapping(path = "/cancel/items")
+	public ResponseEntity getOrderCancelList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+			@RequestParam @Nullable String ifStatus) {
+
+		System.out.println("getOrderDetailList");
+
+		HashMap<String, Object> map = new HashMap<>();
+
+		if (startDt != null) {
+
+			LocalDateTime start = startDt.atStartOfDay();
+
+			map.put("startDt", start);
+		}
+		if (endDt != null) {
+
+			LocalDateTime end = endDt.atTime(23, 59, 59);
+			map.put("endDt", end);
+		}
+		if (ifStatus != null && !ifStatus.equals("")) {
+			map.put("ifStatus", ifStatus);
+		}
+
+		CancelOrderListResponse r = myBatisOrderService.getOrderCancelList(map);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
 		return ResponseEntity.ok(res);
 
 	}

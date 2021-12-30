@@ -32,7 +32,7 @@ public class DepositListWithPurchaseInfoData {
 	private String vendorId;
 //    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
 //    @JsonSerialize(using = LocalDateTimeSerializer.class)
-
+//CustomLocalDateTimeDeSerializer
 	// @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss",
 	// timezone = "Asia/Seoul")
     private String depositDt;
