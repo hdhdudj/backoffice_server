@@ -1,12 +1,12 @@
 package io.spring.jparepos.purchase;
 
-import io.spring.model.purchase.entity.Lspchb;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
+import io.spring.model.purchase.entity.Lspchb;
 
 public interface JpaLspchbRepository extends JpaRepository<Lspchb, Long> {
     Lspchb findByPurchaseNoAndPurchaseSeqAndEffEndDt(String purchaseNo, String purchaseSeq, LocalDateTime effEndDt);
@@ -15,4 +15,7 @@ public interface JpaLspchbRepository extends JpaRepository<Lspchb, Long> {
     String findMaxPurchaseSeqByPurchaseNo(String purchaseNo);
 
     List<Lspchb> findByPurchaseNo(String purchaseNo);
+
+	List<Lspchb> findByPurchaseNoAndEffEndDt(String purchaseNo, LocalDateTime effEndDt);
+
 }
