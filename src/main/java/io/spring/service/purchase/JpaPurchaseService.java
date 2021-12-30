@@ -183,10 +183,7 @@ public class JpaPurchaseService {
             }
             Lspchd lspchd = lspchdList.get(0);
             lspchm = new Lspchm(purchaseInsertRequestData);
-            /// 임시
-            Itasrt itasrt = jpaItasrtRepository.findByAssortId(lspchd.getAssortId());
-            lspchm.setStoreCd(itasrt.getStorageId());
-            ///
+            // todo(완료): itasrt.storageId를 발주데이터에 넣는 게 맞는지 확인 -> 아님. 화면에서 선택한 storageId를 넣어줘야 함.
 			lspchm.setPurchaseStatus(StringFactory.getGbOne()); // 01 하드코딩
         }
         else { // update
@@ -625,9 +622,9 @@ public class JpaPurchaseService {
         List<Lspchd> filteredLspchdList = new ArrayList<>();
         for(Lspchd lspchd : lspchdList){
             if(lspchd.getOrderId() == null || lspchd.getOrderId().trim().equals("")){
-                continue;
+                filteredLspchdList.add(lspchd);
             }
-            if(storageId.equals("000001") && lspchd.getTbOrderDetail().getStatusCd().equals(TrdstOrderStatus.C03.toString())){ // 국내입고처리 발주선택창일 때
+            else if(storageId.equals("000001") && lspchd.getTbOrderDetail().getStatusCd().equals(TrdstOrderStatus.C03.toString())){ // 국내입고처리 발주선택창일 때
                 filteredLspchdList.add(lspchd);
             }
             else if(storageId.equals("000002") && lspchd.getTbOrderDetail().getStatusCd().equals(TrdstOrderStatus.B02.toString())){ // 해외입고처리 발주선택창일 때
@@ -808,6 +805,16 @@ public class JpaPurchaseService {
     public PurchaseSelectListResponseData getDepositPlanList(String purchaseNo) {
         List<PurchaseSelectListResponseData.Purchase> purchaseList = new ArrayList<>();
         List<Lsdpsp> lsdpspList = this.getLsdpsp(purchaseNo);
+        List<Lsdpsp> lsdpspList1 = new ArrayList<>();
+        for(Lsdpsp lsdpsp : lsdpspList){
+            if(lsdpsp.getOrderId() == null || lsdpsp.getOrderId().trim().equals("")){
+                lsdpspList1.add(lsdpsp);
+            }
+            else if(lsdpsp.getTbOrderDetail().getStatusCd().equals(TrdstOrderStatus.B02.toString()) || lsdpsp.getTbOrderDetail().getStatusCd().equals(TrdstOrderStatus.C03.toString())){
+                lsdpspList1.add(lsdpsp);
+            }
+        }
+        lsdpspList = lsdpspList1;
 
         if(lsdpspList.size() == 0){ // 해당 purchaseNo에 해당하는 data가 없을 때
             log.debug("there's no purchase exist.");
@@ -852,11 +859,13 @@ public class JpaPurchaseService {
                                 "left join fetch p.itasrt it " +
                                 "left join fetch d.lspchm m " +
                                 "left join fetch d.tbOrderDetail tod " +
-                                "where p.purchaseNo=?1 and tod.statusCd in (?2, ?3) order by p.depositPlanId asc" //
+                                "where p.purchaseNo=?1 " +
+//                                "and tod.statusCd in (?2, ?3) " +
+                                "order by p.depositPlanId asc"
                         , Lsdpsp.class);
-        query.setParameter(1, purchaseNo)
-                .setParameter(2, TrdstOrderStatus.B02.toString())
-                .setParameter(3,TrdstOrderStatus.C03.toString());
+        query.setParameter(1, purchaseNo);
+//                .setParameter(2, TrdstOrderStatus.B02.toString())
+//                .setParameter(3,TrdstOrderStatus.C03.toString());
         List<Lsdpsp> lsdpspList = query.getResultList();
         return lsdpspList;
     }
