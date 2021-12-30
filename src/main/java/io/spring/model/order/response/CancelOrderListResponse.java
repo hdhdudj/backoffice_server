@@ -70,6 +70,7 @@ public class CancelOrderListResponse {
 	private String optionNm3; // 옵션3
 	private String ifStatus; // 처리상태
 	private String ifMsg; // 연동메세지
+
 }
 
 }
