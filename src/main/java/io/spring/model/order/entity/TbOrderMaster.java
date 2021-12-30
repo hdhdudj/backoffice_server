@@ -1,23 +1,23 @@
 package io.spring.model.order.entity;
 
+import java.time.LocalDateTime;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+
 import io.spring.model.common.entity.CommonProps;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -47,6 +47,21 @@ public class TbOrderMaster extends CommonProps {
     
     // 21-09-28 추가된 컬럼
     private String payGb; // 결제방법
+
+	// 21-10-07 추가된 컬럼
+	private Float totalGoodsPrice;
+	private Float totalDeliveryCharge;
+	private Float totalGoodsDcPrice;
+	private Float totalMemberDcPrice;
+	private Float totalMemberOverlapDcPrice;
+	private Float totalCouponGoodsDcPrice;
+	private Float totalCouponOrderDcPrice;
+	private Float totalCouponDeliveryDcPrice;
+	private Float totalMileage;
+	private Float totalGoodsMileage;
+	private Float totalMemberMileage;
+	private Float totalCouponGoodsMileage;
+	private Float totalCouponOrderMileage;
 
     // 21-12-17 추가된 컬럼
     private String orderName;

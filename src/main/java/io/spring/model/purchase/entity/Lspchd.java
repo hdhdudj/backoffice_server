@@ -18,13 +18,14 @@ import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.deposit.entity.Lsdpsp;
-import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.idclass.LspchdId;
@@ -34,8 +35,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.lang.Nullable;
 
 @Entity
 @Getter
@@ -215,8 +214,6 @@ public class Lspchd extends CommonProps implements Serializable {
     private String setShipId;
     private String setShipSeq;
     private String siteOrderNo;
-    // 21-12-29 추가
-    private String blNo;
 
     // 연관관계 : lspchb
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Lspchb.class)

@@ -11,15 +11,13 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
-import io.spring.enums.TrdstOrderStatus;
-import io.spring.infrastructure.mapstruct.ShipListDataResponseMapper;
-import io.spring.model.ship.response.ShipListDataResponse;
-import jdk.vm.ci.meta.Local;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.spring.enums.TrdstOrderStatus;
+import io.spring.infrastructure.mapstruct.ShipListDataResponseMapper;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
@@ -37,7 +35,6 @@ import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.deposit.entity.Lsdpsm;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
-import io.spring.model.goods.entity.Itvari;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
 import io.spring.model.order.entity.TbOrderMaster;
@@ -49,6 +46,7 @@ import io.spring.model.ship.request.ShipSaveListData;
 import io.spring.model.ship.response.ShipIndicateListData;
 import io.spring.model.ship.response.ShipIndicateSaveListResponseData;
 import io.spring.model.ship.response.ShipItemListData;
+import io.spring.model.ship.response.ShipListDataResponse;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.move.JpaMoveService;
 import lombok.RequiredArgsConstructor;
@@ -183,7 +181,7 @@ public class JpaShipService {
 			}
 		}
 
-		this.changeStatusCdOfTbOrderDetail(orderList, "D01");
+		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.D01.toString());
 
         return shipIdList;
     }
@@ -226,10 +224,7 @@ public class JpaShipService {
 			// 2. 출고 data 생성
 			String shipId = this.makeShipDataByDeposit(ititmcList.get(0), lsdpsd, tbOrderDetail,
 					StringFactory.getGbOne()); // 01 :
-																													// 이동지시or출고지시,
-																													// 04
 																													// :
-																													// 출고
 			if (shipId != null) {
 				shipIdList.add(shipId);
 			}
@@ -351,8 +346,9 @@ public class JpaShipService {
 
 		List<String> ret = new ArrayList<String>();
 
-		Lsshpm lsshpm = jpaLsshpmRepository.findById(ship.getShipId()).orElse(null);
-		Lsshpd lsshpd = jpaLsshpdRepository.findByShipIdAndShipSeq(ship.getShipId(), ship.getShipSeq());
+		String shipId = this.getShipId();
+		Lsshpm lsshpm = jpaLsshpmRepository.findById(ship.getShipId()).orElseGet(()-> null); //new Lsshpm(shipId, shipIndicateSaveListData);
+		Lsshpd lsshpd = jpaLsshpdRepository.findByShipIdAndShipSeq(ship.getShipId(), ship.getShipSeq()); //new Lsshpd(ship);
 
 		lsshpm.setInstructDt(LocalDateTime.now());
 		lsshpm.setShipStatus(StringFactory.getGbTwo()); // 01 : 이동지시or출고지시, 02 : 이동지시or출고지시 접수, 04 : 출고

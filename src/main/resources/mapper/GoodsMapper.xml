@@ -253,7 +253,7 @@
 			 ,i.buy_supply_discount buySupplyDiscount
 			 ,f_categoryFullPathId(i.disp_category_id) fullCatePathId
 		from itasrt i
-		LEFT JOIN if_brand ib ON i.brand_id = ib.channel_brand_id
+		LEFT JOIN if_brand ib ON i.brand_id = ib.brand_id
 		LEFT JOIN itcatg ic ON i.disp_category_id = ic.category_id
 		LEFT JOIN itaimg img ON i.assort_id = img.assort_id
 		,ititmm im
