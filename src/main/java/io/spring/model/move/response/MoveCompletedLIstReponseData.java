@@ -23,22 +23,18 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MoveCompletedLIstReponseData {
+    public MoveCompletedLIstReponseData(){}
     public MoveCompletedLIstReponseData(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId){
-        this.startDt = startDt;
-        this.endDt = endDt;
+        this.startDt = startDt.toString();
+        this.endDt = endDt.toString();
         this.shipId = shipId;
         this.assortId = assortId;
         this.assortNm = assortNm;
         this.storageId = storageId;
     }
-    @JsonSerialize(using = LocalDateSerializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate startDt;
-    @JsonSerialize(using = LocalDateSerializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate endDt;
+    private String startDt;
+    private String endDt;
     private String shipId;
     private String assortId;
     private String assortNm;
@@ -47,8 +43,8 @@ public class MoveCompletedLIstReponseData {
 
     @Getter
     @Setter
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Move implements SetOptionInterface {
+        public Move(){}
         public Move(Lsshpm lsshpm, Lsshpd lsshpd){
             this.shipDt = Utilities.removeTAndTransToStr(lsshpm.getApplyDay());
             this.shipIndDt = Utilities.removeTAndTransToStr(lsshpm.getReceiptDt());
@@ -65,17 +61,17 @@ public class MoveCompletedLIstReponseData {
             this.goodsKey = Utilities.addDashInMiddle(assortId,itemId);
             this.assortNm = lsshpd.getItasrt().getAssortNm();
             // 옵션은 바깥에서 set
-            this.qty = lsshpd.getShipIndicateQty();
+            this.qty = lsshpd.getShipIndicateQty().toString();
 
             this.orderId = lsshpd.getOrderId();
             this.orderSeq = lsshpd.getOrderSeq();
             this.orderKey = Utilities.addDashInMiddle(this.orderId, this.orderSeq);
-            this.shipmentDt = lsshpm.getShipmentDt().toLocalDate();
+            this.shipmentDt = lsshpm.getShipmentDt() == null? "" : lsshpm.getShipmentDt().toLocalDate().toString();
             this.blNo = lsshpm.getBlNo();
             this.movementKd = lsshpm.getMovementKd();
-            this.estiArrvTm = lsshpm.getEstiArrvTm().toLocalDate();
+            this.estiArrvTm = lsshpm.getEstiArrvTm() == null? "" : lsshpm.getEstiArrvTm().toLocalDate().toString();
             this.containerKd = lsshpm.getContainerKd();
-            this.containerQty = lsshpm.getContainerQty();
+            this.containerQty = lsshpm.getContainerQty() == null? "" : lsshpm.getContainerQty().toString();
         }
         private String shipDt;
         private String shipIndDt;
@@ -95,16 +91,16 @@ public class MoveCompletedLIstReponseData {
         private String optionNm1;
         private String optionNm2;
         private String optionNm3;
-        private Long qty;
+        private String qty;
         // 12-21-30 추가된 컬럼
         private String orderId;
         private String orderSeq;
         private String orderKey;
-        private LocalDate shipmentDt;
+        private String shipmentDt;
         private String blNo;
         private String movementKd;
-        private LocalDate estiArrvTm;
+        private String estiArrvTm;
         private String containerKd;
-        private Long containerQty;
+        private String containerQty;
     }
 }
