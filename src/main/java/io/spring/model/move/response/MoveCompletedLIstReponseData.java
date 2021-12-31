@@ -66,6 +66,16 @@ public class MoveCompletedLIstReponseData {
             this.assortNm = lsshpd.getItasrt().getAssortNm();
             // 옵션은 바깥에서 set
             this.qty = lsshpd.getShipIndicateQty();
+
+            this.orderId = lsshpd.getOrderId();
+            this.orderSeq = lsshpd.getOrderSeq();
+            this.orderKey = Utilities.addDashInMiddle(this.orderId, this.orderSeq);
+            this.shipmentDt = lsshpm.getShipmentDt().toLocalDate();
+            this.blNo = lsshpm.getBlNo();
+            this.movementKd = lsshpm.getMovementKd();
+            this.estiArrvTm = lsshpm.getEstiArrvTm().toLocalDate();
+            this.containerKd = lsshpm.getContainerKd();
+            this.containerQty = lsshpm.getContainerQty();
         }
         private String shipDt;
         private String shipIndDt;
