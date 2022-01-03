@@ -644,7 +644,7 @@ public class JpaGoodsService {
             ifBrand = itasrt.getIfBrand();//jpaIfBrandRepository.findByChannelGbAndBrandId(StringFactory.getGbOne(),itasrt.getBrandId());
             goodsSelectDetailResponseData.setBrandNm(ifBrand == null? null : ifBrand.getBrandNm());
         }
-        List<GoodsSelectDetailResponseData.Description> descriptions = this.makeDescriptions(itasrt.getItasrdList());
+        List<GoodsSelectDetailResponseData.Description> descriptions = this.makeDescriptions(jpaItasrdRepository.findByAssortId(itasrt.getAssortId()));
         List<GoodsSelectDetailResponseData.Attributes> attributesList = this.makeAttributesList(itasrt.getItvariList());
         List<GoodsSelectDetailResponseData.Items> itemsList = this.makeItemsList(itasrt.getItitmmList());
         List<GoodsSelectDetailResponseData.UploadMainImage> uploadMainImageList = this.makeUploadMainImageList(itasrt.getItaimg());
