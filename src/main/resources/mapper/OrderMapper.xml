@@ -519,4 +519,59 @@ select aa.channel_gb channelGb
 	</select>	
 	
 	
+	
+	
+	
+		<select id="getOrderCancelList" parameterType="java.util.HashMap"  resultType="HashMap">
+	<![CDATA[
+		select aa.seq seq
+		,aa.if_dt ifDt
+		,'01' channelGb 
+		,bb.order_id orderId
+		,bb.order_seq orderSeq
+		,bb.channel_order_no channelOrderNo
+		,bb.channel_order_seq channelOrderSeq
+		,bb.assort_id assortId
+		,bb.item_id itemId
+		,bb.goods_nm goodsNm
+	,  (select b1.option_nm
+                from ititmm b2, itvari b1
+                where b2.assort_id=bb.assort_id
+                  And b2.item_id= bb.item_id
+                  And  b2.assort_id = b1.assort_id
+                  and b2.variation_gb1 = b1.variation_gb
+                  and  b2.variation_seq1=b1.seq) optionNm1
+           ,    (select b1.option_nm
+                from ititmm b2, itvari b1
+                where b2.assort_id=bb.assort_id
+                  And b2.item_id= bb.item_id
+                  And  b2.assort_id = b1.assort_id
+                  and b2.variation_gb2 = b1.variation_gb
+                  and  b2.variation_seq2=b1.seq) optionNm2
+                ,    (select b1.option_nm
+                from ititmm b2, itvari b1
+                where b2.assort_id=bb.assort_id
+                  And b2.item_id= bb.item_id
+                  And  b2.assort_id = b1.assort_id
+                  and b2.variation_gb3 = b1.variation_gb
+                  and  b2.variation_seq3=b1.seq) optionNm3
+                  ,aa.if_status ifStatus
+                  ,aa.if_msg ifMsg
+		from if_order_cancel  aa
+		,tb_order_detail bb
+		where 1=1
+		and aa.if_dt between #{startDt} and  #{endDt}
+		and aa.if_status =#{ifStatus}
+		and aa.channel_order_no = bb.channel_order_no 
+			and aa.channel_order_seq = bb.channel_order_seq
+				]]>
+	</select>	
+	
+	
+	
+	
+	
+	
+	
+	
 </mapper>

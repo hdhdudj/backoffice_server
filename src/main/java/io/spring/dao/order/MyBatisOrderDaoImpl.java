@@ -46,5 +46,10 @@ public class MyBatisOrderDaoImpl implements MyBatisOrderDao {
 		return orderMapper.getOrderDetailList(param);
 	}
 
+	@Override
+	public List<HashMap<String, Object>> getOrderCancelList(HashMap<String, Object> param) {
+		return orderMapper.getOrderCancelList(param);
+	}
+
 }
 
