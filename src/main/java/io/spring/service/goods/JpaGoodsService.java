@@ -721,7 +721,7 @@ public class JpaGoodsService {
                 item.setValue3(seq);
                 item.setStatus3(StringFactory.getStrR()); // r 하드코딩
             }
-            item.setAddPrice(ititmm.getAddPrice());
+            item.setAddPrice(ititmm.getAddPrice() + "");
 			item.setShortageYn(ititmm.getShortYn());
             itemsList.add(item);
         }

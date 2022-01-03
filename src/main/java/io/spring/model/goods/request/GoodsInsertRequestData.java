@@ -60,6 +60,12 @@ public class GoodsInsertRequestData {
 	private String mdGoodsVatrate; // 상품마진율
 
 	// 상품 가격 관리(구매팀) 화면
+	private String buyRrpIncrement; // RRP 인상률
+	private String buySupplyDiscount; //
+	private String buyTax; // TAX(구매)
+	private String mdMargin; // 정기마진율
+	private String buyExchangeRate; // 적용환율
+
 	// 옵션 화면
 	// 설명 화면
 	private String assortGb;
@@ -68,14 +74,9 @@ public class GoodsInsertRequestData {
 	private String asVendorId;
 	private String localDeliFee;
 	private String assortColor;
-	private String mdMargin;
 	private String mdOfflinePrice;
 	private String mdOnlinePrice;
 	private String buyWhere;
-	private String buyTax;
-	private String buySupplyDiscount;
-	private String buyRrpIncrement;
-	private String buyExchangeRate;
 	private String sizeType;
 	private String vendorId;
 	private String optionUseYn;

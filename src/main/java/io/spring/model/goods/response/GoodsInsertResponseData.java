@@ -64,6 +64,15 @@ public class GoodsInsertResponseData {
     private String mdDiscountRate; // 할인율
     private String mdGoodsVatrate; // 상품마진율
 
+    // 상품 가격 관리(구매팀) 화면
+    private String vendorNm; // 구매처명
+    private String vendorId; // 구매처 코드
+    private String buyRrpIncrement; // RRP 인상률
+    private String buySupplyDiscount; //
+    private String buyTax; // TAX(구매)
+    private String mdMargin; // 정기마진율
+    private String buyExchangeRate; // 적용환율
+
     private List<GoodsInsertRequestData.Description> description;
     private List<Attributes> attributesList;
     private List<Items> itemsList;
