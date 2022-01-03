@@ -227,9 +227,10 @@ public class PurchaseController {
                                                      @RequestParam @Nullable String channelOrderNo,
                                                      @RequestParam @Nullable String brandId,
                                                      @RequestParam @Nullable String vendorId,
-                                                     @RequestParam @Nullable String purchaseGb) {
+                                                     @RequestParam @Nullable String purchaseGb,
+                                                     @RequestParam @Nullable String orderNm) {
         PurchaseMasterListResponseData purchaseMasterListResponseData = jpaPurchaseService
-                .getPurchaseMasterList2(startDt, endDt, siteOrderNo, channelOrderNo, brandId, vendorId, purchaseGb);
+                .getPurchaseMasterList2(startDt, endDt, siteOrderNo, channelOrderNo, brandId, vendorId, purchaseGb, orderNm);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),purchaseMasterListResponseData);
         return ResponseEntity.ok(res);
     }

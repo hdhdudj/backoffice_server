@@ -679,7 +679,7 @@ public class JpaPurchaseService {
      * 발주리스트 가져오기 (변경된 버전. Lspchm 기준으로)
      */
     public PurchaseMasterListResponseData getPurchaseMasterList2(LocalDate startDt, LocalDate endDt,
-                                                                 String siteOrderNo, String channelOrderNo, String brandId, String vendorId, String purchaseGb) {
+                                                                 String siteOrderNo, String channelOrderNo, String brandId, String vendorId, String purchaseGb, String orderNm) {
         PurchaseMasterListResponseData purchaseMasterListResponseData = new PurchaseMasterListResponseData(startDt,
                 endDt, siteOrderNo, channelOrderNo, brandId, vendorId, purchaseGb);
         LocalDateTime start = startDt.atStartOfDay();
@@ -699,10 +699,12 @@ public class JpaPurchaseService {
                         "and (?4 is null or trim(?4)='' or tod.channelOrderNo=?4)" +
                         "and (?5 is null or trim(?5)='' or ib.brandId=?5) " +
                         "and (?6 is null or trim(?6)='' or lm.vendorId=?6) " +
-                        "and (?7 is null or trim(?7)='' or lm.purchaseGb=?7)", Lspchd.class)
+                        "and (?7 is null or trim(?7)='' or lm.purchaseGb=?7) " +
+                        "and (?8 is null or trim(?8)='' or tom.orderName=?8)", Lspchd.class)
                 .setParameter(1, start).setParameter(2, end)
                 .setParameter(3,siteOrderNo).setParameter(4,channelOrderNo)
-                .setParameter(5,brandId).setParameter(6,vendorId).setParameter(7,purchaseGb);
+                .setParameter(5,brandId).setParameter(6,vendorId).setParameter(7,purchaseGb)
+                .setParameter(8,orderNm);
 //        List<String> statusArr = Arrays.asList(StringFactory.getGbOne(), StringFactory.getGbThree()); // 01:발주 03:부분입고 04:완전입고 05:취소  A1:송금완료 A2:거래처선금입금 A3:거래처잔금입금
         List<Lspchd> lspchdList = query.getResultList();
         List<String> purchaseNoList = new ArrayList<>();
