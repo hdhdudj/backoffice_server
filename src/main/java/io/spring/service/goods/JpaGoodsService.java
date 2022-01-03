@@ -85,9 +85,10 @@ public class JpaGoodsService {
         // itaimg에 assortId 업데이트 시켜주기
         this.updateItaimgAssortId(goodsInsertRequestData, itasrt.getAssortId());
 
-        List<GoodsInsertResponseData.Attributes> attributesList = this.makeGoodsResponseAttributes(itvariList);
-        List<GoodsInsertResponseData.Items> itemsList = this.makeGoodsResponseItems(ititmmList, itvariList);
-        return this.makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
+//        List<GoodsInsertResponseData.Attributes> attributesList = this.makeGoodsResponseAttributes(itvariList);
+//        List<GoodsInsertResponseData.Items> itemsList = this.makeGoodsResponseItems(ititmmList, itvariList);
+//        return this.makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
+        return null;
     }
 
     /**
@@ -368,13 +369,22 @@ public class JpaGoodsService {
         List<GoodsInsertRequestData.Attributes> attributes = goodsInsertRequestData.getAttributes();
         List<Itvari> itvariList = new ArrayList<>();
         List<Itvari> existItvariList = jpaItvariRepository.findByAssortId(goodsInsertRequestData.getAssortId());
+        Set<String> seqList = new HashSet<>();
+        for(Itvari itvari : existItvariList){
+            seqList.add(itvari.getSeq());
+        }
 
         for(GoodsInsertRequestData.Attributes attribute : attributes){
+            String assortId = goodsInsertRequestData.getAssortId();
             String seq = attribute.getSeq();
             Itvari itvari = new Itvari(goodsInsertRequestData);
             itvari.setAssortId(goodsInsertRequestData.getAssortId());
+            if(!seqList.contains(seq) && !seq.trim().equals("")){
+                log.debug("기존 itvari의 seqList에 " + seq + "가 존재하지 않습니다.");
+                continue;
+            }
             if(seq == null || seq.trim().equals("")){ // seq가 존재하지 않는 경우 == 새로운 itvari INSERT -> seq max 값 따와야 함
-                seq = jpaItvariRepository.findMaxSeqByAssortId(goodsInsertRequestData.getAssortId());
+                seq = jpaItvariRepository.findMaxSeqByAssortId(assortId);
                 if(seq == null){ // max값이 없음 -> 해당 assort id에서 첫 insert
                     seq = StringFactory.getFourStartCd();//fourStartCd;
                 }
@@ -384,15 +394,35 @@ public class JpaGoodsService {
                 itvari.setSeq(seq);
             }
             else{ // 존재하는 경우 : itvari 객체가 존재함이 보장됨 -> update
-                itvari = jpaItvariRepository.findByAssortIdAndSeq(goodsInsertRequestData.getAssortId(), seq);
+                itvari = existItvariList.stream().filter(x->x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getSeq().equals(attribute.getSeq())).collect(Collectors.toList()).get(0);//jpaItvariRepository.findByAssortIdAndSeq(goodsInsertRequestData.getAssortId(), seq);
+                seqList.remove(seq);
             }
             itvari.setOptionNm(attribute.getValue());
             itvari.setOptionGb(attribute.getVariationGb());
             itvari.setVariationGb(attribute.getVariationGb());
             itvariList.add(itvari);
-//            jpaItvariRepository.save(itvari);
-            em.persist(itvari);
+            jpaItvariRepository.save(itvari);
         }
+
+        for(Itvari i : existItvariList){
+            if(seqList.contains(i.getSeq())){
+                i.setDelYn(StringFactory.getGbOne());
+            }
+            jpaItvariRepository.save(i);
+        }
+
+        int itvariDelNo = 0;
+        for(Itvari i : itvariList){
+            if(i.getDelYn().equals(StringFactory.getGbTwo())){
+                itvariDelNo++;
+            }
+        }
+        if(itvariDelNo == 0){
+            Itvari singleItvari = existItvariList.stream().filter(x->x.getSeq().equals(StringFactory.getFourStartCd())).collect(Collectors.toList()).get(0);
+            singleItvari.setDelYn(StringFactory.getGbTwo());
+            jpaItvariRepository.save(singleItvari);
+        }
+
         return itvariList;
     }
 
@@ -736,6 +766,9 @@ public class JpaGoodsService {
             return attributesList;
         }
         for(Itvari itvari : itvariList){
+            if(itvari.getDelYn().equals(StringFactory.getGbOne())){
+                continue;
+            }
             GoodsSelectDetailResponseData.Attributes attr = new GoodsSelectDetailResponseData.Attributes(itvari);
             attributesList.add(attr);
         }
