@@ -741,8 +741,9 @@ public class JpaGoodsService {
         List<GoodsSelectDetailResponseData.Description> descriptions = this.makeDescriptions(jpaItasrdRepository.findByAssortId(itasrt.getAssortId()));
         List<GoodsSelectDetailResponseData.Attributes> attributesList = this.makeAttributesList(itasrt.getItvariList());
         List<GoodsSelectDetailResponseData.Items> itemsList = this.makeItemsList(jpaItitmmRepository.findByAssortId(itasrt.getAssortId()));
-        List<GoodsSelectDetailResponseData.UploadMainImage> uploadMainImageList = this.makeUploadMainImageList(itasrt.getItaimg());
-        List<GoodsSelectDetailResponseData.UploadAddImage> uploadAddImageList = this.makeUploadAddImageList(itasrt.getItaimg());
+        List<Itaimg> itaimgList = jpaItaimgRepository.findByAssortId(itasrt.getAssortId());
+        List<GoodsSelectDetailResponseData.UploadMainImage> uploadMainImageList = this.makeUploadMainImageList(itaimgList.stream().filter(x->x.getImageGb().equals(StringFactory.getGbOne())).collect(Collectors.toList()));
+        List<GoodsSelectDetailResponseData.UploadAddImage> uploadAddImageList = this.makeUploadAddImageList(itaimgList.stream().filter(x->x.getImageGb().equals(StringFactory.getGbTwo())).collect(Collectors.toList()));
         goodsSelectDetailResponseData.setDescription(descriptions);
         goodsSelectDetailResponseData.setAttributes(attributesList);
         goodsSelectDetailResponseData.setItems(itemsList);
