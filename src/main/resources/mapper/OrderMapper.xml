@@ -529,6 +529,7 @@ select aa.channel_gb channelGb
 		,'01' channelGb 
 		,bb.order_id orderId
 		,bb.order_seq orderSeq
+		,bb.status_cd statusCd
 		,bb.channel_order_no channelOrderNo
 		,bb.channel_order_seq channelOrderSeq
 		,bb.assort_id assortId

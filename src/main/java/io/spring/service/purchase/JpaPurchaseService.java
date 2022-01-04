@@ -1663,7 +1663,13 @@ public class JpaPurchaseService {
 		// ititmt취소
 
 		// ititmt qty update
-		Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(o.getAssortId(),
+
+		System.out.println(
+
+				o.getAssortId() + " : " + o.getItemId() + " : " + lspchm.getStoreCd() + " : "
+						+ StringFactory.getStrEleven() + " : " + lspchm.getPurchaseDt());
+
+		Ititmt ititmt = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(o.getAssortId(),
 				o.getItemId(), lspchm.getStoreCd(), StringFactory.getStrEleven(), lspchm.getPurchaseDt());
 
 		if (ititmt == null) {

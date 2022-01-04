@@ -44,6 +44,7 @@ public class CancelOrderListResponse {
 			this.optionNm3 = p.get("optionNm3") == null ? null : p.get("optionNm3").toString();
 			this.ifStatus = p.get("ifStatus").toString();
 			this.ifMsg = p.get("ifMsg") == null ? null : p.get("ifMsg").toString();
+			this.statusCd = p.get("statusCd").toString();
 
 		}
 
@@ -70,6 +71,7 @@ public class CancelOrderListResponse {
 	private String optionNm3; // 옵션3
 	private String ifStatus; // 처리상태
 	private String ifMsg; // 연동메세지
+	private String statusCd;
 
 }
 
