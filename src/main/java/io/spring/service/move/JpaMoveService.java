@@ -16,6 +16,7 @@ import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 import io.spring.enums.TrdstOrderStatus;
+import io.spring.infrastructure.mapstruct.MoveCompletedListResponseDataMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -91,6 +92,8 @@ public class JpaMoveService {
 	private final JpaTbOrderHistoryRepository tbOrderHistoryrRepository;
 
     private final EntityManager em;
+
+    private final MoveCompletedListResponseDataMapper moveCompletedListResponseDataMapper;
 
     /**
 	 * 주문 이동지시 대상 리스트 가져오는 함수 2021-10-18 사용 안함 jb
@@ -1014,9 +1017,11 @@ public class JpaMoveService {
         for(Lsshpd lsshpd : lsshpdList){
             MoveCompletedLIstReponseData.Move move = new MoveCompletedLIstReponseData.Move(lsshpd.getLsshpm(), lsshpd);
             Utilities.setOptionNames(move, lsshpd.getItasrt().getItvariList());
+            move = moveCompletedListResponseDataMapper.nullToEmpty(move);
             moveList.add(move);
         }
         moveCompletedLIstReponseData.setMoves(moveList);
+        moveCompletedLIstReponseData = moveCompletedListResponseDataMapper.nullToEmpty(moveCompletedLIstReponseData);
         return moveCompletedLIstReponseData;
     }
 
