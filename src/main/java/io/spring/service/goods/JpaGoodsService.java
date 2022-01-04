@@ -74,7 +74,8 @@ public class JpaGoodsService {
         // itasrd에 문구 저장
         List<Itasrd> itasrd = this.saveItasrd(goodsInsertRequestData);
         // itvari에 assort_id별 옵션요소 저장(색상, 사이즈)
-        List<Itvari> itvariList = this.saveItvariList(goodsInsertRequestData);
+        List<Itvari> existItvariList = jpaItvariRepository.findByAssortId(goodsInsertRequestData.getAssortId());
+        List<Itvari> itvariList = this.saveItvariList(goodsInsertRequestData, existItvariList);
         // ititmm에 assort_id별 item 저장
         List<Ititmm> ititmmList = this.saveItemList(goodsInsertRequestData, itvariList);
         // tmitem에 저장
@@ -362,13 +363,12 @@ public class JpaGoodsService {
      * @param goodsInsertRequestData
      * @return List<Itvari>
      */
-    private List<Itvari> saveItvariList(GoodsInsertRequestData goodsInsertRequestData) {
+    private List<Itvari> saveItvariList(GoodsInsertRequestData goodsInsertRequestData, List<Itvari> existItvariList) {
         if(goodsInsertRequestData.getOptionUseYn().equals(StringFactory.getGbTwo())){ // optionUseYn이 02, 즉 단품인 경우
             return saveSingleOption(goodsInsertRequestData); // 단품 옵션 1개를 저장하는 함수
         }
         List<GoodsInsertRequestData.Attributes> attributes = goodsInsertRequestData.getAttributes();
         List<Itvari> itvariList = new ArrayList<>();
-        List<Itvari> existItvariList = jpaItvariRepository.findByAssortId(goodsInsertRequestData.getAssortId());
         Set<String> seqList = new HashSet<>();
         for(Itvari itvari : existItvariList){
             seqList.add(itvari.getSeq());
@@ -376,14 +376,19 @@ public class JpaGoodsService {
 
         for(GoodsInsertRequestData.Attributes attribute : attributes){
             String assortId = goodsInsertRequestData.getAssortId();
+            List<Itvari> origItvariList = existItvariList.stream().filter(x->x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getSeq().equals(attribute.getSeq()))
+                    .collect(Collectors.toList());
+            Itvari itvari = origItvariList.size() > 0? origItvariList.get(0) : null;
             String seq = attribute.getSeq();
-            Itvari itvari = new Itvari(goodsInsertRequestData);
-            itvari.setAssortId(goodsInsertRequestData.getAssortId());
+//            Itvari itvari = new Itvari(goodsInsertRequestData);
+//            itvari.setAssortId(goodsInsertRequestData.getAssortId());
             if(!seqList.contains(seq) && !seq.trim().equals("")){
                 log.debug("기존 itvari의 seqList에 " + seq + "가 존재하지 않습니다.");
                 continue;
             }
-            if(seq == null || seq.trim().equals("")){ // seq가 존재하지 않는 경우 == 새로운 itvari INSERT -> seq max 값 따와야 함
+//            if(seq == null || seq.trim().equals("")){ // seq가 존재하지 않는 경우 == 새로운 itvari INSERT -> seq max 값 따와야 함
+            if(itvari == null){ // seq가 존재하지 않는 경우 == 새로운 itvari INSERT -> seq max 값 따와야 함
+                itvari = new Itvari(goodsInsertRequestData);
                 seq = jpaItvariRepository.findMaxSeqByAssortId(assortId);
                 if(seq == null){ // max값이 없음 -> 해당 assort id에서 첫 insert
                     seq = StringFactory.getFourStartCd();//fourStartCd;
@@ -393,8 +398,13 @@ public class JpaGoodsService {
                 }
                 itvari.setSeq(seq);
             }
-            else{ // 존재하는 경우 : itvari 객체가 존재함이 보장됨 -> update
-                itvari = existItvariList.stream().filter(x->x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getSeq().equals(attribute.getSeq())).collect(Collectors.toList()).get(0);//jpaItvariRepository.findByAssortIdAndSeq(goodsInsertRequestData.getAssortId(), seq);
+            else { // 존재하는 경우 : itvari 객체가 존재함이 보장됨 -> update
+//                itvari = existItvariList.stream().filter(x->x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getSeq().equals(attribute.getSeq()))
+//                        .collect(Collectors.toList()).get(0);//jpaItvariRepository.findByAssortIdAndSeq(goodsInsertRequestData.getAssortId(), seq);
+                if(itvari.getDelYn().equals(StringFactory.getGbOne()) || itvari.getSeq().equals(StringFactory.getFourStartCd())){ // 삭제된 상태거나 seq 0001인 itvari는 수정x
+                    log.debug("delYn이 01이거나 seq가 0001(단품)인 itvari를 update할 수 없습니다.");
+                    continue;
+                }
                 seqList.remove(seq);
             }
             itvari.setOptionNm(attribute.getValue());
@@ -453,14 +463,15 @@ public class JpaGoodsService {
         Itvari itvari = jpaItvariRepository.findByAssortIdAndSeq(goodsInsertRequestData.getAssortId(), StringFactory.getFourStartCd());
         if(itvari == null){
             itvari = new Itvari(goodsInsertRequestData);
-            itvari.setSeq(StringFactory.getFourStartCd()); // 0001
-            itvari.setOptionGb(StringFactory.getGbOne()); // 01
-            itvari.setImgYn(StringFactory.getGbTwo()); // 02
-            itvari.setOptionNm(StringFactory.getStrSingleGoods()); // 단품
-            itvari.setVariationGb(StringFactory.getGbOne()); // 01
+            itvari.setSeq(StringFactory.getFourStartCd()); // 0001 하드코딩
+            itvari.setOptionGb(StringFactory.getGbOne()); // 01 하드코딩
+            itvari.setImgYn(StringFactory.getGbTwo()); // 02 하드코딩
+            itvari.setOptionNm(StringFactory.getStrSingleGoods()); // '단품' 하드코딩
+            itvari.setVariationGb(StringFactory.getGbOne()); // 01 하드코딩
 //        jpaItvariRepository.save(itvari);
-            em.persist(itvari);
         }
+        itvari.setDelYn(StringFactory.getGbTwo()); // 02 하드코딩
+        em.persist(itvari);
         itvariList.add(itvari);
         return itvariList;
     }
