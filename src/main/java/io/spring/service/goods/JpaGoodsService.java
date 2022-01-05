@@ -285,23 +285,13 @@ public class JpaGoodsService {
      */
     private Itasrn saveItasrn(GoodsInsertRequestData goodsInsertRequestData){
 //        ItasrnId itasrnId = new ItasrnId(goodsRequestData);
-        Date effEndDt = null;
-        try
-        {
-            effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
-        }
-        catch (Exception e){
-            log.debug(e.getMessage());
-        }
+        LocalDateTime effEndDt = Utilities.strToLocalDateTime(StringFactory.getDoomDayT()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
         Itasrn itasrn = jpaItasrnRepository.findByAssortIdAndEffEndDt(goodsInsertRequestData.getAssortId(), effEndDt);
         if(itasrn == null){ // insert
             itasrn = new Itasrn(goodsInsertRequestData);
         }
         else{ // update
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(new Date());
-            cal.add(Calendar.SECOND, -1);
-            itasrn.setEffEndDt(cal.getTime());
+            itasrn.setEffEndDt(LocalDateTime.now().minusSeconds(1));
             // update 후 새 이력 insert
             Itasrn newItasrn = new Itasrn(itasrn);
             jpaItasrnRepository.save(newItasrn);
