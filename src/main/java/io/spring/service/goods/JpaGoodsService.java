@@ -64,7 +64,7 @@ public class JpaGoodsService {
      * @return GoodsResponseData
      */
     @Transactional
-    public GoodsInsertResponseData sequenceInsertOrUpdateGoods(GoodsInsertRequestData goodsInsertRequestData){
+    public GoodsSelectDetailResponseData sequenceInsertOrUpdateGoods(GoodsInsertRequestData goodsInsertRequestData){
         // itasrt에 goods 정보 저장
         Itasrt itasrt = this.saveItasrt(goodsInsertRequestData);
         // tmmapi에 저장
@@ -90,7 +90,7 @@ public class JpaGoodsService {
 //        List<GoodsInsertResponseData.Attributes> attributesList = this.makeGoodsResponseAttributes(itvariList);
 //        List<GoodsInsertResponseData.Items> itemsList = this.makeGoodsResponseItems(ititmmList, itvariList);
 //        return this.makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
-        return null;
+        return this.getGoodsDetailPage(goodsInsertRequestData.getAssortId());
     }
 
     /**
