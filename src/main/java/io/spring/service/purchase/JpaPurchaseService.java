@@ -456,8 +456,17 @@ public class JpaPurchaseService {
             log.debug("해당 발주번호에 해당하는 발주상세내역이 존재하지 않습니다.");
             return null;
         }
+        List<String> brandIdList = new ArrayList<>();
+        for(Lspchd lspchd : lspchdList){
+            System.out.println();
+            if(lspchd.getItitmm().getItasrt().getBrandId() != null && !brandIdList.contains(lspchd.getItitmm().getItasrt().getBrandId())){
+                brandIdList.add(lspchd.getItitmm().getItasrt().getBrandId());
+            }
+        }
+        List<IfBrand> ifBrandList = brandIdList.size() > 0? jpaIfBrandRepository.findByBrandIdListByChannelIdAndBrandIdList(StringFactory.getGbOne(), brandIdList) : null;
+//        List<PurchaseListInDepositModalData.Purchase> purchaseList = new ArrayList<>();
         Lspchm lspchm = lspchdList.get(0).getLspchm();
-        List<PurchaseSelectDetailResponseData.Items> itemsList = this.makeItemsList(null, lspchdList);
+        List<PurchaseSelectDetailResponseData.Items> itemsList = this.makeItemsList(ifBrandList, lspchdList);
         PurchaseSelectDetailResponseData purchaseSelectDetailResponseData = new PurchaseSelectDetailResponseData(lspchm);
         purchaseSelectDetailResponseData.setItems(itemsList);
         purchaseSelectDetailResponseData = purchaseSelectDetailResponseDataMapper.nullToEmpty(purchaseSelectDetailResponseData);
@@ -559,7 +568,7 @@ public class JpaPurchaseService {
                 item.setReceiverZipcode(tbOrderDetail.getTbOrderMaster().getTbMemberAddress().getDeliZipcode());
                 item.setReceiverZonecode(tbOrderDetail.getTbOrderMaster().getTbMemberAddress().getDeliZonecode());
                 item.setOrderMemo(tbOrderDetail.getTbOrderMaster().getOrderMemo());
-                item.setBrandNm(itasrt.getBrandId() == null || itasrt.getBrandId().trim().equals("") || itasrt.getIfBrand() == null? "" : itasrt.getIfBrand().getBrandNm());
+//                item.setBrandNm(itasrt.getBrandId() == null || itasrt.getBrandId().trim().equals("") || itasrt.getIfBrand() == null? "" : itasrt.getIfBrand().getBrandNm());
 //                item.setBrandNm(ifBrand == null? "" : ifBrand.getBrandNm());
 //                item.setCustNm(tbMember.getCustNm());
                 item.setChannelOrderNo(tbOrderDetail.getChannelOrderNo());
