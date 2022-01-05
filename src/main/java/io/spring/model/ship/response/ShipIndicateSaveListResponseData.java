@@ -91,7 +91,7 @@ public class ShipIndicateSaveListResponseData {
 			this.shipId = (String) map.get("shipId");
 			this.shipSeq = (String) map.get("shipSeq");
 			this.storageId = (String) map.get("storageId");
-			this.receiptDt = map.get("receiptDt").toString().substring(0, 19);
+			this.receiptDt = map.get("receiptDt").toString();
 
 			this.optionNm1 = (String) map.get("optionNm1");
 			this.optionNm2 = (String) map.get("optionNm2");

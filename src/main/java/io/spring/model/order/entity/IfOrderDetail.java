@@ -1,16 +1,16 @@
 package io.spring.model.order.entity;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.order.idclass.IfOrderDetailId;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
 
 @Entity
 @Getter
@@ -46,7 +46,7 @@ public class IfOrderDetail {
     private String channelGb = StringFactory.getGbOne(); // 01 하드코딩
 
     // 21-09-28 추가된 컬럼
-    private Float goodsModelNo;
+	private String goodsModelNo;
     private Float divisionUseMileage;
     private Float divisionGoodsDeliveryUseDeposit;
     private Float divisionGoodsDeliveryUseMileage;

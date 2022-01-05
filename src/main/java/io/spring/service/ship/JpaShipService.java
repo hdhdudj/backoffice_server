@@ -161,7 +161,6 @@ public class JpaShipService {
             return null;
         }
 
-
         List<String> shipIdList = new ArrayList<>();
 		List<HashMap<String, Object>> orderList = new ArrayList<>();
 
@@ -353,8 +352,7 @@ public class JpaShipService {
 		lsshpm.setInstructDt(LocalDateTime.now());
 		lsshpm.setShipStatus(StringFactory.getGbTwo()); // 01 : 이동지시or출고지시, 02 : 이동지시or출고지시 접수, 04 : 출고
 
-		Lsshps lsshps = new Lsshps(lsshpm);
-		this.updateLsshps(lsshps);
+		this.updateLsshps(lsshpm);
 
 		ret.add(ship.getShipId());
 
@@ -602,9 +600,10 @@ public class JpaShipService {
         return shipIdList;
     }
 
-	private void updateLsshps(Lsshps newLsshps) {
-		Lsshps lsshps = jpaLsshpsRepository.findByShipIdAndEffEndDt(newLsshps.getShipId(),
+	private void updateLsshps(Lsshpm lsshpm) {
+		Lsshps lsshps = jpaLsshpsRepository.findByShipIdAndEffEndDt(lsshpm.getShipId(),
 				Utilities.getStringToDate(StringFactory.getDoomDay()));
+		Lsshps newLsshps = new Lsshps(lsshpm);
 		lsshps.setEffEndDt(new Date());
 		jpaLsshpsRepository.save(lsshps);
 		jpaLsshpsRepository.save(newLsshps);

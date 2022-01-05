@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -28,14 +29,14 @@ public class Itasrn extends CommonProps {
         this.assortId = itasrn.getAssortId();
         this.localSale = itasrn.getLocalSale();
         this.shortageYn = itasrn.getShortageYn();
-        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
+        this.effEndDt = Utilities.strToLocalDateTime(StringFactory.getDoomDayT()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
     }
     public Itasrn(GoodsInsertRequestData goodsInsertRequestData){
         this.historyGb = StringFactory.getGbOne(); // default 값 (01)
         this.ownerId = Utilities.getStringNo(null,StringFactory.getStrOne(),6); // 000001 하드코딩
         this.assortId = goodsInsertRequestData.getAssortId();
         this.localSale = goodsInsertRequestData.getLocalSale() == null || goodsInsertRequestData.getLocalSale().equals("")? null : Float.parseFloat(goodsInsertRequestData.getLocalSale());
-        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
+        this.effEndDt = Utilities.strToLocalDateTime(StringFactory.getDoomDayT()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,11 +45,11 @@ public class Itasrn extends CommonProps {
     private String ownerId;
     private String assortId;
     @CreationTimestamp
-    private Date effStaDt;
+    private LocalDateTime effStaDt;
 //    @Id
 //    private String seq;
 
-    private Date effEndDt;
+    private LocalDateTime effEndDt;
 
     private Float localSale;
     private String shortageYn;
