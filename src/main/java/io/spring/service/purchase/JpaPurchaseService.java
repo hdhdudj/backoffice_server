@@ -568,10 +568,12 @@ public class JpaPurchaseService {
                 item.setReceiverZipcode(tbOrderDetail.getTbOrderMaster().getTbMemberAddress().getDeliZipcode());
                 item.setReceiverZonecode(tbOrderDetail.getTbOrderMaster().getTbMemberAddress().getDeliZonecode());
                 item.setOrderMemo(tbOrderDetail.getTbOrderMaster().getOrderMemo());
+                item.setOrderMemo(tbOrderDetail.getTbOrderMaster().getOrderMemo());
 //                item.setBrandNm(itasrt.getBrandId() == null || itasrt.getBrandId().trim().equals("") || itasrt.getIfBrand() == null? "" : itasrt.getIfBrand().getBrandNm());
 //                item.setBrandNm(ifBrand == null? "" : ifBrand.getBrandNm());
 //                item.setCustNm(tbMember.getCustNm());
                 item.setChannelOrderNo(tbOrderDetail.getChannelOrderNo());
+                item.setBrandId(itasrt.getBrandId());
             }
 
             List<Lspchb> lspchbList = lspchd.getLspchb();
@@ -587,7 +589,7 @@ public class JpaPurchaseService {
 
         if(brandList != null){
             for(PurchaseSelectDetailResponseData.Items item : itemsList){
-                List<IfBrand> ifBrandList1 = brandList.stream().filter(x->x.getBrandId().equals(item.getBrandNm())).collect(Collectors.toList());
+                List<IfBrand> ifBrandList1 = brandList.stream().filter(x->x.getBrandId().equals(item.getBrandId())).collect(Collectors.toList());
                 IfBrand ifBrand = ifBrandList1.size() == 0? null : ifBrandList1.get(0);
                 item.setBrandNm(ifBrand == null? "" : ifBrand.getBrandNm());
             }
