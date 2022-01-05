@@ -559,7 +559,7 @@ public class JpaPurchaseService {
                 item.setReceiverZipcode(tbOrderDetail.getTbOrderMaster().getTbMemberAddress().getDeliZipcode());
                 item.setReceiverZonecode(tbOrderDetail.getTbOrderMaster().getTbMemberAddress().getDeliZonecode());
                 item.setOrderMemo(tbOrderDetail.getTbOrderMaster().getOrderMemo());
-                item.setBrandNm(itasrt.getIfBrand().getBrandNm());
+                item.setBrandNm(itasrt.getBrandId() == null || itasrt.getBrandId().trim().equals("")? "" : itasrt.getIfBrand().getBrandNm());
 //                item.setBrandNm(ifBrand == null? "" : ifBrand.getBrandNm());
 //                item.setCustNm(tbMember.getCustNm());
                 item.setChannelOrderNo(tbOrderDetail.getChannelOrderNo());
