@@ -78,7 +78,7 @@ public interface JpaLspchdRepository extends JpaRepository<Lspchd, LspchdId> {
             "and (:custNm is null or trim(:custNm)='' or tm.custNm like concat('%',:custNm,'%')) " +
             "and (:brandId is null or trim(:brandId)='' or ib.brandId=:brandId) " +
             "and (:itemNm is null or trim(:itemNm)='' or itm.itemNm like concat('%',:itemNm,'%')) " +
-            "and (:channelOrderNo is null or trim(:channelOrderNo)='' or tod.channelOrderNo=:channelOrderNo) " +
+            "and (:unifiedOrderNo is null or trim(:unifiedOrderNo)='' or tod.channelOrderNo=:channelOrderNo or tod.orderId=:unifiedOrderNo) " +
             "and (:orderName is null or trim(:orderName)='' or tom.orderName=:orderName)")
     List<Lspchd> getLspchdList(@Param("start") LocalDateTime start,
                                @Param("end") LocalDateTime end,
@@ -92,7 +92,7 @@ public interface JpaLspchdRepository extends JpaRepository<Lspchd, LspchdId> {
                                @Param("custNm") String custNm,
                                @Param("brandId") String brandId,
                                @Param("itemNm") String itemNm,
-                               @Param("channelOrderNo") String channelOrderNo,
+                               @Param("unifiedOrderNo") String unifiedOrderNo,
                                @Param("orderName") String orderName
     );
 }

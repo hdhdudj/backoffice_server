@@ -691,13 +691,13 @@ public class JpaPurchaseService {
      * 발주리스트 가져오기 (변경된 버전. Lspchm 기준으로)
      */
     public PurchaseMasterListResponseData getPurchaseMasterList2(LocalDate startDt, LocalDate endDt,
-                                                                 String siteOrderNo, String channelOrderNo, String brandId, String vendorId, String purchaseGb, String orderNm) {
+                                                                 String siteOrderNo, String unifiedOrderNo, String brandId, String vendorId, String purchaseGb, String orderNm) {
         PurchaseMasterListResponseData purchaseMasterListResponseData = new PurchaseMasterListResponseData(startDt,
-                endDt, siteOrderNo, channelOrderNo, brandId, vendorId, purchaseGb);
+                endDt, siteOrderNo, unifiedOrderNo, brandId, vendorId, purchaseGb);
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
         List<Lspchd> lspchdList = jpaLspchdRepository.getLspchdList(start, end, vendorId, null, null, purchaseGb,
-                null, null, siteOrderNo, null, brandId, null, channelOrderNo,
+                null, null, siteOrderNo, null, brandId, null, unifiedOrderNo,
                 orderNm);//query.getResultList();
         List<String> purchaseNoList = new ArrayList<>();
         List<PurchaseMasterListResponseData.Purchase> purchaseList = new ArrayList<>();
