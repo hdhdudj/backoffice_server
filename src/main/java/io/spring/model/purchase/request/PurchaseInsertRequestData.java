@@ -87,7 +87,6 @@ public class PurchaseInsertRequestData {
     private String piNo;
     private String memo;
 
-
 	private List<Items> items;
 
     // lspchs
