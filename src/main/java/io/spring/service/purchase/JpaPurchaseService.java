@@ -444,6 +444,7 @@ public class JpaPurchaseService {
                 "left outer join fetch ld.tbOrderDetail tod " +
                 "left outer join fetch tod.tbOrderMaster tom " +
                 "left outer join fetch tom.tbMember tm " +
+                "left outer join fetch tom.tbMemberAddress tma " +
                 "left outer join fetch ld.ititmm im " +
                 "left outer join fetch im.itvari1 iv1 " +
                 "left outer join fetch im.itvari2 iv2 " +
