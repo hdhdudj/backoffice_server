@@ -44,20 +44,20 @@ public class GoodsSelectDetailResponseData {
         this.taxGb = itasrt.getTaxGb();
         this.assortState = itasrt.getAssortState();
         this.shortageYn = itasrt.getShortageYn();
-        this.localPrice = itasrt.getLocalPrice() + "";
-        this.localSale = itasrt.getLocalSale() + "";
-        this.localDeliFee = itasrt.getLocalDeliFee() + "";
-        this.margin = itasrt.getMargin() + "";
-        this.mdRrp = itasrt.getMdRrp() + "";
+        this.localPrice = itasrt.getLocalPrice() == null? null : itasrt.getLocalPrice() + "";
+        this.localSale = itasrt.getLocalSale() == null? null : itasrt.getLocalSale()+ "";
+        this.localDeliFee = itasrt.getLocalDeliFee() == null? null : itasrt.getLocalDeliFee()+ "";
+        this.margin = itasrt.getMargin() == null? null : itasrt.getMargin()+ "";
+        this.mdRrp = itasrt.getMdRrp() == null? null : itasrt.getMdRrp()+ "";
         this.mdYear = itasrt.getMdYear();
-        this.mdVatrate = itasrt.getMdVatrate() + "";
-        this.mdDiscountRate = itasrt.getMdDiscountRate() + "";
-        this.mdGoodsVatrate = itasrt.getMdGoodsVatrate() + "";
-        this.mdMargin = itasrt.getMdMargin() + "";
+        this.mdVatrate = itasrt.getMdVatrate() == null? null : itasrt.getMdVatrate()+ "";
+        this.mdDiscountRate = itasrt.getMdDiscountRate() == null? null : itasrt.getMdDiscountRate()+ "";
+        this.mdGoodsVatrate = itasrt.getMdGoodsVatrate() == null? null : itasrt.getMdGoodsVatrate()+ "";
+        this.mdMargin = itasrt.getMdMargin() == null? null : itasrt.getMdMargin()+ "";
         this.buyWhere = itasrt.getBuyWhere();
-        this.buySupplyDiscount = itasrt.getBuySupplyDiscount() + "";
-        this.buyExchangeRate = itasrt.getBuyExchangeRate() + "";
-        this.buyRrpIncrement = itasrt.getBuyRrpIncrement() + "";
+        this.buySupplyDiscount = itasrt.getBuySupplyDiscount() == null? null : itasrt.getBuySupplyDiscount()+ "";
+        this.buyExchangeRate = itasrt.getBuyExchangeRate() == null? null : itasrt.getBuyExchangeRate()+ "";
+        this.buyRrpIncrement = itasrt.getBuyRrpIncrement() == null? null : itasrt.getBuyRrpIncrement()+ "";
         
 
         this.sellStaDt= Utilities.removeTAndTransToStr(itasrt.getSellStaDt());

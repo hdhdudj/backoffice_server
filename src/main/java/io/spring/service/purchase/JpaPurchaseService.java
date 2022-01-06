@@ -444,6 +444,7 @@ public class JpaPurchaseService {
                 "left outer join fetch ld.tbOrderDetail tod " +
                 "left outer join fetch tod.tbOrderMaster tom " +
                 "left outer join fetch tom.tbMember tm " +
+                "left outer join fetch tom.tbMemberAddress tma " +
                 "left outer join fetch ld.ititmm im " +
                 "left outer join fetch im.itvari1 iv1 " +
                 "left outer join fetch im.itvari2 iv2 " +
@@ -456,8 +457,17 @@ public class JpaPurchaseService {
             log.debug("해당 발주번호에 해당하는 발주상세내역이 존재하지 않습니다.");
             return null;
         }
+        List<String> brandIdList = new ArrayList<>();
+        for(Lspchd lspchd : lspchdList){
+            System.out.println();
+            if(lspchd.getItitmm().getItasrt().getBrandId() != null && !brandIdList.contains(lspchd.getItitmm().getItasrt().getBrandId())){
+                brandIdList.add(lspchd.getItitmm().getItasrt().getBrandId());
+            }
+        }
+        List<IfBrand> ifBrandList = brandIdList.size() > 0? jpaIfBrandRepository.findByBrandIdListByChannelIdAndBrandIdList(StringFactory.getGbOne(), brandIdList) : null;
+//        List<PurchaseListInDepositModalData.Purchase> purchaseList = new ArrayList<>();
         Lspchm lspchm = lspchdList.get(0).getLspchm();
-        List<PurchaseSelectDetailResponseData.Items> itemsList = this.makeItemsList(null, lspchdList);
+        List<PurchaseSelectDetailResponseData.Items> itemsList = this.makeItemsList(ifBrandList, lspchdList);
         PurchaseSelectDetailResponseData purchaseSelectDetailResponseData = new PurchaseSelectDetailResponseData(lspchm);
         purchaseSelectDetailResponseData.setItems(itemsList);
         purchaseSelectDetailResponseData = purchaseSelectDetailResponseDataMapper.nullToEmpty(purchaseSelectDetailResponseData);
@@ -559,10 +569,12 @@ public class JpaPurchaseService {
                 item.setReceiverZipcode(tbOrderDetail.getTbOrderMaster().getTbMemberAddress().getDeliZipcode());
                 item.setReceiverZonecode(tbOrderDetail.getTbOrderMaster().getTbMemberAddress().getDeliZonecode());
                 item.setOrderMemo(tbOrderDetail.getTbOrderMaster().getOrderMemo());
-                item.setBrandNm(itasrt.getBrandId());
+                item.setOrderMemo(tbOrderDetail.getTbOrderMaster().getOrderMemo());
+//                item.setBrandNm(itasrt.getBrandId() == null || itasrt.getBrandId().trim().equals("") || itasrt.getIfBrand() == null? "" : itasrt.getIfBrand().getBrandNm());
 //                item.setBrandNm(ifBrand == null? "" : ifBrand.getBrandNm());
 //                item.setCustNm(tbMember.getCustNm());
                 item.setChannelOrderNo(tbOrderDetail.getChannelOrderNo());
+                item.setBrandId(itasrt.getBrandId());
             }
 
             List<Lspchb> lspchbList = lspchd.getLspchb();
@@ -578,7 +590,7 @@ public class JpaPurchaseService {
 
         if(brandList != null){
             for(PurchaseSelectDetailResponseData.Items item : itemsList){
-                List<IfBrand> ifBrandList1 = brandList.stream().filter(x->x.getBrandId().equals(item.getBrandNm())).collect(Collectors.toList());
+                List<IfBrand> ifBrandList1 = brandList.stream().filter(x->x.getBrandId().equals(item.getBrandId())).collect(Collectors.toList());
                 IfBrand ifBrand = ifBrandList1.size() == 0? null : ifBrandList1.get(0);
                 item.setBrandNm(ifBrand == null? "" : ifBrand.getBrandNm());
             }

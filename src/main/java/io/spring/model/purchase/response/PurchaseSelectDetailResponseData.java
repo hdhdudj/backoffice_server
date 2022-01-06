@@ -148,5 +148,6 @@ public class PurchaseSelectDetailResponseData {
         private String receiverZipcode;
         private String orderMemo;
         private String brandNm;
+        private String brandId;
     }
 }
