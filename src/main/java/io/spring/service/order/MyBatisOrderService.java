@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import io.spring.enums.Scm;
 import org.springframework.stereotype.Service;
 
 import io.spring.dao.order.MyBatisOrderDao;
+import io.spring.enums.Scm;
+import io.spring.model.order.response.CancelOrderListResponse;
 import io.spring.model.order.response.OrderDetailListResponse;
 import io.spring.model.order.response.OrderDetailResponseData;
 import io.spring.model.order.response.OrderMasterListResponseData;
@@ -85,4 +86,27 @@ public class MyBatisOrderService {
 		return orderDetailListResponse;
 
 	}
+
+	public CancelOrderListResponse getOrderCancelList(HashMap<String, Object> map) {
+
+		List<HashMap<String, Object>> list = myBatisOrderDao.getOrderCancelList(map);
+
+		// List<OrderDetailListResponse> orderDetailListResponse = new ArrayList<>();
+
+		List<CancelOrderListResponse.Item> l = new ArrayList<CancelOrderListResponse.Item>();
+
+		for (HashMap<String, Object> o : list) {
+
+			CancelOrderListResponse.Item r = new CancelOrderListResponse.Item(o);
+			l.add(r);
+		}
+
+		CancelOrderListResponse ret = new CancelOrderListResponse();
+
+		ret.setItems(l);
+
+		return ret;
+
+	}
+
 }

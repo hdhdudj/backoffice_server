@@ -26,49 +26,58 @@ public class GoodsInsertRequestData {
 	private String regId;
 	private String updId;
 
-	// itasrt
-	private String assortNm;
-	private String assortModel;
-	private String optionGbName;
-	private String margin;
-	private String taxGb;
+	// 상품기본설정 화면
+	private String assortNm; // 상품명
+	private String assortModel; // 모델번호
+	private String taxGb; // 과세/면세
+	private String assortState; // 상품상태 : 진행중(01), 일시중지(02), 단품(03), 품절(04)
+	private String shortageYn; // 판매상태 : 진행중(01), 중지(02)
+	private String asLength; // 깊이
+	private String asHeight; // 높이
+	private String asWidth; // 너비
+	private String weight; // 무게
+	private String origin; // 원산지
+	private String brandId; // 브랜드 코드
+	private String dispCategoryId; // erp 카테고리 코드
+	private String manufactureNm; // 제조회사
+	private String localSale; // 판매가
+	@JsonDeserialize(using = CustomLocalDateTimeDeSerializer.class)
+	private LocalDateTime sellStaDt; // 판매기간 - 시작
+	@JsonDeserialize(using = CustomLocalDateTimeDeSerializer.class)
+	private LocalDateTime sellEndDt; // 판매기간 - 끝
+	private String deliPrice; // 매입가
+	private String localPrice; // 정가
+	private String margin; // 마진율
+
+	// 이미지 설정 화면
+
+	// 상품 가격 관리(MD팀) 화면
+	private String mdRrp; // RRP
+	private String mdYear; // 자료연도
+	private String mdTax; // TAX(자료)
+	private String mdVatrate; // 부가세율
+	private String mdDiscountRate; // 할인율
+	private String mdGoodsVatrate; // 상품마진율
+
+	// 상품 가격 관리(구매팀) 화면
+	private String buyRrpIncrement; // RRP 인상률
+	private String buySupplyDiscount; //
+	private String buyTax; // TAX(구매)
+	private String mdMargin; // 정기마진율
+	private String buyExchangeRate; // 적용환율
+
+	// 옵션 화면
+	// 설명 화면
 	private String assortGb;
-	private String assortState;
-	private String asWidth;
-	private String asLength;
-	private String asHeight;
-	private String weight;
-	private String origin;
-	private String shortageYn; // itasrn에도
-	private String brandId;
-	private String dispCategoryId;
+	private String optionGbName;
 	private String siteGb;
 	private String asVendorId;
-	private String manufactureNm;
-	private String deliPrice;
-	private String localPrice;
 	private String localDeliFee;
-	private String localSale; // itasrn에도 들어감
 	private String assortColor;
-	@JsonDeserialize(using = CustomLocalDateTimeDeSerializer.class)
-	private LocalDateTime sellStaDt;
-	@JsonDeserialize(using = CustomLocalDateTimeDeSerializer.class)
-	private LocalDateTime sellEndDt;
-	private String mdRrp;
-	private String mdTax;
-	private String mdYear;
-	private String mdMargin;
-	private String mdVatrate;
 	private String mdOfflinePrice;
 	private String mdOnlinePrice;
-	private String mdGoodsVatrate;
 	private String buyWhere;
-	private String buyTax;
-	private String buySupplyDiscount;
-	private String buyRrpIncrement;
-	private String buyExchangeRate;
 	private String sizeType;
-	private String mdDiscountRate;
 	private String vendorId;
 	private String optionUseYn;
 

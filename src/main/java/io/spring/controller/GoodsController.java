@@ -88,7 +88,7 @@ public class GoodsController {
 		goodsInsertRequestData.setAssortId(jpaCommonService.getNumberId(goodsInsertRequestData.getAssortId(), StringFactory.getStrSeqItasrt(), StringFactory.getIntNine())); // assort id 梨꾨쾲
 	
 		System.out.println(goodsInsertRequestData.toString());
-		GoodsInsertResponseData responseData = jpaGoodsService.sequenceInsertOrUpdateGoods(goodsInsertRequestData);
+		GoodsSelectDetailResponseData responseData = jpaGoodsService.sequenceInsertOrUpdateGoods(goodsInsertRequestData);
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), responseData);
 
