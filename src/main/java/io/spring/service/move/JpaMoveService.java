@@ -494,7 +494,7 @@ public class JpaMoveService {
      * 상품이동지시 화면에서 검색에 맞는 Ititmc들을 가져오는 함수
      */
     private List<Ititmc> getItitmc(String storageId, String purchaseVendorId, String assortId, String assortNm) {
-        Query query = em.createQuery("select ic from Ititmc ic " +
+        Query query = em.createQuery("select distinct(ic) from Ititmc ic " +
                 "join fetch ic.itasrt it " +
                 "join fetch it.ifBrand ib " +
                 "join fetch it.itvariList iv " +
@@ -971,7 +971,7 @@ public class JpaMoveService {
 
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
-        TypedQuery<Lsshpd> query = em.createQuery("select ld from Lsshpd ld " +
+        TypedQuery<Lsshpd> query = em.createQuery("select distinct ld from Lsshpd ld " +
                         "join fetch ld.lsshpm lm " +
                         "left join fetch ld.tbOrderDetail td " +
                         "join fetch ld.itasrt it " +
