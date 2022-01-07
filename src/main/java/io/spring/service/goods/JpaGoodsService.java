@@ -655,6 +655,9 @@ public class JpaGoodsService {
     //        jpaItitmmRepository.save(ititmm);
             em.persist(ititmm);
         }
+        else {
+            ititmm.setDelYn(StringFactory.getGbTwo()); // 삭제 상태였던 걸 원래대로
+        }
         ititmmList.add(ititmm);
 
         return ititmmList;
