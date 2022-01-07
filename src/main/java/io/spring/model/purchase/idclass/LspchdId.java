@@ -1,10 +1,12 @@
 package io.spring.model.purchase.idclass;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+@EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LspchdId implements Serializable {
     //default serial version id, required for serializable classes.
