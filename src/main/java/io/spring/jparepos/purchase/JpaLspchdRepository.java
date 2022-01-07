@@ -69,6 +69,7 @@ public interface JpaLspchdRepository extends JpaRepository<Lspchd, LspchdId> {
             "where lm.purchaseDt between :start and :end " +
 //                "and (tod.statusCd in ('B01','C03') or lm.dealtypeCd='02') " +
             "and (:vendorId is null or trim(:vendorId)='' or ld.lspchm.vendorId=:vendorId) " +
+            "and (:vendorId is null or trim(:vendorId)='' or ld.lspchm.vendorId=:vendorId) " +
             "and (:assortId is null or trim(:assortId)='' or ld.assortId=:assortId) "+
             "and (:purchaseStatus is null or trim(:purchaseStatus)='' or ld.lspchm.purchaseStatus=:purchaseStatus) "+
             "and (:purchaseGb is null or trim(:purchaseGb)='' or ld.lspchm.purchaseGb=:purchaseGb) " +

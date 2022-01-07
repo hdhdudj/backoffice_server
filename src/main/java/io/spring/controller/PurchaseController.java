@@ -227,13 +227,14 @@ public class PurchaseController {
     public ResponseEntity getChoosePurchaseModalList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
                                                      @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
                                                      @RequestParam @Nullable String siteOrderNo,
+                                                     @RequestParam @Nullable String purchaseNo,
                                                      @RequestParam @Nullable String unifiedOrderNo,
                                                      @RequestParam @Nullable String brandId,
                                                      @RequestParam @Nullable String vendorId,
                                                      @RequestParam @Nullable String purchaseGb,
                                                      @RequestParam @Nullable String orderNm) {
         PurchaseMasterListResponseData purchaseMasterListResponseData = jpaPurchaseService
-                .getPurchaseMasterList2(startDt, endDt, siteOrderNo, unifiedOrderNo, brandId, vendorId, purchaseGb, orderNm);
+                .getPurchaseMasterList2(startDt, endDt, siteOrderNo, unifiedOrderNo, brandId, vendorId, purchaseGb, orderNm, purchaseNo);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),purchaseMasterListResponseData);
         return ResponseEntity.ok(res);
     }
