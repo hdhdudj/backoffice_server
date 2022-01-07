@@ -217,6 +217,7 @@ public class JpaPurchaseService {
             lspchm.setCarrier(purchaseInsertRequestData.getCarrier());
             lspchm.setPiNo(purchaseInsertRequestData.getPiNo());
             lspchm.setMemo(purchaseInsertRequestData.getMemo());
+            lspchm.setDeliFee(purchaseInsertRequestData.getDeliFee() == null? null : Float.parseFloat(purchaseInsertRequestData.getDeliFee()));
 
 //            lspchm.setDealtypeCd(purchaseInsertRequestData.getDealtypeCd());
             purchaseInsertRequestData.setDealtypeCd(lspchm.getDealtypeCd());

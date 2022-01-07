@@ -86,6 +86,8 @@ public class PurchaseInsertRequestData {
     // 21-12-14 추가
     private String piNo;
     private String memo;
+    // 22-01-07 추가
+    private String deliFee;
 
 	private List<Items> items;
 

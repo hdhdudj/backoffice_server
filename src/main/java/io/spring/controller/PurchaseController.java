@@ -147,6 +147,9 @@ public class PurchaseController {
         return ResponseEntity.ok(res);
     }
 
+    /**
+     * 발주사후 업데이트 : 마스터 부분, 디테일에선 발주가만
+     */
     @PostMapping(path = "/{purchaseNo}/update") // update
     public ResponseEntity savePurchaseJpa(@PathVariable("purchaseNo") String purchaseNo, @RequestBody PurchaseInsertRequestData purchaseInsertRequestData){
         log.debug("update purchase by jpa");
