@@ -147,6 +147,9 @@ public class PurchaseController {
         return ResponseEntity.ok(res);
     }
 
+    /**
+     * 발주사후 업데이트 : 마스터 부분, 디테일에선 발주가만
+     */
     @PostMapping(path = "/{purchaseNo}/update") // update
     public ResponseEntity savePurchaseJpa(@PathVariable("purchaseNo") String purchaseNo, @RequestBody PurchaseInsertRequestData purchaseInsertRequestData){
         log.debug("update purchase by jpa");
@@ -224,13 +227,13 @@ public class PurchaseController {
     public ResponseEntity getChoosePurchaseModalList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
                                                      @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
                                                      @RequestParam @Nullable String siteOrderNo,
-                                                     @RequestParam @Nullable String channelOrderNo,
+                                                     @RequestParam @Nullable String unifiedOrderNo,
                                                      @RequestParam @Nullable String brandId,
                                                      @RequestParam @Nullable String vendorId,
                                                      @RequestParam @Nullable String purchaseGb,
                                                      @RequestParam @Nullable String orderNm) {
         PurchaseMasterListResponseData purchaseMasterListResponseData = jpaPurchaseService
-                .getPurchaseMasterList2(startDt, endDt, siteOrderNo, channelOrderNo, brandId, vendorId, purchaseGb, orderNm);
+                .getPurchaseMasterList2(startDt, endDt, siteOrderNo, unifiedOrderNo, brandId, vendorId, purchaseGb, orderNm);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),purchaseMasterListResponseData);
         return ResponseEntity.ok(res);
     }

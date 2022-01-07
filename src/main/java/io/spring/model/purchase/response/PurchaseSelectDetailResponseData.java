@@ -39,6 +39,7 @@ public class PurchaseSelectDetailResponseData {
         this.dealtypeCd = lspchm.getDealtypeCd();
         this.piNo = lspchm.getPiNo();
         this.memo = lspchm.getMemo();
+        this.deliFee = lspchm.getDeliFee() == null? "" : lspchm.getDeliFee()+"";
     }
 //    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
 //    @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -60,6 +61,8 @@ public class PurchaseSelectDetailResponseData {
     // 21-12-07 추가
     private String piNo;
     private String memo;
+    // 22-01-06 추가
+    private String deliFee;
 
     @Getter
     @Setter
@@ -148,5 +151,6 @@ public class PurchaseSelectDetailResponseData {
         private String receiverZipcode;
         private String orderMemo;
         private String brandNm;
+        private String brandId;
     }
 }
