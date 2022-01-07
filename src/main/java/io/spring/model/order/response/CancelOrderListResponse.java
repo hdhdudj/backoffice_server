@@ -36,9 +36,9 @@ public class CancelOrderListResponse {
 			this.orderSeq = p.get("orderSeq").toString();
 			this.channelOrderNo = p.get("channelOrderNo").toString();
 			this.channelOrderSeq = p.get("channelOrderSeq").toString();
-			this.assortId = p.get("assortId").toString();
-			this.itemId = p.get("itemId").toString();
-			this.goodsNm = p.get("goodsNm").toString();
+			this.assortId = p.get("assortId") == null ? null : p.get("assortId").toString();
+			this.itemId = p.get("itemId") == null ? null : p.get("itemId").toString();
+			this.goodsNm = p.get("goodsNm") == null ? null : p.get("goodsNm").toString();
 			this.optionNm1 = p.get("optionNm1") == null ? null : p.get("optionNm1").toString();
 			this.optionNm2 = p.get("optionNm2") == null ? null : p.get("optionNm2").toString();
 			this.optionNm3 = p.get("optionNm3") == null ? null : p.get("optionNm3").toString();
