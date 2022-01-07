@@ -21,8 +21,8 @@ import java.util.Date;
 public class Lsshps extends CommonProps {
     public Lsshps(Lsshpm lsshpm, String userId){
         this.shipId = lsshpm.getShipId();
-        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
-        this.effStaDt = new Date();
+        this.effEndDt = Utilities.strToLocalDateTime2(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
+        this.effStaDt = LocalDateTime.now();
         this.shipStatus = lsshpm.getShipStatus();
 //        this.shipIndicateUserid =
 //        this.shipUserid =
@@ -31,8 +31,8 @@ public class Lsshps extends CommonProps {
     }
     public Lsshps(Lsshpm lsshpm){
         this.shipId = lsshpm.getShipId();
-        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
-        this.effStaDt = new Date();
+        this.effEndDt = Utilities.strToLocalDateTime2(StringFactory.getDoomDay()); // 9999-12-31 하드코딩
+        this.effStaDt = LocalDateTime.now();
         this.shipStatus = lsshpm.getShipStatus();
 //        this.shipIndicateUserid =
 //        this.shipUserid =
@@ -44,9 +44,9 @@ public class Lsshps extends CommonProps {
     private String seq;
     private String shipId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date effEndDt;
+    private LocalDateTime effEndDt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date effStaDt;
+    private LocalDateTime effStaDt;
     private String shipStatus;
     private Long shipIndicateUserid;
     private Long shipUserid;
