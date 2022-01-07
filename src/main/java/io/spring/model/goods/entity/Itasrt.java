@@ -258,8 +258,22 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 
 	@JoinColumn(name="dispCategoryId", referencedColumnName = "categoryId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JsonIgnore
+	@LazyToOne(value = LazyToOneOption.NO_PROXY)
 	private Itcatg itcatg; // itcatg 연관관계
+	public Itcatg getItcatg() {
+		if (interceptor!=null) {
+			return (Itcatg)interceptor.readObject(this, "itcatg", itcatg);
+		}
+		return itcatg;
+	}
+
+	public void setItcatg(Itcatg itcatg) {
+		if (interceptor!=null) {
+			this.itcatg = (Itcatg) interceptor.writeObject(this,"itcatg", this.itcatg, itcatg);
+			return ;
+		}
+		this.itcatg = itcatg;
+	}
 
 	@JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@BatchSize(size = 100)
@@ -269,13 +283,25 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 
 	@JoinColumn(name = "vendorId", referencedColumnName = "id", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JsonIgnore
-//	@NotFound(action = NotFoundAction.IGNORE)
+	@LazyToOne(value = LazyToOneOption.NO_PROXY)
 	private Cmvdmr cmvdmr; // cmvdmr 연관관계
+	public Cmvdmr getCmvdmr() {
+		if (interceptor!=null) {
+			return (Cmvdmr)interceptor.readObject(this, "cmvdmr", cmvdmr);
+		}
+		return cmvdmr;
+	}
+
+	public void setIfBrand(Cmvdmr ifBrand) {
+		if (interceptor!=null) {
+			this.cmvdmr = (Cmvdmr) interceptor.writeObject(this,"cmvdmr", this.cmvdmr, cmvdmr);
+			return ;
+		}
+		this.cmvdmr = cmvdmr;
+	}
 
 	@JoinColumn(name = "brandId", referencedColumnName = "brandId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JsonIgnore
 	@LazyToOne(value = LazyToOneOption.NO_PROXY)
 	private IfBrand ifBrand;
 	public IfBrand getIfBrand() {
