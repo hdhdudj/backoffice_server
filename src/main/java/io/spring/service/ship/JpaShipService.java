@@ -602,9 +602,9 @@ public class JpaShipService {
 
 	private void updateLsshps(Lsshpm lsshpm) {
 		Lsshps lsshps = jpaLsshpsRepository.findByShipIdAndEffEndDt(lsshpm.getShipId(),
-				Utilities.getStringToDate(StringFactory.getDoomDay()));
+				Utilities.strToLocalDateTime(StringFactory.getDoomDay()));
 		Lsshps newLsshps = new Lsshps(lsshpm);
-		lsshps.setEffEndDt(new Date());
+		lsshps.setEffEndDt(LocalDateTime.now());
 		jpaLsshpsRepository.save(lsshps);
 		jpaLsshpsRepository.save(newLsshps);
 	}

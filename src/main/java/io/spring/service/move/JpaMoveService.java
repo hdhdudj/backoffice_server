@@ -290,7 +290,7 @@ public class JpaMoveService {
 		lsshpm.setShipStatus("02");
 
 		Lsshps lsshps = new Lsshps(lsshpm);
-		this.updateLsshps(lsshps);
+		this.updateLsshps(lsshpm);
 
 		ret.add(move.getShipId());
 
@@ -1098,17 +1098,17 @@ public class JpaMoveService {
         lsshpm.setShipStatus(StringFactory.getGbFour()); // 01 : 출고지시or이동지시, 04 : 출고. 04 하드코딩
         jpaLsshpmRepository.save(lsshpm);
         // 2-3. lsshps 꺾어주기
-        Lsshps lsshps = new Lsshps(lsshpm);
-        this.updateLsshps(lsshps);
+        this.updateLsshps(lsshpm);
         return lsshpd.getShipSeq();
     }
 
     /**
      * Lsshps를 꺾어주는 함수
      */
-    private void updateLsshps(Lsshps newLsshps) {
-        Lsshps lsshps = jpaLsshpsRepository.findByShipIdAndEffEndDt(newLsshps.getShipId(), Utilities.getStringToDate(StringFactory.getDoomDay()));
-        lsshps.setEffEndDt(new Date());
+    private void updateLsshps(Lsshpm lsshpm) {
+        Lsshps newLsshps = new Lsshps(lsshpm);
+        Lsshps lsshps = jpaLsshpsRepository.findByShipIdAndEffEndDt(lsshpm.getShipId(), Utilities.strToLocalDateTime2(StringFactory.getDoomDay()));
+        lsshps.setEffEndDt(LocalDateTime.now());
         jpaLsshpsRepository.save(lsshps);
         jpaLsshpsRepository.save(newLsshps);
     }
