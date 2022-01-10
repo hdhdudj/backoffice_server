@@ -913,16 +913,16 @@ public class JpaGoodsService {
                 Itvari op2 = ititmm.getItvari2();//jpaItvariRepository.findByAssortIdAndSeq(ititmm.getAssortId(), ititmm.getVariationSeq2());
                 optionNm = op2 == null? null : op2.getOptionNm();
                 seq = op2 == null? null : op2.getSeq();
-				item.setSeq2(optionNm);
-				item.setValue2(seq);
+				item.setSeq2(seq);
+				item.setValue2(optionNm);
 				item.setStatus2(StringFactory.getStrR()); // r 하드코딩
             }
             if(ititmm.getVariationSeq3() != null){
                 Itvari op3 = ititmm.getItvari3();//jpaItvariRepository.findByAssortIdAndSeq(ititmm.getAssortId(), ititmm.getVariationSeq2());
                 optionNm = op3 == null? null : op3.getOptionNm();
                 seq = op3 == null? null : op3.getSeq();
-                item.setSeq3(optionNm);
-                item.setValue3(seq);
+                item.setSeq3(seq);
+                item.setValue3(optionNm);
                 item.setStatus3(StringFactory.getStrR()); // r 하드코딩
             }
             item.setAddPrice(ititmm.getAddPrice() == null? null : ititmm.getAddPrice() + "");
