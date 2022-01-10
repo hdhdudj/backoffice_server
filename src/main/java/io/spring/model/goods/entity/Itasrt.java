@@ -292,7 +292,7 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 		return cmvdmr;
 	}
 
-	public void setIfBrand(Cmvdmr ifBrand) {
+	public void setIfBrand(Cmvdmr cmvdmr) {
 		if (interceptor!=null) {
 			this.cmvdmr = (Cmvdmr) interceptor.writeObject(this,"cmvdmr", this.cmvdmr, cmvdmr);
 			return ;

@@ -116,7 +116,7 @@ public class GoodsController {
 	}
 
 	// jpa로 get list
-	@GetMapping(path="/getgoodslistjpa")
+	@GetMapping(path="/items")
 	public ResponseEntity getGoodsListJpa(@RequestParam @Nullable String shortageYn,
 										  @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate regDtBegin,
 										  @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam LocalDate regDtEnd,
