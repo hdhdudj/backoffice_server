@@ -13,6 +13,7 @@ import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.goods.response.GoodsInsertResponseData;
 import io.spring.model.goods.response.GoodsSelectDetailResponseData;
 import io.spring.model.goods.response.GoodsSelectListResponseData;
+import io.spring.model.vendor.entity.Cmvdmr;
 import io.spring.service.file.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
