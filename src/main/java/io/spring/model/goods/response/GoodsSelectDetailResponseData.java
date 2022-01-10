@@ -76,8 +76,6 @@ public class GoodsSelectDetailResponseData {
 		this.vendorId = itasrt.getVendorId();
         System.out.println(itasrt.getVendorId());
 //		this.brandNm = (itasrt.getIfBrand() != null ? itasrt.getIfBrand().getBrandNm() : ""); 바깥에서 set
-        Cmvdmr cmvdmr = itasrt.getCmvdmr();
-		this.vendorNm = (itasrt.getVendorId() != null && !itasrt.getVendorId().trim().equals("")? cmvdmr.getVdNm() : null);
 
 		this.optionUseYn = itasrt.getOptionUseYn();
 		

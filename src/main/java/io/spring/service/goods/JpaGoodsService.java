@@ -87,7 +87,8 @@ public class JpaGoodsService {
 
         // itaimg에 assortId 업데이트 시켜주기
         this.updateItaimgAssortId(goodsInsertRequestData, itasrt.getAssortId());
-
+        em.flush();
+        em.clear();
 //        List<GoodsInsertResponseData.Attributes> attributesList = this.makeGoodsResponseAttributes(itvariList);
 //        List<GoodsInsertResponseData.Items> itemsList = this.makeGoodsResponseItems(ititmmList, itvariList);
 //        return this.makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
@@ -406,6 +407,11 @@ public class JpaGoodsService {
             jpaItvariRepository.save(itvari);
         }
 
+        if(existItvariList == null || existItvariList.size() == 0){
+            log.debug("insert itvari");
+            return null;
+        }
+
         for(Itvari i : existItvariList){
             if(seqList.contains(i.getSeq())){
                 i.setDelYn(StringFactory.getGbOne());
@@ -718,15 +724,18 @@ public class JpaGoodsService {
      */
     public GoodsSelectDetailResponseData getGoodsDetailPage(String assortId) {
         Itasrt itasrt = em.createQuery("select distinct(i) from Itasrt i " +
-                "left outer join fetch i.cmvdmr cv " +
-                "left outer join fetch i.ifBrand ib " +
-                "left outer join fetch i.itvariList ivList " +
+//                "left outer join fetch i.cmvdmr cv " +
+//                "left outer join fetch i.ifBrand ib " +
+//                "left outer join fetch i.itvariList ivList " +
                 "where i.assortId=?1", Itasrt.class).setParameter(1,assortId).getSingleResult();//jpaItasrtRepository.findById(assortId).orElseThrow(() -> new ResourceNotFoundException());
     	
 //		System.out.println(itasrt);
         GoodsSelectDetailResponseData goodsSelectDetailResponseData = new GoodsSelectDetailResponseData(itasrt);
 
-		// 카테고리벨류
+        // 카테고리벨류
+        Cmvdmr cmvdmr = itasrt.getCmvdmr();
+        goodsSelectDetailResponseData.setVendorNm(itasrt.getVendorId() != null && !itasrt.getVendorId().trim().equals("")? cmvdmr.getVdNm() : "");
+        // brand
         IfBrand ifBrand;
         if(itasrt.getBrandId() != null && !itasrt.getBrandId().trim().equals("")){
             ifBrand = itasrt.getIfBrand();//jpaIfBrandRepository.findByChannelGbAndBrandId(StringFactory.getGbOne(),itasrt.getBrandId());

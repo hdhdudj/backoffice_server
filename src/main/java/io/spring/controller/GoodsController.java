@@ -80,7 +80,7 @@ public class GoodsController {
 		return null;
 	}
 	
-	@PostMapping(path = "/savebyjpa")
+	@PostMapping(path = "/save")
 	public ResponseEntity saveGoodsJpa(@RequestBody GoodsInsertRequestData goodsInsertRequestData) {
 		log.debug("save(insert or update) goods by jpa");
 		System.out.println(goodsInsertRequestData.toString());
@@ -136,6 +136,7 @@ public class GoodsController {
 	}
 
 	// 상품리스트조회(ititmm)
+//	@GetMapping(path = "/goods-item")
 	@GetMapping(path = "/goods-item")
 	public ResponseEntity getGoodsItem(@RequestParam String shortageYn,
 			@RequestParam(required = false) String assortId, @RequestParam(required = false) String assortNm,
