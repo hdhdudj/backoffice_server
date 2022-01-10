@@ -394,8 +394,8 @@ public class JpaGoodsService {
             itvari.setOptionGb(attribute.getVariationGb());
             itvari.setVariationGb(attribute.getVariationGb());
             itvariList.add(itvari);
-            jpaItvariRepository.save(itvari);
             seqList.add(seq);
+            jpaItvariRepository.save(itvari);
         }
         return itvariList;
     }
@@ -414,7 +414,6 @@ public class JpaGoodsService {
         }
 
         for(GoodsInsertRequestData.Attributes attribute : attributes){
-            String assortId = goodsInsertRequestData.getAssortId();
             List<Itvari> origItvariList = existItvariList.stream().filter(x->x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getSeq().equals(attribute.getSeq()))
                     .collect(Collectors.toList());
             Itvari itvari = origItvariList.size() > 0? origItvariList.get(0) : null;
@@ -537,20 +536,84 @@ public class JpaGoodsService {
      * @return List<Ititmm>
      */
     private List<Ititmm> saveItemList(GoodsInsertRequestData goodsInsertRequestData, List<Ititmm> existItitmmList, List<Itvari> itvariList) {
-        if(goodsInsertRequestData.getOptionUseYn().equals(StringFactory.getGbTwo())){
-            return saveSingleItem(goodsInsertRequestData);
-        }
-        Set<String> itemIdList = new HashSet<>();
-        for(Ititmm i : existItitmmList){
-            itemIdList.add(i.getItemId());
-        }
+        List<Ititmm> ititmmList;
 
-//        List<Itvari> itvariList = findAllItvari();
+        if(existItitmmList == null || existItitmmList.size() == 0){
+            ititmmList = this.insertItitmmList(goodsInsertRequestData, itvariList);
+        }
+        else{
+            ititmmList = this.updateItitmmList(goodsInsertRequestData, existItitmmList, itvariList);
+        }
+        return ititmmList;
+    }
+
+    /**
+     * 상품 insert 시 ititmm 저장
+     */
+    private List<Ititmm> insertItitmmList(GoodsInsertRequestData goodsInsertRequestData, List<Itvari> itvariList) {
+        List<Ititmm> ititmmList = this.saveSingleItem(goodsInsertRequestData);
+        if(goodsInsertRequestData.getOptionUseYn().equals(StringFactory.getGbTwo())){ // optionUseYn이 02, 즉 단품인 경우
+            return ititmmList; // 단품 옵션 1개를 저장하는 함수
+        }
+        List<GoodsInsertRequestData.Items> itemList = goodsInsertRequestData.getItems();
+        if(itemList.size() > 0){
+            ititmmList.get(0).setDelYn(StringFactory.getGbOne());
+            jpaItitmmRepository.save(ititmmList.get(0));
+        }
+        else{
+            return ititmmList;
+        }
+        Set<String> seqList = new HashSet<>();
+        seqList.add(ititmmList.get(0).getItemId());
+        for(GoodsInsertRequestData.Items items : itemList){
+            Ititmm ititmm = new Ititmm(goodsInsertRequestData);
+            String itemId = Utilities.plusOne(this.findMaxSeq(seqList),4);
+            ititmm.setItemId(itemId);
+            Itvari op1 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getOptionNm().equals(items.getVariationValue1()))
+                    .collect(Utilities.toSingleton());
+            if(op1 != null){
+                ititmm.setVariationGb1(op1.getOptionGb());
+                ititmm.setVariationSeq1(op1.getSeq());
+            }
+            // 옵션2 관련값 찾아넣기
+            Itvari op2 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getOptionNm().equals(items.getVariationValue2()))
+                    .collect(Utilities.toSingleton());
+            if(op2 != null){
+                ititmm.setVariationGb2(op2.getOptionGb());
+                ititmm.setVariationSeq2(op2.getSeq());
+            }
+            // 옵션3 관련값 찾아넣기
+            Itvari op3 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getOptionNm().equals(items.getVariationValue3()))
+                    .collect(Utilities.toSingleton());
+            if(op3 != null){
+                ititmm.setVariationGb3(op3.getOptionGb());
+                ititmm.setVariationSeq3(op3.getSeq());
+            }
+            ititmm.setAddPrice(items.getAddPrice() == null || items.getAddPrice().trim().equals("")? null : Float.parseFloat(items.getAddPrice()));
+            ititmm.setShortYn(items.getShortYn());
+            seqList.add(itemId);
+            jpaItitmmRepository.save(ititmm);
+        }
+        return ititmmList;
+    }
+
+    /**
+     * 상품 update 시 itimm 저장
+     */
+    private List<Ititmm> updateItitmmList(GoodsInsertRequestData goodsInsertRequestData, List<Ititmm> existItitmmList, List<Itvari> itvariList) {
         List<GoodsInsertRequestData.Items> itemList = goodsInsertRequestData.getItems();
         List<Ititmm> ititmmList = new ArrayList<>();
+        Set<String> itemIdList = new HashSet<>();
+        Set<String> removeItemIdList = new HashSet<>();
+        for(Ititmm i : existItitmmList){
+            itemIdList.add(i.getItemId());
+            removeItemIdList.add(i.getItemId());
+        }
+
         for(GoodsInsertRequestData.Items item : itemList){
+            List<Ititmm> origItitmmList = existItitmmList.stream().filter(x->x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getItemId().equals(item.getItemId())).collect(Collectors.toList());
+            Ititmm ititmm = origItitmmList.size() > 0? origItitmmList.get(0) : null;//jpaItitmmRepository.findByAssortIdAndItemId(goodsInsertRequestData.getAssortId(), itemId);
             String itemId = item.getItemId(); // item id를 객체가 갖고 있으면 그것을 이용
-            Ititmm ititmm = jpaItitmmRepository.findByAssortIdAndItemId(goodsInsertRequestData.getAssortId(), itemId);
 //            Ititmm ititmm = new Ititmm(goodsInsertRequestData.getAssortId(), item);
 //            if(itemId == null || itemId.trim().equals("")){ // 객체에 item id가 없으면 jpa에서 max값을 가져옴
             if(!itemIdList.contains(itemId) && !itemId.trim().equals("")){
@@ -567,6 +630,7 @@ public class JpaGoodsService {
                     itemId = Utilities.plusOne(itemId, 4);
                 }
                 ititmm.setItemId(itemId);
+                itemIdList.add(itemId);
             }
             else { // 존재하는 경우 : itvari 객체가 존재함이 보장됨 -> update
 //                itvari = existItvariList.stream().filter(x->x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getSeq().equals(attribute.getSeq()))
@@ -575,7 +639,7 @@ public class JpaGoodsService {
                     log.debug("delYn이 01이거나 itemId가 0001(단품)인 ititmm를 update할 수 없습니다.");
                     continue;
                 }
-                itemIdList.remove(itemId);
+                removeItemIdList.remove(itemId);
             }
 
             // 옵션1 관련값 찾아넣기
@@ -603,27 +667,27 @@ public class JpaGoodsService {
             ititmm.setShortYn(item.getShortYn());
 //            jpaItitmmRepository.save(ititmm);
 //            System.out.println("===== : " + ititmm.toString());
-            em.persist(ititmm);
+            jpaItitmmRepository.save(ititmm);
             ititmmList.add(ititmm);
         }
         for(Ititmm i : existItitmmList){
-            if(itemIdList.contains(i.getItemId())){
+            if(removeItemIdList.contains(i.getItemId())){
                 i.setDelYn(StringFactory.getGbOne());
             }
             jpaItitmmRepository.save(i);
         }
 
-//        int ititmmDelNo = 0;
-//        for(Ititmm i : ititmmList){
-//            if(i.getDelYn().equals(StringFactory.getGbTwo())){
-//                ititmmDelNo++;
-//            }
-//        }
-//        if(ititmmDelNo == 0){
-//            Ititmm singleItitmm = existItitmmList.stream().filter(x->x.getItemId().equals(StringFactory.getFourStartCd())).collect(Collectors.toList()).get(0);
-//            singleItitmm.setDelYn(StringFactory.getGbTwo());
-//            jpaItitmmRepository.save(singleItitmm);
-//        }
+        int ititmmDelNo = 0;
+        for(Ititmm i : ititmmList){
+            if(i.getDelYn().equals(StringFactory.getGbTwo())){
+                ititmmDelNo++;
+            }
+        }
+        if(ititmmDelNo == 0){
+            Ititmm singleItitmm = existItitmmList.stream().filter(x->x.getItemId().equals(StringFactory.getFourStartCd())).collect(Collectors.toList()).get(0);
+            singleItitmm.setDelYn(StringFactory.getGbTwo());
+            jpaItitmmRepository.save(singleItitmm);
+        }
         return ititmmList;
     }
 
@@ -861,8 +925,9 @@ public class JpaGoodsService {
                 item.setValue3(seq);
                 item.setStatus3(StringFactory.getStrR()); // r 하드코딩
             }
-            item.setAddPrice(ititmm.getAddPrice() + "");
+            item.setAddPrice(ititmm.getAddPrice() == null? null : ititmm.getAddPrice() + "");
 			item.setShortageYn(ititmm.getShortYn());
+            item = goodsSelectDetailResponseDataMapper.nullToEmpty(item);
             itemsList.add(item);
         }
         return itemsList;

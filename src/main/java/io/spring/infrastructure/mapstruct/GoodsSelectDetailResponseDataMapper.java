@@ -4,6 +4,8 @@ import io.spring.model.goods.response.GoodsSelectDetailResponseData;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface GoodsSelectDetailResponseDataMapper {
     @Mapping(target = "assortId", expression = "java(g.getAssortId() == null? \"\" : g.getAssortId())")
@@ -45,4 +47,18 @@ public interface GoodsSelectDetailResponseDataMapper {
     @Mapping(target = "asHeight", expression = "java(g.getAsHeight() == null? \"\" : g.getAsHeight())")
     @Mapping(target = "weight", expression = "java(g.getWeight() == null? \"\" : g.getWeight())")
     GoodsSelectDetailResponseData nullToEmpty(GoodsSelectDetailResponseData g);
+
+    @Mapping(target = "itemId", expression = "java(i.getItemId() == null? \"\" : i.getItemId())")
+    @Mapping(target = "seq1", expression = "java(i.getSeq1() == null? \"\" : i.getSeq1())")
+    @Mapping(target = "seq2", expression = "java(i.getSeq2() == null? \"\" : i.getSeq2())")
+    @Mapping(target = "seq3", expression = "java(i.getSeq3() == null? \"\" : i.getSeq3())")
+    @Mapping(target = "value1", expression = "java(i.getValue1() == null? \"\" : i.getValue1())")
+    @Mapping(target = "value2", expression = "java(i.getValue2() == null? \"\" : i.getValue2())")
+    @Mapping(target = "value3", expression = "java(i.getValue3() == null? \"\" : i.getValue3())")
+    @Mapping(target = "addPrice", expression = "java(i.getAddPrice() == null? \"\" : i.getAddPrice())")
+    @Mapping(target = "shortageYn", expression = "java(i.getShortageYn() == null? \"\" : i.getShortageYn())")
+    @Mapping(target = "status1", expression = "java(i.getStatus1() == null? \"\" : i.getStatus1())")
+    @Mapping(target = "status2", expression = "java(i.getStatus2() == null? \"\" : i.getStatus2())")
+    @Mapping(target = "status3", expression = "java(i.getStatus3() == null? \"\" : i.getStatus3())")
+    GoodsSelectDetailResponseData.Items nullToEmpty(GoodsSelectDetailResponseData.Items i);
 }
