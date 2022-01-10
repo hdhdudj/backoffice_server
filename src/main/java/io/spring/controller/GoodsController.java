@@ -116,7 +116,7 @@ public class GoodsController {
 	}
 
 	// jpa로 get list
-	@GetMapping(path="/items")
+	@GetMapping(path="/items/master")
 	public ResponseEntity getGoodsListJpa(@RequestParam @Nullable String shortageYn,
 										  @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate regDtBegin,
 										  @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam LocalDate regDtEnd,
@@ -163,7 +163,8 @@ public class GoodsController {
 	}
 
 	// 상품리스트조회(ititmm)
-	@GetMapping(path = "/goods-item-fullcategory")
+//	@GetMapping(path = "/goods-item-fullcategory")
+	@GetMapping(path = "/items/detail")
 	public ResponseEntity getGoodsItemWithCategory(@RequestParam(required = false) String assortId,
 			@RequestParam(required = false) String assortNm, @RequestParam(required = false) String vendorId,
 			@RequestParam(required = false) String brandId, @RequestParam(required = false) String category) {
