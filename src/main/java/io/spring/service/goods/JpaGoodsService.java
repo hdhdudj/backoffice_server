@@ -357,14 +357,60 @@ public class JpaGoodsService {
      * @return List<Itvari>
      */
     private List<Itvari> saveItvariList(GoodsInsertRequestData goodsInsertRequestData, List<Itvari> existItvariList) {
-        if(goodsInsertRequestData.getOptionUseYn().equals(StringFactory.getGbTwo())){ // optionUseYn이 02, 즉 단품인 경우
-            return saveSingleOption(goodsInsertRequestData); // 단품 옵션 1개를 저장하는 함수
+
+        List<Itvari> itvariList;
+        if(existItvariList == null || existItvariList.size() == 0){
+            itvariList = this.insertItvariList(goodsInsertRequestData);
         }
+        else{
+            itvariList = this.updateItvariList(goodsInsertRequestData, existItvariList);
+        }
+        return itvariList;
+    }
+
+    /**
+     * 상품 insert 시
+     */
+    private List<Itvari> insertItvariList(GoodsInsertRequestData goodsInsertRequestData) {
+        List<Itvari> itvariList = saveSingleOption(goodsInsertRequestData);
+        if(goodsInsertRequestData.getOptionUseYn().equals(StringFactory.getGbTwo())){ // optionUseYn이 02, 즉 단품인 경우
+            return itvariList; // 단품 옵션 1개를 저장하는 함수
+        }
+        List<GoodsInsertRequestData.Attributes> attributes = goodsInsertRequestData.getAttributes();
+        if(attributes.size() > 0){
+            itvariList.get(0).setDelYn(StringFactory.getGbOne());
+            jpaItvariRepository.save(itvariList.get(0));
+        }
+        else{
+            return itvariList;
+        }
+        Set<String> seqList = new HashSet<>();
+        seqList.add(itvariList.get(0).getSeq());
+        for(GoodsInsertRequestData.Attributes attribute : attributes){
+            Itvari itvari = new Itvari(goodsInsertRequestData);
+            String seq = Utilities.plusOne(this.findMaxSeq(seqList), 4);//jpaItvariRepository.findMaxSeqByAssortId(assortId);
+            itvari.setSeq(seq);
+            itvari.setOptionNm(attribute.getValue());
+            itvari.setOptionGb(attribute.getVariationGb());
+            itvari.setVariationGb(attribute.getVariationGb());
+            itvariList.add(itvari);
+            jpaItvariRepository.save(itvari);
+            seqList.add(seq);
+        }
+        return itvariList;
+    }
+
+    /**
+     * 상품 update 시
+     */
+    private List<Itvari> updateItvariList(GoodsInsertRequestData goodsInsertRequestData, List<Itvari> existItvariList) {
         List<GoodsInsertRequestData.Attributes> attributes = goodsInsertRequestData.getAttributes();
         List<Itvari> itvariList = new ArrayList<>();
         Set<String> seqList = new HashSet<>();
+        Set<String> removeSeqList = new HashSet<>();
         for(Itvari itvari : existItvariList){
             seqList.add(itvari.getSeq());
+            removeSeqList.add(itvari.getSeq());
         }
 
         for(GoodsInsertRequestData.Attributes attribute : attributes){
@@ -390,6 +436,7 @@ public class JpaGoodsService {
                     seq = Utilities.plusOne(seq, 4);
                 }
                 itvari.setSeq(seq);
+                seqList.add(seq);
             }
             else { // 존재하는 경우 : itvari 객체가 존재함이 보장됨 -> update
 //                itvari = existItvariList.stream().filter(x->x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getSeq().equals(attribute.getSeq()))
@@ -398,7 +445,7 @@ public class JpaGoodsService {
                     log.debug("delYn이 01이거나 seq가 0001(단품)인 itvari를 update할 수 없습니다.");
                     continue;
                 }
-                seqList.remove(seq);
+                removeSeqList.remove(seq);
             }
             itvari.setOptionNm(attribute.getValue());
             itvari.setOptionGb(attribute.getVariationGb());
@@ -407,13 +454,8 @@ public class JpaGoodsService {
             jpaItvariRepository.save(itvari);
         }
 
-        if(existItvariList == null || existItvariList.size() == 0){
-            log.debug("insert itvari");
-            return null;
-        }
-
         for(Itvari i : existItvariList){
-            if(seqList.contains(i.getSeq())){
+            if(removeSeqList.contains(i.getSeq())){
                 i.setDelYn(StringFactory.getGbOne());
             }
             jpaItvariRepository.save(i);
@@ -430,7 +472,6 @@ public class JpaGoodsService {
             singleItvari.setDelYn(StringFactory.getGbTwo());
             jpaItvariRepository.save(singleItvari);
         }
-
         return itvariList;
     }
 
@@ -484,7 +525,7 @@ public class JpaGoodsService {
 //        jpaItvariRepository.save(itvari);
         }
         itvari.setDelYn(StringFactory.getGbTwo()); // 02 하드코딩
-        em.persist(itvari);
+        jpaItvariRepository.save(itvari);
         itvariList.add(itvari);
         return itvariList;
     }
@@ -726,7 +767,7 @@ public class JpaGoodsService {
         Itasrt itasrt = em.createQuery("select distinct(i) from Itasrt i " +
 //                "left outer join fetch i.cmvdmr cv " +
 //                "left outer join fetch i.ifBrand ib " +
-//                "left outer join fetch i.itvariList ivList " +
+                "left outer join fetch i.itvariList ivList " +
                 "where i.assortId=?1", Itasrt.class).setParameter(1,assortId).getSingleResult();//jpaItasrtRepository.findById(assortId).orElseThrow(() -> new ResourceNotFoundException());
     	
 //		System.out.println(itasrt);

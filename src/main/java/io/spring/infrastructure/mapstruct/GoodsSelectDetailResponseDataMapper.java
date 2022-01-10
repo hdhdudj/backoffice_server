@@ -40,5 +40,9 @@ public interface GoodsSelectDetailResponseDataMapper {
     @Mapping(target = "optionUseYn", expression = "java(g.getOptionUseYn() == null? \"\" : g.getOptionUseYn())")
     @Mapping(target = "brandNm", expression = "java(g.getBrandNm() == null? \"\" : g.getBrandNm())")
     @Mapping(target = "vendorNm", expression = "java(g.getVendorNm() == null? \"\" : g.getVendorNm())")
+    @Mapping(target = "asWidth", expression = "java(g.getAsWidth() == null? \"\" : g.getAsWidth())")
+    @Mapping(target = "asLength", expression = "java(g.getAsLength() == null? \"\" : g.getAsLength())")
+    @Mapping(target = "asHeight", expression = "java(g.getAsHeight() == null? \"\" : g.getAsHeight())")
+    @Mapping(target = "weight", expression = "java(g.getWeight() == null? \"\" : g.getWeight())")
     GoodsSelectDetailResponseData nullToEmpty(GoodsSelectDetailResponseData g);
 }

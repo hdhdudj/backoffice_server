@@ -63,14 +63,13 @@ public class GoodsSelectDetailResponseData {
 
         this.sellStaDt= Utilities.removeTAndTransToStr(itasrt.getSellStaDt());
         this.sellEndDt=Utilities.removeTAndTransToStr(itasrt.getSellEndDt());
-        
-        
-        this.asWidth=itasrt.getAsWidth() + "";
-        this.asLength=itasrt.getAsLength() + "";
-        this.asHeight=itasrt.getAsHeight() + "";
-        this.weight=itasrt.getWeight() + "";
-        this.deliPrice = itasrt.getDeliPrice() + "";
-        
+
+        this.deliPrice = itasrt.getDeliPrice() == null ? null : Float.toString(itasrt.getDeliPrice());
+        this.asWidth = itasrt.getAsWidth() == null ? null : Float.toString(itasrt.getAsWidth());
+        this.asLength = itasrt.getAsLength() == null ? null : Float.toString(itasrt.getAsLength());
+        this.asHeight = itasrt.getAsHeight() == null ? null : Float.toString(itasrt.getAsHeight());
+        this.weight = itasrt.getWeight() == null ? null : Float.toString(itasrt.getWeight());
+
 		this.buyTax = itasrt.getBuyTax();
 		this.mdTax = itasrt.getMdTax();
 		this.vendorId = itasrt.getVendorId();
