@@ -28,7 +28,7 @@ public class GoodsSelectListResponseData {
             this.brandId = itasrt.getBrandId();
             this.dispCategoryId = itasrt.getDispCategoryId();
 //            this.brandNm = itasrt.getIfBrand().getBrandNm(); 바깥에서 set
-            this.categoryNm = itasrt.getItcatg().getCategoryNm();
+            this.categoryNm = itasrt.getCategoryId() == null || itasrt.getCategoryId().trim().equals("")? "" : itasrt.getItcatg().getCategoryNm();
         }
         private String assortNm;
         private String brandNm;

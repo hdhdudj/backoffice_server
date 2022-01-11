@@ -80,7 +80,7 @@ public class GoodsController {
 		return null;
 	}
 	
-	@PostMapping(path = "/savebyjpa")
+	@PostMapping(path = "/save")
 	public ResponseEntity saveGoodsJpa(@RequestBody GoodsInsertRequestData goodsInsertRequestData) {
 		log.debug("save(insert or update) goods by jpa");
 		System.out.println(goodsInsertRequestData.toString());
@@ -116,7 +116,7 @@ public class GoodsController {
 	}
 
 	// jpa로 get list
-	@GetMapping(path="/getgoodslistjpa")
+	@GetMapping(path="/items/master")
 	public ResponseEntity getGoodsListJpa(@RequestParam @Nullable String shortageYn,
 										  @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate regDtBegin,
 										  @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam LocalDate regDtEnd,
@@ -136,6 +136,7 @@ public class GoodsController {
 	}
 
 	// 상품리스트조회(ititmm)
+//	@GetMapping(path = "/goods-item")
 	@GetMapping(path = "/goods-item")
 	public ResponseEntity getGoodsItem(@RequestParam String shortageYn,
 			@RequestParam(required = false) String assortId, @RequestParam(required = false) String assortNm,
@@ -163,7 +164,8 @@ public class GoodsController {
 	}
 
 	// 상품리스트조회(ititmm)
-	@GetMapping(path = "/goods-item-fullcategory")
+//	@GetMapping(path = "/goods-item-fullcategory")
+	@GetMapping(path = "/items/detail")
 	public ResponseEntity getGoodsItemWithCategory(@RequestParam(required = false) String assortId,
 			@RequestParam(required = false) String assortNm, @RequestParam(required = false) String vendorId,
 			@RequestParam(required = false) String brandId, @RequestParam(required = false) String category) {

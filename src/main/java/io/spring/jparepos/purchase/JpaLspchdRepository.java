@@ -53,4 +53,47 @@ public interface JpaLspchdRepository extends JpaRepository<Lspchd, LspchdId> {
 			+ "and bb.purchase_status ='01' ", nativeQuery = true)
 	List<Lspchd> findItemByOrderIdAndOrderSeq(@Param("orderId") String orderId, @Param("orderSeq") String orderSeq);
 
+
+    /**
+     * lspchd 조건 검색 쿼리로 lspchd의 리스트를 가져오는 함수
+     */
+    @Query("select distinct(ld) from Lspchd ld " +
+            "join fetch ld.lspchm lm " +
+            "left outer join fetch ld.tbOrderDetail tod " +
+            "left outer join fetch tod.tbOrderMaster tom " +
+            "left outer join fetch tom.tbMember tm " +
+            "left outer join fetch ld.ititmm itm " +
+            "left outer join fetch itm.itasrt ita " +
+            "left outer join fetch ita.ifBrand ib " +
+            "left outer join fetch ita.itvariList iv " +
+            "where lm.purchaseDt between :start and :end " +
+//                "and (tod.statusCd in ('B01','C03') or lm.dealtypeCd='02') " +
+            "and (:vendorId is null or trim(:vendorId)='' or ld.lspchm.vendorId=:vendorId) " +
+            "and (:vendorId is null or trim(:vendorId)='' or ld.lspchm.vendorId=:vendorId) " +
+            "and (:assortId is null or trim(:assortId)='' or ld.assortId=:assortId) "+
+            "and (:purchaseStatus is null or trim(:purchaseStatus)='' or ld.lspchm.purchaseStatus=:purchaseStatus) "+
+            "and (:purchaseGb is null or trim(:purchaseGb)='' or ld.lspchm.purchaseGb=:purchaseGb) " +
+            "and (:dealtypeCd is null or trim(:dealtypeCd)='' or ld.lspchm.dealtypeCd=:dealtypeCd) " +
+            "and (:purchaseNo is null or trim(:purchaseNo)='' or ld.purchaseNo=:purchaseNo) " +
+            "and (:siteOrderNo is null or trim(:siteOrderNo)='' or lm.siteOrderNo=:siteOrderNo) " +
+            "and (:custNm is null or trim(:custNm)='' or tm.custNm like concat('%',:custNm,'%')) " +
+            "and (:brandId is null or trim(:brandId)='' or ib.brandId=:brandId) " +
+            "and (:itemNm is null or trim(:itemNm)='' or itm.itemNm like concat('%',:itemNm,'%')) " +
+            "and (:unifiedOrderNo is null or trim(:unifiedOrderNo)='' or tom.channelOrderNo=:unifiedOrderNo or tom.orderId=:unifiedOrderNo) " +
+            "and (:orderName is null or trim(:orderName)='' or tom.orderName=:orderName)")
+    List<Lspchd> getLspchdList(@Param("start") LocalDateTime start,
+                               @Param("end") LocalDateTime end,
+                               @Param("vendorId") String vendorId,
+                               @Param("assortId") String assortId,
+                               @Param("purchaseStatus") String purchaseStatus,
+                               @Param("purchaseGb") String purchaseGb,
+                               @Param("dealtypeCd") String dealtypeCd,
+                               @Param("purchaseNo") String purchaseNo,
+                               @Param("siteOrderNo") String siteOrderNo,
+                               @Param("custNm") String custNm,
+                               @Param("brandId") String brandId,
+                               @Param("itemNm") String itemNm,
+                               @Param("unifiedOrderNo") String unifiedOrderNo,
+                               @Param("orderName") String orderName
+    );
 }

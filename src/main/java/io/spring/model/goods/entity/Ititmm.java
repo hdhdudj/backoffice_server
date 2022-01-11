@@ -78,7 +78,7 @@ public class Ititmm extends CommonProps implements Serializable {
     private Itasrt itasrt;
 
     // itvari 연관 관계 (일단 단방향) - 색상
-    @NotFound(action = NotFoundAction.IGNORE)
+//    @NotFound(action = NotFoundAction.IGNORE)
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Itvari.class)
     @JoinColumns({
             @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
@@ -87,7 +87,7 @@ public class Ititmm extends CommonProps implements Serializable {
     private Itvari itvari1;
 
     // itvari 연관 관계 (일단 단방향) - 사이즈
-    @NotFound(action = NotFoundAction.IGNORE)
+//    @NotFound(action = NotFoundAction.IGNORE)
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Itvari.class)
     @JoinColumns({
             @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
@@ -96,7 +96,7 @@ public class Ititmm extends CommonProps implements Serializable {
     private Itvari itvari2;
 
     // itvari 연관 관계 (일단 단방향) - 재질
-    @NotFound(action = NotFoundAction.IGNORE)
+//    @NotFound(action = NotFoundAction.IGNORE)
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Itvari.class)
     @JoinColumns({
             @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),

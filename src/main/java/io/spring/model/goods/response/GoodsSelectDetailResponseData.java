@@ -12,6 +12,7 @@ import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.entity.Itaimg;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Itvari;
+import io.spring.model.vendor.entity.Cmvdmr;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -62,20 +63,18 @@ public class GoodsSelectDetailResponseData {
 
         this.sellStaDt= Utilities.removeTAndTransToStr(itasrt.getSellStaDt());
         this.sellEndDt=Utilities.removeTAndTransToStr(itasrt.getSellEndDt());
-        
-        
-        this.asWidth=itasrt.getAsWidth() + "";
-        this.asLength=itasrt.getAsLength() + "";
-        this.asHeight=itasrt.getAsHeight() + "";
-        this.weight=itasrt.getWeight() + "";
-        this.deliPrice = itasrt.getDeliPrice() + "";
-        
+
+        this.deliPrice = itasrt.getDeliPrice() == null ? null : Float.toString(itasrt.getDeliPrice());
+        this.asWidth = itasrt.getAsWidth() == null ? null : Float.toString(itasrt.getAsWidth());
+        this.asLength = itasrt.getAsLength() == null ? null : Float.toString(itasrt.getAsLength());
+        this.asHeight = itasrt.getAsHeight() == null ? null : Float.toString(itasrt.getAsHeight());
+        this.weight = itasrt.getWeight() == null ? null : Float.toString(itasrt.getWeight());
+
 		this.buyTax = itasrt.getBuyTax();
 		this.mdTax = itasrt.getMdTax();
 		this.vendorId = itasrt.getVendorId();
-
+        System.out.println(itasrt.getVendorId());
 //		this.brandNm = (itasrt.getIfBrand() != null ? itasrt.getIfBrand().getBrandNm() : ""); 바깥에서 set
-		this.vendorNm = (itasrt.getVendorId() != null && !itasrt.getVendorId().trim().equals("")? itasrt.getCmvdmr().getVdNm() : null);
 
 		this.optionUseYn = itasrt.getOptionUseYn();
 		
