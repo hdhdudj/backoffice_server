@@ -991,9 +991,18 @@ public class JpaGoodsService {
                 .setParameter(3, shortageYn).setParameter(4,assortId).setParameter(5,assortNm);
         List<Itasrt> itasrtList = query.getResultList();
         List<GoodsSelectListResponseData.Goods> goodsList = new ArrayList<>();
+        List<IfBrand> brandList;
+        List<String> brandIdList = new ArrayList<>();
+        for(Itasrt itasrt : itasrtList){
+            if(!brandIdList.contains(itasrt.getBrandId())){
+                brandIdList.add(itasrt.getBrandId());
+            }
+        }
+        brandList = jpaIfBrandRepository.findByBrandIdListByChannelIdAndBrandIdList(StringFactory.getGbOne(), brandIdList);
         for(Itasrt itasrt : itasrtList){
             GoodsSelectListResponseData.Goods goods = new GoodsSelectListResponseData.Goods(itasrt);
-            IfBrand ifBrand = jpaIfBrandRepository.findByChannelGbAndChannelBrandId(StringFactory.getGbOne(),itasrt.getBrandId()); // 채널은 01 하드코딩
+            List<IfBrand> brandList1 = brandList.stream().filter(x->x.getBrandId().equals(itasrt.getBrandId())).collect(Collectors.toList());
+            IfBrand ifBrand = brandList1 == null || brandList1.size() == 0? null : brandList1.get(0);//jpaIfBrandRepository.findByChannelGbAndChannelBrandId(StringFactory.getGbOne(),itasrt.getBrandId()); // 채널은 01 하드코딩
             goods.setBrandNm(ifBrand==null? null:ifBrand.getBrandNm());
             goodsList.add(goods);
         }
