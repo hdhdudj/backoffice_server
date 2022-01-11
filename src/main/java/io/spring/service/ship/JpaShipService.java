@@ -602,7 +602,7 @@ public class JpaShipService {
 
 	private void updateLsshps(Lsshpm lsshpm) {
 		Lsshps lsshps = jpaLsshpsRepository.findByShipIdAndEffEndDt(lsshpm.getShipId(),
-				Utilities.strToLocalDateTime(StringFactory.getDoomDay()));
+				Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
 		Lsshps newLsshps = new Lsshps(lsshpm);
 		lsshps.setEffEndDt(LocalDateTime.now());
 		jpaLsshpsRepository.save(lsshps);
