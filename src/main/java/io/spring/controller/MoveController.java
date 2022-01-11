@@ -238,7 +238,7 @@ public class MoveController {
     /**
      * 이동리스트 화면에서 엑셀 업로드한 값 저장
      */
-    @PostMapping(path = "/items")
+    @PostMapping(path = "/excel")
     public ResponseEntity saveExcelList(@RequestBody MoveListExcelRequestData moveListExcelRequestData){
         MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.saveExcelList(moveListExcelRequestData);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveCompletedLIstReponseData);

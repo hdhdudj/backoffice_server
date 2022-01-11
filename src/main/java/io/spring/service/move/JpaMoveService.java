@@ -971,30 +971,8 @@ public class JpaMoveService {
 
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
-        TypedQuery<Lsshpd> query = em.createQuery("select distinct ld from Lsshpd ld " +
-                        "join fetch ld.lsshpm lm " +
-                        "left join fetch ld.tbOrderDetail td " +
-                        "join fetch ld.itasrt it " +
-                        "left join fetch it.ifBrand ib " +
-                        "left join fetch it.itvariList iv " +
-                        "where lm.receiptDt between ?1 and ?2 " +
-				"and lm.shipStatus=?8 " +
-                        "and (?3 is null or trim(?3)='' or ld.shipId=?3) " +
-                        "and (?4 is null or trim(?4)='' or ld.assortId=?4) " +
-                        "and (?5 is null or trim(?5)='' or it.assortNm like concat('%',?5,'%')) " +
-				"and (?6 is null or trim(?6)='' or lm.oStorageId=?6) "
-				+
-                        "and (?7 is null or trim(?7)='' or lm.delMethod=?7)" 
-                        
-                ,Lsshpd.class);
-        query.setParameter(1,start).setParameter(2,end).setParameter(3,shipId)
-                .setParameter(4,assortId).setParameter(5,assortNm)
-                .setParameter(6,storageId).setParameter(7,deliMethod)
-                .setParameter(8, shipStatus);
-        List<Lsshpd> lsshpdList = query.getResultList();
-        
+        List<Lsshpd> lsshpdList = jpaLsshpdRepository.findLsshpdMoveList(start, end, shipId, assortId, assortNm, storageId, deliMethod, shipStatus);
 
-        
         return lsshpdList;
     }
 
@@ -1053,15 +1031,15 @@ public class JpaMoveService {
     }
 
     /**
-     * 이동리스트 화면 - 엑셀에 값 입력 후 엑셀 업로드
+     * 이동리스트 화면 - 엑셀에 값 입력 후 엑셀 업로드로 특정 컬럼들 값 저장
      */
+    @Transactional
     public MoveCompletedLIstReponseData saveExcelList(MoveListExcelRequestData moveListExcelRequestData) {
         List<MoveListExcelRequestData.Move> moveList = moveListExcelRequestData.getMoves();
         List<String> shipIdList = new ArrayList<>();
         for(MoveListExcelRequestData.Move move : moveList){
             shipIdList.add(move.getShipId());
         }
-        MoveCompletedLIstReponseData moveCompletedLIstReponseData = new MoveCompletedLIstReponseData(moveListExcelRequestData);
         List<Lsshpm> lsshpmList = jpaLsshpmRepository.findShipMasterListByShipIdList(shipIdList);
         for(MoveListExcelRequestData.Move move : moveList){
             List<Lsshpm> lsshpmList1 = lsshpmList.stream().filter(x->x.getShipId().equals(move.getShipId())).collect(Collectors.toList());

@@ -68,4 +68,26 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
     List<Lsshpd> findPurchaseList(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end,
                                   @Param("vendorId") String vendorId, @Param("storeCd") String storeCd,
                                   @Param("blNo") String blNo, @Param("statusArr") List<String> statusArr);
+
+    @Query("select distinct ld from Lsshpd ld " +
+            "join fetch ld.lsshpm lm " +
+            "left join fetch ld.tbOrderDetail td " +
+            "join fetch ld.itasrt it " +
+            "left join fetch it.ifBrand ib " +
+            "left join fetch it.itvariList iv " +
+            "where lm.receiptDt between :start and :end " +
+            "and lm.shipStatus=:shipStatus " +
+            "and (:shipId is null or trim(:shipId)='' or ld.shipId=:shipId) " +
+            "and (:assortId is null or trim(:assortId)='' or ld.assortId=:assortId) " +
+            "and (:assortNm is null or trim(:assortNm)='' or it.assortNm like concat('%',:assortNm,'%')) " +
+            "and (:storageId is null or trim(:storageId)='' or lm.oStorageId=:storageId) " +
+            "and (:deliMethod is null or trim(:deliMethod)='' or lm.delMethod=:deliMethod)")
+    List<Lsshpd> findLsshpdMoveList(@Param("start")LocalDateTime start,
+                                    @Param("end")LocalDateTime end,
+                                    @Param("shipId")String shipId,
+                                    @Param("assortId")String assortId,
+                                    @Param("assortNm")String assortNm,
+                                    @Param("storageId")String storageId,
+                                    @Param("deliMethod")String deliMethod,
+                                    @Param("shipStatus")String shipStatus);
 }

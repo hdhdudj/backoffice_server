@@ -2,7 +2,9 @@ package io.spring.model.move.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
@@ -25,10 +27,10 @@ import java.util.List;
 @Getter
 public class MoveListExcelRequestData {
         public MoveListExcelRequestData(){}
-        @JsonSerialize(using = LocalDateSerializer.class)
+        @JsonDeserialize(using = LocalDateDeserializer.class)
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         private LocalDate startDt;
-        @JsonSerialize(using = LocalDateSerializer.class)
+        @JsonDeserialize(using = LocalDateDeserializer.class)
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         private LocalDate endDt;
         private String storageId;
@@ -87,10 +89,10 @@ public class MoveListExcelRequestData {
             //선적일자 : shipmentDt, BL번호 : blNo, 운송형태 : movementKd, 도착예정일자 : estiArrvDt, 컨테이너 종류 : containerKd, 컨테이너 수량 : containerQty
             private String blNo;
             private String movementKd;
-            @JsonSerialize(using = LocalDateSerializer.class)
+            @JsonDeserialize(using = LocalDateDeserializer.class)
             @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
             private LocalDate shipmentDt;
-            @JsonSerialize(using = LocalDateSerializer.class)
+            @JsonDeserialize(using = LocalDateDeserializer.class)
             @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
             private LocalDate estiArrvDt;
             private String containerKd;
