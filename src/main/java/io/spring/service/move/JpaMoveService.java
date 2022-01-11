@@ -17,6 +17,7 @@ import javax.transaction.Transactional;
 
 import io.spring.enums.TrdstOrderStatus;
 import io.spring.infrastructure.mapstruct.MoveCompletedListResponseDataMapper;
+import io.spring.model.move.request.MoveListExcelRequestData;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +44,6 @@ import io.spring.model.goods.entity.IfBrand;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmm;
-import io.spring.model.goods.entity.Itvari;
 import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.move.request.MoveListSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
@@ -118,16 +118,16 @@ public class JpaMoveService {
 //        return orderMoveListDataListResponse;
 //    }
 
-    // lspchd에 tbOrderDetail과 itasrt를 엮어 가져오는 쿼리
-    private Lspchd getLsdpsdTbOrderDetailLspchd(String orderId, String orderSeq) {
-        TypedQuery<Lspchd> query = em.createQuery("select lspchd from Lspchd lspchd " +
-                "join fetch lspchd.tbOrderDetail td " +
-                "join fetch td.itasrt it " +
-                "where lspchd.orderId=?1 and lspchd.orderSeq=?2", Lspchd.class);
-        query.setParameter(1,orderId).setParameter(2,orderSeq);
-        Lspchd lspchd = query.getSingleResult();
-        return lspchd;
-    }
+//    // lspchd에 tbOrderDetail과 itasrt를 엮어 가져오는 쿼리
+//    private Lspchd getLsdpsdTbOrderDetailLspchd(String orderId, String orderSeq) {
+//        TypedQuery<Lspchd> query = em.createQuery("select lspchd from Lspchd lspchd " +
+//                "join fetch lspchd.tbOrderDetail td " +
+//                "join fetch td.itasrt it " +
+//                "where lspchd.orderId=?1 and lspchd.orderSeq=?2", Lspchd.class);
+//        query.setParameter(1,orderId).setParameter(2,orderSeq);
+//        Lspchd lspchd = query.getSingleResult();
+//        return lspchd;
+//    }
 
     /**
      * 주문 이동지시 화면에서 검색에 맞는 TbOrderDetail들을 가져오는 함수
@@ -1050,6 +1050,37 @@ public class JpaMoveService {
         }
         movedDetailResponseData.setMoves(moveList);
         return movedDetailResponseData;
+    }
+
+    /**
+     * 이동리스트 화면 - 엑셀에 값 입력 후 엑셀 업로드
+     */
+    public MoveCompletedLIstReponseData saveExcelList(MoveListExcelRequestData moveListExcelRequestData) {
+        List<MoveListExcelRequestData.Move> moveList = moveListExcelRequestData.getMoves();
+        List<String> shipIdList = new ArrayList<>();
+        for(MoveListExcelRequestData.Move move : moveList){
+            shipIdList.add(move.getShipId());
+        }
+        MoveCompletedLIstReponseData moveCompletedLIstReponseData = new MoveCompletedLIstReponseData(moveListExcelRequestData);
+        List<Lsshpm> lsshpmList = jpaLsshpmRepository.findShipMasterListByShipIdList(shipIdList);
+        for(MoveListExcelRequestData.Move move : moveList){
+            List<Lsshpm> lsshpmList1 = lsshpmList.stream().filter(x->x.getShipId().equals(move.getShipId())).collect(Collectors.toList());
+            if(lsshpmList1.size() == 0){
+                log.debug(move.getShipId() + "인 lsshpm은 존재하지 않습니다.");
+                continue;
+            }
+            Lsshpm lsshpm = lsshpmList1.get(0);
+            lsshpm.setBlNo(move.getBlNo() == null? null : move.getBlNo());
+            lsshpm.setMovementKd(move.getMovementKd() == null? null : move.getMovementKd());
+            lsshpm.setShipmentDt(move.getShipmentDt() == null? null : move.getShipmentDt());
+            lsshpm.setEstiArrvDt(move.getEstiArrvDt() == null? null : move.getEstiArrvDt());
+            lsshpm.setContainerKd(move.getContainerKd() == null? null : move.getContainerKd());
+            lsshpm.setContainerQty(move.getContainerQty() == null? null : move.getContainerQty());
+            jpaLsshpmRepository.save(lsshpm);
+        }
+        em.flush();
+        em.clear();
+        return this.getMovedList(moveListExcelRequestData.getStartDt(), moveListExcelRequestData.getEndDt(), moveListExcelRequestData.getShipId(), moveListExcelRequestData.getAssortId(), moveListExcelRequestData.getAssortNm(), moveListExcelRequestData.getStorageId());
     }
 
 

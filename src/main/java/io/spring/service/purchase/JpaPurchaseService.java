@@ -541,6 +541,7 @@ public class JpaPurchaseService {
         for(Lspchd lspchd : lspchdList){
             Ititmm ititmm = lspchd.getItitmm();
             Itasrt itasrt = ititmm.getItasrt();
+//            System.out.println("----- "+ ititmm.getAssortId() + " : " + ititmm.getVariationSeq2() + ", " + ititmm.getVariationSeq3());
             List<Itaimg> imgList = itasrt.getItaimg();
             if(imgList != null){
                 imgList = imgList.stream().filter(x->x.getImageGb().equals(StringFactory.getGbOne())).collect(Collectors.toList());
@@ -551,8 +552,12 @@ public class JpaPurchaseService {
             PurchaseSelectDetailResponseData.Items item = new PurchaseSelectDetailResponseData.Items(lspchd, ititmm, itasrt, imgList.size() == 0? null : imgList.get(0));
             List<Itvari> itvariList = new ArrayList<>();
             itvariList.add(ititmm.getItvari1());
-            itvariList.add(ititmm.getItvari2());
-            itvariList.add(ititmm.getItvari3());
+            if(ititmm.getVariationSeq2() != null){
+                itvariList.add(ititmm.getItvari2());
+            }
+            if(ititmm.getVariationSeq3() != null){
+                itvariList.add(ititmm.getItvari3());
+            }
             Utilities.setOptionNames(item, itvariList); // optionNm set
             if (lspchd.getLspchm().getDealtypeCd().equals(StringFactory.getGbOne()) && ((lspchd.getOrderId() != null && !lspchd.getOrderId().trim().equals("")) && lspchd.getOrderSeq() != null && !lspchd.getOrderSeq().trim().equals(""))) { // 주문발주인 경우
                 TbOrderDetail tbOrderDetail = lspchd.getTbOrderDetail();

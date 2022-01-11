@@ -633,8 +633,6 @@ public class JpaGoodsService {
                 itemIdList.add(itemId);
             }
             else { // 존재하는 경우 : itvari 객체가 존재함이 보장됨 -> update
-//                itvari = existItvariList.stream().filter(x->x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getSeq().equals(attribute.getSeq()))
-//                        .collect(Collectors.toList()).get(0);//jpaItvariRepository.findByAssortIdAndSeq(goodsInsertRequestData.getAssortId(), seq);
                 if(ititmm.getDelYn().equals(StringFactory.getGbOne()) || ititmm.getItemId().equals(StringFactory.getFourStartCd())){ // 삭제된 상태거나 seq 0001인 itvari는 수정x
                     log.debug("delYn이 01이거나 itemId가 0001(단품)인 ititmm를 update할 수 없습니다.");
                     continue;
