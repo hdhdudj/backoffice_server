@@ -15,6 +15,7 @@ import io.spring.model.goods.response.GoodsSelectDetailResponseData;
 import io.spring.model.goods.response.GoodsSelectListResponseData;
 import io.spring.model.vendor.entity.Cmvdmr;
 import io.spring.service.file.FileService;
+import jdk.vm.ci.meta.Local;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -974,22 +975,15 @@ public class JpaGoodsService {
     public GoodsSelectListResponseData getGoodsList(String shortageYn, LocalDate regDtBegin, LocalDate regDtEnd, String assortId, String assortNm) {
         boolean isAssortIdExist = assortId != null && !assortId.trim().equals("");
         boolean isAssortNmExist = assortNm != null && !assortNm.trim().equals("");
+
         LocalDateTime start = isAssortIdExist || isAssortNmExist? null : regDtBegin.atStartOfDay();
         LocalDateTime end = isAssortIdExist || isAssortNmExist? null : regDtEnd.atTime(23,59,59);
         GoodsSelectListResponseData goodsSelectListResponseData = new GoodsSelectListResponseData(shortageYn, regDtBegin, regDtEnd, assortId, assortNm);
-        TypedQuery<Itasrt> query =
-                em.createQuery("select t from Itasrt t " +
-                                "left join fetch t.itcatg c " +
-                                "where t.regDt " +
-                                "between COALESCE(?1, '0000-01-01 00:00:00') and COALESCE(?2, '9999-12-31 23:59:59') " +
-                                "and (?3 is null or trim(?3)='' or t.shortageYn = ?3) " +
-                                "and (?4 is null or trim(?4)='' or t.assortId = ?4) " +
-                                "and (?5 is null or trim(?5)='' or t.assortNm like concat('%',?5,'%'))"
-                        , Itasrt.class);
-        query.setParameter(1, start)
-                .setParameter(2, end)
-                .setParameter(3, shortageYn).setParameter(4,assortId).setParameter(5,assortNm);
-        List<Itasrt> itasrtList = query.getResultList();
+
+        LocalDateTime oldDay = Utilities.strToLocalDateTime(StringFactory.getOldDayT());
+        LocalDateTime doomsDay = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());
+
+        List<Itasrt> itasrtList = jpaItasrtRepository.findMasterList(start, end, shortageYn, assortId, assortNm, oldDay, doomsDay);//query.getResultList();
         List<GoodsSelectListResponseData.Goods> goodsList = new ArrayList<>();
         if(itasrtList.size() == 0){
             log.debug("검색 조건을 만족하는 상품이 존재하지 않습니다.");

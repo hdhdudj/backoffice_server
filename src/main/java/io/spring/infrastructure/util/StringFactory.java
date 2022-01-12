@@ -76,6 +76,10 @@ public class StringFactory {
     @Getter
     private final static String doomDayT = "9999-12-31T23:59:59";
     @Getter
+    private final static String oldDay = "0000-01-01 00:00:00";
+    @Getter
+    private final static String oldDayT = "0000-01-01T00:00:00";
+    @Getter
     private final static String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
     // 한글
