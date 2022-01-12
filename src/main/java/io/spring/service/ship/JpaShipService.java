@@ -529,7 +529,7 @@ public class JpaShipService {
      * 출고 - 출고내역 : shipId를 받아 출고내역을 반환
      */
     public ShipItemListData getShipIndicateDetailList(String shipId) {
-		List<Lsshpd> lsshpdList = jpaLsshpdRepository.findShipListByPurchaseNo(shipId);
+		List<Lsshpd> lsshpdList = jpaLsshpdRepository.findShipListByShipId(shipId);
 		Lsshpm lsshpm;
 		if(lsshpdList.size() > 0){
 			lsshpm = lsshpdList.get(0).getLsshpm();

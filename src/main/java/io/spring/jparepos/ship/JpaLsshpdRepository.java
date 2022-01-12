@@ -16,7 +16,7 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
     Lsshpd findByShipIdAndShipSeq(String shipId, String shipSeq);
 
     /**
-     * 출고리스트 가져오는 쿼리
+     * 출고내역 가져오는 쿼리
      */
     @Query("select distinct(lsshpd) from Lsshpd lsshpd " +
             "join fetch lsshpd.tbOrderDetail tod " +
@@ -28,8 +28,8 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
             "join fetch itm.itvari1 iv1 " +
             "left outer join fetch itm.itvari2 iv2 " +
             "left outer join fetch itm.itvari3 iv3 " +
-            "where lsshpd.purchaseNo = :purchaseNo")
-    List<Lsshpd> findShipListByPurchaseNo(@Param("purchaseNo") String purchaseNo);
+            "where lsshpd.shipId = :shipId")
+    List<Lsshpd> findShipListByShipId(@Param("shipId") String shipId);
 
     /**
      * 출고리스트 가져오는 쿼리
