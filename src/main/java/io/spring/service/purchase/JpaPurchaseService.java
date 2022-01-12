@@ -713,6 +713,11 @@ public class JpaPurchaseService {
 //        else{
             this.updateLsdpspWhenCandidateExist(lsdpsp, lspchd, tbOrderDetail);
         }
+        else{
+            lsdpsp.setOrderId(tbOrderDetail.getOrderId());
+            lsdpsp.setOrderSeq(tbOrderDetail.getOrderSeq());
+            jpaLsdpspRepository.save(lsdpsp);
+        }
 //        this.updateLspchbd(lsdpsp.getLspchd(), tbOrderDetail.getQty());
         // lspchm, s 저장
 //        this.updateLspchs(lsdpsp.getPurchaseNo(), StringFactory.getGbOne()); // 01 하드코딩
@@ -736,6 +741,8 @@ public class JpaPurchaseService {
         long qty = tbOrderDetail.getQty();
         lsdpsp.setPurchasePlanQty(lsdpsp.getPurchasePlanQty() - qty);
         Lsdpsp newLsdpsp = new Lsdpsp(this.getDepositPlanId(), lsdpsp);
+        newLsdpsp.setOrderId(tbOrderDetail.getOrderId());
+        newLsdpsp.setOrderSeq(tbOrderDetail.getOrderSeq());
         newLsdpsp.setPurchaseTakeQty(0l);
         newLsdpsp.setPurchasePlanQty(qty);
         newLsdpsp.setPurchaseNo(lspchd.getPurchaseNo());
@@ -850,7 +857,7 @@ public class JpaPurchaseService {
 	        log.debug("purchaseStatus를 변경할 lsdpsp가 존재하지 않습니다.");
 	        return null;
         }
-        List<Lsdpsp> newLsdpspList = jpaLsdpspRepository.findByPurchaseNo(purchaseNo);
+//        List<Lsdpsp> newLsdpspList = jpaLsdpspRepository.findByPurchaseNo(purchaseNo);
         for(Lsdpsp lsdpsp : lsdpspList){
             long planQty = lsdpsp.getPurchasePlanQty();
             long takeQty = lsdpsp.getPurchaseTakeQty();

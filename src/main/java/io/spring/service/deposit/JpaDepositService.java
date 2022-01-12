@@ -113,13 +113,13 @@ public class JpaDepositService {
         this.saveLsdpds(lsdpsdList, depositListWithPurchaseInfoData);
         // 5. lsdpsp의 입고예정과 실제 입고량을 비교해 부분입고인지 완전입고인지 여부로 lspchm,b,s의 purchaseStatus 변경
         jpaPurchaseService.changePurchaseStatus(depositListWithPurchaseInfoData.getPurchaseNo(), lsdpspList);
-        // 8. tbOrderdetail 주문상태 변경 (lspchm.dealtypeCd = 01(주문발주) 일 때)
 
 		// 주문입고건에 대해 상태확인후 이동지시 또는 출고지시 처리
 
 		// jpaMoveService.saveOrderMoveByDeposit(lsdpsdList);
 		List<HashMap<String, Object>> retList = this.saveMoveOrShip(lsdpsdList);
 
+        // 8. tbOrderdetail 주문상태 변경 (lspchm.dealtypeCd = 01(주문발주) 일 때)
         this.changeStatusCdOfTbOrderDetail(lsdpspList);
 
         messageList.add(lsdpsm.getDepositNo());

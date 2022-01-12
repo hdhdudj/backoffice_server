@@ -14,4 +14,7 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
     Lsshpd findByShipIdAndShipSeq(String shipId, String shipSeq);
 
     List<Lsshpd> findByShipId(String shipId);
+
+    @Query("select lsd from Lsshpd lsd join fetch lsd.lsshpm lsm where lsm.shipOrderGb=?1 and lsd.assortId=?2 and lsd.itemId=?3")
+    Lsshpd getLssSeriesByShipOrderGbAndAssortIdAndItemId(String gbTwo, String assortId, String itemId);
 }

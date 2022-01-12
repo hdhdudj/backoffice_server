@@ -332,6 +332,10 @@ public class JpaOrderService {
             }
             else { // 물건이 국내(주문자위치)입고예정이라면
                 statusCd = StringFactory.getStrC03(); // 이동지시완료 : C03
+                Lsshpd lsshpd = jpaLsshpdRepository.getLssSeriesByShipOrderGbAndAssortIdAndItemId(StringFactory.getGbTwo(), tbOrderDetail.getAssortId(), tbOrderDetail.getItemId());
+                lsshpd.setOrderId(tbOrderDetail.getOrderId());
+                lsshpd.setOrderSeq(tbOrderDetail.getOrderSeq());
+                jpaLsshpdRepository.save(lsshpd);
             }
             jpaPurchaseService.makePurchaseDataByOrder(tbOrderDetail, di);
             return statusCd;

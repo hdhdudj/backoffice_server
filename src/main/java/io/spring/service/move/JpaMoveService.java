@@ -751,15 +751,18 @@ public class JpaMoveService {
         for(String shipId : shipNoSet){
             Lsshpd lsshpd = jpaLsshpdRepository.findByShipId(shipId).get(0);
 
-
-
 			Lsshpm lsshpm = jpaLsshpmRepository.findByShipId(lsshpd.getShipId());
             if(lsshpm == null){
                 log.debug("there's no data(lsshpm) of shipId : " + shipId);
                 continue;
             }
             if(lsshpm.getShipOrderGb().equals(StringFactory.getGbTwo())){ // 01 주문, 02 상품
-                log.debug("주문이동처리가 아닌 상품이동지시입니다.");
+                log.debug("주문이동처리 저장이 아닌 상품이동지시 저장입니다.");
+                if(lsshpd.getOrderId() != null){
+                    lsshpm.setShipOrderGb(StringFactory.getGbOne()); // 주문번호를 갖고 있으면 주문으로 변경
+                    this.updateLsshpms(lsshpm);
+
+                }
                 lsshpm.setShipStatus(StringFactory.getGbFour()); // 01 이동지시or출고지시 02 이동지시or출고지시 접수 04 출고
                 jpaLsshpmRepository.save(lsshpm);
                 continue;
@@ -817,6 +820,18 @@ public class JpaMoveService {
 		jpaPurchaseService.makePurchaseDataFromOrderMoveSave2(l2);
 
         return newShipIdList;
+    }
+
+    /**
+     * lsshpm의 상태가 변했을 때 lsshpm과 lsshps(이력)를 저장
+     */
+    private void updateLsshpms(Lsshpm lsshpm) {
+        Lsshps lsshps = jpaLsshpsRepository.findByShipIdAndEffEndDt(lsshpm.getShipId(), Utilities.getStringToDate(StringFactory.getDoomDay()));
+        lsshps.setEffEndDt(new Date());
+        Lsshps newLsshps = new Lsshps(lsshpm);
+        jpaLsshpmRepository.save(lsshpm);
+        jpaLsshpsRepository.save(lsshps);
+        jpaLsshpsRepository.save(newLsshps);
     }
 
     /**
