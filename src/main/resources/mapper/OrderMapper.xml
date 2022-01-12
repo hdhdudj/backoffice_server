@@ -521,11 +521,7 @@ select aa.channel_gb channelGb
 			]]>
 		</if>	
 	</select>	
-	
-	
-	
-	
-	
+
 		<select id="getOrderCancelList" parameterType="java.util.HashMap"  resultType="HashMap">
 	<![CDATA[
 		select aa.seq seq

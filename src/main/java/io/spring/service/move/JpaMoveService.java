@@ -1042,22 +1042,21 @@ public class JpaMoveService {
         }
         List<Lsshpm> lsshpmList = jpaLsshpmRepository.findShipMasterListByShipIdList(shipIdList);
         for(MoveListExcelRequestData.Move move : moveList){
-            List<Lsshpm> lsshpmList1 = lsshpmList.stream().filter(x->x.getShipId().equals(move.getShipId())).collect(Collectors.toList());
-            if(lsshpmList1.size() == 0){
+            if(lsshpmList.stream().filter(x->x.getShipId().equals(move.getShipId())).count() == 0){
                 log.debug(move.getShipId() + "인 lsshpm은 존재하지 않습니다.");
                 continue;
             }
-            Lsshpm lsshpm = lsshpmList1.get(0);
+            Lsshpm lsshpm = lsshpmList.stream().filter(x->x.getShipId().equals(move.getShipId())).collect(Collectors.toList()).get(0);//lsshpmList.get(0);
+            lsshpmList.remove(lsshpm);
             lsshpm.setBlNo(move.getBlNo() == null? null : move.getBlNo());
             lsshpm.setMovementKd(move.getMovementKd() == null? null : move.getMovementKd());
             lsshpm.setShipmentDt(move.getShipmentDt() == null? null : move.getShipmentDt());
             lsshpm.setEstiArrvDt(move.getEstiArrvDt() == null? null : move.getEstiArrvDt());
             lsshpm.setContainerKd(move.getContainerKd() == null? null : move.getContainerKd());
             lsshpm.setContainerQty(move.getContainerQty() == null? null : move.getContainerQty());
-            jpaLsshpmRepository.save(lsshpm);
+            jpaLsshpmRepository.saveAndFlush(lsshpm);
+            em.detach(lsshpm);
         }
-        em.flush();
-        em.clear();
         return this.getMovedList(moveListExcelRequestData.getStartDt(), moveListExcelRequestData.getEndDt(), moveListExcelRequestData.getShipId(), moveListExcelRequestData.getAssortId(), moveListExcelRequestData.getAssortNm(), moveListExcelRequestData.getStorageId());
     }
 

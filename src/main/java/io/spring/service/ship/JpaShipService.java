@@ -529,11 +529,18 @@ public class JpaShipService {
      * 출고 - 출고내역 : shipId를 받아 출고내역을 반환
      */
     public ShipItemListData getShipIndicateDetailList(String shipId) {
-		Lsshpm lsshpm = jpaLsshpmRepository.findByShipId(shipId);
+		List<Lsshpd> lsshpdList = jpaLsshpdRepository.findShipListByPurchaseNo(shipId);
+		Lsshpm lsshpm;
+		if(lsshpdList.size() > 0){
+			lsshpm = lsshpdList.get(0).getLsshpm();
+		}
+		else{
+			log.debug("출고내역 : 해당 shipId에 해당하는 출고내역이 없습니다.");
+			return null;
+		}
         ShipItemListData shipItemListData = new ShipItemListData(lsshpm);
         TbOrderMaster tbOrderMaster = lsshpm.getTbOrderMaster();
         shipItemListData.setOrderDt(Utilities.removeTAndTransToStr(tbOrderMaster.getOrderDate()));
-        List<Lsshpd> lsshpdList = lsshpm.getLsshpdList();
         List<ShipItemListData.Ship> shipList = new ArrayList<>();
         for(Lsshpd lsshpd:lsshpdList){
             ShipItemListData.Ship ship = new ShipItemListData.Ship(lsshpd);

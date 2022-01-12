@@ -183,10 +183,10 @@ public class Lsshpm extends CommonProps {
     private Long containerQty; // 컨테이너 수량
 
 
-    // 연관관계 : Lsshpd
-    @OneToMany(fetch = FetchType.LAZY, targetEntity = Lsshpd.class)
-    @JoinColumn(name = "shipId", referencedColumnName = "shipId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
-    private List<Lsshpd> lsshpdList;
+//    // 연관관계 : Lsshpd
+//    @OneToMany(fetch = FetchType.LAZY, targetEntity = Lsshpd.class)
+//    @JoinColumn(name = "shipId", referencedColumnName = "shipId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+//    private List<Lsshpd> lsshpdList;
 
     // 연관관계 : TbOrderMaster
     @OneToOne(fetch = FetchType.LAZY, targetEntity = TbOrderMaster.class)
