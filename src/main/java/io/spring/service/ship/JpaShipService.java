@@ -11,6 +11,9 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import io.spring.infrastructure.mapstruct.ShipItemListDataMapper;
+import io.spring.model.goods.entity.Ititmm;
+import io.spring.model.goods.entity.Itvari;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
@@ -75,6 +78,7 @@ public class JpaShipService {
     private final EntityManager em;
 
 	private final ShipListDataResponseMapper shipListDataResponseMapper;
+	private final ShipItemListDataMapper shipItemListDataMapper;
 
     /**
      * 출고지시 화면에서 조건검색하면 리스트를 반환해주는 함수
@@ -543,11 +547,24 @@ public class JpaShipService {
         shipItemListData.setOrderDt(Utilities.removeTAndTransToStr(tbOrderMaster.getOrderDate()));
         List<ShipItemListData.Ship> shipList = new ArrayList<>();
         for(Lsshpd lsshpd:lsshpdList){
+			Itasrt itasrt = lsshpd.getItasrt();
+			Ititmm ititmm = lsshpd.getTbOrderDetail().getItitmm();
             ShipItemListData.Ship ship = new ShipItemListData.Ship(lsshpd);
+			ship.setAssortNm(itasrt.getAssortNm());
+			List<Itvari> itvariList = new ArrayList<>();
+			itvariList.add(ititmm.getItvari1());
+			if(ititmm.getVariationSeq2() != null){
+				itvariList.add(ititmm.getItvari2());
+			}
+			if(ititmm.getVariationSeq3() != null){
+				itvariList.add(ititmm.getItvari3());
+			}
             // option
-			Utilities.setOptionNames(ship, lsshpd.getTbOrderDetail().getItitmm().getItasrt().getItvariList());
-            shipList.add(ship);
-        }
+			Utilities.setOptionNames(ship, itvariList);
+			ship = shipItemListDataMapper.nullToEmpty(ship);
+			shipList.add(ship);
+		}
+		shipItemListData = shipItemListDataMapper.nullToEmpty(shipItemListData);
         shipItemListData.setShips(shipList);
         return shipItemListData;
     }
