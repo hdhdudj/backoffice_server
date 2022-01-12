@@ -20,4 +20,6 @@ public interface MyBatisOrderDao {
 
 	List<HashMap<String, Object>> getOrderDetailList(HashMap<String, Object> param);
 
+	List<HashMap<String, Object>> getOrderCancelList(HashMap<String, Object> param);
+
 }

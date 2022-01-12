@@ -3,10 +3,12 @@ package io.spring.model.goods.entity;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.file.FileVo;
+import io.spring.model.goods.request.GoodsInsertRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 
@@ -14,9 +16,10 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Table(name="itaimg")
+@BatchSize(size = 10)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Itaimg extends CommonProps {
-	  public Itaimg(String imageGb,FileVo f){
+	  public Itaimg(String imageGb, FileVo f){
 		  this.imageGb = imageGb;
 		  this.imageName = f.getFileName();
 		  this.imageOriginalName = f.getOriginalFileName();
@@ -25,7 +28,7 @@ public class Itaimg extends CommonProps {
 		  this.imageType= f.getFileType();
 		  this.imageStatus= StringFactory.getGbOne(); // 01 하드코딩
 	  }
-	 
+
 	  @Id
 	  @GeneratedValue(strategy = GenerationType.IDENTITY)
 	  private Long imageSeq;
@@ -37,4 +40,5 @@ public class Itaimg extends CommonProps {
 	  private Long imageSize;
 	  private String imageType;
 	  private String assortId;
+
 }

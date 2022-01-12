@@ -29,6 +29,9 @@ public class DepositSelectDetailResponseData {
 //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private String depositDt;
 	private String vendorId;
+
+    // 21-12-08 추가
+    private String memo;
 //    private String storeCd;
 //    private String depositStatus;
 //    private String depositVendorId;
@@ -53,6 +56,7 @@ public class DepositSelectDetailResponseData {
             this.itemId = lsdpsd.getItemId();
             this.extraUnitcost = lsdpsd.getExtraUnitcost();
             this.purchaseGb = lsdpsd.getLspchd().getLspchm().getPurchaseGb();
+            this.memo = lsdpsd.getMemo();
         }
         private String depositNo;
         private String depositSeq;
@@ -71,10 +75,13 @@ public class DepositSelectDetailResponseData {
         private String itemNm;
         private String optionNm1;
         private String optionNm2;
+        private String optionNm3;
 
 //        private String itemGrade;
         private Long depositQty;
         private Float extraUnitcost;
         private String depositStatus;
+        // 21-12-08 추가
+        private String memo;
     }
 }

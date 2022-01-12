@@ -71,7 +71,7 @@ public class JpaCategoryService {
 
 		List<HashMap<String, Object>> list1 = list;
 
-		System.out.println(rootCategoryId);
+		// System.out.println(rootCategoryId);
 
 		HashMap<String, Object> map = list.stream().filter(o -> o.get("category_id").toString().equals(rootCategoryId))
 				.findFirst().orElseGet(() -> null);
@@ -81,7 +81,7 @@ public class JpaCategoryService {
 			return null;
 		}
 
-		System.out.println(map);
+		// System.out.println(map);
 
 		String cat = map.get("category_id").toString();
 		String catNm = map.get("category_nm").toString();
@@ -98,7 +98,7 @@ public class JpaCategoryService {
 					.filter(o -> o.get("up_category_id").toString().equals(map.get("category_id").toString()));
 
 			s.forEach(o1 -> {
-				System.out.println(o1.get("category_nm"));
+				// System.out.println(o1.get("category_nm"));
 				CategoryTree c = findSubCategoryList(list1, o1.get("category_id").toString());
 				child.add(c);
 			});
@@ -131,7 +131,7 @@ public class JpaCategoryService {
 		catId = upCatId;
 		
 		while (upCatId != "A00000000")  {
-			System.out.println(catId);
+			// System.out.println(catId);
 			Itcatg itcatgT = jpaItcatgRepository.findById(catId).orElseGet(() -> null);
 			if(!itcatgT.getUpCategoryId().equals("A00000000")) {
 				a.addFirst(itcatgT.getCategoryId()); 
@@ -144,7 +144,7 @@ public class JpaCategoryService {
 	}
 
 	private CategoryTree findSubCategory(String rootCategoryId) {
-		System.out.println(rootCategoryId);
+		// System.out.println(rootCategoryId);
 
 
 		Itcatg itcatg = jpaItcatgRepository.findById(rootCategoryId).orElseGet(() -> null);
@@ -168,7 +168,7 @@ public class JpaCategoryService {
 		if (itcatg.getIsBottomYn().equals("02")) {
 			List<Itcatg> itcatgList = jpaItcatgRepository.findByUpCategoryId(rootCategoryId);
 			for (Itcatg o : itcatgList) {
-				System.out.println(o.getCategoryId());
+				// System.out.println(o.getCategoryId());
 				CategoryTree c = findSubCategory(o.getCategoryId());
 				child.add(c);
 			}

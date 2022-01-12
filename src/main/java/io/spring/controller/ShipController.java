@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
+import io.spring.enums.TrdstOrderStatus;
+import io.spring.model.ship.response.ShipListDataResponse;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -111,8 +113,8 @@ public class ShipController {
                                        @RequestParam @Nullable String channelId){
 //        Date start = java.sql.Timestamp.valueOf(startDt.atStartOfDay());
 //        Date end = java.sql.Timestamp.valueOf(endDt.atTime(23,59,59));
-		ShipIndicateListData shipIndicateListData = jpaShipService.getShipList(startDt, endDt, shipId, assortId,
-				assortNm, channelId, StringFactory.getStrD01(), "");
+		ShipIndicateListData shipIndicateListData = jpaShipService.getShipIndList(startDt, endDt, shipId, assortId,
+				assortNm, channelId, StringFactory.getStrD01(), "", StringFactory.getGbTwo());
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
         return ResponseEntity.ok(res);
     }
@@ -137,8 +139,8 @@ public class ShipController {
                                              @RequestParam @Nullable String assortId,
                                              @RequestParam @Nullable String assortNm,
 			@RequestParam @Nullable String channelId, @RequestParam @Nullable String orderId) {
-		ShipIndicateListData shipIndicateListData = jpaShipService.getShipList(startDt, endDt, shipId, assortId,
-				assortNm, channelId, StringFactory.getStrD01(), orderId);
+		ShipIndicateListData shipIndicateListData = jpaShipService.getShipIndList(startDt, endDt, shipId, assortId,
+				assortNm, channelId, StringFactory.getStrD01(), orderId, StringFactory.getGbTwo());
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
         return ResponseEntity.ok(res);
     }
@@ -155,9 +157,7 @@ public class ShipController {
 
     /**
 	 * 출고리스트 화면 : 출고지시일자, 출고지시번호, 상품코드, 구매처를 받아서 조회하면 출고 목록을 보여줌
-	 * 
-	 * 
-	 * todo : 2021-10-27 출고리스트 서비스 안만들어짐 지금쓰는건 출고지시용임,새로 출고리스트 조회하는거 하나 새로 만들어야함,.
+     * todo(완) : 2021-10-27 출고리스트 서비스 안만들어짐 지금쓰는건 출고지시용임,새로 출고리스트 조회하는거 하나 새로 만들어야함,.
 	 */
     @GetMapping(path = "/ship/items")
     public ResponseEntity getShipList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
@@ -165,10 +165,10 @@ public class ShipController {
                                              @RequestParam @Nullable String shipId,
                                              @RequestParam @Nullable String assortId,
                                              @RequestParam @Nullable String assortNm,
-                                             @RequestParam @Nullable String channelId){
-		ShipIndicateListData shipIndicateListData = jpaShipService.getShipList2(startDt, endDt, shipId, assortId,
-				assortNm, channelId, StringFactory.getStrD02(), "");
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
+                                             @RequestParam @Nullable String vendorId){
+		ShipListDataResponse shipListDataResponse = jpaShipService.getShipList(startDt, endDt, shipId, assortId,
+				assortNm, vendorId, TrdstOrderStatus.D02.toString(), StringFactory.getGbFour());
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipListDataResponse);
         return ResponseEntity.ok(res);
     }
 

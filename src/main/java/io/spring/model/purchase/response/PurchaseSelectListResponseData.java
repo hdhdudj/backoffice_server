@@ -26,13 +26,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PurchaseSelectListResponseData {
-    public PurchaseSelectListResponseData(Map<String, Object> param){
-        this.startDt = (LocalDate) param.get(StringFactory.getStrStartDt());
-        this.endDt = (LocalDate) param.get(StringFactory.getStrEndDt());
-        this.assortId = (String) param.get(StringFactory.getStrAssortId());
-        this.purchasStatus = (String) param.get(StringFactory.getStrPurchaseStatus());
-        this.purchaseGb = (String)param.get(StringFactory.getStrPurchaseGb());
-
+    public PurchaseSelectListResponseData(String vendorId,String assortId, String purchaseNo, String channelOrderNo, String custNm, String assortNm,
+                                          String purchaseStatus, String brandNm, LocalDate startDt, LocalDate endDt, String purchaseGb, String dealtypeCd){
+        this.startDt = startDt;
+        this.endDt = endDt;
+        this.assortId = assortId;
+        this.purchasStatus = purchaseStatus;
+        this.purchaseGb = purchaseGb;
     }
 
     public PurchaseSelectListResponseData(Lspchm lspchm){
@@ -88,18 +88,24 @@ public class PurchaseSelectListResponseData {
          */
         public Purchase(Lspchm lspchm, Lsdpsp lsdpsp, Itasrt itasrt){
             this.purchaseNo = lspchm.getPurchaseNo();
-			this.vendorId = lspchm.getVendorId();
+            this.purchaseSeq = lsdpsp.getPurchaseSeq();
+            this.purchaseKey = Utilities.addDashInMiddle(this.purchaseNo, this.purchaseSeq);
+            this.purchaseDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
+
+            this.vendorId = lspchm.getVendorId();
             this.purchaseGb = lspchm.getPurchaseGb();
             this.dealtypeCd = lspchm.getDealtypeCd();
 
-            this.purchaseSeq = lsdpsp.getPurchaseSeq();
             this.assortId = lsdpsp.getAssortId();
             this.itemId = lsdpsp.getItemId();
+            this.itemKey = Utilities.addDashInMiddle(this.assortId, this.itemId);
+
             this.depositPlanId = lsdpsp.getDepositPlanId();
 
             this.itemNm = itasrt.getAssortNm();
 
             this.depositQty = 0l;
+            this.purchaseQty = lsdpsp.getPurchasePlanQty();
 
             this.purchaseCost = lsdpsp.getLspchd().getPurchaseUnitAmt();
         }
@@ -107,11 +113,12 @@ public class PurchaseSelectListResponseData {
             this.purchaseNo = lspchm.getPurchaseNo();
             this.dealtypeCd = lspchm.getDealtypeCd();
             this.purchaseSeq = lspchd.getPurchaseSeq();
-            this.purchaseKey = Utilities.addDashInMiddle(purchaseNo, purchaseSeq);
+            this.purchaseKey = Utilities.addDashInMiddle(this.purchaseNo, this.purchaseSeq);
 			this.vendorId = lspchm.getVendorId();
             this.purchaseGb = lspchm.getPurchaseGb();
             this.assortId = lspchd.getAssortId();
             this.itemId = lspchd.getItemId();
+            this.itemKey = Utilities.addDashInMiddle(this.assortId, this.itemId);
             this.purchaseDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
             this.purchaseGb = lspchm.getPurchaseGb();
             this.purchaseCost = lspchd.getPurchaseUnitAmt();
@@ -120,7 +127,7 @@ public class PurchaseSelectListResponseData {
             this.orderSeq = lspchd.getOrderSeq();
             this.purchaseQty = lspchd.getPurchaseQty();
             this.purchaseUnitAmt = lspchd.getPurchaseUnitAmt();
-            this.siteOrderNo = lspchd.getSiteOrderNo();
+            this.siteOrderNo = lspchm.getSiteOrderNo();
         }
         // 발주리스트, 입고처리 화면 공통 요소
         private String purchaseNo; // 발주번호
@@ -128,9 +135,11 @@ public class PurchaseSelectListResponseData {
         private String purchaseKey; // 발주번호-발주순번
         private String assortId; // 품목코드
         private String itemId; // 상품코드
+        private String itemKey; // 품목코드-상품코드
         private String itemNm; // 상품이름
         private String optionNm1; // 색상
         private String optionNm2; // 사이즈
+        private String optionNm3; // 재질
 
         // 발주리스트 화면 요소
 //        @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -151,9 +160,11 @@ public class PurchaseSelectListResponseData {
 
         // 입고처리 화면 요소
         private String depositPlanId; // 입고예정번호
-        private Long availableQty; // 가능수량
+        private Long availableQty; // 가능수량(입고예정수량)
         private Long depositQty; // 입고수량
         private Float purchaseCost; // 발주금액
 		private String optionInfo;
+        // 21-12-20 추가
+        private String custNm;
     }
 }

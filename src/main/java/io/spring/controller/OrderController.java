@@ -23,8 +23,10 @@ import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.order.entity.OrderStock;
 import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.order.request.CancelOrderRequestData;
+import io.spring.model.order.request.OrderOptionRequestData;
 import io.spring.model.order.request.OrderStockMngInsertRequestData;
-import io.spring.model.order.response.OrderDetailListResponse;
+import io.spring.model.order.response.CancelOrderListResponse;
 import io.spring.model.order.response.OrderDetailResponseData;
 import io.spring.model.order.response.OrderMasterListResponseData;
 import io.spring.service.common.JpaCommonService;
@@ -173,7 +175,7 @@ public class OrderController {
 
 	// orderId, orderSeq를 받아서 주문 상태를 바꿔주는 주소
 	@RequestMapping(path = "/orderstatus", method = RequestMethod.GET)
-	public ResponseEntity changeOrderStatus(@RequestParam String orderId, @RequestParam String orderSeq){
+	public ResponseEntity changeOrderStatus(@RequestParam String orderId, @RequestParam String orderSeq) {
 		log.debug("changeOrderStatus 실행.");
 		jpaOrderService.changeOrderStatus(orderId, orderSeq);
 
@@ -190,12 +192,23 @@ public class OrderController {
 	}
 
 
+	/**
+	 * 주문별주문리스트 가져오는 api
+	 */
 	@GetMapping(path = "/items")
+	// 주문일자,주문상태,주문번호,( 셀렉트방식으로 채널주문번호(기본값),주문자명,주문자휴대폰번호,주문자전화번호,수령자명,수령자휴대폰번호,수령자 전화번호,입금자명
 	public ResponseEntity getOrderList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+			  @RequestParam @Nullable String statusCd,
 			  @RequestParam @Nullable String orderId,
+			  @RequestParam @Nullable String channelOrderNo,
 			  @RequestParam @Nullable String custNm,
-			@RequestParam @Nullable String custHp, @RequestParam @Nullable String channelOrderNo) {
+			@RequestParam @Nullable String custHp,
+			@RequestParam @Nullable String custTel,
+			@RequestParam @Nullable String deliNm,
+			@RequestParam @Nullable String deliHp,
+			@RequestParam @Nullable String deliTel
+									   ) {
 
 		System.out.println("getOrderList");
 
@@ -212,7 +225,9 @@ public class OrderController {
 			LocalDateTime end = endDt.atTime(23, 59, 59);
 			map.put("endDt", end);
 		}
-
+		if (statusCd != null && !statusCd.equals("")) {
+			map.put("orderStatus", statusCd);
+		}
 		if (orderId != null && !orderId.equals("")) {
 			map.put("orderId", orderId);
 		}
@@ -222,7 +237,18 @@ public class OrderController {
 		if (custHp != null && !custHp.equals("")) {
 			map.put("custHp", custHp);
 		}
-		
+		if (custTel != null && !custTel.equals("")) {
+			map.put("custTel", custTel);
+		}
+		if (deliNm != null && !deliNm.equals("")) {
+			map.put("deliNm", deliNm);
+		}
+		if (deliHp != null && !deliHp.equals("")) {
+			map.put("deliHp", deliHp);
+		}
+		if (deliTel != null && !deliTel.equals("")) {
+			map.put("deliTel", deliTel);
+		}
 		if (channelOrderNo != null && !channelOrderNo.equals("")) {
 			map.put("channelOrderNo", channelOrderNo);
 		}
@@ -234,11 +260,22 @@ public class OrderController {
 
 	}
 
+	/**
+	 * 상품별주문리스트 가져오는 api
+	 */
 	@GetMapping(path = "/goods/items")
 	public ResponseEntity getOrderDetailList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
-			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
-			@RequestParam @Nullable String orderId, @RequestParam @Nullable String statusCd,
-			@RequestParam @Nullable String channelOrderNo) {
+	@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+	@RequestParam @Nullable String statusCd,
+	@RequestParam @Nullable String orderId,
+	@RequestParam @Nullable String channelOrderNo,
+	@RequestParam @Nullable String custNm,
+	@RequestParam @Nullable String custHp,
+	@RequestParam @Nullable String custTel,
+	@RequestParam @Nullable String deliNm,
+	@RequestParam @Nullable String deliHp,
+	@RequestParam @Nullable String deliTel
+									   ) {
 
 		System.out.println("getOrderDetailList");
 
@@ -255,22 +292,68 @@ public class OrderController {
 			LocalDateTime end = endDt.atTime(23, 59, 59);
 			map.put("endDt", end);
 		}
-
+		if (statusCd != null && !statusCd.equals("")) {
+			map.put("orderStatus", statusCd);
+		}
 		if (orderId != null && !orderId.equals("")) {
 			map.put("orderId", orderId);
 		}
-		if (statusCd != null && !statusCd.equals("")) {
-			map.put("statusCd", statusCd);
+		if (custNm != null && !custNm.equals("")) {
+			map.put("custNm", custNm);
 		}
-
+		if (custHp != null && !custHp.equals("")) {
+			map.put("custHp", custHp);
+		}
+		if (custTel != null && !custTel.equals("")) {
+			map.put("custTel", custTel);
+		}
+		if (deliNm != null && !deliNm.equals("")) {
+			map.put("deliNm", deliNm);
+		}
+		if (deliHp != null && !deliHp.equals("")) {
+			map.put("deliHp", deliHp);
+		}
+		if (deliTel != null && !deliTel.equals("")) {
+			map.put("deliTel", deliTel);
+		}
 		if (channelOrderNo != null && !channelOrderNo.equals("")) {
 			map.put("channelOrderNo", channelOrderNo);
 		}
 
-		List<OrderDetailListResponse> r = myBatisOrderService.getOrderDetailList(map);
+		List<OrderMasterListResponseData> r = myBatisOrderService.getOrderMasterList(map);
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
 		return ResponseEntity.ok(res);
+
+//		HashMap<String, Object> map = new HashMap<>();
+//
+//		if (startDt != null) {
+//
+//			LocalDateTime start = startDt.atStartOfDay();
+//
+//			map.put("startDt", start);
+//		}
+//		if (endDt != null) {
+//
+//			LocalDateTime end = endDt.atTime(23, 59, 59);
+//			map.put("endDt", end);
+//		}
+//
+//		if (orderId != null && !orderId.equals("")) {
+//			map.put("orderId", orderId);
+//		}
+//		if (statusCd != null && !statusCd.equals("")) {
+//			map.put("statusCd", statusCd);
+//		}
+//
+//		if (channelOrderNo != null && !channelOrderNo.equals("")) {
+//			map.put("channelOrderNo", channelOrderNo);
+//		}
+//
+//		List<OrderMasterListResponseData> r = myBatisOrderService.getOrderDetailList2(map);
+//
+//		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
+//		return ResponseEntity.ok(res);
 
 	}
 
@@ -286,6 +369,145 @@ public class OrderController {
 		OrderDetailResponseData r = myBatisOrderService.getOrderDetail(map);
 
 		// List<OrderMasterListResponseData> r = myBatisOrderService.get(map);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
+		return ResponseEntity.ok(res);
+
+	}
+
+	@GetMapping(path = "/items/{orderId}/{orderSeq}")
+	public ResponseEntity getOrder(@PathVariable String orderId, @PathVariable String orderSeq) {
+
+		System.out.println("testest");
+
+		TbOrderDetail t = jpaOrderService.getNullTest(orderId, orderSeq);
+
+		// List<OrderMasterListResponseData> r = myBatisOrderService.get(map);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), t);
+		return ResponseEntity.ok(res);
+
+	}
+
+//	@GetMapping(path = "/")
+
+
+	@GetMapping(path = "/test/sms")
+	public ResponseEntity smsSendTest(@RequestParam String body, @RequestParam String tbOrderNo){
+		jpaOrderService.testSms(body, tbOrderNo);
+		return null;
+	}
+
+	@PostMapping(path = "/ifoption")
+	public ResponseEntity saveOrderOption(
+			@RequestBody OrderOptionRequestData req) {
+
+		System.out.println(req);
+
+		Boolean ret = jpaOrderService.saveGoodsIfoption(req.getOrderId(), req.getOrderSeq(), req.getAssortId(),
+				req.getChannelGoodsNo(),
+				req.getChannelOptionSno());
+
+		if (ret) {
+			jpaOrderService.noOptionChangeOrderStatus(req.getOrderId(), req.getOrderSeq());
+		}
+
+		ApiResponseMessage res = null;
+
+		// log.debug(r.size());
+
+		res = new ApiResponseMessage<String>("SUCCESS", "", "");
+
+		return ResponseEntity.ok(res);
+
+	}
+
+	@PostMapping(path = "/items/cancel")
+	public ResponseEntity cancelOrder(
+			@RequestBody CancelOrderRequestData param) {
+
+//CancelOrderRequestData
+
+		System.out.println("cancelOrder");
+
+		String userId = param.getUserId();
+
+		// List<HashMap<String, Object>> l = new ArrayList<HashMap<String, Object>>();
+
+		String chk = "";
+
+		for (CancelOrderRequestData.Item o : param.getItems()) {
+			HashMap<String, Object> m = new HashMap<String, Object>();
+
+			m.put("orderId", o.getOrderId());
+			m.put("orderSeq", o.getOrderSeq());
+			m.put("cancelGb", o.getCancelGb());
+			m.put("cancelMsg", o.getCancelMsg());
+			// m.put("cancelQty", o.getCancelQty());
+			// m.put("ifCancelGb", o.getIfCancelGb());
+			m.put("seq", o.getSeq());
+			m.put("userId", userId);
+
+			if (o.getChannelGb().equals("01")) {
+				boolean r = jpaOrderService.cancelGodoOrder(m);
+				System.out.println(r);
+				if (r == false) {
+					chk = "error";
+				}
+			} else {
+				System.out.println("다른채널 처리");
+			}
+
+			// l.add(m);
+		}
+
+
+		// HashMap
+
+		// param
+
+		// TbOrderDetail t = jpaOrderService.getNullTest(orderId, orderSeq);
+
+		// List<OrderMasterListResponseData> r = myBatisOrderService.get(map);
+
+		ApiResponseMessage res = null;
+
+		if (chk.equals("error")) {
+			res = new ApiResponseMessage(StringFactory.getStrOk(), "error", "");
+		} else {
+			res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), "");
+		}
+
+//		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), t);
+		return ResponseEntity.ok(res);
+
+	}
+
+	@GetMapping(path = "/cancel/items")
+	public ResponseEntity getOrderCancelList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+			@RequestParam @Nullable String ifStatus) {
+
+		System.out.println("getOrderDetailList");
+
+		HashMap<String, Object> map = new HashMap<>();
+
+		if (startDt != null) {
+
+			LocalDateTime start = startDt.atStartOfDay();
+
+			map.put("startDt", start);
+		}
+		if (endDt != null) {
+
+			LocalDateTime end = endDt.atTime(23, 59, 59);
+			map.put("endDt", end);
+		}
+		if (ifStatus != null && !ifStatus.equals("")) {
+			map.put("ifStatus", ifStatus);
+		}
+
+		CancelOrderListResponse r = myBatisOrderService.getOrderCancelList(map);
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
 		return ResponseEntity.ok(res);

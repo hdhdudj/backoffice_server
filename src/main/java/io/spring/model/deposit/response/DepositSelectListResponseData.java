@@ -24,12 +24,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DepositSelectListResponseData {
-    public DepositSelectListResponseData(LocalDate startDt, LocalDate endDt, String assortId, String assortNm, String purchaseVendorId){
+    public DepositSelectListResponseData(LocalDate startDt, LocalDate endDt, String assortId, String assortNm, String purchaseVendorId, String memo){
         this.startDt = startDt;
         this.endDt = endDt;
         this.assortId = assortId;
         this.assortNm = assortNm;
 		this.vendorId = purchaseVendorId;
+        this.memo = memo;
     }
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -43,6 +44,8 @@ public class DepositSelectListResponseData {
     private String assortNm;
 	private String vendorId;
     private List<Deposit> depositList;
+    // 21-12-08 추가
+    private String memo;
 
     @Getter
     @Setter
@@ -57,6 +60,12 @@ public class DepositSelectListResponseData {
             this.goodsKey = Utilities.addDashInMiddle(this.assortId, this.itemId);
             this.extraUnitcost = lsdpsd.getExtraUnitcost();
             this.depositDt = Utilities.removeTAndTransToStr(lsdpsd.getLsdpsm().getDepositDt());
+            this.purchaseDt = lsdpsd.getLspchd() == null? null : Utilities.removeTAndTransToStr(lsdpsd.getLspchd().getLspchm().getPurchaseDt());
+            if(lsdpsd.getLspchd() != null){
+                this.orderId = lsdpsd.getOrderId();
+                this.orderSeq = lsdpsd.getOrderSeq();
+                this.orderkey = Utilities.addDashInMiddle(orderId, orderSeq);
+            }
         }
         private String depositKey;
 //        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -75,7 +84,16 @@ public class DepositSelectListResponseData {
         private String assortNm;
         private String optionNm1;
         private String optionNm2;
+        private String optionNm3;
         private Long depositQty;
         private Float extraUnitcost;
+        // 21-11-11 추가
+        private Float weight;
+        // 21-11-29 추가
+        private String purchaseDt;
+        // 21-11-30 추가
+        private String orderId;
+        private String orderSeq;
+        private String orderkey;
     }
 }

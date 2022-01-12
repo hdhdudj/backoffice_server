@@ -1,16 +1,16 @@
 package io.spring.jparepos.deposit;
 
-import io.spring.model.deposit.entity.Lsdpsp;
-import io.spring.model.purchase.entity.Lspchd;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
+import io.spring.model.deposit.entity.Lsdpsp;
 
 public interface JpaLsdpspRepository extends JpaRepository<Lsdpsp, String> {
     Lsdpsp findByPurchaseNoAndPurchaseSeq(String purchaseNo, String purchaseSeq);
+
+	List<Lsdpsp> findItemByPurchaseNoAndPurchaseSeq(String purchaseNo, String purchaseSeq);
 
     @Query("select max(l.purchaseSeq) as maxVal from Lsdpsp as l where l.purchaseNo = ?1")
     String findMaxPurchaseSeqByPurchaseNo(String purchaseNo);

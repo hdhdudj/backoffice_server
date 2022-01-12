@@ -7,6 +7,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import io.spring.dao.order.MyBatisOrderDao;
+import io.spring.enums.Scm;
+import io.spring.model.order.response.CancelOrderListResponse;
 import io.spring.model.order.response.OrderDetailListResponse;
 import io.spring.model.order.response.OrderDetailResponseData;
 import io.spring.model.order.response.OrderMasterListResponseData;
@@ -23,17 +25,29 @@ public class MyBatisOrderService {
 
 		List<HashMap<String, Object>> list = myBatisOrderDao.getOrderMasterList(map);
 
-		List<OrderMasterListResponseData> orderMasterListDataListResponse = new ArrayList<>();
+		List<OrderMasterListResponseData> orderMasterListDataListResponseList = new ArrayList<>();
 
 		for (HashMap<String, Object> o : list) {
 			OrderMasterListResponseData orderMasterListResponseData = new OrderMasterListResponseData(o);
-			orderMasterListDataListResponse.add(orderMasterListResponseData);
+			orderMasterListResponseData.setScmNm(this.matchScmNoToScmNm(orderMasterListResponseData.getScmNo()));
+			orderMasterListDataListResponseList.add(orderMasterListResponseData);
 		}
 
 
-		return orderMasterListDataListResponse;
+		return orderMasterListDataListResponseList;
 	}
 
+	/**
+	 * scmNo를 scmNm로 매칭시켜주는 함수
+	 */
+	private String matchScmNoToScmNm(String scmNo){
+		for(Scm key : Scm.values()){
+			if(key.getFieldName().equals(scmNo)){
+				return key.toString();
+			}
+		}
+		return null;
+	}
 
 	public OrderDetailResponseData getOrderDetail(HashMap<String, Object> map) {
 		
@@ -70,6 +84,28 @@ public class MyBatisOrderService {
 		}
 
 		return orderDetailListResponse;
+
+	}
+
+	public CancelOrderListResponse getOrderCancelList(HashMap<String, Object> map) {
+
+		List<HashMap<String, Object>> list = myBatisOrderDao.getOrderCancelList(map);
+
+		// List<OrderDetailListResponse> orderDetailListResponse = new ArrayList<>();
+
+		List<CancelOrderListResponse.Item> l = new ArrayList<CancelOrderListResponse.Item>();
+
+		for (HashMap<String, Object> o : list) {
+
+			CancelOrderListResponse.Item r = new CancelOrderListResponse.Item(o);
+			l.add(r);
+		}
+
+		CancelOrderListResponse ret = new CancelOrderListResponse();
+
+		ret.setItems(l);
+
+		return ret;
 
 	}
 

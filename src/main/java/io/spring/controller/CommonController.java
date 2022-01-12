@@ -64,8 +64,8 @@ public class CommonController {
 			@RequestParam(required = false) String codeNm) {
 //public ResponseEntity selectBrandSearchList() {
 
-		System.out.println(codeId);
-		System.out.println(codeNm);
+//		System.out.println(codeId);
+		// System.out.println(codeNm);
 
 		HashMap<String, Object> param = new HashMap<String, Object>();
 

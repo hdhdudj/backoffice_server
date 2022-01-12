@@ -1,6 +1,7 @@
 package io.spring.model.move.response;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -9,6 +10,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.SetOptionInterface;
+import io.spring.model.move.request.MoveListExcelRequestData;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import lombok.AccessLevel;
@@ -21,22 +24,26 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MoveCompletedLIstReponseData {
+    public MoveCompletedLIstReponseData(){}
     public MoveCompletedLIstReponseData(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId){
-        this.startDt = startDt;
-        this.endDt = endDt;
+        this.startDt = startDt.toString();
+        this.endDt = endDt.toString();
         this.shipId = shipId;
         this.assortId = assortId;
         this.assortNm = assortNm;
         this.storageId = storageId;
     }
-    @JsonSerialize(using = LocalDateSerializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate startDt;
-    @JsonSerialize(using = LocalDateSerializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate endDt;
+    public MoveCompletedLIstReponseData(MoveListExcelRequestData moveListExcelRequestData){
+        this.startDt = moveListExcelRequestData.getStartDt().toString();
+        this.endDt = moveListExcelRequestData.getEndDt().toString();
+        this.shipId = moveListExcelRequestData.getShipId();
+        this.assortId = moveListExcelRequestData.getAssortId();
+        this.assortNm = moveListExcelRequestData.getAssortNm();
+        this.storageId = moveListExcelRequestData.getStorageId();
+    }
+    private String startDt;
+    private String endDt;
     private String shipId;
     private String assortId;
     private String assortNm;
@@ -45,8 +52,8 @@ public class MoveCompletedLIstReponseData {
 
     @Getter
     @Setter
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class Move{
+    public static class Move implements SetOptionInterface {
+        public Move(){}
         public Move(Lsshpm lsshpm, Lsshpd lsshpd){
             this.shipDt = Utilities.removeTAndTransToStr(lsshpm.getApplyDay());
             this.shipIndDt = Utilities.removeTAndTransToStr(lsshpm.getReceiptDt());
@@ -55,7 +62,7 @@ public class MoveCompletedLIstReponseData {
             this.shipKey = Utilities.addDashInMiddle(shipId,shipSeq);
             this.trackNo = lsshpm.getBlNo();
             this.storageId = lsshpm.getStorageId();
-            this.oStorageId = lsshpd.getOStorageId();
+            this.oStorageId = lsshpm.getOStorageId();
             this.shipGb = lsshpd.getShipGb();
             this.deliMethod = lsshpm.getDelMethod();
             this.assortId = lsshpd.getAssortId();
@@ -63,7 +70,17 @@ public class MoveCompletedLIstReponseData {
             this.goodsKey = Utilities.addDashInMiddle(assortId,itemId);
             this.assortNm = lsshpd.getItasrt().getAssortNm();
             // 옵션은 바깥에서 set
-            this.qty = lsshpd.getShipIndicateQty();
+            this.qty = lsshpd.getShipIndicateQty().toString();
+
+            this.orderId = lsshpd.getOrderId();
+            this.orderSeq = lsshpd.getOrderSeq();
+            this.orderKey = Utilities.addDashInMiddle(this.orderId, this.orderSeq);
+            this.shipmentDt = lsshpm.getShipmentDt() == null? "" : lsshpm.getShipmentDt().toString();
+            this.blNo = lsshpm.getBlNo();
+            this.movementKd = lsshpm.getMovementKd();
+            this.estiArrvDt = lsshpm.getEstiArrvDt() == null? "" : lsshpm.getEstiArrvDt().toString();
+            this.containerKd = lsshpm.getContainerKd();
+            this.containerQty = lsshpm.getContainerQty() == null? "" : lsshpm.getContainerQty().toString();
         }
         private String shipDt;
         private String shipIndDt;
@@ -82,6 +99,17 @@ public class MoveCompletedLIstReponseData {
         private String assortNm;
         private String optionNm1;
         private String optionNm2;
-        private Long qty;
+        private String optionNm3;
+        private String qty;
+        // 12-21-30 추가된 컬럼
+        private String orderId;
+        private String orderSeq;
+        private String orderKey;
+        private String shipmentDt;
+        private String blNo;
+        private String movementKd;
+        private String estiArrvDt;
+        private String containerKd;
+        private String containerQty;
     }
 }

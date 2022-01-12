@@ -28,6 +28,9 @@ public class PurchaseUpdateRequestData {
 	private String payment; // PAYMENT
 	private String carrier; // CARRIER
 	private String userId; // userId
+	// 21-12-02 추가
+	private String memo;
+	private String piNo;
 
 	private List<Items> items;
 

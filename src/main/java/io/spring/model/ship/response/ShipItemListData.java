@@ -1,6 +1,7 @@
 package io.spring.model.ship.response;
 
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.SetOptionInterface;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import lombok.AccessLevel;
@@ -16,8 +17,8 @@ import java.util.List;
  */
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShipItemListData {
+    public ShipItemListData(){}
     public ShipItemListData(Lsshpm lsshpm){
         this.shipId = lsshpm.getShipId();
         this.storageId = lsshpm.getStorageId();
@@ -28,11 +29,8 @@ public class ShipItemListData {
     }
     private String shipId;
     private String storageId;
-//    private String vendorId; : channelId로 변경
     private String channelId;
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private String orderDt;
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private String shipIndicateDt;
     private List<Ship> ships;
     // 출고내역에만 있는 요소
@@ -40,8 +38,8 @@ public class ShipItemListData {
 
     @Getter
     @Setter
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class Ship{
+    public static class Ship implements SetOptionInterface {
+        public Ship(){}
         public Ship(Lsshpd lsshpd){
             this.shipId = lsshpd.getShipId();
             this.shipSeq = lsshpd.getShipSeq();
@@ -55,8 +53,8 @@ public class ShipItemListData {
             this.itemId = lsshpd.getItemId();
             this.goodsKey = Utilities.addDashInMiddle(assortId, itemId);
             // 옵션은 밖에서
-            this.qty = lsshpd.getShipIndicateQty();
-            this.cost = lsshpd.getLocalPrice();
+            this.qty = lsshpd.getShipIndicateQty() == null? null : lsshpd.getShipIndicateQty() + "";
+            this.cost = lsshpd.getLocalPrice() == null? null : lsshpd.getLocalPrice()+"";
         }
         private String shipId;
         private String shipSeq;
@@ -72,7 +70,8 @@ public class ShipItemListData {
         private String assortNm;
         private String optionNm1;
         private String optionNm2;
-        private Long qty;
-        private Float cost;
+        private String optionNm3;
+        private String qty;
+        private String cost;
     }
 }

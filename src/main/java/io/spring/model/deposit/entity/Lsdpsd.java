@@ -69,7 +69,7 @@ public class Lsdpsd extends CommonProps implements Serializable {
         this.inputSeq = item.getPurchaseSeq();
     }
     // 입고 체크 후 저장시 실행되는 생성자
-    public Lsdpsd(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData, Lsdpsm lsdpsm, String depositSeq, DepositListWithPurchaseInfoData.Deposit deposit) {
+    public Lsdpsd(DepositListWithPurchaseInfoData depositListWithPurchaseInfoData, Lsdpsm lsdpsm, String depositSeq, DepositListWithPurchaseInfoData.Deposit deposit, Lsdpsp lsdpsp) {
         this.depositNo = lsdpsm.getDepositNo();
         this.depositSeq = depositSeq;
         this.assortId = deposit.getAssortId();
@@ -90,6 +90,9 @@ public class Lsdpsd extends CommonProps implements Serializable {
 		// '0'); // 000001 하드코딩
         this.inputNo = deposit.getPurchaseNo();
         this.inputSeq = deposit.getPurchaseSeq();
+
+        this.orderId = lsdpsp.getOrderId();
+        this.orderSeq = lsdpsp.getOrderSeq();
     }
     @Id
     private String depositNo;
@@ -122,6 +125,9 @@ public class Lsdpsd extends CommonProps implements Serializable {
 
 	private String orderId;
 	private String orderSeq;
+    // 21-12-08 추가
+    private String defectYn;
+    private String memo;
 
     // 연관 관계 lsdpsm
     @ManyToOne(fetch = FetchType.LAZY)
@@ -137,7 +143,7 @@ public class Lsdpsd extends CommonProps implements Serializable {
     private Lspchd lspchd;
 
     // 연관 관계 lsdpds
-    @NotFound(action = NotFoundAction.IGNORE)
+//    @NotFound(action = NotFoundAction.IGNORE)
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumns({
             @JoinColumn(name = "depositNo", referencedColumnName="depositNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
@@ -146,7 +152,7 @@ public class Lsdpsd extends CommonProps implements Serializable {
     private List<Lsdpds> lsdpds;
 
     // 연관 관계 itasrt
-    @NotFound(action = NotFoundAction.IGNORE)
+//    @NotFound(action = NotFoundAction.IGNORE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     private Itasrt itasrt;
@@ -157,6 +163,6 @@ public class Lsdpsd extends CommonProps implements Serializable {
             @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
             @JoinColumn(name = "itemId", referencedColumnName="itemId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
     })
-    @NotFound(action = NotFoundAction.IGNORE)
+//    @NotFound(action = NotFoundAction.IGNORE)
     private Ititmm ititmm;
 }

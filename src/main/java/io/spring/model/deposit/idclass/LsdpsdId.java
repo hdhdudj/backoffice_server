@@ -1,15 +1,13 @@
 package io.spring.model.deposit.idclass;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode
 public class LsdpsdId implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;

@@ -1,5 +1,6 @@
 package io.spring.model.ship.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -37,7 +38,7 @@ import lombok.Setter;
 @Table(name = "lsshpm")
 public class Lsshpm extends CommonProps {
     /**
-     * 상품이동지시 저장, 주문이동처리 저장,출고 시 실행되는 생성자
+     * 주문이동처리 저장,출고 시 실행되는 생성자
      */
 	public Lsshpm(String shipGb, String shipId, Itasrt itasrt, TbOrderDetail tbOrderDetail) {
         this.shipId = shipId;
@@ -47,8 +48,8 @@ public class Lsshpm extends CommonProps {
         this.deliId = null; // 이동지시 null, 출고지시 tb_order_master.deli_id
         this.shipItemCnt = null;
         this.receiptDt = LocalDateTime.now(); // 출고지시 일자
-        this.storageId = itasrt.getStorageId();
-        this.oStorageId = tbOrderDetail.getStorageId();
+		this.storageId = itasrt.getStorageId(); // 상황에 따라서 창고가 틀림 이부분도 나중에 수정해야함.
+		this.oStorageId = tbOrderDetail.getStorageId(); // 상황에 따라서 창고가 틀림 이부분도 나중에 수정해야함.
 		this.instructDt = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());// 패킹일자
 																					// //Utilities.getStringToDate(StringFactory.getDoomDay());
         this.applyDay = LocalDateTime.parse(StringFactory.getDoomDay(), DateTimeFormatter.ofPattern(StringFactory.getDateFormat())); // 출고처리 일자
@@ -63,7 +64,7 @@ public class Lsshpm extends CommonProps {
 
 		if (shipGb.equals("01")) {
 			// 출고일 경우 현재는 주문출고만 있음
-			this.shipGb = StringFactory.getGbOne(); // 02 하드코딩 (01 : 출고, 02 : 이동)
+			this.shipGb = StringFactory.getGbOne(); // 01 하드코딩 (01 : 출고, 02 : 이동)
 			this.masterShipGb = "01"; // 01 출고 03 주문이동지시 04싱픔이동지시
 			this.shipOrderGb = "01"; // 01 주문 02 상품
 		} else if (shipGb.equals("03")) {
@@ -76,8 +77,7 @@ public class Lsshpm extends CommonProps {
 			// 주문이동지시
 			this.shipGb = StringFactory.getGbTwo(); // 02 하드코딩 (01 : 출고, 02 : 이동)
 			this.masterShipGb = "04"; // 01 출고 03 주문이동지시 04싱픔이동지시
-			this.shipOrderGb = "01"; // 01 주문 02 상품
-
+			this.shipOrderGb = "02"; // 01 주문 02 상품
 		}
 
 
@@ -132,6 +132,8 @@ public class Lsshpm extends CommonProps {
 
 		}
 
+        // todo : 12-29에 추가된 새로운 컬럼 값 설정해줘야 함
+
         super.setRegId(goodsMoveSaveData.getUserId());
         super.setUpdId(goodsMoveSaveData.getUserId());
     }
@@ -173,11 +175,18 @@ public class Lsshpm extends CommonProps {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private Date uploadDt;
     private String blNo;
+    // 21-12-29 added column
+    private LocalDate shipmentDt; // 선적일자
+    private LocalDate estiArrvDt; // 도착예정일자
+    private String movementKd; // 운송형태
+    private String containerKd; // 컨테이너 종류
+    private Long containerQty; // 컨테이너 수량
 
-    // 연관관계 : Lsshpd
-    @OneToMany(fetch = FetchType.LAZY, targetEntity = Lsshpd.class)
-    @JoinColumn(name = "shipId", referencedColumnName = "shipId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
-    private List<Lsshpd> lsshpdList;
+
+//    // 연관관계 : Lsshpd
+//    @OneToMany(fetch = FetchType.LAZY, targetEntity = Lsshpd.class)
+//    @JoinColumn(name = "shipId", referencedColumnName = "shipId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+//    private List<Lsshpd> lsshpdList;
 
     // 연관관계 : TbOrderMaster
     @OneToOne(fetch = FetchType.LAZY, targetEntity = TbOrderMaster.class)

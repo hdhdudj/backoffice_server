@@ -1,5 +1,6 @@
 package io.spring.infrastructure.util;
 
+import io.spring.enums.DeliveryMethod;
 import io.spring.model.common.SetOptionInterface;
 import io.spring.model.goods.entity.Itvari;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collector;
@@ -118,6 +120,16 @@ public class Utilities {
     }
 
     /**
+     * String 날짜(yyyy-MM-dd HH:mm:ss 꼴)를 받아서 LocalDateTime으로 변환해 반환하는 함수
+     * @param strDt
+     * @return LocalDateTime
+     */
+    public static LocalDateTime strToLocalDateTime2(String strDt){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.KOREA);
+        return LocalDateTime.parse(strDt, formatter);
+    }
+
+    /**
      * 두 String 사이에 -를 넣어서 붙여서 반환하는 함수 (a,b) -> "a-b"
      */
     public static String addDashInMiddle(String a, String b){
@@ -132,6 +144,10 @@ public class Utilities {
      * @return String
      */
     public static String removeTAndTransToStr(LocalDateTime localDateTime){
+        if(localDateTime == null){
+            log.debug("localDateTime이 null 입니다.");
+            return null;
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.KOREA);
         String strDate = localDateTime.format(formatter);
         return strDate.replace('T', ' ');
@@ -154,14 +170,63 @@ public class Utilities {
     }
 
     /**
-     * optionNm1, optionNm2 설정 함수
+     * optionNm1, optionNm2, optionNm3 설정 함수
      */
     public static void setOptionNames(SetOptionInterface setOptionInterface, List<Itvari> itvariList){
+        if(itvariList == null){
+            log.debug("itvari list가 존재하지 않습니다.");
+            return;
+        }
         if(itvariList.size() > 0){
-            setOptionInterface.setOptionNm1(itvariList.get(0).getOptionNm());
+            setOptionInterface.setOptionNm1(itvariList.get(0) == null? "" : itvariList.get(0).getOptionNm());
         }
         if(itvariList.size() > 1){
-            setOptionInterface.setOptionNm2(itvariList.get(1).getOptionNm());
+            setOptionInterface.setOptionNm2(itvariList.get(1) == null? "" : itvariList.get(1).getOptionNm());
         }
+        if(itvariList.size() > 2){
+            setOptionInterface.setOptionNm3(itvariList.get(2) == null? "" : itvariList.get(2).getOptionNm());
+        }
+    }
+
+    /**
+     * Date to String
+     */
+    public static String dateToString(Date from){
+        SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String to = transFormat.format(from);
+        return to;
+    }
+
+    /**
+     *  MyBatis로 결과물을 받았을 때 해당 prop이 null이면 빈 칸으로 바꿔주는 함수
+     */
+    public static void changeNullToEmpty(HashMap<String, Object> map){
+        for(String key : map.keySet()){
+            if(map.get(key) == null){
+                map.put(key, "");
+            }
+        }
+    }
+
+    public static String convertDeliveryMethodFieldNameToEnum(String arg){
+        if(arg == null){
+            return null;
+        }
+        for(DeliveryMethod d : DeliveryMethod.values()){
+            if(d.getFieldName().equals(arg)){
+                return d.toString();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * input 값이 null이거나 empty string이면 null return, 아니면 input 그대로 return
+     */
+    public static <T> T nullOrEmptyFilter(T in){
+        if(in == null || in.toString().trim().equals("")){
+            return null;
+        }
+        return in;
     }
 }

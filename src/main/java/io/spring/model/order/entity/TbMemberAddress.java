@@ -27,6 +27,7 @@ public class TbMemberAddress extends CommonProps {
     private String deliTel;
     private String deliHp;
     private String deliZipcode;
+    private String deliZonecode;
     private String deliAddr1;
     private String deliAddr2;
 }

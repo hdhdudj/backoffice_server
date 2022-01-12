@@ -142,15 +142,19 @@
 		LEFT JOIN itcatg ic ON i.disp_category_id = ic.category_id
 		where 	1=1
 		  and i.reg_Dt between #{regDtBegin} and  #{regDtEnd}
-		  and i.shortage_yn =#{shortageYn}
-		<if test='assortId != null'>
+		<if test='assortId != null and assortId.trim() != ""'>
 			<![CDATA[
 			and i.assort_id = #{assortId}
 			]]>
 		</if>
-		<if test='assortNm != null'>
+		<if test='assortNm != null and assortNm.trim() != ""'>
 			<![CDATA[
 			and i.assort_nm like concat('%',#{assortNm},'%')
+			]]>
+		</if>
+		<if test='shortageYn != null and shortageYn.trim() != ""'>
+			<![CDATA[
+			and i.shortage_yn = #{shortageYn}
 			]]>
 		</if>
 	</select>	
@@ -169,6 +173,7 @@
 			 ,im.short_yn as itemShortageYn
 			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq1 and iv.variation_gb='01' and del_yn='02' ) optionNm1
 			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq2 and iv.variation_gb='02' and del_yn='02' ) optionNm2			 
+			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq3 and iv.variation_gb='03' and del_yn='02' ) optionNm3
 			 ,i.brand_id as brandId
 			 ,ib.brand_nm as brandNm
 			 ,i.disp_category_id as dispCategoryId
@@ -183,20 +188,23 @@
 		where 	1=1
 		
 		]]>
-	<if test='assortId != null'>
+	<if test='assortId != null and assortId.trim() != ""'>
 			 <![CDATA[		
 		and i.assort_id = #{assortId}
 			 ]]>
 			</if>
-	<if test='assortNm != null'>
+	<if test='assortNm != null and assortNm.trim() != ""'>
 			 <![CDATA[		
 		and i.assort_nm like CONCAT( '%',  #{assortNm}, '%') 
 			 ]]>
-			</if>		
-					
-				 		<![CDATA[		  
+			</if>
+		<if test='shortageYn != null and shortageYn.trim() != ""'>
+			<![CDATA[
+		and i.shortage_yn = #{shortageYn}
+			 ]]>
+		</if>
+				 		<![CDATA[
 		  and i.reg_Dt between #{regDtBegin} and  #{regDtEnd}
-		  and i.shortage_yn =#{shortageYn}
 		  and i.assort_id = im.assort_id
 		  ]]>
 	</select>	
@@ -204,7 +212,6 @@
 	
 	<select id="getGoodsItemListWithCategory" parameterType="java.util.HashMap" resultType="java.util.HashMap">
 	 <![CDATA[	
-
 			select aaa.assortId assortId
 			,aaa.assortNm assortNm
 			,aaa.shortageYn shortageYn
@@ -212,6 +219,12 @@
 			,aaa.itemShortageYn
 			,aaa.optionNm1
 			,aaa.optionNm2
+			,aaa.optionNm3
+			,aaa.modelNo
+			,aaa.origin
+			,aaa.custCategory
+			,aaa.material
+			,aaa.purchasePrice
 			,aaa.brandId
 			,aaa.brandNm
 			,aaa.dispCategoryId dispCategoryId
@@ -220,6 +233,7 @@
 			,aaa.mdRrp 
 			,aaa.buySupplyDiscount
 			,aaa.fullCatePathId fullCatePathId
+			,aaa.imagePath
 			from (
 			select
 			i.assort_id as assortId
@@ -227,9 +241,16 @@
 			 ,i.shortage_yn as shortageYn
 			 ,im.item_id as itemId
 			 ,im.short_yn as itemShortageYn
+			 ,im.model_no as modelNo
+	    	 ,i.cust_category as custCategory
+			 ,im.material as material
+			 ,im.purchase_price as purchasePrice
+			 ,concat('https://trdst.hgodo.com/', img.image_path, img.image_name) imagePath
 			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq1 and iv.variation_gb='01' and del_yn='02' ) optionNm1
 			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq2 and iv.variation_gb='02' and del_yn='02' ) optionNm2			 
+			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq3 and iv.variation_gb='03' and del_yn='02' ) optionNm3
 			 ,i.brand_id as brandId
+		     ,i.origin as origin
 			 ,i.storage_id as storageId
 			 ,ib.brand_nm as brandNm
 			 ,i.disp_category_id as dispCategoryId
@@ -237,30 +258,31 @@
 			 ,f_categoryFullPath(i.disp_category_id) fullCategoryNm
 			 ,i.md_rrp mdRrp
 			 ,i.buy_supply_discount buySupplyDiscount
-			 	,f_categoryFullPathId(i.disp_category_id) fullCatePathId
+			 ,f_categoryFullPathId(i.disp_category_id) fullCatePathId
 		from itasrt i
-		LEFT JOIN if_brand ib ON i.brand_id = ib.channel_brand_id
+		LEFT JOIN if_brand ib ON i.brand_id = ib.brand_id
 		LEFT JOIN itcatg ic ON i.disp_category_id = ic.category_id
-		,ititmm im		
+		LEFT JOIN itaimg img ON i.assort_id = img.assort_id
+		,ititmm im
 			where 1=1
 			and i.assort_id = im.assort_id 
 			 ]]>
-			<if test='assortId != null'>
+			<if test='assortId != null and assortId.trim() != ""'>
 			 <![CDATA[		
 					and i.assort_id =#{assortId} 
 			 ]]>
 			</if>		
-			<if test='assortNm != null'>
+			<if test='assortNm != null and assortNm.trim() != ""'>
 			 <![CDATA[		
 				and i.assort_nm like CONCAT( '%',  #{assortNm}, '%') 
 			 ]]>
 			</if>		
-			<if test='vendorId != null'>
+			<if test='vendorId != null and vendorId.trim() != ""'>
 			 <![CDATA[		
 					and i.vendor_id =#{vendorId} 
 			 ]]>
 			</if>		
-			<if test='brandId != null'>
+			<if test='brandId != null and brandId.trim() != ""'>
 			 <![CDATA[		
 					and ib.brand_id =#{brandId}
 			 ]]>
@@ -269,7 +291,7 @@
 			) aaa
 			where 1=1
 			 ]]>
-			<if test='category != null'>
+			<if test='category != null and category.trim() != ""'>
 				 <![CDATA[		
 			and aaa.fullCatePathId like CONCAT( #{category}, '%')
 			]]>
@@ -302,8 +324,15 @@
 		                  And  b2.assort_id = b1.assort_id
 		                  and b2.variation_gb2 = b1.variation_gb
 		                  and  b2.variation_seq2=b1.seq) optionNm2
-		,aa.ship_indicate_qty
-		,aa.qty
+		           ,    (select b1.option_nm
+		                from ititmm b2, itvari b1
+		                where b2.assort_id=aa.assort_id
+		                  And b2.item_id= aa.item_id
+		                  And  b2.assort_id = b1.assort_id
+		                  and b2.variation_gb3 = b1.variation_gb
+		                  and  b2.variation_seq3=b1.seq) optionNm3
+		,aa.ship_indicate_qty shipIndicateQty
+		,aa.qty qty
 		from (
 		select storage_id
 		,assort_id ,item_id ,item_grade 
@@ -316,12 +345,12 @@
 		where aa.storage_id = bb.storage_id 
 		 and aa.assort_id = cc.assort_id 
 		]]>
-			<if test='assortId != null'>
+			<if test='assortId != null and assortId.trim() != ""'>
 			 <![CDATA[		
 					and cc.assort_id =#{assortId} 
 			 ]]>
 			</if>			
-			<if test='storageId != null'>
+			<if test='storageId != null and storageId.trim() != ""'>
 			 <![CDATA[		
 					and bb.storage_id =#{storageId} 
 			 ]]>

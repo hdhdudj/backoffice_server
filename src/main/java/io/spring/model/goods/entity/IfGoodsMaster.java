@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -19,18 +20,8 @@ import java.util.Date;
 @Setter
 @IdClass(IfGoodsMasterId.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(exclude = "uploadStatus")
+@EqualsAndHashCode(exclude = "uploadStatus", callSuper = false)
 public class IfGoodsMaster extends CommonProps implements Cloneable {
-    @Override
-    public IfGoodsMaster clone() {
-        try {
-            return (IfGoodsMaster) super.clone();
-        } catch (CloneNotSupportedException e) {
-            // Cloneable을 구현했기 때문에 이 블록이 실행되는 일은 없다.
-            return null;
-        }
-    }
-
     public IfGoodsMaster(Itasrt itasrt, Itasrn itasrn, Itasrd itasrd){
         // itasrt
         this.channelGb = StringFactory.getGbOne(); // 01 하드코딩
@@ -150,9 +141,9 @@ public class IfGoodsMaster extends CommonProps implements Cloneable {
     private String stockFl;
     private String soldOutFl;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date salesStartYmd;
+    private LocalDateTime salesStartYmd;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date salesEndYmd;
+    private LocalDateTime salesEndYmd;
     private Float goodsPrice;
     private Float fixedPrice;
     private Float costPrice;
