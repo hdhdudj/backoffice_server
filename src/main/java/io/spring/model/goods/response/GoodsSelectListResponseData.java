@@ -6,15 +6,25 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GoodsSelectListResponseData {
-    public GoodsSelectListResponseData(List<Goods> goodses){
-        this.goodsList = goodses;
+    public GoodsSelectListResponseData(String shortageYn, LocalDate regDtBegin, LocalDate regDtEnd, String assortId, String assortNm){
+        this.regDtBegin = regDtBegin;
+        this.regDtEnd = regDtEnd;
+        this.assortId = assortId;
+        this.shortageYn = shortageYn;
+        this.assortNm = assortNm;
     }
+    private LocalDate regDtBegin;
+    private LocalDate regDtEnd;
+    private String assortId;
+    private String shortageYn;
+    private String assortNm;
     private List<Goods> goodsList;
 
     @Getter

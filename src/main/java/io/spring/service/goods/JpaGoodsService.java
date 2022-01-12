@@ -65,7 +65,7 @@ public class JpaGoodsService {
      * @return GoodsResponseData
      */
     @Transactional
-    public GoodsSelectDetailResponseData sequenceInsertOrUpdateGoods(GoodsInsertRequestData goodsInsertRequestData){
+    public void sequenceInsertOrUpdateGoods(GoodsInsertRequestData goodsInsertRequestData){
         // itasrt에 goods 정보 저장
         Itasrt itasrt = this.saveItasrt(goodsInsertRequestData);
         // tmmapi에 저장
@@ -87,12 +87,9 @@ public class JpaGoodsService {
 
         // itaimg에 assortId 업데이트 시켜주기
         this.updateItaimgAssortId(goodsInsertRequestData, itasrt.getAssortId());
-        em.flush();
-        em.clear();
 //        List<GoodsInsertResponseData.Attributes> attributesList = this.makeGoodsResponseAttributes(itvariList);
 //        List<GoodsInsertResponseData.Items> itemsList = this.makeGoodsResponseItems(ititmmList, itvariList);
 //        return this.makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
-        return this.getGoodsDetailPage(goodsInsertRequestData.getAssortId());
     }
 
     /**
@@ -836,8 +833,10 @@ public class JpaGoodsService {
         GoodsSelectDetailResponseData goodsSelectDetailResponseData = new GoodsSelectDetailResponseData(itasrt);
 
         // 카테고리벨류
-        Cmvdmr cmvdmr = itasrt.getCmvdmr();
-        goodsSelectDetailResponseData.setVendorNm(itasrt.getVendorId() != null && !itasrt.getVendorId().trim().equals("")? cmvdmr.getVdNm() : "");
+        if(itasrt.getDispCategoryId() != null && !itasrt.getDispCategoryId().trim().equals("")){
+            Cmvdmr cmvdmr = itasrt.getCmvdmr();
+            goodsSelectDetailResponseData.setVendorNm(itasrt.getVendorId() != null && !itasrt.getVendorId().trim().equals("")? cmvdmr.getVdNm() : "");
+        }
         // brand
         IfBrand ifBrand;
         if(itasrt.getBrandId() != null && !itasrt.getBrandId().trim().equals("")){
@@ -973,13 +972,16 @@ public class JpaGoodsService {
      * @return GoodsSelectListResponseData
      */
     public GoodsSelectListResponseData getGoodsList(String shortageYn, LocalDate regDtBegin, LocalDate regDtEnd, String assortId, String assortNm) {
-        LocalDateTime start = regDtBegin.atStartOfDay();
-        LocalDateTime end = regDtEnd.atTime(23,59,59);
+        boolean isAssortIdExist = assortId != null && !assortId.trim().equals("");
+        boolean isAssortNmExist = assortNm != null && !assortNm.trim().equals("");
+        LocalDateTime start = isAssortIdExist || isAssortNmExist? null : regDtBegin.atStartOfDay();
+        LocalDateTime end = isAssortIdExist || isAssortNmExist? null : regDtEnd.atTime(23,59,59);
+        GoodsSelectListResponseData goodsSelectListResponseData = new GoodsSelectListResponseData(shortageYn, regDtBegin, regDtEnd, assortId, assortNm);
         TypedQuery<Itasrt> query =
                 em.createQuery("select t from Itasrt t " +
                                 "left join fetch t.itcatg c " +
                                 "where t.regDt " +
-                                "between ?1 and ?2 " +
+                                "between COALESCE(?1, '0000-01-01 00:00:00') and COALESCE(?2, '9999-12-31 23:59:59') " +
                                 "and (?3 is null or trim(?3)='' or t.shortageYn = ?3) " +
                                 "and (?4 is null or trim(?4)='' or t.assortId = ?4) " +
                                 "and (?5 is null or trim(?5)='' or t.assortNm like concat('%',?5,'%'))"
@@ -989,6 +991,11 @@ public class JpaGoodsService {
                 .setParameter(3, shortageYn).setParameter(4,assortId).setParameter(5,assortNm);
         List<Itasrt> itasrtList = query.getResultList();
         List<GoodsSelectListResponseData.Goods> goodsList = new ArrayList<>();
+        if(itasrtList.size() == 0){
+            log.debug("검색 조건을 만족하는 상품이 존재하지 않습니다.");
+            goodsSelectListResponseData.setGoodsList(goodsList);
+            return goodsSelectListResponseData;
+        }
         List<IfBrand> brandList;
         List<String> brandIdList = new ArrayList<>();
         for(Itasrt itasrt : itasrtList){
@@ -1004,7 +1011,7 @@ public class JpaGoodsService {
             goods.setBrandNm(ifBrand==null? null:ifBrand.getBrandNm());
             goodsList.add(goods);
         }
-        GoodsSelectListResponseData goodsSelectListResponseData = new GoodsSelectListResponseData(goodsList);
+        goodsSelectListResponseData.setGoodsList(goodsList);
         return goodsSelectListResponseData;
     }
 
