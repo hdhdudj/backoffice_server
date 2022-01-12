@@ -1042,12 +1042,12 @@ public class JpaMoveService {
                 continue;
             }
             Lsshpm lsshpm = lsshpmList.stream().filter(x->x.getShipId().equals(move.getShipId())).collect(Collectors.toList()).get(0);//lsshpmList.get(0);
-            lsshpm.setBlNo(move.getBlNo() == null? null : move.getBlNo());
-            lsshpm.setMovementKd(move.getMovementKd() == null? null : move.getMovementKd());
-            lsshpm.setShipmentDt(move.getShipmentDt() == null? null : move.getShipmentDt());
-            lsshpm.setEstiArrvDt(move.getEstiArrvDt() == null? null : move.getEstiArrvDt());
-            lsshpm.setContainerKd(move.getContainerKd() == null? null : move.getContainerKd());
-            lsshpm.setContainerQty(move.getContainerQty() == null? null : move.getContainerQty());
+            lsshpm.setBlNo(Utilities.nullOrEmptyFilter(move.getBlNo()));
+            lsshpm.setMovementKd(Utilities.nullOrEmptyFilter(move.getBlNo()));
+            lsshpm.setShipmentDt(Utilities.nullOrEmptyFilter(move.getShipmentDt()));
+            lsshpm.setEstiArrvDt(Utilities.nullOrEmptyFilter(move.getEstiArrvDt()));
+            lsshpm.setContainerKd(Utilities.nullOrEmptyFilter(move.getContainerKd()));
+            lsshpm.setContainerQty(Utilities.nullOrEmptyFilter(move.getContainerQty()));
             jpaLsshpmRepository.saveAndFlush(lsshpm);
         }
     }

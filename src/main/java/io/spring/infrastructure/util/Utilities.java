@@ -208,7 +208,7 @@ public class Utilities {
         }
     }
 
-    public static String convertFieldNameToEnum(String arg){
+    public static String convertDeliveryMethodFieldNameToEnum(String arg){
         if(arg == null){
             return null;
         }
@@ -218,5 +218,15 @@ public class Utilities {
             }
         }
         return null;
+    }
+
+    /**
+     * input 값이 null이거나 empty string이면 null return, 아니면 input 그대로 return
+     */
+    public static <T> T nullOrEmptyFilter(T in){
+        if(in == null || in.toString().trim().equals("")){
+            return null;
+        }
+        return in;
     }
 }
