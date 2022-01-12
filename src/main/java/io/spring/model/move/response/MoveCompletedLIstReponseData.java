@@ -78,7 +78,7 @@ public class MoveCompletedLIstReponseData {
             this.shipmentDt = lsshpm.getShipmentDt() == null? "" : lsshpm.getShipmentDt().toString();
             this.blNo = lsshpm.getBlNo();
             this.movementKd = lsshpm.getMovementKd();
-            this.estiArrvTm = lsshpm.getEstiArrvDt() == null? "" : lsshpm.getEstiArrvDt().toString();
+            this.estiArrvDt = lsshpm.getEstiArrvDt() == null? "" : lsshpm.getEstiArrvDt().toString();
             this.containerKd = lsshpm.getContainerKd();
             this.containerQty = lsshpm.getContainerQty() == null? "" : lsshpm.getContainerQty().toString();
         }
@@ -108,7 +108,7 @@ public class MoveCompletedLIstReponseData {
         private String shipmentDt;
         private String blNo;
         private String movementKd;
-        private String estiArrvTm;
+        private String estiArrvDt;
         private String containerKd;
         private String containerQty;
     }

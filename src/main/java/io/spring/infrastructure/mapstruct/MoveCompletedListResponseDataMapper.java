@@ -38,7 +38,7 @@ public interface MoveCompletedListResponseDataMapper {
     @Mapping(target = "shipmentDt", expression = "java(m.getShipmentDt() == null? \"\" : m.getShipmentDt())")
     @Mapping(target = "blNo", expression = "java(m.getBlNo() == null? \"\" : m.getBlNo())")
     @Mapping(target = "movementKd", expression = "java(m.getMovementKd() == null? \"\" : m.getMovementKd())")
-    @Mapping(target = "estiArrvTm", expression = "java(m.getEstiArrvTm() == null? \"\" : m.getEstiArrvTm())")
+    @Mapping(target = "estiArrvDt", expression = "java(m.getEstiArrvDt() == null? \"\" : m.getEstiArrvDt())")
     @Mapping(target = "containerKd", expression = "java(m.getContainerKd() == null? \"\" : m.getContainerKd())")
     @Mapping(target = "containerQty", expression = "java(m.getContainerQty() == null? \"\" : m.getContainerQty())")
     MoveCompletedLIstReponseData.Move nullToEmpty(MoveCompletedLIstReponseData.Move m);

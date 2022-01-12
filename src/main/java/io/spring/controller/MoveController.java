@@ -240,7 +240,8 @@ public class MoveController {
      */
     @PostMapping(path = "/excel")
     public ResponseEntity saveExcelList(@RequestBody MoveListExcelRequestData moveListExcelRequestData){
-        MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.saveExcelList(moveListExcelRequestData);
+        jpaMoveService.saveExcelList(moveListExcelRequestData);
+        MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.getMovedList(moveListExcelRequestData.getStartDt(), moveListExcelRequestData.getEndDt(), moveListExcelRequestData.getShipId(), moveListExcelRequestData.getAssortId(), moveListExcelRequestData.getAssortNm(), moveListExcelRequestData.getStorageId());
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveCompletedLIstReponseData);
         return ResponseEntity.ok(res);
     }

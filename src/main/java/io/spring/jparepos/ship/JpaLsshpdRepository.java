@@ -1,6 +1,7 @@
 package io.spring.jparepos.ship;
 
 import io.spring.model.ship.entity.Lsshpd;
+import io.spring.model.ship.entity.Lsshpm;
 import io.spring.model.ship.idclass.LsshpdId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -109,4 +110,9 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
                                     @Param("shipStatus")String shipStatus);
 
     List<Lsshpd> findByShipId(String shipId);
+
+    @Query("select lsshpd from Lsshpd lsshpd " +
+            "join fetch lsshpd.lsshpm lm " +
+            "where lsshpd.shipId in :shipIdList")
+    List<Lsshpd> findShipDetailListByShipIdList(@Param("shipIdList") List<String> shipIdList);
 }

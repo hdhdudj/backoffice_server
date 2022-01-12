@@ -2,12 +2,7 @@ package io.spring.service.move;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -1034,7 +1029,7 @@ public class JpaMoveService {
      * 이동리스트 화면 - 엑셀에 값 입력 후 엑셀 업로드로 특정 컬럼들 값 저장
      */
     @Transactional
-    public MoveCompletedLIstReponseData saveExcelList(MoveListExcelRequestData moveListExcelRequestData) {
+    public void saveExcelList(MoveListExcelRequestData moveListExcelRequestData) {
         List<MoveListExcelRequestData.Move> moveList = moveListExcelRequestData.getMoves();
         List<String> shipIdList = new ArrayList<>();
         for(MoveListExcelRequestData.Move move : moveList){
@@ -1047,7 +1042,6 @@ public class JpaMoveService {
                 continue;
             }
             Lsshpm lsshpm = lsshpmList.stream().filter(x->x.getShipId().equals(move.getShipId())).collect(Collectors.toList()).get(0);//lsshpmList.get(0);
-            lsshpmList.remove(lsshpm);
             lsshpm.setBlNo(move.getBlNo() == null? null : move.getBlNo());
             lsshpm.setMovementKd(move.getMovementKd() == null? null : move.getMovementKd());
             lsshpm.setShipmentDt(move.getShipmentDt() == null? null : move.getShipmentDt());
@@ -1055,9 +1049,7 @@ public class JpaMoveService {
             lsshpm.setContainerKd(move.getContainerKd() == null? null : move.getContainerKd());
             lsshpm.setContainerQty(move.getContainerQty() == null? null : move.getContainerQty());
             jpaLsshpmRepository.saveAndFlush(lsshpm);
-            em.detach(lsshpm);
         }
-        return this.getMovedList(moveListExcelRequestData.getStartDt(), moveListExcelRequestData.getEndDt(), moveListExcelRequestData.getShipId(), moveListExcelRequestData.getAssortId(), moveListExcelRequestData.getAssortNm(), moveListExcelRequestData.getStorageId());
     }
 
 
