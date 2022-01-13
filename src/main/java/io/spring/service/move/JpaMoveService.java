@@ -223,10 +223,9 @@ public class JpaMoveService {
 	/**
      * 주문 이동지시 저장 함수
      */
+    @Transactional
 	public List<String> saveOrderMoveByDeposit(Lsdpsd lsdpsd) {
-    	
-    
-    	
+
         //List<OrderMoveSaveData.Move> moveList = orderMoveSaveData.getMoves();
 		if (lsdpsd == null) {
             log.debug("input data is empty.");

@@ -110,11 +110,11 @@ public class ShipController {
                                       @RequestParam @Nullable String shipId,
                                        @RequestParam @Nullable String assortId,
                                        @RequestParam @Nullable String assortNm,
-                                       @RequestParam @Nullable String channelId){
+                                       @RequestParam @Nullable String vendorId){
 //        Date start = java.sql.Timestamp.valueOf(startDt.atStartOfDay());
 //        Date end = java.sql.Timestamp.valueOf(endDt.atTime(23,59,59));
 		ShipIndicateListData shipIndicateListData = jpaShipService.getShipIndList(startDt, endDt, shipId, assortId,
-				assortNm, channelId, StringFactory.getStrD01(), "", StringFactory.getGbTwo());
+				assortNm, vendorId, StringFactory.getStrD01(), "", StringFactory.getGbTwo());
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
         return ResponseEntity.ok(res);
     }
@@ -138,9 +138,9 @@ public class ShipController {
                                              @RequestParam @Nullable String shipId,
                                              @RequestParam @Nullable String assortId,
                                              @RequestParam @Nullable String assortNm,
-			@RequestParam @Nullable String channelId, @RequestParam @Nullable String orderId) {
+			@RequestParam @Nullable String vendorId, @RequestParam @Nullable String orderId) {
 		ShipIndicateListData shipIndicateListData = jpaShipService.getShipIndList(startDt, endDt, shipId, assortId,
-				assortNm, channelId, StringFactory.getStrD01(), orderId, StringFactory.getGbTwo());
+				assortNm, vendorId, StringFactory.getStrD01(), orderId, StringFactory.getGbTwo());
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
         return ResponseEntity.ok(res);
     }

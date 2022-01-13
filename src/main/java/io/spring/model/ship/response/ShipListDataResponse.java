@@ -59,6 +59,7 @@ public class ShipListDataResponse {
             Itvari itvari1 = ititmm.getItvari1();
             Itvari itvari2 = ititmm.getItvari2();
             Itvari itvari3 = ititmm.getItvari3();
+            this.shipId = lsshpd.getShipId();
             this.orderId = tod.getOrderId();
             this.orderSeq = tod.getOrderSeq();
             this.orderKey = Utilities.addDashInMiddle(orderId, orderSeq);
@@ -80,6 +81,7 @@ public class ShipListDataResponse {
             this.itemId = ititmm.getItemId();
             this.itemKey = Utilities.addDashInMiddle(assortId, itemId);
         }
+        private String shipId;
         private String orderId;
         private String orderSeq;
         private String orderKey;

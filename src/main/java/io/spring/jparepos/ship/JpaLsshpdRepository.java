@@ -33,6 +33,32 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
     List<Lsshpd> findShipListByShipId(@Param("shipId") String shipId);
 
     /**
+     * 출고지시리스트, 출고처리화면 조회 리스트
+     */
+    @Query("select lsd from Lsshpd lsd " +
+            "join fetch lsd.lsshpm lsm " +
+            "join fetch lsd.tbOrderDetail td " +
+            "join fetch td.ititmm im "+
+            "join fetch im.itasrt it "+
+            "where lsm.instructDt between :start and :end " +
+            "and (:assortId is null or trim(:assortId)='' or td.assortId=:assortId) " +
+            "and (:shipId is null or trim(:shipId)='' or lsd.shipId=:shipId) " +
+            "and (:assortNm is null or trim(:assortNm)='' or it.assortNm like concat('%', :assortNm, '%')) " +
+            "and (:vendorId is null or trim(:vendorId)='' or it.vendorId=:vendorId)" +
+            "and lsm.shipStatus=:shipStatus "
+            + "and (:orderId is null or trim(:orderId)='' or lsd.orderId=:orderId)"
+            + "and (:orderSeq is null or trim(:orderSeq)='' or lsd.orderSeq=:orderSeq)")
+    List<Lsshpd> findShipIndicateList(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end,
+                                      @Param("assortId") String assortId,
+                                      @Param("shipId") String shipId,
+                                      @Param("assortNm") String assortNm,
+                                      @Param("vendorId") String vendorId,
+                                      @Param("shipStatus") String shipStatus,
+                                      @Param("orderId") String orderId,
+                                      @Param("orderSeq") String orderSeq
+                                      );
+
+    /**
      * 출고리스트 가져오는 쿼리
      */
     @Query("select distinct(lsshpd) from Lsshpd lsshpd " +

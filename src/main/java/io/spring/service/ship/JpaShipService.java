@@ -135,23 +135,7 @@ public class JpaShipService {
     private List<TbOrderDetail> getOrdersByCondition(LocalDate startDt, LocalDate endDt, String assortId, String assortNm, String vendorId) {
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
-        // tbOrderDetailList 중 statusCd가 C04인 애들 or statusCd가 C01이면서 assortGb가 01인 애만 가져오기
-        TypedQuery<TbOrderDetail> query = em.createQuery("select td from TbOrderDetail td " +
-                "join fetch td.tbOrderMaster to " +
-                "join fetch td.ititmm itm " +
-                "join fetch itm.itasrt it " +
-                "where to.orderDate between ?1 and ?2 " +
-                "and (?3 is null or trim(?3)='' or td.assortId=?3) "+
-                "and (?4 is null or trim(?4)='' or it.vendorId=?4) "+
-                "and (?5 is null or trim(?5)='' or it.assortNm like concat('%', ?5, '%')) " +
-                "and td.statusCd=?6"
-                , TbOrderDetail.class);
-        query.setParameter(1,start).setParameter(2,end)
-        .setParameter(3,assortId).setParameter(4,vendorId)
-        .setParameter(5,assortNm).setParameter(6,StringFactory.getStrC04());
-//        .setParameter(7,StringFactory.getStrC01()).setParameter(8,StringFactory.getGbOne());
-        List<TbOrderDetail> tbOrderDetailList = query.getResultList();
-
+        List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository.findIndicateShipList(start, end, assortId, vendorId, assortNm, StringFactory.getStrC04());//query.getResultList();
         return tbOrderDetailList;
     }
 
@@ -379,7 +363,7 @@ public class JpaShipService {
     public ShipIndicateListData getShipIndList(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
 											   @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
 											   String shipId, String assortId, String assortNm,
-											   String channelId, String statusCd, String orderKey, String shipStatus) {
+											   String vendorId, String statusCd, String orderKey, String shipStatus) {
 
 		String orderId = "";
 		String orderSeq = "";
@@ -391,27 +375,9 @@ public class JpaShipService {
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
 		ShipIndicateListData shipIndicateListData = new ShipIndicateListData(start.toLocalDate(), end.toLocalDate(),
-				shipId, assortId, assortNm, channelId, orderId);
-//        start = startDt == null? Utilities.strToLocalDate(StringFactory.getStartDay()) : startDt;
-//        end = endDt == null? Utilities.strToLocalDate(StringFactory.getStartDay()) : endDt.plusDays(1);
-        TypedQuery<Lsshpd> query = em.createQuery("select lsd from Lsshpd lsd " +
-                        "join fetch lsd.lsshpm lsm " +
-                        "join fetch lsd.tbOrderDetail td " +
-                        "join fetch td.ititmm im "+
-                        "join fetch im.itasrt it "+
-				"where lsm.instructDt between ?1 and ?2 " +
-                        "and (?3 is null or trim(?3)='' or td.assortId=?3) " +
-                        "and (?4 is null or trim(?4)='' or lsd.shipId=?4) " +
-                        "and (?5 is null or trim(?5)='' or it.assortNm like concat('%', ?5, '%')) " +
-				"and (?6 is null or trim(?6)='' or lsd.ownerId=?6)" + "and lsm.shipStatus=:shipStatus "
-				+ "and (?7 is null or trim(?7)='' or lsd.orderId=?7)"
-				+ "and (?8 is null or trim(?7)='' or lsd.orderSeq=?8)"
-                ,Lsshpd.class);
-        query.setParameter(1, start).setParameter(2, end)
-                .setParameter(3,assortId).setParameter(4,shipId)
-				.setParameter(5, assortNm).setParameter(6, channelId).setParameter(7, orderId)
-				.setParameter(8, orderSeq).setParameter(StringFactory.getStrShipStatus(), shipStatus);
-        List<Lsshpd> lsshpdList = query.getResultList();
+				shipId, assortId, assortNm, vendorId, orderId);
+
+        List<Lsshpd> lsshpdList = jpaLsshpdRepository.findShipIndicateList(start, end, assortId, shipId, assortNm, vendorId, shipStatus, orderId, orderSeq);//query.getResultList();
         // 출고지시리스트 : C04, 출고처리리스트 : D01, 출고리스트 statusCd = D02인 애들만 남기기
         lsshpdList = lsshpdList.stream().filter(x->x.getTbOrderDetail().getStatusCd().equals(statusCd)).collect(Collectors.toList());
         List<ShipIndicateListData.Ship> shipList = new ArrayList<>();
