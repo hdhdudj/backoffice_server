@@ -438,21 +438,7 @@ public class JpaPurchaseService {
      * @return
      */
     public PurchaseSelectDetailResponseData getPurchaseDetailPage(String purchaseNo) {
-        List<Lspchd> lspchdList = em.createQuery("select distinct (ld) from Lspchd ld " +
-                "left outer join fetch ld.lspchm lm " +
-                "left outer join fetch ld.lspchb lb " +
-                "left outer join fetch ld.tbOrderDetail tod " +
-                "left outer join fetch tod.tbOrderMaster tom " +
-                "left outer join fetch tom.tbMember tm " +
-                "left outer join fetch tom.tbMemberAddress tma " +
-                "left outer join fetch ld.ititmm im " +
-                "left outer join fetch im.itvari1 iv1 " +
-                "left outer join fetch im.itvari2 iv2 " +
-                "left outer join fetch im.itvari3 iv3 " +
-                "left outer join fetch im.itasrt ita " +
-                "left outer join fetch ita.ifBrand ib " +
-//                "left outer join fetch ita.itaimg img " +
-                "where ld.purchaseNo=?1", Lspchd.class).setParameter(1,purchaseNo).getResultList();//jpaLspchmRepository.findById(purchaseNo).orElseGet(() -> null);//.get();
+        List<Lspchd> lspchdList = jpaLspchdRepository.findLspchdByPurchaseNo(purchaseNo);
         if(lspchdList == null || lspchdList.size() == 0){
             log.debug("해당 발주번호에 해당하는 발주상세내역이 존재하지 않습니다.");
             return null;
