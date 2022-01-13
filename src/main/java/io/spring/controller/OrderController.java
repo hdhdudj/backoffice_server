@@ -486,7 +486,7 @@ public class OrderController {
 	@GetMapping(path = "/cancel/items")
 	public ResponseEntity getOrderCancelList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
-			@RequestParam @Nullable String ifStatus) {
+			@RequestParam @Nullable String ifStatus, @RequestParam @Nullable String orderName) {
 
 		System.out.println("getOrderDetailList");
 

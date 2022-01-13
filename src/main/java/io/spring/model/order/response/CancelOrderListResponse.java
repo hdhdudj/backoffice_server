@@ -7,6 +7,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import io.spring.enums.TrdstOrderStatus;
+import io.spring.infrastructure.util.Utilities;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,7 +47,7 @@ public class CancelOrderListResponse {
 			this.ifStatus = p.get("ifStatus").toString();
 			this.ifMsg = p.get("ifMsg") == null ? null : p.get("ifMsg").toString();
 			this.statusCd = p.get("statusCd").toString();
-
+			this.statusName = Utilities.convertEnumToFieldName(TrdstOrderStatus.values(), this.statusCd);
 		}
 
 		private String seq; // 순번
@@ -72,6 +74,7 @@ public class CancelOrderListResponse {
 	private String ifStatus; // 처리상태
 	private String ifMsg; // 연동메세지
 	private String statusCd;
+	private String statusName;
 
 }
 

@@ -1,6 +1,6 @@
 package io.spring.infrastructure.util;
 
-import io.spring.enums.DeliveryMethod;
+import io.spring.model.common.EnumCommonInterface;
 import io.spring.model.common.SetOptionInterface;
 import io.spring.model.goods.entity.Itvari;
 import lombok.extern.slf4j.Slf4j;
@@ -208,13 +208,25 @@ public class Utilities {
         }
     }
 
-    public static String convertDeliveryMethodFieldNameToEnum(String arg){
+    public static String convertFieldNameToEnum(EnumCommonInterface[] c, String arg){
         if(arg == null){
             return null;
         }
-        for(DeliveryMethod d : DeliveryMethod.values()){
+        for(EnumCommonInterface d : c){
             if(d.getFieldName().equals(arg)){
                 return d.toString();
+            }
+        }
+        return null;
+    }
+
+    public static String convertEnumToFieldName(EnumCommonInterface[] c, String arg){
+        if(arg == null){
+            return null;
+        }
+        for(EnumCommonInterface d : c){
+            if(d.toString().equals(arg)){
+                return d.getFieldName();
             }
         }
         return null;
