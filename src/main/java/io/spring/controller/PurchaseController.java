@@ -127,7 +127,7 @@ public class PurchaseController {
     }
 
     /**
-     * 발주(주문), 발주(상품) 저장 공통
+     * 발주등록(주문), 발주등록(상품) 저장 공통
      * @param purchaseInsertRequestData
      * @return
      */
