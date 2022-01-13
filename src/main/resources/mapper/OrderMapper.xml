@@ -185,9 +185,9 @@ from (select aa.channel_gb channel_gb,
 		LEFT OUTER JOIN ititmm as itm
 		    on tod.assort_id = itm.assort_id and tod.item_id = itm.item_id
 		 LEFT OUTER JOIN tb_member AS tm    -- A_TABLE 기준
-		              ON tom.deli_id = tm.deli_id
+		              ON tom.cust_id = tm.cust_id
 		 LEFT OUTER JOIN tb_member_address AS tma    -- A_TABLE 기준
-			  ON tom.cust_id = tma.cust_id
+			  ON tom.deli_id = tma.deli_id
 		where  1=1
 		and tom.order_date between #{startDt} and  #{endDt}
 	]]>
@@ -291,9 +291,9 @@ from (select aa.channel_gb channel_gb,
 		LEFT OUTER JOIN ititmm as itm
 		    on tod.assort_id = itm.assort_id and tod.item_id = itm.item_id
 		 LEFT OUTER JOIN tb_member AS tm    -- A_TABLE 기준
-		              ON tom.deli_id = tm.deli_id
+		              ON tom.cust_id = tm.cust_id
 		 LEFT OUTER JOIN tb_member_address AS tma    -- A_TABLE 기준
-			  ON tom.cust_id = tma.cust_id
+			  ON tom.deli_id = tma.deli_id
 		where  1=1
 		and tom.order_date between #{startDt} and  #{endDt}
 	]]>
@@ -493,10 +493,10 @@ select aa.channel_gb channelGb
 		,bb.sale_price salePrice
 		,bb.deli_price deliPrice
 		,bb.dc_sum_price dcSumPrice
-		,(bb.sale_price + bb.deli_price - bb.dc_sum_price) totalPrice 
+		,(bb.sale_price + bb.deli_price - bb.dc_sum_price) totalPrice
 		,bb.list_image_data listImageData
 		,bb.channel_order_no  channelOrderNo
-		,bb.channel_order_seq  channelOrderSeq		
+		,bb.channel_order_seq  channelOrderSeq
 		from tb_order_master aa
 		,tb_order_detail bb
 		where 1=1
