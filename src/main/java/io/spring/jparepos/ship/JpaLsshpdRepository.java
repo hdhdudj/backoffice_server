@@ -14,7 +14,8 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
     @Query("select max(d.shipSeq) from Lsshpd d where d.shipId=?1")
     String findMaxSeq(String shipId);
 
-    Lsshpd findByShipIdAndShipSeq(String shipId, String shipSeq);
+    @Query("select ld from Lsshpd ld join fetch ld.tbOrderDetail to where ld.shipId=:shipId and ld.shipSeq=:shipSeq")
+    Lsshpd findByShipIdAndShipSeq(@Param("shipId") String shipId, @Param("shipSeq") String shipSeq);
 
     /**
      * 출고내역 가져오는 쿼리
@@ -45,9 +46,9 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
             "and (:shipId is null or trim(:shipId)='' or lsd.shipId=:shipId) " +
             "and (:assortNm is null or trim(:assortNm)='' or it.assortNm like concat('%', :assortNm, '%')) " +
             "and (:vendorId is null or trim(:vendorId)='' or it.vendorId=:vendorId)" +
-            "and lsm.shipStatus=:shipStatus "
-            + "and (:orderId is null or trim(:orderId)='' or lsd.orderId=:orderId)"
-            + "and (:orderSeq is null or trim(:orderSeq)='' or lsd.orderSeq=:orderSeq)")
+            "and lsm.shipStatus=:shipStatus " +
+            "and (:orderId is null or trim(:orderId)='' or lsd.orderId=:orderId) " +
+            "and (:orderSeq is null or trim(:orderSeq)='' or lsd.orderSeq=:orderSeq)")
     List<Lsshpd> findShipIndicateList(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end,
                                       @Param("assortId") String assortId,
                                       @Param("shipId") String shipId,

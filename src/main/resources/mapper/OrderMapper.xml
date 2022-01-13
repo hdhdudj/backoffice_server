@@ -185,7 +185,7 @@ from (select aa.channel_gb channel_gb,
 		LEFT OUTER JOIN ititmm as itm
 		    on tod.assort_id = itm.assort_id and tod.item_id = itm.item_id
 		 LEFT OUTER JOIN tb_member AS tm    -- A_TABLE 기준
-		              ON tom.cust_id = tm.cust_id
+		              ON tom.deli_id = tm.deli_id
 		 LEFT OUTER JOIN tb_member_address AS tma    -- A_TABLE 기준
 			  ON tom.cust_id = tma.cust_id
 		where  1=1
@@ -291,7 +291,7 @@ from (select aa.channel_gb channel_gb,
 		LEFT OUTER JOIN ititmm as itm
 		    on tod.assort_id = itm.assort_id and tod.item_id = itm.item_id
 		 LEFT OUTER JOIN tb_member AS tm    -- A_TABLE 기준
-		              ON tom.cust_id = tm.cust_id
+		              ON tom.deli_id = tm.deli_id
 		 LEFT OUTER JOIN tb_member_address AS tma    -- A_TABLE 기준
 			  ON tom.cust_id = tma.cust_id
 		where  1=1

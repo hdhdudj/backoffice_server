@@ -333,9 +333,9 @@ public class JpaShipService {
 
 		List<String> ret = new ArrayList<String>();
 
-		String shipId = this.getShipId();
+//		String shipId = this.getShipId();
 		Lsshpm lsshpm = jpaLsshpmRepository.findById(ship.getShipId()).orElseGet(()-> null); //new Lsshpm(shipId, shipIndicateSaveListData);
-		Lsshpd lsshpd = jpaLsshpdRepository.findByShipIdAndShipSeq(ship.getShipId(), ship.getShipSeq()); //new Lsshpd(ship);
+//		Lsshpd lsshpd = jpaLsshpdRepository.findByShipIdAndShipSeq(ship.getShipId(), ship.getShipSeq()); //new Lsshpd(ship);
 
 		lsshpm.setInstructDt(LocalDateTime.now());
 		lsshpm.setShipStatus(StringFactory.getGbTwo()); // 01 : 이동지시or출고지시, 02 : 이동지시or출고지시 접수, 04 : 출고
@@ -544,9 +544,7 @@ public class JpaShipService {
         // 1. ititmc의 두 qty에서 처리된 양만큼 빼기
         List<Lsshpd> lsshpdList = new ArrayList<>();
         for(ShipSaveListData.Ship ship : shipSaveListData.getShips()){
-            Lsshpd lsshpd = em.createQuery("select ld from Lsshpd ld join fetch ld.tbOrderDetail to where ld.shipId=?1 and ld.shipSeq=?2",Lsshpd.class)
-                    .setParameter(1,ship.getShipId())
-                    .setParameter(2, ship.getShipSeq()).getSingleResult();//jpaLsshpdRepository.findByShipIdAndShipSeq(ship.getShipId(), ship.getShipSeq());
+            Lsshpd lsshpd = jpaLsshpdRepository.findByShipIdAndShipSeq(ship.getShipId(), ship.getShipSeq());
 
             // 수량 완전입고로 변경
             lsshpd.setShipQty(lsshpd.getShipIndicateQty());
