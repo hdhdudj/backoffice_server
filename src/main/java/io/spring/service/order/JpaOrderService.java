@@ -504,7 +504,7 @@ public class JpaOrderService {
      * Ititmc list를 loop 돌면서 qty 관련 계산
      */
     private boolean loopItitmc(List<Ititmc> ititmcList, TbOrderDetail tbOrderDetail){
-<<<<<<< HEAD
+
 
 		throw new IllegalArgumentException("loopItitmc use ititmc");
 //
@@ -520,18 +520,19 @@ public class JpaOrderService {
 //            }
 //        }
 //        return false;
-=======
-        long orderQty = tbOrderDetail.getQty();
-        boolean isBigOneExist = false;
-        for(Ititmc ititmc : ititmcList){
-            if(ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()){
-                ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
-                this.makeShipDataByDeposit(ititmc, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
-                return true;
-            }
-        }
-        return false;
->>>>>>> dev
+
+		// 이부분은 일부러 오류낼려고 처리한 내역임.랙처리되면서 사라지는 내용 2022-01-14
+//        long orderQty = tbOrderDetail.getQty();
+//        boolean isBigOneExist = false;
+//        for(Ititmc ititmc : ititmcList){
+//            if(ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()){
+//                ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
+//                this.makeShipDataByDeposit(ititmc, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
+//                return true;
+//            }
+//        }
+//        return false;
+
     }
 
 	/**

@@ -612,7 +612,8 @@ public class JpaMoveService {
             
 			Ititmc ititmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(
 					goods.getAssortId(), goods.getItemId(), rackNo, StringFactory.getStrEleven(),
-					Utilities.dateToLocalDateTime(goods.getDepositDt()));
+			// Utilities.dateToLocalDateTime(goods.getDepositDt()));
+					goods.getDepositDt());
 //
 //			// 상품이동지시할떄 주문건의 수량을 뺴기위해서 넣은 로직인데 이동지시를 그전에 만드는걸로 로직을 변경하여 제외
 //			// List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository
@@ -673,7 +674,7 @@ public class JpaMoveService {
 
 			p.put("assortId", goods.getAssortId());
 			p.put("itemId", goods.getItemId());
-			p.put("effStaDt", Utilities.dateToLocalDateTime(goods.getDepositDt()));
+			p.put("effStaDt", goods.getDepositDt()); // Utilities.dateToLocalDateTime(goods.getDepositDt()));
 			p.put("itemGrade", "11");
 			p.put("storageId", StorageId);
 			p.put("rackNo", rackNo);

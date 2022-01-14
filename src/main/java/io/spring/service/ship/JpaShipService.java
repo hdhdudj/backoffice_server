@@ -9,20 +9,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 
-<<<<<<< HEAD
-=======
-import io.spring.infrastructure.mapstruct.ShipItemListDataMapper;
-import io.spring.model.goods.entity.Ititmm;
-import io.spring.model.goods.entity.Itvari;
->>>>>>> dev
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.spring.enums.TrdstOrderStatus;
+import io.spring.infrastructure.mapstruct.ShipItemListDataMapper;
 import io.spring.infrastructure.mapstruct.ShipListDataResponseMapper;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
@@ -41,6 +35,8 @@ import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.deposit.entity.Lsdpsm;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
+import io.spring.model.goods.entity.Ititmm;
+import io.spring.model.goods.entity.Itvari;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
 import io.spring.model.order.entity.TbOrderMaster;
@@ -666,13 +662,8 @@ public class JpaShipService {
 
 				orderList.add(m);
 
-<<<<<<< HEAD
-				this.changeStatusCdOfTbOrderDetail(orderList, "D02");
-			
-				
-=======
+
 				this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.D02.toString());
->>>>>>> dev
 
 			}     
             

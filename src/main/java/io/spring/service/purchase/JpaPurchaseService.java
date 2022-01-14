@@ -6,18 +6,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-<<<<<<< HEAD
-=======
 import java.util.HashMap;
 import java.util.HashSet;
->>>>>>> dev
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.apache.commons.lang3.StringUtils;
@@ -48,17 +44,13 @@ import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.model.common.entity.Cmstgm;
 import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.deposit.response.PurchaseListInDepositModalData;
-<<<<<<< HEAD
-=======
 import io.spring.model.goods.entity.IfBrand;
->>>>>>> dev
 import io.spring.model.goods.entity.Itaimg;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.entity.Itvari;
 import io.spring.model.goods.idclass.ItitmtId;
-import io.spring.model.order.entity.TbMember;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
 import io.spring.model.purchase.entity.Lspchb;
@@ -91,12 +83,9 @@ public class JpaPurchaseService {
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
     private final JpaIfBrandRepository jpaIfBrandRepository;
 
-<<<<<<< HEAD
 	private final JpaCmstgmRepository jpaCmstgmRepository;
 
-=======
 	private final JpaLsshpdRepository jpaLsshpdRepository;
->>>>>>> dev
 	private final JpaLsshpmRepository jpaLsshpmRepository;
 
 	private final JpaTbOrderDetailRepository tbOrderDetailRepository;
