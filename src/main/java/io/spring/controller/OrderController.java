@@ -506,6 +506,9 @@ public class OrderController {
 		if (ifStatus != null && !ifStatus.equals("")) {
 			map.put("ifStatus", ifStatus);
 		}
+		if (orderName != null && !orderName.trim().equals("")) {
+			map.put("orderName", orderName);
+		}
 
 		CancelOrderListResponse r = myBatisOrderService.getOrderCancelList(map);
 

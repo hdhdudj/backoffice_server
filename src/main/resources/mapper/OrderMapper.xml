@@ -535,6 +535,7 @@ select aa.channel_gb channelGb
 		,bb.assort_id assortId
 		,bb.item_id itemId
 		,bb.goods_nm goodsNm
+		,cc.order_name orderName
 	,  (select b1.option_nm
                 from ititmm b2, itvari b1
                 where b2.assort_id=bb.assort_id
@@ -559,14 +560,19 @@ select aa.channel_gb channelGb
                   ,aa.if_status ifStatus
                   ,aa.if_msg ifMsg
 		from if_order_cancel  aa
-		,tb_order_detail bb
+		,tb_order_detail bb, tb_order_master cc
 		where 1=1
 		and aa.if_dt between #{startDt} and  #{endDt}
 		and aa.if_status =#{ifStatus}
 		and aa.channel_order_no = bb.channel_order_no 
 			and aa.channel_order_seq = bb.channel_order_seq
 				]]>
-	</select>	
+			<if test='orderName != null and orderName.trim() != ""'>
+				<![CDATA[
+				and bb.channel_order_no =#{orderName}
+			]]>
+			</if>
+		</select>
 	
 	
 	
