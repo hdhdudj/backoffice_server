@@ -566,10 +566,11 @@ select aa.channel_gb channelGb
 		and aa.if_status =#{ifStatus}
 		and aa.channel_order_no = bb.channel_order_no 
 			and aa.channel_order_seq = bb.channel_order_seq
+		  and bb.order_id = cc.order_id
 				]]>
 			<if test='orderName != null and orderName.trim() != ""'>
 				<![CDATA[
-				and bb.channel_order_no =#{orderName}
+				and cc.order_name =#{orderName}
 			]]>
 			</if>
 		</select>
