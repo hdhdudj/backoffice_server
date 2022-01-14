@@ -142,7 +142,6 @@
 		LEFT JOIN itcatg ic ON i.disp_category_id = ic.category_id
 		where 	1=1
 		  and i.reg_Dt between #{regDtBegin} and  #{regDtEnd}
-		  and i.shortage_yn =#{shortageYn}
 		<if test='assortId != null and assortId.trim() != ""'>
 			<![CDATA[
 			and i.assort_id = #{assortId}
@@ -151,6 +150,11 @@
 		<if test='assortNm != null and assortNm.trim() != ""'>
 			<![CDATA[
 			and i.assort_nm like concat('%',#{assortNm},'%')
+			]]>
+		</if>
+		<if test='shortageYn != null and shortageYn.trim() != ""'>
+			<![CDATA[
+			and i.shortage_yn = #{shortageYn}
 			]]>
 		</if>
 	</select>	
@@ -193,11 +197,14 @@
 			 <![CDATA[		
 		and i.assort_nm like CONCAT( '%',  #{assortNm}, '%') 
 			 ]]>
-			</if>		
-					
-				 		<![CDATA[		  
+			</if>
+		<if test='shortageYn != null and shortageYn.trim() != ""'>
+			<![CDATA[
+		and i.shortage_yn = #{shortageYn}
+			 ]]>
+		</if>
+				 		<![CDATA[
 		  and i.reg_Dt between #{regDtBegin} and  #{regDtEnd}
-		  and i.shortage_yn =#{shortageYn}
 		  and i.assort_id = im.assort_id
 		  ]]>
 	</select>	
@@ -253,7 +260,7 @@
 			 ,i.buy_supply_discount buySupplyDiscount
 			 ,f_categoryFullPathId(i.disp_category_id) fullCatePathId
 		from itasrt i
-		LEFT JOIN if_brand ib ON i.brand_id = ib.channel_brand_id
+		LEFT JOIN if_brand ib ON i.brand_id = ib.brand_id
 		LEFT JOIN itcatg ic ON i.disp_category_id = ic.category_id
 		LEFT JOIN itaimg img ON i.assort_id = img.assort_id
 		,ititmm im

@@ -6,6 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.SetOptionInterface;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import lombok.AccessLevel;
@@ -36,7 +37,7 @@ public class MovedDetailResponseData {
     @Getter
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class Move{
+    public static class Move implements SetOptionInterface {
         public Move(Lsshpm lsshpm, Lsshpd lsshpd){
             this.shipId = lsshpd.getShipId();
             this.shipSeq = lsshpd.getShipSeq();
@@ -64,6 +65,7 @@ public class MovedDetailResponseData {
         private String assortNm;
         private String optionNm1;
         private String optionNm2;
+        private String optionNm3;
         private Long qty;
         private Float cost;
     }

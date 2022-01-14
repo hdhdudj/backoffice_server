@@ -60,7 +60,7 @@ public class ShipIndicateListData {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Ship implements SetOptionInterface {
         public Ship(TbOrderDetail tbOrderDetail, Lsshpm lsshpm, Lsshpd lsshpd){
-            TbMember tbMember = tbOrderDetail.getTbOrderMaster().getTbMember();
+//            TbMember tbMember = tbOrderDetail.getTbOrderMaster().getTbMember();
             this.shipIndDt = java.sql.Timestamp.valueOf(lsshpm.getReceiptDt());
             this.shipId = lsshpd.getShipId();
             this.shipSeq = lsshpd.getShipSeq();
@@ -69,7 +69,7 @@ public class ShipIndicateListData {
             this.deliMethod = tbOrderDetail.getDeliMethod();
             this.assortId = tbOrderDetail.getAssortId();
             this.itemId = tbOrderDetail.getItemId();
-            this.custNm = tbMember==null? null : tbMember.getCustNm();
+            this.custNm = tbOrderDetail.getTbOrderMaster().getTbMemberAddress().getDeliNm();//tbMember==null? null : tbMember.getCustNm();
             this.assortNm = tbOrderDetail.getGoodsNm();
             this.blNo = lsshpm.getBlNo(); // 트래킹 번호
             this.shipDt = Utilities.removeTAndTransToStr(lsshpm.getApplyDay());

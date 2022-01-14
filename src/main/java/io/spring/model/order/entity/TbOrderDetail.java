@@ -2,6 +2,8 @@ package io.spring.model.order.entity;
 
 import javax.persistence.*;
 
+import io.spring.model.goods.entity.IfBrand;
+import io.spring.model.purchase.entity.Lspchd;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.NotFound;
@@ -20,6 +22,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.engine.spi.PersistentAttributeInterceptable;
+import org.hibernate.engine.spi.PersistentAttributeInterceptor;
+
+import java.io.Serializable;
 
 @Entity
 @Table(name="tb_order_detail")
@@ -125,10 +131,45 @@ public class TbOrderDetail extends CommonProps
     @JsonIgnore
     private TbOrderMaster tbOrderMaster; // tbOrderMaster 연관관계
 
-    @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
-    private Itasrt itasrt; // itasrt 연관관계
+//    @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JsonIgnore
+//    private Itasrt itasrt; // itasrt 연관관계
+//
+//    @JoinColumns(
+//            {
+//                    @JoinColumn(name = "orderId", referencedColumnName = "orderId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none")),
+//                    @JoinColumn(name = "orderSeq", referencedColumnName = "orderSeq", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
+//            })
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    private Lspchd lspchd; // lspchd 연관관계
+//    public Lspchd getTbOrderDetail() {
+//        if (interceptor!=null) {
+//            return (Lspchd)interceptor.readObject(this, "lspchd", lspchd);
+//        }
+//        return lspchd;
+//    }
+//
+//    public void setTbOrderDetail(Lspchd tbOrderDetail) {
+//        if (interceptor!=null) {
+//            this.lspchd = (Lspchd) interceptor.writeObject(this,"lspchd", this.lspchd, lspchd);
+//            return ;
+//        }
+//        this.lspchd = lspchd;
+//    }
+//
+//    @Transient
+//    private PersistentAttributeInterceptor interceptor;
+//
+//    @Override
+//    public PersistentAttributeInterceptor $$_hibernate_getInterceptor() {
+//        return interceptor;
+//    }
+//
+//    @Override
+//    public void $$_hibernate_setInterceptor(PersistentAttributeInterceptor interceptor) {
+//        this.interceptor = interceptor;
+//    }
 	/*
 	 * @JoinColumns({
 	 * 

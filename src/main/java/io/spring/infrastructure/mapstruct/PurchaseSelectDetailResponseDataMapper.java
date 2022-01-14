@@ -20,5 +20,6 @@ public interface PurchaseSelectDetailResponseDataMapper {
     @Mapping(target = "purchaseStatus", expression = "java(p.getPurchaseStatus() == null? \"\" : p.getPurchaseStatus())")
     @Mapping(target = "piNo", expression = "java(p.getPiNo() == null? \"\" : p.getPiNo())")
     @Mapping(target = "memo", expression = "java(p.getMemo() == null? \"\" : p.getMemo())")
+    @Mapping(target = "deliFee", expression = "java(p.getDeliFee() == null? \"\" : p.getDeliFee())")
     PurchaseSelectDetailResponseData nullToEmpty(PurchaseSelectDetailResponseData p);
 }

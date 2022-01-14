@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
+import io.spring.enums.DeliveryMethod;
 import io.spring.infrastructure.util.Utilities;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,7 +19,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderMasterListResponseData {
-
+	private DeliveryMethod d;
 
 	public OrderMasterListResponseData(HashMap<String, Object> m) {
 		this.channelGb = (String) m.get("channelGb"); // 채널번호
@@ -43,7 +44,7 @@ public class OrderMasterListResponseData {
 		this.qty = m.get("qty") == null ? null : Long.parseLong(Integer.toString((Integer)m.get("qty"))); // 수량
 		this.goodsPrice = m.get("goodsPrice") == null ? null : ((BigDecimal) m.get("goodsPrice")).doubleValue(); // 금액, 총상품가
 		this.deliPrice = m.get("deliPrice") == null ? null : ((BigDecimal) m.get("deliPrice")).doubleValue(); // 배송비
-		this.deliMethod = Utilities.convertFieldNameToEnum(m.get("deliMethod") == null ? null : (String) m.get("deliMethod")); // 배송방법
+		this.deliMethod = Utilities.convertFieldNameToEnum(DeliveryMethod.values() ,m.get("deliMethod") == null ? null : (String) m.get("deliMethod")); // 배송방법
 		this.deliveryInfo = m.get("deliveryInfo") == null ? null : (String) m.get("deliveryInfo"); // 배송구분
 		this.scmNo = m.get("scmNo") == null ? null : Integer.toString((Integer)m.get("scmNo")); // 공급사 번호
 		this.deliNm = m.get("deliNm") == null ? null : (String) m.get("deliNm"); // 수령자

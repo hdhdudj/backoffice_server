@@ -39,6 +39,7 @@ public class PurchaseSelectDetailResponseData {
         this.dealtypeCd = lspchm.getDealtypeCd();
         this.piNo = lspchm.getPiNo();
         this.memo = lspchm.getMemo();
+        this.deliFee = lspchm.getDeliFee() == null? "" : lspchm.getDeliFee()+"";
     }
 //    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
 //    @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -60,6 +61,8 @@ public class PurchaseSelectDetailResponseData {
     // 21-12-07 추가
     private String piNo;
     private String memo;
+    // 22-01-06 추가
+    private String deliFee;
 
     @Getter
     @Setter
@@ -86,7 +89,10 @@ public class PurchaseSelectDetailResponseData {
             this.origin = itasrt.getOrigin();
             this.custCategory = itasrt.getCustCategory();
             this.material = ititmm.getMaterial();
-            this.imagePath = itaimg == null? null : this.imgServerUrl + itaimg.getImagePath() + itaimg.getImageName();
+            this.imagePath = itasrt.getListImageData();
+
+            // 21-12-21 추가 (입고처리 발주선택창에 붙는 디테일 리스트에 필요한 애들)
+
         }
 //        public Items(Lspchd lspchd, TbOrderDetail tbOrderDetail, Itasrt itasrt){
 //            this.purchaseId = lspchd.getPurchaseNo();
@@ -133,5 +139,18 @@ public class PurchaseSelectDetailResponseData {
         // 21-12-06 추가
         private String custNm;
         private String channelOrderNo;
+
+        // 21-12-21 추가 (입고처리 발주선택창에 붙는 디테일 리스트에 필요한 애들)
+        private String custTel;
+        private String receiverNm;
+        private String receiverTel;
+        private String receiverHp;
+        private String receiverAddr1;
+        private String receiverAddr2;
+        private String receiverZonecode;
+        private String receiverZipcode;
+        private String orderMemo;
+        private String brandNm;
+        private String brandId;
     }
 }

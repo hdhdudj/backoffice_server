@@ -1,11 +1,13 @@
 package io.spring.model.goods.idclass;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode
 public class ItvariId implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;

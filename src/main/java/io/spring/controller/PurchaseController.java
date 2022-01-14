@@ -127,7 +127,7 @@ public class PurchaseController {
     }
 
     /**
-     * 발주(주문), 발주(상품) 저장 공통
+     * 발주등록(주문), 발주등록(상품) 저장 공통
      * @param purchaseInsertRequestData
      * @return
      */
@@ -147,6 +147,9 @@ public class PurchaseController {
         return ResponseEntity.ok(res);
     }
 
+    /**
+     * 발주사후 업데이트 : 마스터 부분, 디테일에선 발주가만
+     */
     @PostMapping(path = "/{purchaseNo}/update") // update
     public ResponseEntity savePurchaseJpa(@PathVariable("purchaseNo") String purchaseNo, @RequestBody PurchaseInsertRequestData purchaseInsertRequestData){
         log.debug("update purchase by jpa");
@@ -224,15 +227,16 @@ public class PurchaseController {
     public ResponseEntity getChoosePurchaseModalList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
                                                      @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
                                                      @RequestParam @Nullable String siteOrderNo,
-                                                     @RequestParam @Nullable String channelOrderNo,
+                                                     @RequestParam @Nullable String purchaseNo,
+                                                     @RequestParam @Nullable String unifiedOrderNo,
                                                      @RequestParam @Nullable String brandId,
                                                      @RequestParam @Nullable String vendorId,
-                                                     @RequestParam @Nullable String purchaseGb) {
+			@RequestParam @Nullable String purchaseGb, @RequestParam @Nullable String orderNm) {
+
 
 		System.out.println("getChoosePurchaseModalList");
-
         PurchaseMasterListResponseData purchaseMasterListResponseData = jpaPurchaseService
-                .getPurchaseMasterList2(startDt, endDt, siteOrderNo, channelOrderNo, brandId, vendorId, purchaseGb);
+                .getPurchaseMasterList2(startDt, endDt, siteOrderNo, unifiedOrderNo, brandId, vendorId, purchaseGb, orderNm, purchaseNo);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),purchaseMasterListResponseData);
         return ResponseEntity.ok(res);
     }
@@ -291,5 +295,36 @@ public class PurchaseController {
         }
         return ResponseEntity.ok(res);
     }
+
+	@PostMapping(path = "/orders/{orderId}/{orderSeq}/cancel") // 취소처리
+	public ResponseEntity cancelPurchase(@PathVariable("orderId") String orderId,
+			@PathVariable("orderSeq") String orderSeq
+	// ,@RequestBody PurchaseCancelRequestData purchaseCancelRequestData
+	) {
+		log.debug("cancelPurchase");
+
+		HashMap<String, Object> p = new HashMap<String, Object>();
+
+		p.put("orderId", "O00043303");
+
+		p.put("orderSeq", "0001");
+		p.put("cancelGb", "00");
+		p.put("cancelMsg", "etc");
+
+		jpaPurchaseService.cancelOrderPurchase(p);
+
+		// String purchaseNo2 = jpaPurchaseService.createPurchaseSquence(purchaseNo,
+		// purchaseInsertRequestData);
+
+		// jpaOrderService.updateStatusCd("O2106100714498480", "0001", "B02");
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
+				"");
+		if (res == null) {
+			return null;
+		}
+		return ResponseEntity.ok(res);
+	}
+
 }
 

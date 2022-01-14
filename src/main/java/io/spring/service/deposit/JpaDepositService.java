@@ -440,7 +440,7 @@ public class JpaDepositService {
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
         List<DepositSelectListResponseData.Deposit> depositList = new ArrayList<>();
-        TypedQuery<Lsdpsd> query = em.createQuery("select ld from Lsdpsd ld " +
+        TypedQuery<Lsdpsd> query = em.createQuery("select distinct (ld) from Lsdpsd ld " +
                         "left join fetch ld.lsdpsm lm " +
                         "left join fetch ld.lspchd lcd " +
                         "left join fetch lcd.lspchm lcm " +

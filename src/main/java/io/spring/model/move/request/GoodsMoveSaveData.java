@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import io.spring.infrastructure.custom.CustomLocalDateTimeDeSerializer;
 import io.spring.model.goods.entity.Ititmc;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -11,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -42,8 +45,9 @@ public class GoodsMoveSaveData {
         }
         private String storageId;
         private String assortId;
+        @JsonDeserialize(using = CustomLocalDateTimeDeSerializer.class)
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-        private Date depositDt;
+        private LocalDateTime depositDt;
         private String itemId;
         private String goodsKey;
         private String assortNm;

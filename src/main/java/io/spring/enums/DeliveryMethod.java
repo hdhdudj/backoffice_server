@@ -1,11 +1,12 @@
 package io.spring.enums;
 
+import io.spring.model.common.EnumCommonInterface;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public enum DeliveryMethod {
+public enum DeliveryMethod implements EnumCommonInterface {
     delivery("001"),
     air("002"),
     ship("003"),

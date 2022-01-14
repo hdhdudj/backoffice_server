@@ -1,7 +1,10 @@
 package io.spring.service.order;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -24,10 +27,14 @@ import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.goods.JpaItitmmRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
 import io.spring.jparepos.goods.JpaTmitemRepository;
+import io.spring.jparepos.order.JpaIfOrderCancelRepository;
+import io.spring.jparepos.order.JpaIfOrderDetailRepository;
+import io.spring.jparepos.order.JpaIfOrderMasterRepository;
 import io.spring.jparepos.order.JpaOrderLogRepository;
 import io.spring.jparepos.order.JpaOrderStockRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.order.JpaTbOrderHistoryRepository;
+import io.spring.jparepos.order.JpaTbOrderMasterRepository;
 import io.spring.jparepos.purchase.JpaLspchbRepository;
 import io.spring.jparepos.purchase.JpaLspchdRepository;
 import io.spring.jparepos.ship.JpaLsshpdRepository;
@@ -41,10 +48,14 @@ import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.goods.entity.Ititmt;
 import io.spring.model.goods.entity.Tmitem;
+import io.spring.model.order.entity.IfOrderCancel;
+import io.spring.model.order.entity.IfOrderDetail;
+import io.spring.model.order.entity.IfOrderMaster;
 import io.spring.model.order.entity.OrderLog;
 import io.spring.model.order.entity.OrderStock;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
+import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.order.request.OrderStockMngInsertRequestData;
 import io.spring.model.purchase.entity.Lspchb;
 import io.spring.model.purchase.entity.Lspchd;
@@ -87,6 +98,14 @@ public class JpaOrderService {
 
 	private final JpaItitmmRepository jpaItitmmRepository;
 
+	private final JpaIfOrderDetailRepository jpaIfOrderDetailRepository;
+
+	private final JpaIfOrderMasterRepository jpaIfOrderMasterRepository;
+
+	private final JpaTbOrderMasterRepository jpaTbOrderMasterRepository;
+
+	private final JpaIfOrderCancelRepository jpaIfOrderCancelRepository;
+
     private final EntityManager em;
 
     private final KakaoBizMessageService kakaoBizMessageService;
@@ -103,7 +122,7 @@ public class JpaOrderService {
                 em.createQuery("select td from TbOrderDetail td " +
                                 "join fetch td.tbOrderMaster tm " +
                                 "left join fetch td.ititmm it " +
-                                "left join fetch td.itasrt itasrt " +
+                                "left join fetch it.itasrt itasrt " +
                                 "where td.orderId = ?1" +
                                 "and td.orderSeq = ?2 "
                         , TbOrderDetail.class);
@@ -117,11 +136,11 @@ public class JpaOrderService {
             log.debug("There is no ititmm of orderId : " + orderId + " and orderSeq : " + orderSeq);
             return;
         }
-        else if(tbOrderDetail.getItasrt() == null){
+        else if(tbOrderDetail.getItitmm().getItasrt() == null){
             log.debug("There is no itasrt of orderId : " + orderId + " and orderSeq : " + orderSeq);
             return;
         }
-        Itasrt itasrt = tbOrderDetail.getItasrt();
+        Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
         String prevStatus = tbOrderDetail.getStatusCd();
 //        TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
         String assortGb = itasrt.getAssortGb();
@@ -149,7 +168,7 @@ public class JpaOrderService {
 		log.debug("in changeOrderStatus ; orderId : " + orderId + ", orderSeq : " + orderSeq);
 		TypedQuery<TbOrderDetail> query = em.createQuery(
 				"select td from TbOrderDetail td " + "join fetch td.tbOrderMaster tm " + "left join fetch td.ititmm it "
-						+ "left join fetch td.itasrt itasrt " + "where td.orderId = ?1" + "and td.orderSeq = ?2 ",
+						+ "left join fetch it.itasrt itasrt " + "where td.orderId = ?1" + "and td.orderSeq = ?2 ",
 				TbOrderDetail.class);
 		query.setParameter(1, orderId).setParameter(2, orderSeq);
 		TbOrderDetail tbOrderDetail = query.getSingleResult();
@@ -428,6 +447,7 @@ public class JpaOrderService {
 
     /**
      * Ititmt list를 loop 돌면서 qty 관련 계산
+     * 10-21 수정 : 해당 주문 이상의 숫자를 가진 ititmt가 존재해야 함.
      */
     private String loopItitmt(List<Ititmt> ititmtList, TbOrderDetail tbOrderDetail, DirectOrImport di) {
 
@@ -438,6 +458,7 @@ public class JpaOrderService {
         boolean isStockCandidateExist = false;
         long orderQty = tbOrderDetail.getQty();
         String goodsStorageId = null;
+
         for(Ititmt ititmt : ititmtList){
             if(ititmt.getTempQty() >= orderQty + ititmt.getTempIndicateQty()){
 				ititmt.setTempQty(ititmt.getTempQty() - orderQty);
@@ -483,6 +504,7 @@ public class JpaOrderService {
      * Ititmc list를 loop 돌면서 qty 관련 계산
      */
     private boolean loopItitmc(List<Ititmc> ititmcList, TbOrderDetail tbOrderDetail){
+<<<<<<< HEAD
 
 		throw new IllegalArgumentException("loopItitmc use ititmc");
 //
@@ -498,6 +520,18 @@ public class JpaOrderService {
 //            }
 //        }
 //        return false;
+=======
+        long orderQty = tbOrderDetail.getQty();
+        boolean isBigOneExist = false;
+        for(Ititmc ititmc : ititmcList){
+            if(ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()){
+                ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
+                this.makeShipDataByDeposit(ititmc, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
+                return true;
+            }
+        }
+        return false;
+>>>>>>> dev
     }
 
 	/**
@@ -544,7 +578,7 @@ public class JpaOrderService {
 	private String makeMoveDataByDeposit(Ititmc ititmc, TbOrderDetail tbOrderDetail, String shipStatus) {
 		String shipId = this.getShipId();
 
-		Itasrt itasrt = tbOrderDetail.getItasrt();
+		Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
 		// lsshpm 저장
 		Lsshpm lsshpm = new Lsshpm("03", shipId, itasrt, tbOrderDetail);
 
@@ -581,7 +615,7 @@ public class JpaOrderService {
     private String makeShipDataByDeposit(Ititmc ititmc, TbOrderDetail tbOrderDetail, String shipStatus) {
         String shipId = this.getShipId();
 
-        Itasrt itasrt = tbOrderDetail.getItasrt();
+        Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
         // lsshpm 저장
         Lsshpm lsshpm = new Lsshpm("01", shipId, itasrt, tbOrderDetail);
 
@@ -617,7 +651,7 @@ public class JpaOrderService {
 	private String makeDomesticShipDataByDeposit(Ititmc ititmc, TbOrderDetail tbOrderDetail, String shipStatus) {
 		String shipId = this.getShipId();
 
-		Itasrt itasrt = tbOrderDetail.getItasrt();
+		Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
 		// lsshpm 저장
 		Lsshpm lsshpm = new Lsshpm("01", shipId, itasrt, tbOrderDetail);
 
@@ -790,18 +824,19 @@ public class JpaOrderService {
         return sum;
     }
 
-//    public TbOrderDetail getNullTest(String orderId, String orderSeq) {
-//        List<TbOrderDetail> tbOrderDetail = em.createQuery("select t from TbOrderDetail t " +
-//                "join fetch t.itasrt " +
-//                "where t.orderId in (?1) and t.orderSeq=?2", TbOrderDetail.class)
-//                .setParameter(1, Arrays.asList(new String[]{"O00020410"}))//, "O00020410"O00025071
-//                .setParameter(2,orderSeq).getResultList();
-//
-//        if(tbOrderDetail.get(0).getItasrt() == null){
-//            System.out.println("널입니다.");
-//        }
-//        return tbOrderDetail.get(0);
-//    }
+    public TbOrderDetail getNullTest(String orderId, String orderSeq) {
+        TbOrderDetail tbOrderDetail = em.createQuery("select t from TbOrderDetail t " +
+                "left join fetch t.ititmm im " +
+                "left join fetch im.itasrt " +
+                "where t.orderId=?1 and t.orderSeq=?2", TbOrderDetail.class)
+                .setParameter(1, orderId)//, "O00020410"O00025071
+                .setParameter(2,orderSeq).getSingleResult();
+
+        if(tbOrderDetail.getItitmm().getItasrt() == null){
+            System.out.println("널입니다.");
+        }
+        return tbOrderDetail;
+    }
 
     private enum ItitmcQty{
         QTY, SHIPINDQTY
@@ -816,6 +851,7 @@ public class JpaOrderService {
         TbOrderDetail td = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(tbOrderNo, "0001");
         smsService.sendSmsMessage(body, td);
     }
+
 
 	@Transactional
 	public boolean saveGoodsIfoption(String orderId, String orderSeq, String assortId, String channelGoodsNo,
@@ -911,6 +947,164 @@ public class JpaOrderService {
 
 
 	}
+
+	@Transactional
+	public boolean cancelGodoOrder(HashMap<String, Object> p) {
+
+//		m.put("orderId", o.getOrderId());
+//		m.put("orderSeq", o.getOrderSeq());
+//		m.put("cancelGb", o.getCancelGb());
+//		m.put("cancelMsg", o.getCancelMsg());
+//		m.put("cancelQty", o.getCancelQty());
+//		m.put("ifCancelGb", o.getIfCancelGb());
+//		m.put("userId", userId);
+
+		String seq = p.get("seq").toString();
+
+		IfOrderCancel ioc = jpaIfOrderCancelRepository.findById(seq).orElse(null);
+
+		System.out.println(ioc.getIfNo());
+
+		if (ioc == null || !ioc.getIfStatus().equals("01")) {
+			System.out.println("취소요청데이타 이상!!!");
+			throw new RuntimeException("취소요청데이타 이상!!!.");
+		}
+
+		// jpaIfOrderCancelRepository.
+
+		Date today = new Date();
+
+		LocalDateTime todayLDT = Instant.ofEpochMilli(today.getTime()).atZone(ZoneId.of("Asia/Seoul"))
+				.toLocalDateTime();
+
+
+
+
+			TbOrderDetail od = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(p.get("orderId").toString(),
+					p.get("orderSeq").toString());
+
+			TbOrderMaster om = jpaTbOrderMasterRepository.findById(p.get("orderId").toString()).orElse(null);
+
+			IfOrderDetail iod = jpaIfOrderDetailRepository
+					.findByChannelOrderNoAndChannelOrderSeq(od.getChannelOrderNo(), od.getChannelOrderSeq());
+			
+			IfOrderMaster iom = jpaIfOrderMasterRepository.findByChannelOrderNo(iod.getChannelOrderNo());
+
+			String ifCancelGb = ioc.getIfCancelGb().toString();
+
+			if (od.getStatusCd().equals("B01") || od.getStatusCd().equals("B02") || od.getStatusCd().equals("A01")) {
+				if (od.getStatusCd().equals("B02")) {
+					boolean r = jpaPurchaseService.cancelOrderPurchase(p);
+
+					System.out.println(r);
+
+				}
+
+				if (ifCancelGb.equals("01")) {
+					// 주문취소
+					updateOrderStatusCd(p.get("orderId").toString(), p.get("orderSeq").toString(), "X01");
+				} else if (ifCancelGb.equals("02")) {
+					// 상품수량변경
+				//	Long qty = 
+				od.setQty(iod.getGoodsCnt());
+
+				od.setGoodsPrice(iod.getFixedPrice());
+				od.setSalePrice(iod.getGoodsPrice());
+				od.setGoodsDcPrice(iod.getGoodsDcPrice());
+				od.setMemberDcPrice(iod.getMemberDcPrice());
+				od.setCouponDcPrice(iod.getCouponDcPrice());
+				// od.setDcSumPrice(iod.getDc);
+				od.setDeliPrice(iod.getDeliPrice());
+				od.setOptionPrice(iod.getOptionPrice());
+
+				float goodsDcPrice = iod.getGoodsDcPrice() == null ? 0 : iod.getGoodsDcPrice();
+				float memberDcPrice = iod.getMemberDcPrice() == null ? 0 : iod.getMemberDcPrice();
+				float couponDcPrice = iod.getCouponDcPrice() == null ? 0 : iod.getCouponDcPrice();
+				float adminDcPrice = iod.getAdminDcPrice() == null ? 0 : iod.getAdminDcPrice();
+
+				od.setDcSumPrice(goodsDcPrice + memberDcPrice + couponDcPrice + adminDcPrice);
+
+				om.setOrderAmt(iom.getPayAmt());
+				om.setReceiptAmt(iom.getPayAmt());
+				om.setTotalGoodsPrice(iom.getTotalGoodsPrice());
+				om.setTotalDeliveryCharge(iom.getTotalDeliveryCharge());
+				om.setTotalGoodsDcPrice(iom.getTotalGoodsDcPrice());
+				om.setTotalMemberDcPrice(iom.getTotalMemberDcPrice());
+				om.setTotalMemberOverlapDcPrice(iom.getTotalMemberOverlapDcPrice());
+				om.setTotalCouponGoodsDcPrice(iom.getTotalCouponGoodsDcPrice());
+				om.setTotalCouponOrderDcPrice(iom.getTotalCouponOrderDcPrice());
+				om.setTotalCouponDeliveryDcPrice(iom.getTotalCouponDeliveryDcPrice());
+				om.setTotalMileage(iom.getTotalMileage());
+				om.setTotalGoodsMileage(iom.getTotalGoodsMileage());
+				om.setTotalMemberMileage(iom.getTotalMemberMileage());
+				om.setTotalCouponGoodsMileage(iom.getTotalCouponGoodsMileage());
+				om.setTotalCouponOrderMileage(iom.getTotalCouponOrderMileage());
+
+				jpaTbOrderDetailRepository.save(od);
+				jpaTbOrderMasterRepository.save(om);
+
+			} else if (ifCancelGb.equals("03")) {
+				// 상품수량변경,주문취소
+				// Long qty =
+				od.setQty(iod.getGoodsCnt());
+
+				od.setGoodsPrice(iod.getFixedPrice());
+				od.setSalePrice(iod.getGoodsPrice());
+				od.setGoodsDcPrice(iod.getGoodsDcPrice());
+				od.setMemberDcPrice(iod.getMemberDcPrice());
+				od.setCouponDcPrice(iod.getCouponDcPrice());
+				// od.setDcSumPrice(iod.getDc);
+				od.setDeliPrice(iod.getDeliPrice());
+				od.setOptionPrice(iod.getOptionPrice());
+
+				float goodsDcPrice = iod.getGoodsDcPrice() == null ? 0 : iod.getGoodsDcPrice();
+				float memberDcPrice = iod.getMemberDcPrice() == null ? 0 : iod.getMemberDcPrice();
+				float couponDcPrice = iod.getCouponDcPrice() == null ? 0 : iod.getCouponDcPrice();
+				float adminDcPrice = iod.getAdminDcPrice() == null ? 0 : iod.getAdminDcPrice();
+
+				od.setDcSumPrice(goodsDcPrice + memberDcPrice + couponDcPrice + adminDcPrice);
+
+				om.setOrderAmt(iom.getPayAmt());
+				om.setReceiptAmt(iom.getPayAmt());
+				om.setTotalGoodsPrice(iom.getTotalGoodsPrice());
+				om.setTotalDeliveryCharge(iom.getTotalDeliveryCharge());
+				om.setTotalGoodsDcPrice(iom.getTotalGoodsDcPrice());
+				om.setTotalMemberDcPrice(iom.getTotalMemberDcPrice());
+				om.setTotalMemberOverlapDcPrice(iom.getTotalMemberOverlapDcPrice());
+				om.setTotalCouponGoodsDcPrice(iom.getTotalCouponGoodsDcPrice());
+				om.setTotalCouponOrderDcPrice(iom.getTotalCouponOrderDcPrice());
+				om.setTotalCouponDeliveryDcPrice(iom.getTotalCouponDeliveryDcPrice());
+				om.setTotalMileage(iom.getTotalMileage());
+				om.setTotalGoodsMileage(iom.getTotalGoodsMileage());
+				om.setTotalMemberMileage(iom.getTotalMemberMileage());
+				om.setTotalCouponGoodsMileage(iom.getTotalCouponGoodsMileage());
+				om.setTotalCouponOrderMileage(iom.getTotalCouponOrderMileage());
+
+				jpaTbOrderDetailRepository.save(od);
+				jpaTbOrderMasterRepository.save(om);
+
+				updateOrderStatusCd(p.get("orderId").toString(), p.get("orderSeq").toString(), "X01");
+
+				}
+
+				System.out.println("z05");
+				ioc.setIfStatus("02");
+				jpaIfOrderCancelRepository.save(ioc);
+			} else {
+
+				System.out.println("z06");
+				ioc.setIfStatus("99");
+				jpaIfOrderCancelRepository.save(ioc);
+			}
+			
+
+
+
+
+		return true;
+	}
+
+
 }
 
 

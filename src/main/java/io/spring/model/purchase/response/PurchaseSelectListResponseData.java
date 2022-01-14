@@ -163,6 +163,11 @@ public class PurchaseSelectListResponseData {
         private Float purchaseCost; // 발주금액
 		private String optionInfo;
 
+
 		private String rackNo = "";
+
+        // 21-12-20 추가
+        private String custNm;
+
     }
 }

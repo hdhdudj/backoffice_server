@@ -6,16 +6,13 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode
 public class ItitmcId implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;

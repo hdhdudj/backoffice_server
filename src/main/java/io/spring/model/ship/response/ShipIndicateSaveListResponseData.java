@@ -59,8 +59,8 @@ public class ShipIndicateSaveListResponseData {
 		// 사용안함 2021-10-18 jb
 		public Ship(TbOrderDetail tbOrderDetail) {
 			TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
-			Itasrt itasrt = tbOrderDetail.getItasrt();
-			TbMember tbMember = tbOrderMaster.getTbMember();
+			Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
+//			TbMember tbMember = tbOrderMaster.getTbMember();
 			this.orderDt = Utilities.removeTAndTransToStr(tbOrderDetail.getTbOrderMaster().getOrderDate());
 			this.assortGb = itasrt.getAssortGb();
 			this.orderId = tbOrderDetail == null ? null : tbOrderDetail.getOrderId();
@@ -69,7 +69,7 @@ public class ShipIndicateSaveListResponseData {
 			this.deliMethod = tbOrderDetail == null ? null : tbOrderDetail.getDeliMethod();
 			this.assortId = tbOrderDetail == null ? null : tbOrderDetail.getAssortId();
 			this.itemId = tbOrderDetail == null ? null : tbOrderDetail.getItemId();
-			this.custNm = tbMember == null ? null : tbMember.getCustNm();
+			this.custNm = tbOrderMaster.getTbMemberAddress().getDeliNm();//tbMember == null ? null : tbMember.getCustNm();
 			this.assortNm = itasrt.getAssortNm();
 //        this.availableQty =
 			this.qty = 0l;
@@ -91,7 +91,7 @@ public class ShipIndicateSaveListResponseData {
 			this.shipId = (String) map.get("shipId");
 			this.shipSeq = (String) map.get("shipSeq");
 			this.storageId = (String) map.get("storageId");
-			this.receiptDt = map.get("receiptDt").toString().substring(0, 19);
+			this.receiptDt = map.get("receiptDt").toString();
 
 			this.optionNm1 = (String) map.get("optionNm1");
 			this.optionNm2 = (String) map.get("optionNm2");
