@@ -58,6 +58,7 @@ and ld.order_id = tod.order_id
 and ld.order_seq = tod.order_seq
 and tod.status_cd ='C04'
 and tod.order_id = tom.order_id
+and it.add_goods_yn='02'
     	 ]]>
     	 <if test='storageId != null'>
 			 <![CDATA[
