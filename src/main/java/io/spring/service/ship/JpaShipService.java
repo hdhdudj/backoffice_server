@@ -150,6 +150,7 @@ public class JpaShipService {
         }
 
         List<String> shipIdList = new ArrayList<>();
+        List<String> orderIdList = new ArrayList<>();
 		List<HashMap<String, Object>> orderList = new ArrayList<>();
 
 		// List<ShipIndicateSaveListData.Ship> l = shipIndicateSaveListData.getShips();
@@ -160,12 +161,23 @@ public class JpaShipService {
 			m.put("order_id", ship.getOrderId());
 			m.put("order_seq", ship.getOrderSeq());
 
+			orderIdList.add(ship.getOrderId());
 			orderList.add(m);
 
 			List<String> shipIdList1 = this.saveShipIndicateSaveData(ship);
 			if (shipIdList1.size() > 0) {
 				shipIdList1.stream().forEach(x -> shipIdList.add(x));
 			}
+		}
+
+		// addGoods도 추가
+		List<Lsshpd> lsshpdList = jpaLsshpdRepository.findAddGoodsByOrderIdList(orderIdList, StringFactory.getThreeTwoCd()); // 002 (추가상품) 하드코딩
+		for(Lsshpd lsshpd : lsshpdList){
+			HashMap<String, Object> m = new HashMap<String, Object>();
+			m.put("order_id", lsshpd.getOrderId());
+			m.put("order_seq", lsshpd.getOrderSeq());
+
+			orderList.add(m);
 		}
 
 		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.D01.toString());
@@ -612,7 +624,6 @@ public class JpaShipService {
 	}
 
 	private void updateOrderStatusCd(String orderId, String orderSeq, String statusCd) {
-
 		TbOrderDetail tod = tbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
 		if (tod == null) {
 			log.debug("해당 주문이 존재하지 않습니다. - JpaPurchaseService.updateOrderStatusCd");

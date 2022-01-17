@@ -24,4 +24,9 @@ public class MyBatisShipDaoImpl implements MyBatisShipDao {
 		return shipMapper.getOrderShipList(param);
 	};
 
+	@Override
+	public List<HashMap<String, Object>> getOrderAddGoodsShipList(HashMap<String, Object> param) {
+		return shipMapper.getOrderAddGoodsShipList(param);
+	};
+
 }

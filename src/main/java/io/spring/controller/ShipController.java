@@ -92,7 +92,7 @@ public class ShipController {
     }
 
     /**
-     * 출고지시 화면 : 저장용. 출고지시 할 출고내역들을 선택 후 저장 버튼을 누르면 호출되는 api (출고번호 기준으로 불러옴)
+     * 출고지시 화면 : 출고지시 저장용. 출고지시 할 출고내역들을 선택 후 저장 버튼을 누르면 호출되는 api (출고번호 기준으로 불러옴)
      */
     @PostMapping(path = "/indicate")
     public ResponseEntity saveShipIndicate(@RequestBody ShipIndicateSaveListData shipIndicateSaveDataList){
