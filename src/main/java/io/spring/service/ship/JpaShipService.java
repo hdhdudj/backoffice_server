@@ -3,13 +3,11 @@ package io.spring.service.ship;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 
 import io.spring.infrastructure.mapstruct.ShipItemListDataMapper;
 import io.spring.model.goods.entity.Ititmm;
