@@ -637,7 +637,7 @@ public class JpaOrderService {
 	public void updateOrderStatusCd(String orderId, String orderSeq, String statusCd) {
 
 		TbOrderDetail tod = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
-        Date date = Utilities.getStringToDate(StringFactory.getDoomDay());
+        LocalDateTime date = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());
 		List<TbOrderHistory> tohs = jpaTbOrderHistoryRepository.findByOrderIdAndOrderSeqAndEffEndDt(orderId, orderSeq, date);
         if(statusCd.equals(tod.getStatusCd())){
             log.debug("변경하려는 주문상태가 현재 주문상태와 동일합니다.");
@@ -645,7 +645,7 @@ public class JpaOrderService {
         }
 		tod.setStatusCd(statusCd);
 
-		Date newEffEndDate = new Date();
+        LocalDateTime newEffEndDate = LocalDateTime.now();
 
 		for (int i = 0; i < tohs.size(); i++) {
 			tohs.get(i).setEffEndDt(newEffEndDate);
@@ -653,7 +653,7 @@ public class JpaOrderService {
 		 }
 
 		TbOrderHistory toh = new TbOrderHistory(orderId, orderSeq, statusCd, "001", newEffEndDate,
-				Utilities.getStringToDate(StringFactory.getDoomDay()));
+				Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
         // 임시 코드
         toh.setRegId("1");
         toh.setUpdId("1");

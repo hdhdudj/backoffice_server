@@ -66,7 +66,7 @@ public class JpaGoodsService {
      * @return GoodsResponseData
      */
     @Transactional
-    public void sequenceInsertOrUpdateGoods(GoodsInsertRequestData goodsInsertRequestData){
+    public String sequenceInsertOrUpdateGoods(GoodsInsertRequestData goodsInsertRequestData){
         // itasrt에 goods 정보 저장
         Itasrt itasrt = this.saveItasrt(goodsInsertRequestData);
         // tmmapi에 저장
@@ -91,6 +91,7 @@ public class JpaGoodsService {
 //        List<GoodsInsertResponseData.Attributes> attributesList = this.makeGoodsResponseAttributes(itvariList);
 //        List<GoodsInsertResponseData.Items> itemsList = this.makeGoodsResponseItems(ititmmList, itvariList);
 //        return this.makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
+        return itasrt.getAssortId();
     }
 
     /**
@@ -299,7 +300,7 @@ public class JpaGoodsService {
         itasrn.setLocalSale(goodsInsertRequestData.getLocalSale() == null || goodsInsertRequestData.getLocalSale().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getLocalSale()));
         itasrn.setShortageYn(goodsInsertRequestData.getShortageYn());
 //        jpaItasrnRepository.save(itasrn);
-        em.persist(itasrn);
+        jpaItasrnRepository.save(itasrn);
         return itasrn;
     }
 
@@ -342,7 +343,7 @@ public class JpaGoodsService {
                 itasrd.setTextHtmlGb(descriptionList.get(i).getTextHtmlGb());
             }
 //            jpaItasrdRepository.save(itasrd);
-            em.persist(itasrd);
+            jpaItasrdRepository.save(itasrd);
             itasrdList.add(itasrd);
         }
         return itasrdList;
@@ -780,7 +781,7 @@ public class JpaGoodsService {
      */
     private List<Ititmd> saveItemHistoryList(GoodsInsertRequestData goodsInsertRequestData, List<Ititmm> ititmmList) {
         List<Ititmd> ititmdList = new ArrayList<>();
-        Date effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
+        LocalDateTime effEndDt = Utilities.strToLocalDateTime(StringFactory.getDoomDayT()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
         List<Ititmd> allItitmdList = jpaItitmdRepository.findAll();
         for (Ititmm ititmm : ititmmList) {
             Ititmd ititmd = allItitmdList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId())
@@ -790,19 +791,15 @@ public class JpaGoodsService {
                 ititmd = new Ititmd(ititmm);
             }
             else{ // update
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(new Date());
-                cal.add(Calendar.SECOND, -1);
-                ititmd.setEffEndDt(cal.getTime());
+                LocalDateTime newDate = LocalDateTime.now().minusSeconds(1);
+                ititmd.setEffEndDt(newDate);
                 // update 후 새 이력 insert
                 Ititmd newItitmd = new Ititmd(ititmd);
-//                jpaItitmdRepository.save(newItitmd);
-                em.persist(newItitmd);
+                jpaItitmdRepository.save(newItitmd);
 //            saveItasrn(goodsRequestData);
             }
             ititmd.setShortYn(ititmm.getShortYn());
-//            jpaItitmdRepository.save(ititmd);
-            em.persist(ititmd);
+            jpaItitmdRepository.save(ititmd);
         }
 
         return ititmdList;

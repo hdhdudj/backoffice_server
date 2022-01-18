@@ -7,6 +7,7 @@ import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.vendor.entity.Cmvdmr;
+import jdk.vm.ci.meta.Local;
 import lombok.*;
 import org.hibernate.annotations.*;
 import org.hibernate.engine.spi.PersistentAttributeInterceptable;
@@ -16,6 +17,7 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
@@ -125,9 +127,9 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 	private String deliSure;
 	private String reserveYn;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date resStaDt;
+	private LocalDateTime resStaDt;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date resEndDt;
+	private LocalDateTime resEndDt;
 	private String claimSureYn;
 	private String defaultYn;
 	private String recommYn;
@@ -174,9 +176,9 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 	private Float cashbagPoint;
 	private String plGbn;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date plFromDt;
+	private LocalDateTime plFromDt;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date plToDt;
+	private LocalDateTime plToDt;
 	private String storageId;
 	private String optionGb;
 	private String shopSaleGb;
@@ -186,18 +188,18 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 	private String marginCd;
 	private String directPathGb;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date resShipStaDt;
+	private LocalDateTime resShipStaDt;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date resShipEndDt;
+	private LocalDateTime resShipEndDt;
 	private String imgType;
 	private String onlinedispYn;
 	private String payType;
 	private String freeGiftYn;
 	private String currencyUnit;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date disStartDt;
+	private LocalDateTime disStartDt;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date disEndDt;
+	private LocalDateTime disEndDt;
 	private String workGb;
 	private Float cardFee;
 	private String assortGrade;
@@ -230,6 +232,9 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 	private String addOptionNm;
 	private String addImageUrl;
 	private Long stockCnt;
+
+	@Transient
+	private PersistentAttributeInterceptor interceptor;
 
 	//// 다른 테이블과 엮으면 나오는 프로퍼티들
 	@JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
@@ -319,8 +324,7 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 		this.ifBrand = ifBrand;
 	}
 
-	@Transient
-	private PersistentAttributeInterceptor interceptor;
+
 
 	@Override
 	public PersistentAttributeInterceptor $$_hibernate_getInterceptor() {

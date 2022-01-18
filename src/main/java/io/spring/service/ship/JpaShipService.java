@@ -618,13 +618,13 @@ public class JpaShipService {
 			log.debug("해당 주문이 존재하지 않습니다. - JpaPurchaseService.updateOrderStatusCd");
 			return;
 		}
-		Date date = Utilities.getStringToDate(StringFactory.getDoomDay());
+		LocalDateTime date = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());
 		List<TbOrderHistory> tohs = tbOrderHistoryrRepository.findByOrderIdAndOrderSeqAndEffEndDt(orderId, orderSeq,
 				date);
 
 		tod.setStatusCd(statusCd);
 
-		Date newEffEndDate = new Date();
+		LocalDateTime newEffEndDate = LocalDateTime.now();
 
 		for (int i = 0; i < tohs.size(); i++) {
 			tohs.get(i).setEffEndDt(newEffEndDate);
@@ -632,7 +632,7 @@ public class JpaShipService {
 		}
 
 		TbOrderHistory toh = new TbOrderHistory(orderId, orderSeq, statusCd, "001", newEffEndDate,
-				Utilities.getStringToDate(StringFactory.getDoomDay()));
+				Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
 
 		tohs.add(toh);
 

@@ -2,10 +2,7 @@ package io.spring.controller;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import io.spring.infrastructure.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
@@ -91,14 +88,15 @@ public class GoodsController {
 		goodsInsertRequestData.setAssortId(jpaCommonService.getNumberId(goodsInsertRequestData.getAssortId(), StringFactory.getStrSeqItasrt(), StringFactory.getIntNine())); // assort id 梨꾨쾲
 
 		System.out.println(goodsInsertRequestData.toString());
-		jpaGoodsService.sequenceInsertOrUpdateGoods(goodsInsertRequestData);
-		GoodsSelectDetailResponseData responseData = jpaGoodsService.getGoodsDetailPage(goodsInsertRequestData.getAssortId());
+		String assortId = jpaGoodsService.sequenceInsertOrUpdateGoods(goodsInsertRequestData);
+//		GoodsSelectDetailResponseData responseData = jpaGoodsService.getGoodsDetailPage(goodsInsertRequestData.getAssortId());
+		Map<String, String> responseMap = new HashMap<>();
+		responseMap.put(StringFactory.getStrAssortId(), assortId);
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), responseMap);
 
-		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), responseData);
-
-		if(responseData == null){
-			return null;
-		}
+//		if(responseData == null){
+//			return null;
+//		}
 		return ResponseEntity.ok(res);
 	}
 
