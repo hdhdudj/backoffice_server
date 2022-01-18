@@ -36,6 +36,7 @@ public class CancelOrderListResponse {
 			this.channelGb = p.get("channelGb").toString();
 			this.orderId = p.get("orderId").toString();
 			this.orderSeq = p.get("orderSeq").toString();
+			this.orderName = p.get("orderName").toString();
 			this.channelOrderNo = p.get("channelOrderNo").toString();
 			this.channelOrderSeq = p.get("channelOrderSeq").toString();
 			this.assortId = p.get("assortId") == null ? null : p.get("assortId").toString();
@@ -63,6 +64,7 @@ public class CancelOrderListResponse {
 	private String orderId; // 주문번호
 	private String orderSeq; // 주문순번
 	private String assortId; // 품목코드
+	private String orderName; // 주문자명
 	private String channelOrderNo;
 	private String channelOrderSeq;
 	private String itemId; // 상품코드
