@@ -1,10 +1,12 @@
 package io.spring.model.goods.idclass;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.Date;
 
+@EqualsAndHashCode
 public class TmitemId implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;

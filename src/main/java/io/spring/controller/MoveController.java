@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
+import io.spring.model.move.request.MoveListExcelRequestData;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -230,6 +231,17 @@ public class MoveController {
                                            @RequestParam @Nullable String assortNm,
                                            @RequestParam @Nullable String storageId){
         MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.getMovedList(startDt, endDt, shipId, assortId, assortNm, storageId);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveCompletedLIstReponseData);
+        return ResponseEntity.ok(res);
+    }
+
+    /**
+     * 이동리스트 화면에서 엑셀 업로드한 값 저장
+     */
+    @PostMapping(path = "/excel")
+    public ResponseEntity saveExcelList(@RequestBody MoveListExcelRequestData moveListExcelRequestData){
+        jpaMoveService.saveExcelList(moveListExcelRequestData);
+        MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.getMovedList(moveListExcelRequestData.getStartDt(), moveListExcelRequestData.getEndDt(), moveListExcelRequestData.getShipId(), moveListExcelRequestData.getAssortId(), moveListExcelRequestData.getAssortNm(), moveListExcelRequestData.getStorageId());
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveCompletedLIstReponseData);
         return ResponseEntity.ok(res);
     }

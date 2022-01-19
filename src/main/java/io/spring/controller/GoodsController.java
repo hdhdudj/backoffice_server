@@ -2,10 +2,7 @@ package io.spring.controller;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import io.spring.infrastructure.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
@@ -63,41 +60,49 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 	}
 	
-	@RequestMapping(path = "/insert")
-	public ResponseEntity insertGoodsMyBatis(@RequestBody GoodsInsertRequestData goodsInsertRequestData) {
-		log.debug("insert goods");
-		
-		HashMap<String, Object> arr = new HashMap<String, Object>();
-		arr.put("seqName", "seq_ITASRT");
-		HashMap<String, Object> x1 = myBatisCommonDao.getSequence(arr);
-		System.out.println("x1 = " + x1.get("nextval"));
-		
-		goodsInsertRequestData.setAssortId(StringUtils.leftPad(Long.toString((long)x1.get("nextval")), 9, '0'));
-		Boolean b = goodsRepository.insertGoods(goodsInsertRequestData);
-		
-		ApiResponseMessage res = null;
-		
-		return null;
-	}
-	
-	@PostMapping(path = "/savebyjpa")
+//	@RequestMapping(path = "/insert")
+//	public ResponseEntity insertGoodsMyBatis(@RequestBody GoodsInsertRequestData goodsInsertRequestData) {
+//		log.debug("insert goods");
+//
+//		HashMap<String, Object> arr = new HashMap<String, Object>();
+//		arr.put("seqName", "seq_ITASRT");
+//		HashMap<String, Object> x1 = myBatisCommonDao.getSequence(arr);
+//		System.out.println("x1 = " + x1.get("nextval"));
+//
+//		goodsInsertRequestData.setAssortId(StringUtils.leftPad(Long.toString((long)x1.get("nextval")), 9, '0'));
+//		Boolean b = goodsRepository.insertGoods(goodsInsertRequestData);
+//
+//		ApiResponseMessage res = null;
+//
+//		return null;
+//	}
+
+	/**
+	 * 상품 등록 및 수정
+	 */
+	@PostMapping(path = "/save")
 	public ResponseEntity saveGoodsJpa(@RequestBody GoodsInsertRequestData goodsInsertRequestData) {
 		log.debug("save(insert or update) goods by jpa");
 		System.out.println(goodsInsertRequestData.toString());
 
 		goodsInsertRequestData.setAssortId(jpaCommonService.getNumberId(goodsInsertRequestData.getAssortId(), StringFactory.getStrSeqItasrt(), StringFactory.getIntNine())); // assort id 梨꾨쾲
-	
+
 		System.out.println(goodsInsertRequestData.toString());
-		GoodsSelectDetailResponseData responseData = jpaGoodsService.sequenceInsertOrUpdateGoods(goodsInsertRequestData);
+		String assortId = jpaGoodsService.sequenceInsertOrUpdateGoods(goodsInsertRequestData);
+//		GoodsSelectDetailResponseData responseData = jpaGoodsService.getGoodsDetailPage(goodsInsertRequestData.getAssortId());
+		Map<String, String> responseMap = new HashMap<>();
+		responseMap.put(StringFactory.getStrAssortId(), assortId);
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), responseMap);
 
-		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), responseData);
-
-		if(responseData == null){
-			return null;
-		}
+//		if(responseData == null){
+//			return null;
+//		}
 		return ResponseEntity.ok(res);
 	}
 
+	/**
+	 * 상품 상세 내용
+	 */
 	@GetMapping(path = "/{assortId}")
 	public ResponseEntity getGoodsDetailJpa(@PathVariable("assortId") String assortId){
 		log.debug("get goods detail page");
@@ -115,8 +120,10 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 	}
 
-	// jpa로 get list
-	@GetMapping(path="/getgoodslistjpa")
+	/**
+	 * 마스터 기준으로 상품 목록을 가져옴
+	 */
+	@GetMapping(path="/items/master")
 	public ResponseEntity getGoodsListJpa(@RequestParam @Nullable String shortageYn,
 										  @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate regDtBegin,
 										  @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam LocalDate regDtEnd,
@@ -136,6 +143,7 @@ public class GoodsController {
 	}
 
 	// 상품리스트조회(ititmm)
+//	@GetMapping(path = "/goods-item")
 	@GetMapping(path = "/goods-item")
 	public ResponseEntity getGoodsItem(@RequestParam String shortageYn,
 			@RequestParam(required = false) String assortId, @RequestParam(required = false) String assortNm,
@@ -163,7 +171,12 @@ public class GoodsController {
 	}
 
 	// 상품리스트조회(ititmm)
-	@GetMapping(path = "/goods-item-fullcategory")
+//	@GetMapping(path = "/goods-item-fullcategory")
+
+	/**
+	 * itmeId 기준으로 상품 목록을 가져옴
+	*/
+	@GetMapping(path = "/items/detail")
 	public ResponseEntity getGoodsItemWithCategory(@RequestParam(required = false) String assortId,
 			@RequestParam(required = false) String assortNm, @RequestParam(required = false) String vendorId,
 			@RequestParam(required = false) String brandId, @RequestParam(required = false) String category) {

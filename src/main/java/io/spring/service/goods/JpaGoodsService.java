@@ -13,6 +13,7 @@ import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.goods.response.GoodsInsertResponseData;
 import io.spring.model.goods.response.GoodsSelectDetailResponseData;
 import io.spring.model.goods.response.GoodsSelectListResponseData;
+import io.spring.model.vendor.entity.Cmvdmr;
 import io.spring.service.file.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -64,7 +64,7 @@ public class JpaGoodsService {
      * @return GoodsResponseData
      */
     @Transactional
-    public GoodsSelectDetailResponseData sequenceInsertOrUpdateGoods(GoodsInsertRequestData goodsInsertRequestData){
+    public String sequenceInsertOrUpdateGoods(GoodsInsertRequestData goodsInsertRequestData){
         // itasrt에 goods 정보 저장
         Itasrt itasrt = this.saveItasrt(goodsInsertRequestData);
         // tmmapi에 저장
@@ -86,11 +86,10 @@ public class JpaGoodsService {
 
         // itaimg에 assortId 업데이트 시켜주기
         this.updateItaimgAssortId(goodsInsertRequestData, itasrt.getAssortId());
-
 //        List<GoodsInsertResponseData.Attributes> attributesList = this.makeGoodsResponseAttributes(itvariList);
 //        List<GoodsInsertResponseData.Items> itemsList = this.makeGoodsResponseItems(ititmmList, itvariList);
 //        return this.makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
-        return this.getGoodsDetailPage(goodsInsertRequestData.getAssortId());
+        return itasrt.getAssortId();
     }
 
     /**
@@ -299,7 +298,7 @@ public class JpaGoodsService {
         itasrn.setLocalSale(goodsInsertRequestData.getLocalSale() == null || goodsInsertRequestData.getLocalSale().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getLocalSale()));
         itasrn.setShortageYn(goodsInsertRequestData.getShortageYn());
 //        jpaItasrnRepository.save(itasrn);
-        em.persist(itasrn);
+        jpaItasrnRepository.save(itasrn);
         return itasrn;
     }
 
@@ -342,7 +341,7 @@ public class JpaGoodsService {
                 itasrd.setTextHtmlGb(descriptionList.get(i).getTextHtmlGb());
             }
 //            jpaItasrdRepository.save(itasrd);
-            em.persist(itasrd);
+            jpaItasrdRepository.save(itasrd);
             itasrdList.add(itasrd);
         }
         return itasrdList;
@@ -355,18 +354,63 @@ public class JpaGoodsService {
      * @return List<Itvari>
      */
     private List<Itvari> saveItvariList(GoodsInsertRequestData goodsInsertRequestData, List<Itvari> existItvariList) {
-        if(goodsInsertRequestData.getOptionUseYn().equals(StringFactory.getGbTwo())){ // optionUseYn이 02, 즉 단품인 경우
-            return saveSingleOption(goodsInsertRequestData); // 단품 옵션 1개를 저장하는 함수
+
+        List<Itvari> itvariList;
+        if(existItvariList == null || existItvariList.size() == 0){
+            itvariList = this.insertItvariList(goodsInsertRequestData);
         }
+        else{
+            itvariList = this.updateItvariList(goodsInsertRequestData, existItvariList);
+        }
+        return itvariList;
+    }
+
+    /**
+     * 상품 insert 시
+     */
+    private List<Itvari> insertItvariList(GoodsInsertRequestData goodsInsertRequestData) {
+        List<Itvari> itvariList = saveSingleOption(goodsInsertRequestData);
+        if(goodsInsertRequestData.getOptionUseYn().equals(StringFactory.getGbTwo())){ // optionUseYn이 02, 즉 단품인 경우
+            return itvariList; // 단품 옵션 1개를 저장하는 함수
+        }
+        List<GoodsInsertRequestData.Attributes> attributes = goodsInsertRequestData.getAttributes();
+        if(attributes.size() > 0){
+            itvariList.get(0).setDelYn(StringFactory.getGbOne());
+            jpaItvariRepository.save(itvariList.get(0));
+        }
+        else{
+            return itvariList;
+        }
+        Set<String> seqList = new HashSet<>();
+        seqList.add(itvariList.get(0).getSeq());
+        for(GoodsInsertRequestData.Attributes attribute : attributes){
+            Itvari itvari = new Itvari(goodsInsertRequestData);
+            String seq = Utilities.plusOne(this.findMaxSeq(seqList), 4);//jpaItvariRepository.findMaxSeqByAssortId(assortId);
+            itvari.setSeq(seq);
+            itvari.setOptionNm(attribute.getValue());
+            itvari.setOptionGb(attribute.getVariationGb());
+            itvari.setVariationGb(attribute.getVariationGb());
+            itvariList.add(itvari);
+            seqList.add(seq);
+            jpaItvariRepository.save(itvari);
+        }
+        return itvariList;
+    }
+
+    /**
+     * 상품 update 시
+     */
+    private List<Itvari> updateItvariList(GoodsInsertRequestData goodsInsertRequestData, List<Itvari> existItvariList) {
         List<GoodsInsertRequestData.Attributes> attributes = goodsInsertRequestData.getAttributes();
         List<Itvari> itvariList = new ArrayList<>();
         Set<String> seqList = new HashSet<>();
+        Set<String> removeSeqList = new HashSet<>();
         for(Itvari itvari : existItvariList){
             seqList.add(itvari.getSeq());
+            removeSeqList.add(itvari.getSeq());
         }
 
         for(GoodsInsertRequestData.Attributes attribute : attributes){
-            String assortId = goodsInsertRequestData.getAssortId();
             List<Itvari> origItvariList = existItvariList.stream().filter(x->x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getSeq().equals(attribute.getSeq()))
                     .collect(Collectors.toList());
             Itvari itvari = origItvariList.size() > 0? origItvariList.get(0) : null;
@@ -388,6 +432,7 @@ public class JpaGoodsService {
                     seq = Utilities.plusOne(seq, 4);
                 }
                 itvari.setSeq(seq);
+                seqList.add(seq);
             }
             else { // 존재하는 경우 : itvari 객체가 존재함이 보장됨 -> update
 //                itvari = existItvariList.stream().filter(x->x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getSeq().equals(attribute.getSeq()))
@@ -396,7 +441,7 @@ public class JpaGoodsService {
                     log.debug("delYn이 01이거나 seq가 0001(단품)인 itvari를 update할 수 없습니다.");
                     continue;
                 }
-                seqList.remove(seq);
+                removeSeqList.remove(seq);
             }
             itvari.setOptionNm(attribute.getValue());
             itvari.setOptionGb(attribute.getVariationGb());
@@ -406,7 +451,7 @@ public class JpaGoodsService {
         }
 
         for(Itvari i : existItvariList){
-            if(seqList.contains(i.getSeq())){
+            if(removeSeqList.contains(i.getSeq())){
                 i.setDelYn(StringFactory.getGbOne());
             }
             jpaItvariRepository.save(i);
@@ -423,7 +468,6 @@ public class JpaGoodsService {
             singleItvari.setDelYn(StringFactory.getGbTwo());
             jpaItvariRepository.save(singleItvari);
         }
-
         return itvariList;
     }
 
@@ -477,7 +521,7 @@ public class JpaGoodsService {
 //        jpaItvariRepository.save(itvari);
         }
         itvari.setDelYn(StringFactory.getGbTwo()); // 02 하드코딩
-        em.persist(itvari);
+        jpaItvariRepository.save(itvari);
         itvariList.add(itvari);
         return itvariList;
     }
@@ -489,20 +533,84 @@ public class JpaGoodsService {
      * @return List<Ititmm>
      */
     private List<Ititmm> saveItemList(GoodsInsertRequestData goodsInsertRequestData, List<Ititmm> existItitmmList, List<Itvari> itvariList) {
-        if(goodsInsertRequestData.getOptionUseYn().equals(StringFactory.getGbTwo())){
-            return saveSingleItem(goodsInsertRequestData);
-        }
-        Set<String> itemIdList = new HashSet<>();
-        for(Ititmm i : existItitmmList){
-            itemIdList.add(i.getItemId());
-        }
+        List<Ititmm> ititmmList;
 
-//        List<Itvari> itvariList = findAllItvari();
+        if(existItitmmList == null || existItitmmList.size() == 0){
+            ititmmList = this.insertItitmmList(goodsInsertRequestData, itvariList);
+        }
+        else{
+            ititmmList = this.updateItitmmList(goodsInsertRequestData, existItitmmList, itvariList);
+        }
+        return ititmmList;
+    }
+
+    /**
+     * 상품 insert 시 ititmm 저장
+     */
+    private List<Ititmm> insertItitmmList(GoodsInsertRequestData goodsInsertRequestData, List<Itvari> itvariList) {
+        List<Ititmm> ititmmList = this.saveSingleItem(goodsInsertRequestData);
+        if(goodsInsertRequestData.getOptionUseYn().equals(StringFactory.getGbTwo())){ // optionUseYn이 02, 즉 단품인 경우
+            return ititmmList; // 단품 옵션 1개를 저장하는 함수
+        }
+        List<GoodsInsertRequestData.Items> itemList = goodsInsertRequestData.getItems();
+        if(itemList.size() > 0){
+            ititmmList.get(0).setDelYn(StringFactory.getGbOne());
+            jpaItitmmRepository.save(ititmmList.get(0));
+        }
+        else{
+            return ititmmList;
+        }
+        Set<String> seqList = new HashSet<>();
+        seqList.add(ititmmList.get(0).getItemId());
+        for(GoodsInsertRequestData.Items items : itemList){
+            Ititmm ititmm = new Ititmm(goodsInsertRequestData);
+            String itemId = Utilities.plusOne(this.findMaxSeq(seqList),4);
+            ititmm.setItemId(itemId);
+            Itvari op1 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getOptionNm().equals(items.getVariationValue1()))
+                    .collect(Utilities.toSingleton());
+            if(op1 != null){
+                ititmm.setVariationGb1(op1.getOptionGb());
+                ititmm.setVariationSeq1(op1.getSeq());
+            }
+            // 옵션2 관련값 찾아넣기
+            Itvari op2 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getOptionNm().equals(items.getVariationValue2()))
+                    .collect(Utilities.toSingleton());
+            if(op2 != null){
+                ititmm.setVariationGb2(op2.getOptionGb());
+                ititmm.setVariationSeq2(op2.getSeq());
+            }
+            // 옵션3 관련값 찾아넣기
+            Itvari op3 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getOptionNm().equals(items.getVariationValue3()))
+                    .collect(Utilities.toSingleton());
+            if(op3 != null){
+                ititmm.setVariationGb3(op3.getOptionGb());
+                ititmm.setVariationSeq3(op3.getSeq());
+            }
+            ititmm.setAddPrice(items.getAddPrice() == null || items.getAddPrice().trim().equals("")? null : Float.parseFloat(items.getAddPrice()));
+            ititmm.setShortYn(items.getShortYn());
+            seqList.add(itemId);
+            jpaItitmmRepository.save(ititmm);
+        }
+        return ititmmList;
+    }
+
+    /**
+     * 상품 update 시 itimm 저장
+     */
+    private List<Ititmm> updateItitmmList(GoodsInsertRequestData goodsInsertRequestData, List<Ititmm> existItitmmList, List<Itvari> itvariList) {
         List<GoodsInsertRequestData.Items> itemList = goodsInsertRequestData.getItems();
         List<Ititmm> ititmmList = new ArrayList<>();
+        Set<String> itemIdList = new HashSet<>();
+        Set<String> removeItemIdList = new HashSet<>();
+        for(Ititmm i : existItitmmList){
+            itemIdList.add(i.getItemId());
+            removeItemIdList.add(i.getItemId());
+        }
+
         for(GoodsInsertRequestData.Items item : itemList){
+            List<Ititmm> origItitmmList = existItitmmList.stream().filter(x->x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getItemId().equals(item.getItemId())).collect(Collectors.toList());
+            Ititmm ititmm = origItitmmList.size() > 0? origItitmmList.get(0) : null;//jpaItitmmRepository.findByAssortIdAndItemId(goodsInsertRequestData.getAssortId(), itemId);
             String itemId = item.getItemId(); // item id를 객체가 갖고 있으면 그것을 이용
-            Ititmm ititmm = jpaItitmmRepository.findByAssortIdAndItemId(goodsInsertRequestData.getAssortId(), itemId);
 //            Ititmm ititmm = new Ititmm(goodsInsertRequestData.getAssortId(), item);
 //            if(itemId == null || itemId.trim().equals("")){ // 객체에 item id가 없으면 jpa에서 max값을 가져옴
             if(!itemIdList.contains(itemId) && !itemId.trim().equals("")){
@@ -519,15 +627,14 @@ public class JpaGoodsService {
                     itemId = Utilities.plusOne(itemId, 4);
                 }
                 ititmm.setItemId(itemId);
+                itemIdList.add(itemId);
             }
             else { // 존재하는 경우 : itvari 객체가 존재함이 보장됨 -> update
-//                itvari = existItvariList.stream().filter(x->x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getSeq().equals(attribute.getSeq()))
-//                        .collect(Collectors.toList()).get(0);//jpaItvariRepository.findByAssortIdAndSeq(goodsInsertRequestData.getAssortId(), seq);
                 if(ititmm.getDelYn().equals(StringFactory.getGbOne()) || ititmm.getItemId().equals(StringFactory.getFourStartCd())){ // 삭제된 상태거나 seq 0001인 itvari는 수정x
                     log.debug("delYn이 01이거나 itemId가 0001(단품)인 ititmm를 update할 수 없습니다.");
                     continue;
                 }
-                itemIdList.remove(itemId);
+                removeItemIdList.remove(itemId);
             }
 
             // 옵션1 관련값 찾아넣기
@@ -555,27 +662,27 @@ public class JpaGoodsService {
             ititmm.setShortYn(item.getShortYn());
 //            jpaItitmmRepository.save(ititmm);
 //            System.out.println("===== : " + ititmm.toString());
-            em.persist(ititmm);
+            jpaItitmmRepository.save(ititmm);
             ititmmList.add(ititmm);
         }
         for(Ititmm i : existItitmmList){
-            if(itemIdList.contains(i.getItemId())){
+            if(removeItemIdList.contains(i.getItemId())){
                 i.setDelYn(StringFactory.getGbOne());
             }
             jpaItitmmRepository.save(i);
         }
 
-//        int ititmmDelNo = 0;
-//        for(Ititmm i : ititmmList){
-//            if(i.getDelYn().equals(StringFactory.getGbTwo())){
-//                ititmmDelNo++;
-//            }
-//        }
-//        if(ititmmDelNo == 0){
-//            Ititmm singleItitmm = existItitmmList.stream().filter(x->x.getItemId().equals(StringFactory.getFourStartCd())).collect(Collectors.toList()).get(0);
-//            singleItitmm.setDelYn(StringFactory.getGbTwo());
-//            jpaItitmmRepository.save(singleItitmm);
-//        }
+        int ititmmDelNo = 0;
+        for(Ititmm i : ititmmList){
+            if(i.getDelYn().equals(StringFactory.getGbTwo())){
+                ititmmDelNo++;
+            }
+        }
+        if(ititmmDelNo == 0){
+            Ititmm singleItitmm = existItitmmList.stream().filter(x->x.getItemId().equals(StringFactory.getFourStartCd())).collect(Collectors.toList()).get(0);
+            singleItitmm.setDelYn(StringFactory.getGbTwo());
+            jpaItitmmRepository.save(singleItitmm);
+        }
         return ititmmList;
     }
 
@@ -655,6 +762,9 @@ public class JpaGoodsService {
     //        jpaItitmmRepository.save(ititmm);
             em.persist(ititmm);
         }
+        else {
+            ititmm.setDelYn(StringFactory.getGbTwo()); // 삭제 상태였던 걸 원래대로
+        }
         ititmmList.add(ititmm);
 
         return ititmmList;
@@ -669,7 +779,7 @@ public class JpaGoodsService {
      */
     private List<Ititmd> saveItemHistoryList(GoodsInsertRequestData goodsInsertRequestData, List<Ititmm> ititmmList) {
         List<Ititmd> ititmdList = new ArrayList<>();
-        Date effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
+        LocalDateTime effEndDt = Utilities.strToLocalDateTime(StringFactory.getDoomDayT()); // 마지막 날짜(없을 경우 9999-12-31 23:59:59?)
         List<Ititmd> allItitmdList = jpaItitmdRepository.findAll();
         for (Ititmm ititmm : ititmmList) {
             Ititmd ititmd = allItitmdList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId())
@@ -679,19 +789,15 @@ public class JpaGoodsService {
                 ititmd = new Ititmd(ititmm);
             }
             else{ // update
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(new Date());
-                cal.add(Calendar.SECOND, -1);
-                ititmd.setEffEndDt(cal.getTime());
+                LocalDateTime newDate = LocalDateTime.now().minusSeconds(1);
+                ititmd.setEffEndDt(newDate);
                 // update 후 새 이력 insert
                 Ititmd newItitmd = new Ititmd(ititmd);
-//                jpaItitmdRepository.save(newItitmd);
-                em.persist(newItitmd);
+                jpaItitmdRepository.save(newItitmd);
 //            saveItasrn(goodsRequestData);
             }
             ititmd.setShortYn(ititmm.getShortYn());
-//            jpaItitmdRepository.save(ititmd);
-            em.persist(ititmd);
+            jpaItitmdRepository.save(ititmd);
         }
 
         return ititmdList;
@@ -714,15 +820,20 @@ public class JpaGoodsService {
      */
     public GoodsSelectDetailResponseData getGoodsDetailPage(String assortId) {
         Itasrt itasrt = em.createQuery("select distinct(i) from Itasrt i " +
-                "left outer join fetch i.cmvdmr cv " +
-                "left outer join fetch i.ifBrand ib " +
+//                "left outer join fetch i.cmvdmr cv " +
+//                "left outer join fetch i.ifBrand ib " +
                 "left outer join fetch i.itvariList ivList " +
                 "where i.assortId=?1", Itasrt.class).setParameter(1,assortId).getSingleResult();//jpaItasrtRepository.findById(assortId).orElseThrow(() -> new ResourceNotFoundException());
     	
 //		System.out.println(itasrt);
         GoodsSelectDetailResponseData goodsSelectDetailResponseData = new GoodsSelectDetailResponseData(itasrt);
 
-		// 카테고리벨류
+        // 카테고리벨류
+        if(itasrt.getDispCategoryId() != null && !itasrt.getDispCategoryId().trim().equals("")){
+            Cmvdmr cmvdmr = itasrt.getCmvdmr();
+            goodsSelectDetailResponseData.setVendorNm(itasrt.getVendorId() != null && !itasrt.getVendorId().trim().equals("")? cmvdmr.getVdNm() : "");
+        }
+        // brand
         IfBrand ifBrand;
         if(itasrt.getBrandId() != null && !itasrt.getBrandId().trim().equals("")){
             ifBrand = itasrt.getIfBrand();//jpaIfBrandRepository.findByChannelGbAndBrandId(StringFactory.getGbOne(),itasrt.getBrandId());
@@ -795,20 +906,21 @@ public class JpaGoodsService {
                 Itvari op2 = ititmm.getItvari2();//jpaItvariRepository.findByAssortIdAndSeq(ititmm.getAssortId(), ititmm.getVariationSeq2());
                 optionNm = op2 == null? null : op2.getOptionNm();
                 seq = op2 == null? null : op2.getSeq();
-				item.setSeq2(optionNm);
-				item.setValue2(seq);
+				item.setSeq2(seq);
+				item.setValue2(optionNm);
 				item.setStatus2(StringFactory.getStrR()); // r 하드코딩
             }
             if(ititmm.getVariationSeq3() != null){
                 Itvari op3 = ititmm.getItvari3();//jpaItvariRepository.findByAssortIdAndSeq(ititmm.getAssortId(), ititmm.getVariationSeq2());
                 optionNm = op3 == null? null : op3.getOptionNm();
                 seq = op3 == null? null : op3.getSeq();
-                item.setSeq3(optionNm);
-                item.setValue3(seq);
+                item.setSeq3(seq);
+                item.setValue3(optionNm);
                 item.setStatus3(StringFactory.getStrR()); // r 하드코딩
             }
-            item.setAddPrice(ititmm.getAddPrice() + "");
+            item.setAddPrice(ititmm.getAddPrice() == null? null : ititmm.getAddPrice() + "");
 			item.setShortageYn(ititmm.getShortYn());
+            item = goodsSelectDetailResponseDataMapper.nullToEmpty(item);
             itemsList.add(item);
         }
         return itemsList;
@@ -856,29 +968,39 @@ public class JpaGoodsService {
      * @return GoodsSelectListResponseData
      */
     public GoodsSelectListResponseData getGoodsList(String shortageYn, LocalDate regDtBegin, LocalDate regDtEnd, String assortId, String assortNm) {
-        LocalDateTime start = regDtBegin.atStartOfDay();
-        LocalDateTime end = regDtEnd.atTime(23,59,59);
-        TypedQuery<Itasrt> query =
-                em.createQuery("select t from Itasrt t " +
-                                "left join fetch t.itcatg c " +
-                                "where t.regDt " +
-                                "between ?1 and ?2 " +
-                                "and (?3 is null or trim(?3)='' or t.shortageYn = ?3) " +
-                                "and (?4 is null or trim(?4)='' or t.assortId = ?4) " +
-                                "and (?5 is null or trim(?5)='' or t.assortNm like concat('%',?5,'%'))"
-                        , Itasrt.class);
-        query.setParameter(1, start)
-                .setParameter(2, end)
-                .setParameter(3, shortageYn).setParameter(4,assortId).setParameter(5,assortNm);
-        List<Itasrt> itasrtList = query.getResultList();
+        boolean isAssortIdExist = assortId != null && !assortId.trim().equals("");
+        boolean isAssortNmExist = assortNm != null && !assortNm.trim().equals("");
+
+        LocalDateTime start = isAssortIdExist || isAssortNmExist? null : regDtBegin.atStartOfDay();
+        LocalDateTime end = isAssortIdExist || isAssortNmExist? null : regDtEnd.atTime(23,59,59);
+        GoodsSelectListResponseData goodsSelectListResponseData = new GoodsSelectListResponseData(shortageYn, regDtBegin, regDtEnd, assortId, assortNm);
+
+        LocalDateTime oldDay = Utilities.strToLocalDateTime(StringFactory.getOldDayT());
+        LocalDateTime doomsDay = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());
+
+        List<Itasrt> itasrtList = jpaItasrtRepository.findMasterList(start, end, shortageYn, assortId, assortNm, oldDay, doomsDay);//query.getResultList();
         List<GoodsSelectListResponseData.Goods> goodsList = new ArrayList<>();
+        if(itasrtList.size() == 0){
+            log.debug("검색 조건을 만족하는 상품이 존재하지 않습니다.");
+            goodsSelectListResponseData.setGoodsList(goodsList);
+            return goodsSelectListResponseData;
+        }
+        List<IfBrand> brandList;
+        List<String> brandIdList = new ArrayList<>();
+        for(Itasrt itasrt : itasrtList){
+            if(!brandIdList.contains(itasrt.getBrandId())){
+                brandIdList.add(itasrt.getBrandId());
+            }
+        }
+        brandList = jpaIfBrandRepository.findByBrandIdListByChannelIdAndBrandIdList(StringFactory.getGbOne(), brandIdList);
         for(Itasrt itasrt : itasrtList){
             GoodsSelectListResponseData.Goods goods = new GoodsSelectListResponseData.Goods(itasrt);
-            IfBrand ifBrand = jpaIfBrandRepository.findByChannelGbAndChannelBrandId(StringFactory.getGbOne(),itasrt.getBrandId()); // 채널은 01 하드코딩
+            List<IfBrand> brandList1 = brandList.stream().filter(x->x.getBrandId().equals(itasrt.getBrandId())).collect(Collectors.toList());
+            IfBrand ifBrand = brandList1 == null || brandList1.size() == 0? null : brandList1.get(0);//jpaIfBrandRepository.findByChannelGbAndChannelBrandId(StringFactory.getGbOne(),itasrt.getBrandId()); // 채널은 01 하드코딩
             goods.setBrandNm(ifBrand==null? null:ifBrand.getBrandNm());
             goodsList.add(goods);
         }
-        GoodsSelectListResponseData goodsSelectListResponseData = new GoodsSelectListResponseData(goodsList);
+        goodsSelectListResponseData.setGoodsList(goodsList);
         return goodsSelectListResponseData;
     }
 

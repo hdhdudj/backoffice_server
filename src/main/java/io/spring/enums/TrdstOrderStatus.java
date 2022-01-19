@@ -1,11 +1,12 @@
 package io.spring.enums;
 
+import io.spring.model.common.EnumCommonInterface;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public enum TrdstOrderStatus {
+public enum TrdstOrderStatus implements EnumCommonInterface {
     A01("주문접수"),
     A02("주문확인"),
     B01("발주대기"),

@@ -486,7 +486,7 @@ public class OrderController {
 	@GetMapping(path = "/cancel/items")
 	public ResponseEntity getOrderCancelList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
-			@RequestParam @Nullable String ifStatus) {
+			@RequestParam @Nullable String ifStatus, @RequestParam @Nullable String orderName) {
 
 		System.out.println("getOrderDetailList");
 
@@ -505,6 +505,9 @@ public class OrderController {
 		}
 		if (ifStatus != null && !ifStatus.equals("")) {
 			map.put("ifStatus", ifStatus);
+		}
+		if (orderName != null && !orderName.trim().equals("")) {
+			map.put("orderName", orderName);
 		}
 
 		CancelOrderListResponse r = myBatisOrderService.getOrderCancelList(map);

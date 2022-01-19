@@ -7,6 +7,7 @@ import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.vendor.entity.Cmvdmr;
+import jdk.vm.ci.meta.Local;
 import lombok.*;
 import org.hibernate.annotations.*;
 import org.hibernate.engine.spi.PersistentAttributeInterceptable;
@@ -16,6 +17,7 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
@@ -39,14 +41,14 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 		this.assortId = goodsInsertRequestData.getAssortId();
 		this.assortNm = goodsInsertRequestData.getAssortNm();
 		this.assortModel = goodsInsertRequestData.getAssortModel();
-		this.margin = goodsInsertRequestData.getMargin().trim().equals("") || goodsInsertRequestData.getMargin() == null? null : Float.parseFloat(goodsInsertRequestData.getMargin());
 		this.taxGb = goodsInsertRequestData.getTaxGb();
 		this.assortGb = goodsInsertRequestData.getAssortGb();
 		this.assortState = goodsInsertRequestData.getAssortState();
-		this.asWidth = goodsInsertRequestData.getAsWidth().trim().equals("") || goodsInsertRequestData.getAsWidth() == null? null : Float.parseFloat(goodsInsertRequestData.getAsWidth());
-		this.asLength = goodsInsertRequestData.getAsLength().trim().equals("") || goodsInsertRequestData.getAsLength() == null? null : Float.parseFloat(goodsInsertRequestData.getAsLength());
-		this.asHeight = goodsInsertRequestData.getAsHeight().trim().equals("") || goodsInsertRequestData.getAsHeight() == null? null : Float.parseFloat(goodsInsertRequestData.getAsHeight());
-		this.weight = goodsInsertRequestData.getWeight().trim().equals("") || goodsInsertRequestData.getWeight() == null? null : Float.parseFloat(goodsInsertRequestData.getWeight());
+		this.margin = goodsInsertRequestData.getMargin() == null || goodsInsertRequestData.getMargin().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getMargin());
+		this.asWidth = goodsInsertRequestData.getAsWidth() == null || goodsInsertRequestData.getAsWidth().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getAsWidth());
+		this.asLength = goodsInsertRequestData.getAsLength() == null || goodsInsertRequestData.getAsLength().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getAsLength());
+		this.asHeight = goodsInsertRequestData.getAsHeight() == null || goodsInsertRequestData.getAsHeight().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getAsHeight());
+		this.weight = goodsInsertRequestData.getWeight() == null || goodsInsertRequestData.getWeight().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getWeight());
 		this.origin = goodsInsertRequestData.getOrigin();
 		this.shortageYn = goodsInsertRequestData.getShortageYn();
 		this.brandId = goodsInsertRequestData.getBrandId();
@@ -54,29 +56,29 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 		this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
 		this.ownerId = goodsInsertRequestData.getAsVendorId();
 		this.manufactureNm = goodsInsertRequestData.getManufactureNm();
-		this.deliPrice = goodsInsertRequestData.getDeliPrice().trim().equals("") || goodsInsertRequestData.getDeliPrice() == null? null : Float.parseFloat(goodsInsertRequestData.getDeliPrice());
-		this.localPrice = goodsInsertRequestData.getLocalPrice().trim().equals("") || goodsInsertRequestData.getLocalPrice() == null? null : Float.parseFloat(goodsInsertRequestData.getLocalPrice());
-		this.localSale = goodsInsertRequestData.getLocalSale().trim().equals("") || goodsInsertRequestData.getLocalSale() == null? null : Float.parseFloat(goodsInsertRequestData.getLocalSale());
-	//	this.localDeliFee = goodsInsertRequestData.getLocalDeliFee();
+		this.deliPrice = goodsInsertRequestData.getDeliPrice() == null || goodsInsertRequestData.getDeliPrice().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getDeliPrice());
+		this.localPrice = goodsInsertRequestData.getLocalPrice() == null || goodsInsertRequestData.getLocalPrice().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getLocalPrice());
+		this.localSale = goodsInsertRequestData.getLocalSale() == null || goodsInsertRequestData.getLocalSale().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getLocalSale());
+		this.mdRrp = goodsInsertRequestData.getMdRrp() == null || goodsInsertRequestData.getMdRrp().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getMdRrp());
+		this.mdMargin = goodsInsertRequestData.getMdMargin() == null || goodsInsertRequestData.getMdMargin().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getMdMargin());
+		this.mdVatrate = goodsInsertRequestData.getMdVatrate() == null || goodsInsertRequestData.getMdVatrate().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getMdVatrate());
+		this.mdOfflinePrice = goodsInsertRequestData.getMdOfflinePrice() == null || goodsInsertRequestData.getMdOfflinePrice().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getMdOfflinePrice());
+		this.mdOnlinePrice = goodsInsertRequestData.getMdOnlinePrice() == null || goodsInsertRequestData.getMdOnlinePrice().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getMdOnlinePrice());
+		this.mdGoodsVatrate = goodsInsertRequestData.getMdGoodsVatrate() == null || goodsInsertRequestData.getMdGoodsVatrate().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getMdGoodsVatrate());
+		this.buySupplyDiscount = goodsInsertRequestData.getBuySupplyDiscount() == null || goodsInsertRequestData.getBuySupplyDiscount().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getBuySupplyDiscount());
+		this.buyRrpIncrement = goodsInsertRequestData.getBuyRrpIncrement() == null || goodsInsertRequestData.getBuyRrpIncrement().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getBuyRrpIncrement());
+		this.buyExchangeRate = goodsInsertRequestData.getBuyExchangeRate() == null || goodsInsertRequestData.getBuyExchangeRate().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getBuyExchangeRate());
+		this.mdDiscountRate = goodsInsertRequestData.getMdDiscountRate() == null || goodsInsertRequestData.getMdDiscountRate().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getMdDiscountRate());
+//		this.sizeType = goodsInsertRequestData.getSizeType();
+		//	this.localDeliFee = goodsInsertRequestData.getLocalDeliFee();
 		this.assortColor = goodsInsertRequestData.getAssortColor();
 		this.sellStaDt = goodsInsertRequestData.getSellStaDt();//.toLocalDateTime();
 		this.sellEndDt = goodsInsertRequestData.getSellEndDt();//.toLocalDateTime();
 		this.taxGb = goodsInsertRequestData.getTaxGb();
-		this.mdRrp = goodsInsertRequestData.getMdRrp().trim().equals("") || goodsInsertRequestData.getMdRrp() == null? null : Float.parseFloat(goodsInsertRequestData.getMdRrp());
 		this.mdTax = goodsInsertRequestData.getMdTax();
 		this.mdYear = goodsInsertRequestData.getMdYear();
-		this.mdMargin = goodsInsertRequestData.getMdMargin().trim().equals("") || goodsInsertRequestData.getMdMargin() == null? null : Float.parseFloat(goodsInsertRequestData.getMdMargin());
-		this.mdVatrate = goodsInsertRequestData.getMdVatrate().trim().equals("") || goodsInsertRequestData.getMdVatrate() == null? null : Float.parseFloat(goodsInsertRequestData.getMdVatrate());
-		this.mdOfflinePrice = goodsInsertRequestData.getMdOfflinePrice().trim().equals("") || goodsInsertRequestData.getMdOfflinePrice() == null? null : Float.parseFloat(goodsInsertRequestData.getMdOfflinePrice());
-		this.mdOnlinePrice = goodsInsertRequestData.getMdOnlinePrice().trim().equals("") || goodsInsertRequestData.getMdOnlinePrice() == null? null : Float.parseFloat(goodsInsertRequestData.getMdOnlinePrice());
-		this.mdGoodsVatrate = goodsInsertRequestData.getMdGoodsVatrate().trim().equals("") || goodsInsertRequestData.getMdGoodsVatrate() == null? null : Float.parseFloat(goodsInsertRequestData.getMdGoodsVatrate());
 		this.buyWhere = goodsInsertRequestData.getBuyWhere();
 		this.buyTax = goodsInsertRequestData.getBuyTax();
-		this.buySupplyDiscount = goodsInsertRequestData.getBuySupplyDiscount().trim().equals("") || goodsInsertRequestData.getBuySupplyDiscount() == null? null : Float.parseFloat(goodsInsertRequestData.getBuySupplyDiscount());
-		this.buyRrpIncrement = goodsInsertRequestData.getBuyRrpIncrement().trim().equals("") || goodsInsertRequestData.getBuyRrpIncrement() == null? null : Float.parseFloat(goodsInsertRequestData.getBuyRrpIncrement());
-		this.buyExchangeRate = goodsInsertRequestData.getBuyExchangeRate().trim().equals("") || goodsInsertRequestData.getBuyExchangeRate() == null? null : Float.parseFloat(goodsInsertRequestData.getBuyExchangeRate());
-//		this.sizeType = goodsInsertRequestData.getSizeType();
-		this.mdDiscountRate = goodsInsertRequestData.getMdDiscountRate().trim().equals("") || goodsInsertRequestData.getMdDiscountRate() == null? null : Float.parseFloat(goodsInsertRequestData.getMdDiscountRate());
 		this.optionGbName = goodsInsertRequestData.getOptionGbName();
 		this.vendorId = goodsInsertRequestData.getVendorId();
 
@@ -125,9 +127,9 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 	private String deliSure;
 	private String reserveYn;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date resStaDt;
+	private LocalDateTime resStaDt;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date resEndDt;
+	private LocalDateTime resEndDt;
 	private String claimSureYn;
 	private String defaultYn;
 	private String recommYn;
@@ -174,9 +176,9 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 	private Float cashbagPoint;
 	private String plGbn;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date plFromDt;
+	private LocalDateTime plFromDt;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date plToDt;
+	private LocalDateTime plToDt;
 	private String storageId;
 	private String optionGb;
 	private String shopSaleGb;
@@ -186,18 +188,18 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 	private String marginCd;
 	private String directPathGb;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date resShipStaDt;
+	private LocalDateTime resShipStaDt;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date resShipEndDt;
+	private LocalDateTime resShipEndDt;
 	private String imgType;
 	private String onlinedispYn;
 	private String payType;
 	private String freeGiftYn;
 	private String currencyUnit;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date disStartDt;
+	private LocalDateTime disStartDt;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date disEndDt;
+	private LocalDateTime disEndDt;
 	private String workGb;
 	private Float cardFee;
 	private String assortGrade;
@@ -231,6 +233,9 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 	private String addImageUrl;
 	private Long stockCnt;
 
+	@Transient
+	private PersistentAttributeInterceptor interceptor;
+
 	//// 다른 테이블과 엮으면 나오는 프로퍼티들
 	@JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@JsonIgnore
@@ -258,8 +263,22 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 
 	@JoinColumn(name="dispCategoryId", referencedColumnName = "categoryId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JsonIgnore
+	@LazyToOne(value = LazyToOneOption.NO_PROXY)
 	private Itcatg itcatg; // itcatg 연관관계
+	public Itcatg getItcatg() {
+		if (interceptor!=null) {
+			return (Itcatg)interceptor.readObject(this, "itcatg", itcatg);
+		}
+		return itcatg;
+	}
+
+	public void setItcatg(Itcatg itcatg) {
+		if (interceptor!=null) {
+			this.itcatg = (Itcatg) interceptor.writeObject(this,"itcatg", this.itcatg, itcatg);
+			return ;
+		}
+		this.itcatg = itcatg;
+	}
 
 	@JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@BatchSize(size = 100)
@@ -269,13 +288,25 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 
 	@JoinColumn(name = "vendorId", referencedColumnName = "id", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JsonIgnore
-//	@NotFound(action = NotFoundAction.IGNORE)
+	@LazyToOne(value = LazyToOneOption.NO_PROXY)
 	private Cmvdmr cmvdmr; // cmvdmr 연관관계
+	public Cmvdmr getCmvdmr() {
+		if (interceptor!=null) {
+			return (Cmvdmr)interceptor.readObject(this, "cmvdmr", cmvdmr);
+		}
+		return cmvdmr;
+	}
+
+	public void setCmvdmr(Cmvdmr cmvdmr) {
+		if (interceptor!=null) {
+			this.cmvdmr = (Cmvdmr) interceptor.writeObject(this,"cmvdmr", this.cmvdmr, cmvdmr);
+			return ;
+		}
+		this.cmvdmr = cmvdmr;
+	}
 
 	@JoinColumn(name = "brandId", referencedColumnName = "brandId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JsonIgnore
 	@LazyToOne(value = LazyToOneOption.NO_PROXY)
 	private IfBrand ifBrand;
 	public IfBrand getIfBrand() {
@@ -293,8 +324,7 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 		this.ifBrand = ifBrand;
 	}
 
-	@Transient
-	private PersistentAttributeInterceptor interceptor;
+
 
 	@Override
 	public PersistentAttributeInterceptor $$_hibernate_getInterceptor() {

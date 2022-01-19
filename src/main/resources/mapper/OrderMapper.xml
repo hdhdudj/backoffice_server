@@ -170,7 +170,8 @@ from (select aa.channel_gb channel_gb,
 		,tom.order_amt orderAmt
 		,tom.pay_gb payGb
 		,tom.pay_dt payDt
-		,tma.deli_nm deliNm
+-- 		,tma.deli_nm deliNm
+		,iom.receiver_name deliNm
 		,tma.deli_hp deliHp
 		,tma.deli_tel deliTel
 		,tma.deli_addr1 deliAddr
@@ -179,14 +180,15 @@ from (select aa.channel_gb channel_gb,
 		    on tom.order_id = tod.order_id
 		LEFT OUTER JOIN itasrt as ita
 		    on tod.assort_id = ita.assort_id
+		LEFT OUTER JOIN if_order_master as iom
+		    on iom.order_id = tom.order_id
 		LEFT OUTER JOIN ititmm as itm
 		    on tod.assort_id = itm.assort_id and tod.item_id = itm.item_id
 		 LEFT OUTER JOIN tb_member AS tm    -- A_TABLE 기준
 		              ON tom.cust_id = tm.cust_id
 		 LEFT OUTER JOIN tb_member_address AS tma    -- A_TABLE 기준
-			  ON tom.cust_id = tma.cust_id
+			  ON tom.deli_id = tma.deli_id
 		where  1=1
-		and tom.order_status not like 'f%'
 		and tom.order_date between #{startDt} and  #{endDt}
 	]]>
 	<if test='orderId != null'>
@@ -291,9 +293,8 @@ from (select aa.channel_gb channel_gb,
 		 LEFT OUTER JOIN tb_member AS tm    -- A_TABLE 기준
 		              ON tom.cust_id = tm.cust_id
 		 LEFT OUTER JOIN tb_member_address AS tma    -- A_TABLE 기준
-			  ON tom.cust_id = tma.cust_id
+			  ON tom.deli_id = tma.deli_id
 		where  1=1
-		and tom.order_status not like 'f%'
 		and tom.order_date between #{startDt} and  #{endDt}
 	]]>
 		<if test='orderId != null'>
@@ -362,7 +363,8 @@ from (select aa.channel_gb channel_gb,
 		,tm.cust_zipcode  custZipcode
 		,tom.order_addr1  custAddr1
 		,tom.order_addr2 custAddr2
-		,tma.deli_nm  deliNm
+-- 		,tma.deli_nm  deliNm
+		,iom.receiver_name deliNm
 		,tma.deli_tel  deliTel
 		,tma.deli_hp  deliHp
 		,tma.deli_zipcode  deliZipcode
@@ -376,10 +378,12 @@ from (select aa.channel_gb channel_gb,
 		,0.0 totalUseMileage
 		from tb_order_master tom
 		,tb_member tm 
-		,tb_member_address tma 
+		,tb_member_address tma
+		,if_order_master iom
 		where tom.order_id =#{orderId}
 		and tom.cust_id  = tm.cust_id 
-		and tom.deli_id  = tma.deli_id 
+		and tom.order_id  = iom.order_id
+		and tom.deli_id  = tma.deli_id
 		
 		
 			
@@ -489,10 +493,10 @@ select aa.channel_gb channelGb
 		,bb.sale_price salePrice
 		,bb.deli_price deliPrice
 		,bb.dc_sum_price dcSumPrice
-		,(bb.sale_price + bb.deli_price - bb.dc_sum_price) totalPrice 
+		,(bb.sale_price + bb.deli_price - bb.dc_sum_price) totalPrice
 		,bb.list_image_data listImageData
 		,bb.channel_order_no  channelOrderNo
-		,bb.channel_order_seq  channelOrderSeq		
+		,bb.channel_order_seq  channelOrderSeq
 		from tb_order_master aa
 		,tb_order_detail bb
 		where 1=1
@@ -517,11 +521,7 @@ select aa.channel_gb channelGb
 			]]>
 		</if>	
 	</select>	
-	
-	
-	
-	
-	
+
 		<select id="getOrderCancelList" parameterType="java.util.HashMap"  resultType="HashMap">
 	<![CDATA[
 		select aa.seq seq
@@ -535,6 +535,7 @@ select aa.channel_gb channelGb
 		,bb.assort_id assortId
 		,bb.item_id itemId
 		,bb.goods_nm goodsNm
+		,cc.order_name orderName
 	,  (select b1.option_nm
                 from ititmm b2, itvari b1
                 where b2.assort_id=bb.assort_id
@@ -559,14 +560,20 @@ select aa.channel_gb channelGb
                   ,aa.if_status ifStatus
                   ,aa.if_msg ifMsg
 		from if_order_cancel  aa
-		,tb_order_detail bb
+		,tb_order_detail bb, tb_order_master cc
 		where 1=1
 		and aa.if_dt between #{startDt} and  #{endDt}
 		and aa.if_status =#{ifStatus}
 		and aa.channel_order_no = bb.channel_order_no 
 			and aa.channel_order_seq = bb.channel_order_seq
+		  and bb.order_id = cc.order_id
 				]]>
-	</select>	
+			<if test='orderName != null and orderName.trim() != ""'>
+				<![CDATA[
+				and cc.order_name =#{orderName}
+			]]>
+			</if>
+		</select>
 	
 	
 	
