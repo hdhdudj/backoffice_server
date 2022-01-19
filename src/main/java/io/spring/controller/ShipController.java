@@ -114,7 +114,7 @@ public class ShipController {
 //        Date start = java.sql.Timestamp.valueOf(startDt.atStartOfDay());
 //        Date end = java.sql.Timestamp.valueOf(endDt.atTime(23,59,59));
 		ShipIndicateListData shipIndicateListData = jpaShipService.getShipIndList(startDt, endDt, shipId, assortId,
-				assortNm, vendorId, StringFactory.getStrD01(), "", StringFactory.getGbTwo());
+				assortNm, vendorId, StringFactory.getStrC04(), "", StringFactory.getGbTwo());
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
         return ResponseEntity.ok(res);
     }
