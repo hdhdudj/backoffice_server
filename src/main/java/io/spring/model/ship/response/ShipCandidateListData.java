@@ -62,7 +62,7 @@ public class ShipCandidateListData {
             this.orderId = tbOrderDetail.getOrderId();
             this.orderSeq = tbOrderDetail.getOrderSeq();
             this.orderKey = Utilities.addDashInMiddle(this.orderId, this.orderSeq);
-            this.assortGb = tbOrderDetail.getAssortGb();
+            this.assortGb = itasrt.getAssortGb();
             this.deliMethod = tbOrderDetail.getDeliMethod();
             this.assortId = tbOrderDetail.getAssortId();
             this.itemId = tbOrderDetail.getItemId();

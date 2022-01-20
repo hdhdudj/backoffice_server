@@ -544,7 +544,9 @@ public class JpaPurchaseService {
                 itvariList.add(ititmm.getItvari3());
             }
             Utilities.setOptionNames(item, itvariList); // optionNm set
-            if (lspchd.getLspchm().getDealtypeCd().equals(StringFactory.getGbOne()) && ((lspchd.getOrderId() != null && !lspchd.getOrderId().trim().equals("")) && lspchd.getOrderSeq() != null && !lspchd.getOrderSeq().trim().equals(""))) { // 주문발주인 경우
+            if ((lspchd.getLspchm().getDealtypeCd().equals(StringFactory.getGbOne()) || lspchd.getLspchm().getDealtypeCd().equals(StringFactory.getGbThree()))
+                    && ((lspchd.getOrderId() != null && !lspchd.getOrderId().trim().equals(""))
+                    && lspchd.getOrderSeq() != null && !lspchd.getOrderSeq().trim().equals(""))) { // 주문발주인 경우
                 TbOrderDetail tbOrderDetail = lspchd.getTbOrderDetail();
 //                IfBrand ifBrand = itasrt.getIfBrand();
 //                TbMember tbMember = tbOrderDetail.getTbOrderMaster().getTbMember();
@@ -942,7 +944,7 @@ public class JpaPurchaseService {
 
 			Lspchm lp = jpaLspchmRepository.findByPurchaseNo(lspchd.getPurchaseNo()).orElse(null);
 
-			Ititmt it = new Ititmt(lp, lspchd, "newRegID");
+			Ititmt it = new Ititmt(lp, lspchd, "batch to server (orderStatus)");
 			it.setTempIndicateQty(lspchd.getPurchaseQty());
 
 			jpaItitmtRepository.save(it);
