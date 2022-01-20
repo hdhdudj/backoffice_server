@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.spring.enums.TrdstOrderStatus;
-import io.spring.model.ship.response.ShipListDataResponse;
+import io.spring.model.ship.response.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -22,9 +22,6 @@ import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
 import io.spring.model.ship.request.ShipSaveListData;
-import io.spring.model.ship.response.ShipIndicateListData;
-import io.spring.model.ship.response.ShipIndicateSaveListResponseData;
-import io.spring.model.ship.response.ShipItemListData;
 import io.spring.service.ship.JpaShipService;
 import io.spring.service.ship.MyBatisShipService;
 import lombok.RequiredArgsConstructor;
@@ -92,7 +89,7 @@ public class ShipController {
     }
 
     /**
-     * 출고지시 화면 : 저장용. 출고지시 할 출고내역들을 선택 후 저장 버튼을 누르면 호출되는 api (출고번호 기준으로 불러옴)
+     * 출고지시 화면 : 출고지시 저장용. 출고지시 할 출고내역들을 선택 후 저장 버튼을 누르면 호출되는 api (출고번호 기준으로 불러옴)
      */
     @PostMapping(path = "/indicate")
     public ResponseEntity saveShipIndicate(@RequestBody ShipIndicateSaveListData shipIndicateSaveDataList){
@@ -107,15 +104,16 @@ public class ShipController {
     @GetMapping(path = "/indicate/items")
     public ResponseEntity getShipIndicateList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
                                       @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
-                                      @RequestParam @Nullable String shipId,
+//                                      @RequestParam @Nullable String shipId,
                                        @RequestParam @Nullable String assortId,
                                        @RequestParam @Nullable String assortNm,
+                                       @RequestParam @Nullable String storageId,
                                        @RequestParam @Nullable String vendorId){
 //        Date start = java.sql.Timestamp.valueOf(startDt.atStartOfDay());
 //        Date end = java.sql.Timestamp.valueOf(endDt.atTime(23,59,59));
-		ShipIndicateListData shipIndicateListData = jpaShipService.getShipIndList(startDt, endDt, shipId, assortId,
-				assortNm, vendorId, StringFactory.getStrD01(), "", StringFactory.getGbTwo());
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
+        ShipCandidateListData shipCandidateListData = jpaShipService.getShipCandidateList(startDt, endDt, storageId, assortId,
+				assortNm, vendorId, StringFactory.getStrC04(), "", StringFactory.getGbTwo());
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipCandidateListData);
         return ResponseEntity.ok(res);
     }
 

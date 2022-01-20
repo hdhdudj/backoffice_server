@@ -11,6 +11,7 @@ public enum Scm implements EnumCommonInterface {
     atempo("63"),
     mohd("67"),
     본사재고("74"),
+    추가금("75"),
     sevokorea("64");
     private final String fieldName;
 }

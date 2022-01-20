@@ -53,11 +53,12 @@ where 1=1
 and lm.receipt_dt between #{startDt} and  #{endDt}
 and lm.ship_status='01'
 and lm.ship_id = ld.ship_id 
-and ld.assort_id = it.assort_id 
-and ld.order_id = tod.order_id 
+and ld.assort_id = it.assort_id
+and ld.order_id = tod.order_id
 and ld.order_seq = tod.order_seq
 and tod.status_cd ='C04'
 and tod.order_id = tom.order_id
+and it.add_goods_yn='02'
     	 ]]>
     	 <if test='storageId != null'>
 			 <![CDATA[
@@ -85,8 +86,4 @@ and tod.order_id = tom.order_id
 			
 					
     </select>
-    
-    
-    
-
 </mapper>

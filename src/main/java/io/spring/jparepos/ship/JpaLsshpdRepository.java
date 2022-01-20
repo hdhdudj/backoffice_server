@@ -34,7 +34,7 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
     List<Lsshpd> findShipListByShipId(@Param("shipId") String shipId);
 
     /**
-     * 출고지시리스트, 출고처리화면 조회 리스트
+     * 출고처리 화면 조회 리스트
      */
     @Query("select lsd from Lsshpd lsd " +
             "join fetch lsd.lsshpm lsm " +
@@ -142,4 +142,10 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
             "join fetch lsshpd.lsshpm lm " +
             "where lsshpd.shipId in :shipIdList")
     List<Lsshpd> findShipDetailListByShipIdList(@Param("shipIdList") List<String> shipIdList);
+
+    @Query("select lsd from Lsshpd lsd " +
+            "join fetch lsd.tbOrderDetail tod " +
+            "where lsd.orderId in :orderIdList and tod.assortGb=:assortGb")
+    List<Lsshpd> findAddGoodsByOrderIdList(@Param("orderIdList") List<String> orderIdList,
+                                           @Param("assortGb") String assortGb);
 }

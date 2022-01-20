@@ -115,16 +115,7 @@ public class JpaOrderService {
     public void changeOrderStatus(String orderId, String orderSeq) {
         // orderId, orderSeq로 해당하는 TbOrderDetail 찾아오기
         log.debug("in changeOrderStatus ; orderId : " + orderId + ", orderSeq : " + orderSeq);
-        TypedQuery<TbOrderDetail> query =
-                em.createQuery("select td from TbOrderDetail td " +
-                                "join fetch td.tbOrderMaster tm " +
-                                "left join fetch td.ititmm it " +
-                                "left join fetch it.itasrt itasrt " +
-                                "where td.orderId = ?1" +
-                                "and td.orderSeq = ?2 "
-                        , TbOrderDetail.class);
-        query.setParameter(1, orderId).setParameter(2, orderSeq);
-        TbOrderDetail tbOrderDetail = query.getSingleResult();
+        TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq2(orderId, orderSeq);//query.getSingleResult();
         if(tbOrderDetail == null){
             log.debug("There is no TbOrderDetail of " + orderId + " and " + orderSeq);
             return;

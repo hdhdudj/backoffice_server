@@ -19,6 +19,17 @@ public interface JpaTbOrderDetailRepository extends JpaRepository<TbOrderDetail,
 
     TbOrderDetail findByOrderIdAndOrderSeq(String orderId, String orderSeq);
 
+    /**
+     * changeOrderStatus에서 쓰는 쿼리
+     */
+    @Query("select td from TbOrderDetail td " +
+            "join fetch td.tbOrderMaster tm " +
+            "left join fetch td.ititmm it " +
+            "left join fetch it.itasrt itasrt " +
+            "where td.orderId = :orderId " +
+            "and td.orderSeq = :orderSeq")
+    TbOrderDetail findByOrderIdAndOrderSeq2(@Param("orderId") String orderId, @Param("orderSeq") String orderSeq);
+
     List<TbOrderDetail> findByAssortIdAndItemId(String assortId, String itemId);
 
     List<TbOrderDetail> findByAssortIdAndItemIdAndQtyAndStatusCd(String assortId, String itemId, Long purchasePlanQty, String strC03);
