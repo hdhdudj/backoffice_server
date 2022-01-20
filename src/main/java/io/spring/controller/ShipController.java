@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.spring.enums.TrdstOrderStatus;
-import io.spring.model.ship.response.ShipListDataResponse;
+import io.spring.model.ship.response.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -22,9 +22,6 @@ import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
 import io.spring.model.ship.request.ShipSaveListData;
-import io.spring.model.ship.response.ShipIndicateListData;
-import io.spring.model.ship.response.ShipIndicateSaveListResponseData;
-import io.spring.model.ship.response.ShipItemListData;
 import io.spring.service.ship.JpaShipService;
 import io.spring.service.ship.MyBatisShipService;
 import lombok.RequiredArgsConstructor;
@@ -107,15 +104,16 @@ public class ShipController {
     @GetMapping(path = "/indicate/items")
     public ResponseEntity getShipIndicateList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
                                       @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
-                                      @RequestParam @Nullable String shipId,
+//                                      @RequestParam @Nullable String shipId,
                                        @RequestParam @Nullable String assortId,
                                        @RequestParam @Nullable String assortNm,
+                                       @RequestParam @Nullable String storageId,
                                        @RequestParam @Nullable String vendorId){
 //        Date start = java.sql.Timestamp.valueOf(startDt.atStartOfDay());
 //        Date end = java.sql.Timestamp.valueOf(endDt.atTime(23,59,59));
-		ShipIndicateListData shipIndicateListData = jpaShipService.getShipIndList(startDt, endDt, shipId, assortId,
+        ShipCandidateListData shipCandidateListData = jpaShipService.getShipCandidateList(startDt, endDt, storageId, assortId,
 				assortNm, vendorId, StringFactory.getStrC04(), "", StringFactory.getGbTwo());
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipCandidateListData);
         return ResponseEntity.ok(res);
     }
 

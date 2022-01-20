@@ -34,7 +34,7 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
     List<Lsshpd> findShipListByShipId(@Param("shipId") String shipId);
 
     /**
-     * 출고지시리스트, 출고처리화면 조회 리스트
+     * 출고처리 화면 조회 리스트
      */
     @Query("select lsd from Lsshpd lsd " +
             "join fetch lsd.lsshpm lsm " +

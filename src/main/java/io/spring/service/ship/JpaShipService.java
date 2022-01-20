@@ -12,8 +12,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 import io.spring.infrastructure.mapstruct.ShipItemListDataMapper;
+import io.spring.jparepos.deposit.JpaLsdpsdRepository;
 import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.goods.entity.Itvari;
+import io.spring.model.purchase.entity.Lspchd;
+import io.spring.model.ship.response.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
@@ -46,10 +49,6 @@ import io.spring.model.ship.entity.Lsshpm;
 import io.spring.model.ship.entity.Lsshps;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
 import io.spring.model.ship.request.ShipSaveListData;
-import io.spring.model.ship.response.ShipIndicateListData;
-import io.spring.model.ship.response.ShipIndicateSaveListResponseData;
-import io.spring.model.ship.response.ShipItemListData;
-import io.spring.model.ship.response.ShipListDataResponse;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.move.JpaMoveService;
 import lombok.RequiredArgsConstructor;
@@ -70,6 +69,7 @@ public class JpaShipService {
     private final JpaLsshpdRepository jpaLsshpdRepository;
     private final JpaItitmcRepository jpaItitmcRepository;
 	private final JpaLsdpsmRepository jpaLsdpsmRepository;
+	private final JpaLsdpsdRepository jpaLsdpsdRepository;
 
 	private final JpaTbOrderMasterRepository tbOrderMasterRepository;
 	private final JpaTbOrderDetailRepository tbOrderDetailRepository;
@@ -367,10 +367,48 @@ public class JpaShipService {
 
     }
 
+	/**
+	 * 출고 : 출고지시 화면에서 list를 불러오는 함수
+	 */
+	public ShipCandidateListData getShipCandidateList(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+											   @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+											   String storageId, String assortId, String assortNm,
+											   String vendorId, String statusCd, String orderKey, String shipStatus) {
+
+		String orderId = "";
+		String orderSeq = "";
+		if(orderId != null && !orderId.trim().equals("")){
+			String[] order = orderKey.split("-");
+			orderId = order[0];
+			orderSeq = order.length > 1? order[1]:orderSeq;
+		}
+		LocalDateTime start = startDt.atStartOfDay();
+		LocalDateTime end = endDt.atTime(23,59,59);
+		ShipCandidateListData shipCandidateListData = new ShipCandidateListData(startDt, endDt,
+				assortId, assortNm, vendorId, orderId);
+
+		List<Lsdpsd> lsdpsdList = jpaLsdpsdRepository.findShipCandidateList(start, end, assortId, assortNm, vendorId, orderId, orderSeq, storageId);//query.getResultList();
+		lsdpsdList = lsdpsdList.stream().filter(x->x.getLspchd() != null).filter(y->y.getLspchd().getTbOrderDetail() != null).filter(z->z.getLspchd().getTbOrderDetail().getStatusCd().equals(statusCd)).collect(Collectors.toList());
+		List<ShipCandidateListData.Ship> shipList = new ArrayList<>();
+		for(Lsdpsd lsdpsd : lsdpsdList){
+			Ititmm ititmm = lsdpsd.getItitmm();
+			ShipCandidateListData.Ship ship = new ShipCandidateListData.Ship(lsdpsd);
+			Itvari itvari1 = ititmm.getItvari1();
+			Itvari itvari2 = ititmm.getItvari2();
+			Itvari itvari3 = ititmm.getItvari3();
+			List<Itvari> itvariList = new ArrayList<>();
+			itvariList.add(itvari1);
+			itvariList.add(itvari2);
+			itvariList.add(itvari3);
+			Utilities.setOptionNames(ship, itvariList);
+			shipList.add(ship);
+		}
+		shipCandidateListData.setShips(shipList);
+		return shipCandidateListData;
+	}
+
     /**
-     * 출고 : 출고지시리스트 화면, 출고처리 화면에서 list를 불러오는 함수
-     * 출고지시리스트 화면인지 출고처리 화면인지는 statusCd로 구분됨.
-     * (C04 : 출고지시리스트 화면, D01 : 출고처리 화면)
+     * 출고 : 출고처리 화면에서 list를 불러오는 함수
      */
     public ShipIndicateListData getShipIndList(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
 											   @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
@@ -390,7 +428,6 @@ public class JpaShipService {
 				shipId, assortId, assortNm, vendorId, orderId);
 
         List<Lsshpd> lsshpdList = jpaLsshpdRepository.findShipIndicateList(start, end, assortId, shipId, assortNm, vendorId, shipStatus, orderId, orderSeq);//query.getResultList();
-        // 출고지시리스트 : C04, 출고처리리스트 : D01, 출고리스트 statusCd = D02인 애들만 남기기
         lsshpdList = lsshpdList.stream().filter(x->x.getTbOrderDetail().getStatusCd().equals(statusCd)).collect(Collectors.toList());
         List<ShipIndicateListData.Ship> shipList = new ArrayList<>();
         for(Lsshpd lsshpd : lsshpdList){
