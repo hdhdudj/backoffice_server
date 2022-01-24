@@ -426,7 +426,7 @@ public class JpaOrderService {
         if(isStockCandidateExist && di.equals(DirectOrImport.direct)){ // 직구
 
 			System.out.println("111111111111111111111111111");
-
+            di = DirectOrImport.purchase;
             jpaPurchaseService.makePurchaseDataByOrder(tbOrderDetail, di);
             return StringFactory.getStrB02(); // 발주완료 : B02
         }
