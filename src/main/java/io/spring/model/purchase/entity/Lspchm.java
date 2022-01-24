@@ -34,8 +34,8 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lspchm extends CommonProps {
+    public Lspchm(){}
     public Lspchm(Lspchm purchaseInsertRequestData){
         this.purchaseNo = purchaseInsertRequestData.getPurchaseNo();
         this.purchaseDt = purchaseInsertRequestData.getPurchaseDt();

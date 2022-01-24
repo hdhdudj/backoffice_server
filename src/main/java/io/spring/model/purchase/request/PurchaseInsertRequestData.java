@@ -3,6 +3,7 @@ package io.spring.model.purchase.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import io.spring.infrastructure.custom.CustomLocalDateTimeDeSerializer;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
@@ -13,6 +14,7 @@ import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderMaster;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -145,6 +147,9 @@ public class PurchaseInsertRequestData {
 //        private String purchaseStatus;
 		private String orderId;
 		private String orderSeq;
+        // 22-01-24 추가
+        @JsonDeserialize(using = LocalDateDeserializer.class)
+        private LocalDate compleDt;
     }
 
 }

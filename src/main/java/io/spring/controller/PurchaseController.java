@@ -149,13 +149,14 @@ public class PurchaseController {
     }
 
     /**
-     * 발주사후 업데이트 : 마스터 부분, 디테일에선 발주가만
+     * 발주사후 업데이트 : 마스터 부분, 디테일에선 발주가와 제작완료일자만
      */
     @PostMapping(path = "/{purchaseNo}/update") // update
     public ResponseEntity savePurchaseJpa(@PathVariable("purchaseNo") String purchaseNo, @RequestBody PurchaseInsertRequestData purchaseInsertRequestData){
         log.debug("update purchase by jpa");
 
-        String purchaseNo2 = jpaPurchaseService.createPurchaseSquence(purchaseNo, purchaseInsertRequestData);
+//        String purchaseNo2 = jpaPurchaseService.createPurchaseSquence(purchaseNo, purchaseInsertRequestData);
+        String purchaseNo2 = jpaPurchaseService.updatePurchaseSquence(purchaseNo, purchaseInsertRequestData);
 
         // jpaOrderService.updateStatusCd("O2106100714498480", "0001", "B02");
 

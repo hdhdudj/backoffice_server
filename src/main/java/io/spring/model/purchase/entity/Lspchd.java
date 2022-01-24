@@ -1,6 +1,7 @@
 package io.spring.model.purchase.entity;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -214,6 +215,8 @@ public class Lspchd extends CommonProps implements Serializable {
     private String setShipId;
     private String setShipSeq;
     private String siteOrderNo;
+    // 22-01-24 추가
+    private LocalDate compleDt;
 
     // 연관관계 : lspchb
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Lspchb.class)

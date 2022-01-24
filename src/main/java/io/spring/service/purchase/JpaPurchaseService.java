@@ -17,6 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import io.spring.infrastructure.mapstruct.LspchmMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,6 +92,7 @@ public class JpaPurchaseService {
     private final ItemsMapper itemsMapper;
     private final PurchaseSelectDetailResponseDataMapper purchaseSelectDetailResponseDataMapper;
     private final PurchaseMasterListResponseDataMapper purchaseMasterListResponseDataMapper;
+    private final LspchmMapper lspchmMapper;
 
     private final EntityManager em;
 
@@ -143,14 +145,18 @@ public class JpaPurchaseService {
         }
     }
 
+    /**
+     * 발주사후 화면에서 업데이트 할 때
+     */
     public String updatePurchaseSquence(String purchaseNo, PurchaseInsertRequestData purchaseInsertRequestData) {
         // lspchd (발주 디테일)
-        List<Lspchd> lspchdList = this.saveLspchd(purchaseInsertRequestData);
-        Lspchm lspchm = jpaLspchmRepository.findByPurchaseNo(purchaseNo).orElseGet(()->null);
+        List<Lspchd> lspchdList = jpaLspchdRepository.findByPurchaseNo(purchaseNo);//this.saveLspchd(purchaseInsertRequestData);
+        Lspchm lspchm = lspchdList.size() > 0? lspchdList.get(0).getLspchm() : null;
         if(lspchm == null){
             log.debug("update할 lspchm이 존재하지 않습니다. purcahseNo : " + purchaseNo);
             return null;
         }
+//        lspchm = lspchmMapper.to(purchaseInsertRequestData);
         lspchm.setPurchaseStatus(purchaseInsertRequestData.getPurchaseStatus());
         lspchm.setVendorId(purchaseInsertRequestData.getVendorId());
         lspchm.setPurchaseDt(purchaseInsertRequestData.getPurchaseDt());
@@ -163,7 +169,15 @@ public class JpaPurchaseService {
         lspchm.setUpdId(purchaseInsertRequestData.getUserId());
         lspchm.setPiNo(purchaseInsertRequestData.getPiNo());
         lspchm.setMemo(purchaseInsertRequestData.getMemo());
+        lspchm.setDeliFee(purchaseInsertRequestData.getDeliFee() == null? null : Float.parseFloat(purchaseInsertRequestData.getDeliFee()));
         jpaLspchmRepository.save(lspchm);
+        for(PurchaseInsertRequestData.Items i : purchaseInsertRequestData.getItems()){
+            Lspchd l = lspchdList.stream().filter(x->x.getPurchaseSeq().equals(i.getPurchaseSeq())).collect(Collectors.toList()).get(0);
+            l.setPurchaseUnitAmt(i.getPurchaseUnitAmt());
+            l.setPurchaseItemAmt(l.getPurchaseQty() * l.getPurchaseUnitAmt());
+            l.setCompleDt(i.getCompleDt());
+            jpaLspchdRepository.save(l);
+        }
         return purchaseNo;
     }
 
