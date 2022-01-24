@@ -122,7 +122,9 @@ public class JpaPurchaseService {
         // ititmt (예정 재고)
         List<Ititmt> ititmt = this.saveItitmt(purchaseInsertRequestData, lspchm);
         // tbOrderDetail 상태변경
-        this.changeStatusCdOfTbOrderDetail(lspchdList);
+        if(purchaseInsertRequestData.getDealtypeCd().equals(StringFactory.getGbOne())){ // 주문발주일 때만
+            this.changeStatusCdOfTbOrderDetail(lspchdList);
+        }
 
         return lspchm.getPurchaseNo();
     }
@@ -151,7 +153,7 @@ public class JpaPurchaseService {
         }
         lspchm.setPurchaseStatus(purchaseInsertRequestData.getPurchaseStatus());
         lspchm.setVendorId(purchaseInsertRequestData.getVendorId());
-        lspchm.setPurchaseDt(Utilities.dateToLocalDateTime(purchaseInsertRequestData.getPurchaseDt()));
+        lspchm.setPurchaseDt(purchaseInsertRequestData.getPurchaseDt());
         lspchm.setStoreCd(purchaseInsertRequestData.getStorageId());
         lspchm.setSiteOrderNo(purchaseInsertRequestData.getSiteOrderNo());
         lspchm.setTerms(purchaseInsertRequestData.getTerms());
@@ -198,8 +200,8 @@ public class JpaPurchaseService {
 			lspchm.setPurchaseStatus(StringFactory.getGbOne()); // 01 하드코딩
         }
         else { // update
-            lspchm.setPurchaseDt(Utilities.dateToLocalDateTime(purchaseInsertRequestData.getPurchaseDt()));
-            lspchm.setEffEndDt(new Date());
+            lspchm.setPurchaseDt(purchaseInsertRequestData.getPurchaseDt());
+            lspchm.setEffEndDt(LocalDateTime.now());
             lspchm.setPurchaseStatus(purchaseInsertRequestData.getPurchaseStatus());
             lspchm.setPurchaseRemark(purchaseInsertRequestData.getPurchaseRemark());
 //            lspchm.setSiteGb(purchaseInsertRequest.getSiteGb());
@@ -255,7 +257,7 @@ public class JpaPurchaseService {
         return lspchs;
     }
 
-    private List<Lspchd> saveLspchd(PurchaseInsertRequestData purchaseInsertRequestData) {
+    private List<Lspchd> saveLspchd(PurchaseInsertRequestData purchaseInsertRequestData){
         List<Lspchd> lspchdList = new ArrayList<>();
 
         for(PurchaseInsertRequestData.Items item : purchaseInsertRequestData.getItems()){
@@ -272,15 +274,17 @@ public class JpaPurchaseService {
                 lspchd.setRegId(purchaseInsertRequestData.getUserId());
 //                lspchd.setUpdId(purchaseInsertRequestData.getUserId());
             }
-
+            // 발주가가 null이면 500 에러 내야 함
+//            if(item.getPurchaseUnitAmt() == null){
+//                throw new Exception("발주가가 null 입니다.");
+//            }
             lspchd.setPurchaseUnitAmt(item.getPurchaseUnitAmt());
             if(lspchd.getPurchaseQty()== null || item.getPurchaseUnitAmt() == null){
                 log.debug("purchaseQty 또는 purchaseUnitAmt가 null 입니다.");
-                lspchd.setPurchaseItemAmt(null);
             }
-            else{
+//            else{
                 lspchd.setPurchaseItemAmt(lspchd.getPurchaseQty()*item.getPurchaseUnitAmt());
-            }
+//            }
             lspchd.setUpdId(purchaseInsertRequestData.getUserId());
 
             jpaLspchdRepository.save(lspchd);

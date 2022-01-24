@@ -2,6 +2,8 @@ package io.spring.model.purchase.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import io.spring.infrastructure.custom.CustomLocalDateTimeDeSerializer;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.entity.Itasrt;
@@ -11,6 +13,7 @@ import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderMaster;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -27,7 +30,7 @@ public class PurchaseInsertRequestData {
     public PurchaseInsertRequestData(TbOrderMaster tbOrderMaster, TbOrderDetail tbOrderDetail, Itasrt itasrt, Ititmc ititmc, Ititmt ititmt, String purchaseGb) {
         // lspchm
         this.purchaseStatus = StringFactory.getGbOne(); // 01 : 발주, 05 : 취소
-        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay()); // 9999-12-31 23:59:59 하드코딩
+        this.effEndDt = Utilities.strToLocalDateTime(StringFactory.getDoomDayT()); // 9999-12-31 23:59:59 하드코딩
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
         this.vendorId = StringFactory.getFourStartCd(); // "0001" 하드코딩
         this.siteOrderNo = null; // 해외주문번호
@@ -38,7 +41,7 @@ public class PurchaseInsertRequestData {
         this.itemId = ititmt.getItemId();
         this.itemGrade = ititmt.getItemGrade();
 
-        this.purchaseDt = new Date();
+        this.purchaseDt = LocalDateTime.now();
     }
 
     /**
@@ -49,8 +52,8 @@ public class PurchaseInsertRequestData {
     // 여러 테이블에서 쓰는 변수
     private String purchaseId; // lspchm, lspchs
     private String purchaseStatus; // lspchm, lspchs, lspchb
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date effEndDt; // lspchm, lspchs
+    @JsonDeserialize(using = CustomLocalDateTimeDeSerializer.class)
+    private LocalDateTime effEndDt; // lspchm, lspchs
     private String siteGb; // lspchm, ititmt
     private String vendorId; // lspchm, ititmt
     private String assortId; // lspchd, lsdpsp, ititmt
@@ -60,8 +63,8 @@ public class PurchaseInsertRequestData {
 	private String dealtypeCd;
 
     // lspchm
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date purchaseDt ;
+    @JsonDeserialize(using = CustomLocalDateTimeDeSerializer.class)
+    private LocalDateTime purchaseDt ;
     private String purchaseRemark;
     private String siteOrderNo;
     private String siteTrackNo;
@@ -92,8 +95,8 @@ public class PurchaseInsertRequestData {
 	private List<Items> items;
 
     // lspchs
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date effStaDt;
+    @JsonDeserialize(using = CustomLocalDateTimeDeSerializer.class)
+    private LocalDateTime effStaDt;
 
     // lspchd
     private String purchaseSeq;
@@ -109,8 +112,8 @@ public class PurchaseInsertRequestData {
 
     // lsdpsp
     private String depositPlanId;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date smReservationDt;
+    @JsonDeserialize(using = CustomLocalDateTimeDeSerializer.class)
+    private LocalDateTime smReservationDt;
     private Long purchasePlanQty;
     private Long purchaseTakeQty;
     private String planStatus;

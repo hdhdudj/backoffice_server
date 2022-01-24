@@ -39,7 +39,7 @@ public class Lspchm extends CommonProps {
     public Lspchm(Lspchm purchaseInsertRequestData){
         this.purchaseNo = purchaseInsertRequestData.getPurchaseNo();
         this.purchaseDt = purchaseInsertRequestData.getPurchaseDt();
-        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
+        this.effEndDt = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());
 		this.purchaseStatus = purchaseInsertRequestData.getPurchaseStatus(); // 01 : 발주, 03 : 부분입고, 04 : 완전입고, 05 : 취소
         this.purchaseRemark = purchaseInsertRequestData.getPurchaseRemark();
         this.siteGb = StringFactory.getGbOne(); // "01" 하드코딩
@@ -68,8 +68,8 @@ public class Lspchm extends CommonProps {
     }
     public Lspchm(PurchaseInsertRequestData purchaseInsertRequestData){
         this.purchaseNo = purchaseInsertRequestData.getPurchaseId();
-        this.purchaseDt = Utilities.dateToLocalDateTime(purchaseInsertRequestData.getPurchaseDt());
-        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
+        this.purchaseDt = purchaseInsertRequestData.getPurchaseDt();
+        this.effEndDt = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());
         this.purchaseStatus = purchaseInsertRequestData.getPurchaseStatus(); // 01 : 발주, 05 : 취소
         this.purchaseRemark = purchaseInsertRequestData.getPurchaseRemark();
         this.siteGb = StringFactory.getGbOne(); // "01" 하드코딩
@@ -108,7 +108,7 @@ public class Lspchm extends CommonProps {
 	public Lspchm(String orderGoodsType, String purchaseNo) {
         this.purchaseNo = purchaseNo;
         this.purchaseDt = LocalDateTime.now();
-        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
+        this.effEndDt = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());
 		this.purchaseStatus = StringFactory.getGbOne(); // 01 : 발주, 04 : 이동지시?, 05 : 취소 (04 하드코딩)
 //        this.purchaseRemark : 바깥 set
         this.siteGb = StringFactory.getGbOne(); // "01" 하드코딩
@@ -154,7 +154,7 @@ public class Lspchm extends CommonProps {
     public Lspchm(String purchaseNo, Lsshpm lsshpm, String regId) {
         this.purchaseNo = purchaseNo;
         this.purchaseDt = LocalDateTime.now();
-        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
+        this.effEndDt = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());
         this.purchaseStatus = StringFactory.getGbOne(); // 01:발주 03:부분입고 04:완전입고 05:취소  A1:송금완료 A2:거래처선금입금 A3:거래처잔금입금 (01 하드코딩)
 //        this.purchaseRemark : 바깥 set
         this.siteGb = StringFactory.getGbOne(); // "01" 하드코딩
@@ -187,7 +187,7 @@ public class Lspchm extends CommonProps {
     public Lspchm(TbOrderDetail tbOrderDetail, DirectOrImport di) {
         Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
         this.purchaseDt = LocalDateTime.now();
-        this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
+        this.effEndDt = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());
         this.purchaseStatus = StringFactory.getGbOne(); // 01 하드코딩
         this.siteGb = StringFactory.getGbOne(); // 01 하드코딩 (고도몰)
         this.vendorId = itasrt.getVendorId();
@@ -210,7 +210,7 @@ public class Lspchm extends CommonProps {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime purchaseDt;
 //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date effEndDt;
+    private LocalDateTime effEndDt;
     private String purchaseStatus;
     private String purchaseRemark;
     private String siteGb;
