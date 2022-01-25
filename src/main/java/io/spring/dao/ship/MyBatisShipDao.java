@@ -6,6 +6,4 @@ import java.util.List;
 public interface MyBatisShipDao {
 
 	List<HashMap<String, Object>> getOrderShipList(HashMap<String, Object> param);
-	
-
 }

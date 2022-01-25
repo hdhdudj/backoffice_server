@@ -9,5 +9,4 @@ import org.apache.ibatis.annotations.Mapper;
 public interface ShipMapper {
 	
 	List<HashMap<String, Object>> getOrderShipList(HashMap<String, Object> param);
-	
 }

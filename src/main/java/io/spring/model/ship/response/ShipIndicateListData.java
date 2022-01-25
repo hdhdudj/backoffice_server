@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * 출고 - 출고지시리스트 : 출고지시일자, 출고지시번호, 상품코드or상품명, 구매처 조건에 맞는 출고지시 리스트 DTO
  * 출고 - 출고처리 : 출고처리 화면에서 조건 검색으로 리스트 가져올 때도 이용됨.
 */
 @Getter

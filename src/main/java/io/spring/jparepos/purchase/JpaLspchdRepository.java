@@ -12,7 +12,9 @@ import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.idclass.LspchdId;
 
 public interface JpaLspchdRepository extends JpaRepository<Lspchd, LspchdId> {
-    List<Lspchd> findByPurchaseNo(String purchaseNo);
+    @Query("select ld from Lspchd ld join fetch ld.lspchm lm where ld.purchaseNo=:purchaseNo")
+    List<Lspchd> findByPurchaseNo(@Param("purchaseNo") String purchaseNo);
+
     @Query("select max(l.purchaseSeq) as maxVal from Lspchd as l where l.purchaseNo = ?1")
     String findMaxPurchaseSeqByPurchaseNo(String purchaseNo);
 
