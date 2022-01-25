@@ -230,7 +230,7 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 	private String listImageData;
 	private String addGoodsYn;
 	private String addOptionNm;
-	private String addImageUrl;
+	private String mainImageUrl;
 	private Long stockCnt;
 
 	@Transient
