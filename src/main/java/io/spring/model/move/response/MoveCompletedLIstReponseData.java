@@ -11,6 +11,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
+import io.spring.model.move.request.MoveListExcelRequestData;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import lombok.AccessLevel;
@@ -32,6 +33,14 @@ public class MoveCompletedLIstReponseData {
         this.assortId = assortId;
         this.assortNm = assortNm;
         this.storageId = storageId;
+    }
+    public MoveCompletedLIstReponseData(MoveListExcelRequestData moveListExcelRequestData){
+        this.startDt = moveListExcelRequestData.getStartDt().toString();
+        this.endDt = moveListExcelRequestData.getEndDt().toString();
+        this.shipId = moveListExcelRequestData.getShipId();
+        this.assortId = moveListExcelRequestData.getAssortId();
+        this.assortNm = moveListExcelRequestData.getAssortNm();
+        this.storageId = moveListExcelRequestData.getStorageId();
     }
     private String startDt;
     private String endDt;
@@ -66,10 +75,10 @@ public class MoveCompletedLIstReponseData {
             this.orderId = lsshpd.getOrderId();
             this.orderSeq = lsshpd.getOrderSeq();
             this.orderKey = Utilities.addDashInMiddle(this.orderId, this.orderSeq);
-            this.shipmentDt = lsshpm.getShipmentDt() == null? "" : lsshpm.getShipmentDt().toLocalDate().toString();
+            this.shipmentDt = lsshpm.getShipmentDt() == null? "" : lsshpm.getShipmentDt().toString();
             this.blNo = lsshpm.getBlNo();
             this.movementKd = lsshpm.getMovementKd();
-            this.estiArrvTm = lsshpm.getEstiArrvTm() == null? "" : lsshpm.getEstiArrvTm().toLocalDate().toString();
+            this.estiArrvDt = lsshpm.getEstiArrvDt() == null? "" : lsshpm.getEstiArrvDt().toString();
             this.containerKd = lsshpm.getContainerKd();
             this.containerQty = lsshpm.getContainerQty() == null? "" : lsshpm.getContainerQty().toString();
         }
@@ -99,7 +108,7 @@ public class MoveCompletedLIstReponseData {
         private String shipmentDt;
         private String blNo;
         private String movementKd;
-        private String estiArrvTm;
+        private String estiArrvDt;
         private String containerKd;
         private String containerQty;
     }

@@ -2,12 +2,7 @@ package io.spring.service.move;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -17,6 +12,7 @@ import javax.transaction.Transactional;
 
 import io.spring.enums.TrdstOrderStatus;
 import io.spring.infrastructure.mapstruct.MoveCompletedListResponseDataMapper;
+import io.spring.model.move.request.MoveListExcelRequestData;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +39,6 @@ import io.spring.model.goods.entity.IfBrand;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmm;
-import io.spring.model.goods.entity.Itvari;
 import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.move.request.MoveListSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
@@ -118,16 +113,16 @@ public class JpaMoveService {
 //        return orderMoveListDataListResponse;
 //    }
 
-    // lspchd에 tbOrderDetail과 itasrt를 엮어 가져오는 쿼리
-    private Lspchd getLsdpsdTbOrderDetailLspchd(String orderId, String orderSeq) {
-        TypedQuery<Lspchd> query = em.createQuery("select lspchd from Lspchd lspchd " +
-                "join fetch lspchd.tbOrderDetail td " +
-                "join fetch td.itasrt it " +
-                "where lspchd.orderId=?1 and lspchd.orderSeq=?2", Lspchd.class);
-        query.setParameter(1,orderId).setParameter(2,orderSeq);
-        Lspchd lspchd = query.getSingleResult();
-        return lspchd;
-    }
+//    // lspchd에 tbOrderDetail과 itasrt를 엮어 가져오는 쿼리
+//    private Lspchd getLsdpsdTbOrderDetailLspchd(String orderId, String orderSeq) {
+//        TypedQuery<Lspchd> query = em.createQuery("select lspchd from Lspchd lspchd " +
+//                "join fetch lspchd.tbOrderDetail td " +
+//                "join fetch td.itasrt it " +
+//                "where lspchd.orderId=?1 and lspchd.orderSeq=?2", Lspchd.class);
+//        query.setParameter(1,orderId).setParameter(2,orderSeq);
+//        Lspchd lspchd = query.getSingleResult();
+//        return lspchd;
+//    }
 
     /**
      * 주문 이동지시 화면에서 검색에 맞는 TbOrderDetail들을 가져오는 함수
@@ -228,10 +223,9 @@ public class JpaMoveService {
 	/**
      * 주문 이동지시 저장 함수
      */
+    @Transactional
 	public List<String> saveOrderMoveByDeposit(Lsdpsd lsdpsd) {
-    	
-    
-    	
+
         //List<OrderMoveSaveData.Move> moveList = orderMoveSaveData.getMoves();
 		if (lsdpsd == null) {
             log.debug("input data is empty.");
@@ -284,7 +278,7 @@ public class JpaMoveService {
 		List<String> ret = new ArrayList<String>();
 
 		Lsshpm lsshpm = jpaLsshpmRepository.findById(move.getShipId()).orElse(null);
-		Lsshpd lsshpd = jpaLsshpdRepository.findByShipIdAndShipSeq(move.getShipId(), move.getShipSeq());
+//		Lsshpd lsshpd = jpaLsshpdRepository.findByShipIdAndShipSeq(move.getShipId(), move.getShipSeq());
 
 		lsshpm.setInstructDt(LocalDateTime.now());
 		lsshpm.setShipStatus("02");
@@ -971,30 +965,8 @@ public class JpaMoveService {
 
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
-        TypedQuery<Lsshpd> query = em.createQuery("select distinct ld from Lsshpd ld " +
-                        "join fetch ld.lsshpm lm " +
-                        "left join fetch ld.tbOrderDetail td " +
-                        "join fetch ld.itasrt it " +
-                        "left join fetch it.ifBrand ib " +
-                        "left join fetch it.itvariList iv " +
-                        "where lm.receiptDt between ?1 and ?2 " +
-				"and lm.shipStatus=?8 " +
-                        "and (?3 is null or trim(?3)='' or ld.shipId=?3) " +
-                        "and (?4 is null or trim(?4)='' or ld.assortId=?4) " +
-                        "and (?5 is null or trim(?5)='' or it.assortNm like concat('%',?5,'%')) " +
-				"and (?6 is null or trim(?6)='' or lm.oStorageId=?6) "
-				+
-                        "and (?7 is null or trim(?7)='' or lm.delMethod=?7)" 
-                        
-                ,Lsshpd.class);
-        query.setParameter(1,start).setParameter(2,end).setParameter(3,shipId)
-                .setParameter(4,assortId).setParameter(5,assortNm)
-                .setParameter(6,storageId).setParameter(7,deliMethod)
-                .setParameter(8, shipStatus);
-        List<Lsshpd> lsshpdList = query.getResultList();
-        
+        List<Lsshpd> lsshpdList = jpaLsshpdRepository.findLsshpdMoveList(start, end, shipId, assortId, assortNm, storageId, deliMethod, shipStatus);
 
-        
         return lsshpdList;
     }
 
@@ -1050,6 +1022,33 @@ public class JpaMoveService {
         }
         movedDetailResponseData.setMoves(moveList);
         return movedDetailResponseData;
+    }
+
+    /**
+     * 이동리스트 화면 - 엑셀에 값 입력 후 엑셀 업로드로 특정 컬럼들 값 저장
+     */
+    @Transactional
+    public void saveExcelList(MoveListExcelRequestData moveListExcelRequestData) {
+        List<MoveListExcelRequestData.Move> moveList = moveListExcelRequestData.getMoves();
+        List<String> shipIdList = new ArrayList<>();
+        for(MoveListExcelRequestData.Move move : moveList){
+            shipIdList.add(move.getShipId());
+        }
+        List<Lsshpm> lsshpmList = jpaLsshpmRepository.findShipMasterListByShipIdList(shipIdList);
+        for(MoveListExcelRequestData.Move move : moveList){
+            if(lsshpmList.stream().filter(x->x.getShipId().equals(move.getShipId())).count() == 0){
+                log.debug(move.getShipId() + "인 lsshpm은 존재하지 않습니다.");
+                continue;
+            }
+            Lsshpm lsshpm = lsshpmList.stream().filter(x->x.getShipId().equals(move.getShipId())).collect(Collectors.toList()).get(0);//lsshpmList.get(0);
+            lsshpm.setBlNo(Utilities.nullOrEmptyFilter(move.getBlNo()));
+            lsshpm.setMovementKd(Utilities.nullOrEmptyFilter(move.getBlNo()));
+            lsshpm.setShipmentDt(Utilities.nullOrEmptyFilter(move.getShipmentDt()));
+            lsshpm.setEstiArrvDt(Utilities.nullOrEmptyFilter(move.getEstiArrvDt()));
+            lsshpm.setContainerKd(Utilities.nullOrEmptyFilter(move.getContainerKd()));
+            lsshpm.setContainerQty(Utilities.nullOrEmptyFilter(move.getContainerQty()));
+            jpaLsshpmRepository.saveAndFlush(lsshpm);
+        }
     }
 
 
@@ -1173,13 +1172,13 @@ public class JpaMoveService {
 			log.debug("해당 주문이 존재하지 않습니다. - JpaPurchaseService.updateOrderStatusCd");
 			return;
 		}
-		Date date = Utilities.getStringToDate(StringFactory.getDoomDay());
+        LocalDateTime date = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());
 		List<TbOrderHistory> tohs = tbOrderHistoryrRepository.findByOrderIdAndOrderSeqAndEffEndDt(orderId, orderSeq,
 				date);
 
 		tod.setStatusCd(statusCd);
 
-		Date newEffEndDate = new Date();
+		LocalDateTime newEffEndDate = LocalDateTime.now();
 
 		for (int i = 0; i < tohs.size(); i++) {
 			tohs.get(i).setEffEndDt(newEffEndDate);
@@ -1187,7 +1186,7 @@ public class JpaMoveService {
 		}
 
 		TbOrderHistory toh = new TbOrderHistory(orderId, orderSeq, statusCd, "001", newEffEndDate,
-				Utilities.getStringToDate(StringFactory.getDoomDay()));
+				Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
 
 		tohs.add(toh);
 

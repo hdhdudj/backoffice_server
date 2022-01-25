@@ -152,7 +152,7 @@ public class Lsshpd extends CommonProps implements Serializable {
     @OneToMany(fetch = FetchType.LAZY)
     @JsonIgnore
 //    @NotFound(action = NotFoundAction.IGNORE)
-    private List<Lsdpsd> lsdpsdList; // itasrt 연관관계
+    private List<Lsdpsd> lsdpsdList; // lsdpsd 연관관계
 
     @JoinColumns({
             @JoinColumn(name = "purchaseNo", referencedColumnName = "purchaseNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),

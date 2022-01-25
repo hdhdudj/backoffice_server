@@ -1,5 +1,6 @@
 package io.spring.model.order.entity;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -8,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import jdk.vm.ci.meta.Local;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -27,8 +29,8 @@ import lombok.Setter;
 @Table(name="tb_order_history")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TbOrderHistory extends CommonProps {
-	public TbOrderHistory(String orderId, String orderSeq, String statusCd, String lastYn, Date effStartDt,
-						  Date effEndDt) {
+	public TbOrderHistory(String orderId, String orderSeq, String statusCd, String lastYn, LocalDateTime effStartDt,
+                          LocalDateTime effEndDt) {
 
 		this.orderId = orderId;
 		this.orderSeq = orderSeq;
@@ -42,7 +44,7 @@ public class TbOrderHistory extends CommonProps {
         this.orderId = tbOrderDetail.getOrderId();
         orderSeq = tbOrderDetail.getOrderSeq();//StringUtils.leftPad(StringFactory.getStrOne(), 3,'0'); // 001 하드코딩
         lastYn = StringUtils.leftPad(StringFactory.getStrOne(), 3,'0'); // 002 하드코딩
-        effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
+        effEndDt = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());
     }
 
     @Id
@@ -54,7 +56,7 @@ public class TbOrderHistory extends CommonProps {
     private String lastYn;
     @CreationTimestamp
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date effStartDt;
+    private LocalDateTime effStartDt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-    private Date effEndDt;
+    private LocalDateTime effEndDt;
 }

@@ -176,17 +176,17 @@ public class Lsshpm extends CommonProps {
     private Date uploadDt;
     private String blNo;
     // 21-12-29 added column
-    private LocalDateTime shipmentDt; // 선적일자
-    private LocalDateTime estiArrvTm; // 도착예정일자
+    private LocalDate shipmentDt; // 선적일자
+    private LocalDate estiArrvDt; // 도착예정일자
     private String movementKd; // 운송형태
     private String containerKd; // 컨테이너 종류
     private Long containerQty; // 컨테이너 수량
 
 
-    // 연관관계 : Lsshpd
-    @OneToMany(fetch = FetchType.LAZY, targetEntity = Lsshpd.class)
-    @JoinColumn(name = "shipId", referencedColumnName = "shipId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
-    private List<Lsshpd> lsshpdList;
+//    // 연관관계 : Lsshpd
+//    @OneToMany(fetch = FetchType.LAZY, targetEntity = Lsshpd.class)
+//    @JoinColumn(name = "shipId", referencedColumnName = "shipId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+//    private List<Lsshpd> lsshpdList;
 
     // 연관관계 : TbOrderMaster
     @OneToOne(fetch = FetchType.LAZY, targetEntity = TbOrderMaster.class)

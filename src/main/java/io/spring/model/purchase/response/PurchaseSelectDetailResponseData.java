@@ -90,9 +90,7 @@ public class PurchaseSelectDetailResponseData {
             this.custCategory = itasrt.getCustCategory();
             this.material = ititmm.getMaterial();
             this.imagePath = itasrt.getListImageData();
-
-            // 21-12-21 추가 (입고처리 발주선택창에 붙는 디테일 리스트에 필요한 애들)
-
+            this.compleDt = lspchd.getCompleDt() == null? "" : lspchd.getCompleDt().toString();
         }
 //        public Items(Lspchd lspchd, TbOrderDetail tbOrderDetail, Itasrt itasrt){
 //            this.purchaseId = lspchd.getPurchaseNo();
@@ -152,5 +150,7 @@ public class PurchaseSelectDetailResponseData {
         private String orderMemo;
         private String brandNm;
         private String brandId;
+        // 22-01-20 추가
+        private String compleDt;
     }
 }

@@ -26,7 +26,7 @@ public class ItitmtId implements Serializable {
         this.assortId = items.getAssortId();
         this.itemId = items.getItemId();
         this.itemGrade = items.getItemGrade();
-        this.effStaDt = Utilities.dateToLocalDateTime(purchaseInsertRequestData.getPurchaseDt());
+        this.effStaDt = purchaseInsertRequestData.getPurchaseDt();
         this.effEndDt = this.effStaDt;
     }
 

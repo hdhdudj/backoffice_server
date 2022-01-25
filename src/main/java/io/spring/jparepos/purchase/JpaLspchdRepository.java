@@ -12,7 +12,9 @@ import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.idclass.LspchdId;
 
 public interface JpaLspchdRepository extends JpaRepository<Lspchd, LspchdId> {
-    List<Lspchd> findByPurchaseNo(String purchaseNo);
+    @Query("select ld from Lspchd ld join fetch ld.lspchm lm where ld.purchaseNo=:purchaseNo")
+    List<Lspchd> findByPurchaseNo(@Param("purchaseNo") String purchaseNo);
+
     @Query("select max(l.purchaseSeq) as maxVal from Lspchd as l where l.purchaseNo = ?1")
     String findMaxPurchaseSeqByPurchaseNo(String purchaseNo);
 
@@ -96,4 +98,25 @@ public interface JpaLspchdRepository extends JpaRepository<Lspchd, LspchdId> {
                                @Param("unifiedOrderNo") String unifiedOrderNo,
                                @Param("orderName") String orderName
     );
+
+    /**
+     * 발주사후 가져올 때 쿼리
+     */
+    @Query("select distinct (ld) from Lspchd ld " +
+            "left outer join fetch ld.lspchm lm " +
+            "left outer join fetch ld.lspchb lb " +
+            "left outer join fetch ld.tbOrderDetail tod " +
+            "left outer join fetch tod.tbOrderMaster tom " +
+            "left outer join fetch tom.tbMember tm " +
+            "left outer join fetch tom.tbMemberAddress tma " +
+            "left outer join fetch ld.ititmm im " +
+            "left outer join fetch im.itvari1 iv1 " +
+            "left outer join fetch im.itvari2 iv2 " +
+            "left outer join fetch im.itvari3 iv3 " +
+            "left outer join fetch im.itasrt ita " +
+            "left outer join fetch ita.ifBrand ib " +
+            "where ld.purchaseNo=:purchaseNo " +
+            "and lb.effEndDt='9999-12-31T23:59:59' and lb.purchaseStatus <> '05'"
+            )
+    List<Lspchd> findLspchdByPurchaseNo(@Param("purchaseNo") String purchaseNo);
 }
