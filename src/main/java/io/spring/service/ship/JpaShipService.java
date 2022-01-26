@@ -140,7 +140,7 @@ public class JpaShipService {
     /**
      * 출고지시 저장 : 수량 입력 후 저장하는 함수
      */
-    @Transactional
+	@Transactional
     public List<String> saveShipIndicate(ShipIndicateSaveListData shipIndicateSaveListData) {
         if(shipIndicateSaveListData.getShips().size() == 0){
             log.debug("input data is empty.");
@@ -312,8 +312,8 @@ public class JpaShipService {
 		lsshpm.setShipStatus(shipStatus); // 01 : 이동지시or출고지시, 02 : 이동지시or출고지시 접수, 04 : 출고
 		lsshpm.setDeliId(tbOrderDetail.getTbOrderMaster().getDeliId());
 
-		lsshpm.setShipOrderGb("01");
-		lsshpm.setMasterShipGb("01");
+		lsshpm.setShipOrderGb(StringFactory.getGbOne());
+		lsshpm.setMasterShipGb(StringFactory.getGbOne());
 
 		// lsshpm.setOStorageId(tbOrderDetail.getStorageId());
 
@@ -331,7 +331,7 @@ public class JpaShipService {
 //            lsshpd.setLocalPrice(tbOrderDetail.getLspchd());
 		lsshpd.setVendorDealCd(StringFactory.getGbOne()); // 01 : 주문, 02 : 상품, 03 : 입고예정
 		lsshpd.setShipIndicateQty(lsdpsd.getDepositQty());
-		lsshpd.setShipGb("01"); // 주문출고지시
+		lsshpd.setShipGb(StringFactory.getGbOne()); // 주문출고지시
 		jpaLsshpdRepository.save(lsshpd);
 		return shipId;
 	}

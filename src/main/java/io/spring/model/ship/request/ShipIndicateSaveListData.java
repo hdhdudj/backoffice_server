@@ -1,5 +1,6 @@
 package io.spring.model.ship.request;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -22,20 +23,23 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShipIndicateSaveListData {
-    public ShipIndicateSaveListData(Date startDt, Date endDt, String assortId, String assortNm, String vendorId){
+    public ShipIndicateSaveListData(LocalDate startDt, LocalDate endDt, String assortId, String assortNm, String vendorId, String orderId){
         this.startDt = startDt;
         this.endDt = endDt;
         this.assortId = assortId;
         this.assortNm = assortNm;
         this.vendorId = vendorId;
+        this.orderId = orderId;
     }
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private Date startDt;
+    private LocalDate startDt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private Date endDt;
+    private LocalDate endDt;
     private String assortId;
+    private String storageId;
     private String assortNm;
     private String vendorId;
+    private String orderId;
     private List<Ship> ships;
     @Getter
     @Setter
@@ -56,7 +60,7 @@ public class ShipIndicateSaveListData {
             this.goodsKey = Utilities.addDashInMiddle(this.assortId, this.itemId);
             this.custNm = tbMember.getCustNm();
             this.assortNm = itasrt.getAssortNm();
-            this.qty = 0l;
+//            this.qty = 0l;
             // optionNm1, optionNm2는 외부에서 set
         }
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
@@ -75,10 +79,10 @@ public class ShipIndicateSaveListData {
         private String optionNm2;
         private String optionNm3;
         private Long availableQty;
-        private Long qty;
+//        private Long qty;
 		private String shipId;
 		private String shipSeq;
-		private String storageId;
-		private String receiptDt;
+//		private String storageId;
+//		private String receiptDt;
     }
 }

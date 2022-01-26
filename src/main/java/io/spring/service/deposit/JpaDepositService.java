@@ -122,7 +122,7 @@ public class JpaDepositService {
 
 		// 주문입고건에 대해 상태확인후 이동지시 또는 출고지시 처리
 
-		// jpaMoveService.saveOrderMoveByDeposit(lsdpsdList);
+//		 jpaMoveService.saveOrderMoveByDeposit(lsdpsdList);
 		List<HashMap<String, Object>> retList = this.saveMoveOrShip(lsdpsdList);
 
         this.changeStatusCdOfTbOrderDetail(lsdpspList);
@@ -710,13 +710,13 @@ public class JpaDepositService {
 						assortId2 = lsdpsd.getAssortId();
 					}
 
-					Itasrt itasrt = jpaItasrtRepository.findByAssortId(lsdpsd.getAssortId());
+//					Itasrt itasrt = jpaItasrtRepository.findByAssortId(lsdpsd.getAssortId());
 					
 					Itasrt itasrt2 = jpaItasrtRepository.findByAssortId(assortId2); // 추가상품일경우 원건의 상품구분사용
 
 					if (itasrt2.getAssortGb().equals(StringFactory.getGbOne())) { // 직구
 
-						System.out.println("-----------------------수입------------------------------");
+						System.out.println("-----------------------직구------------------------------");
 
 						// 입고창고와 주문의 창고가 같은경우 출고지시
 						List<String> r = jpaShipService.saveShipIndicateByDeposit(lsdpsd);
@@ -731,7 +731,7 @@ public class JpaDepositService {
 
 					} else { // if(tbOrderDetail.getAssortGb().equals(StringFactory.getGbTwo())){ // 수입
 
-						System.out.println("-----------------------직구------------------------------");
+						System.out.println("-----------------------수입------------------------------");
 
 						if (tbOrderDetail.getStorageId().equals(lspchm.getStoreCd())) {
 							// 입고창고와 주문의 창고가 같은경우 출고지시
