@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -17,6 +16,10 @@ public class CustomLocalDateDeSerializer extends JsonDeserializer<LocalDate> {
 
     @Override
     public LocalDate deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+        String t = jsonParser.getText();
+        if(t.trim().equals("")){
+            return null;
+        }
         return LocalDate.parse(jsonParser.getText().split("T")[0], DATE_FORMAT);
     }
 }
