@@ -21,10 +21,11 @@ class StringToLocalDateConverter
             return null;
         }
         //2022-01-26T05:58:03.119Z
+        String source2 = source;
         if(source.split("T").length > 1){
-            source = source.split("T")[0];
+            source2 = source.split("T")[0];
         }
         return LocalDate.parse(
-                source, DateTimeFormatter.ISO_LOCAL_DATE);
+                source2, DateTimeFormatter.ISO_LOCAL_DATE);
     }
 }

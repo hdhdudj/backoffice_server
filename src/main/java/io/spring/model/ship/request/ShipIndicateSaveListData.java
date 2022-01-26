@@ -1,6 +1,7 @@
 package io.spring.model.ship.request;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -8,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import io.spring.infrastructure.custom.CustomLocalDateDeSerializer;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.order.entity.TbMember;
@@ -33,10 +36,10 @@ public class ShipIndicateSaveListData {
         this.vendorId = vendorId;
         this.orderId = orderId;
     }
-    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonDeserialize(using = CustomLocalDateDeSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate startDt;
-    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonDeserialize(using = CustomLocalDateDeSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate endDt;
     private String assortId;
@@ -53,7 +56,7 @@ public class ShipIndicateSaveListData {
             TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
             Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
             TbMember tbMember = tbOrderMaster.getTbMember();
-            this.orderDt = Utilities.localDateTimeToDate(tbOrderDetail.getTbOrderMaster().getOrderDate());
+            this.orderDt = tbOrderDetail.getTbOrderMaster().getOrderDate();
             this.orderId = tbOrderDetail.getOrderId();
             this.orderSeq = tbOrderDetail.getOrderSeq();
             this.orderKey = Utilities.addDashInMiddle(this.orderId, this.orderSeq);
@@ -67,8 +70,9 @@ public class ShipIndicateSaveListData {
 //            this.qty = 0l;
             // optionNm1, optionNm2는 외부에서 set
         }
+        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-        private Date orderDt;
+        private LocalDateTime orderDt;
         private String orderId;
         private String orderSeq;
         private String orderKey;
@@ -83,10 +87,12 @@ public class ShipIndicateSaveListData {
         private String optionNm2;
         private String optionNm3;
         private Long availableQty;
-//        private Long qty;
+        private Long qty;
 		private String shipId;
 		private String shipSeq;
-//		private String storageId;
-//		private String receiptDt;
+		private String storageId;
+        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+		private LocalDateTime receiptDt;
     }
 }
