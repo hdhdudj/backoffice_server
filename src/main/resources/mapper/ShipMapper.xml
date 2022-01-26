@@ -14,6 +14,7 @@ select ld.ship_id shipId
 ,ld.item_id  itemId
 ,lm.receipt_dt receiptDt 
 ,tom.order_date orderDt
+,tom.order_name custNm
 ,tod.order_id orderId 
 ,tod.order_seq orderSeq
 ,concat(tod.order_id  ,'-',tod.order_seq) orderKey

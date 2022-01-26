@@ -20,6 +20,10 @@ class StringToLocalDateConverter
         if(source.trim().equals("")){
             return null;
         }
+        //2022-01-26T05:58:03.119Z
+        if(source.split("T").length > 1){
+            source = source.split("T")[0];
+        }
         return LocalDate.parse(
                 source, DateTimeFormatter.ISO_LOCAL_DATE);
     }
