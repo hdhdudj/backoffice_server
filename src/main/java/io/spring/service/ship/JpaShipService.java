@@ -444,7 +444,7 @@ public class JpaShipService {
 	/**
 	 *	출고 - 출고리스트
 	 */
-	public ShipListDataResponse getShipList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String vendorId, String statusCd,String shipStatus) {
+	public ShipListDataResponse getShipList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String vendorId, String statusCd,String shipStatus, String storageId) {
 		ShipListDataResponse shipListDataResponse = new ShipListDataResponse(startDt, endDt, shipId, assortId, assortNm, vendorId);
 		String shipId2 = "";
 		String shipSeq = "";
@@ -455,7 +455,7 @@ public class JpaShipService {
 		}
 		LocalDateTime start = startDt.atStartOfDay();
 		LocalDateTime end = endDt.atTime(23,59,59);
-		List<Lsshpd> lsshpdList = jpaLsshpdRepository.findShipList(start, end, shipId2, shipSeq, assortId, assortNm, vendorId, statusCd);
+		List<Lsshpd> lsshpdList = jpaLsshpdRepository.findShipList(start, end, shipId2, shipSeq, assortId, assortNm, vendorId, statusCd, storageId);
 		List<ShipListDataResponse.Ship> shipList = new ArrayList<>();
 		for(Lsshpd l : lsshpdList){
 			ShipListDataResponse.Ship ship = new ShipListDataResponse.Ship(l);
