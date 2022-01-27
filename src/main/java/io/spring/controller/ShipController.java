@@ -73,12 +73,20 @@ public class ShipController {
 			map.put("channelId", channelId);
 		}
 
+        String orderSeq = "";
+
 		if (orderId != null && !orderId.equals("")) {
+            String[] orderArr = orderId.split("-");
+            if(orderArr.length > 1){
+                orderId = orderArr[0];
+                orderSeq = orderArr[1];
+            }
 			map.put("orderId", orderId);
+			map.put("orderSeq", orderSeq);
 		}
 
 		List<ShipIndicateSaveListResponseData.Ship> l = myBatisShipService.getOrderShipList(map);
-		
+
 		ShipIndicateSaveListResponseData shipIndicateSaveListResponseData = new ShipIndicateSaveListResponseData(
 				startDt, endDt, assortId, assortNm, channelId, orderId);
 		shipIndicateSaveListResponseData.setShips(l);
@@ -88,9 +96,29 @@ public class ShipController {
         return ResponseEntity.ok(res);
     }
 
-    /**
-     * 출고지시 화면 : 출고지시 저장용. 출고지시 할 출고내역들을 선택 후 저장 버튼을 누르면 호출되는 api (출고번호 기준으로 불러옴)
-     */
+//    /**
+//     * 출고지시 화면 : 출고지시 저장 화면에서 저장하기 위한 리스트를 조건 검색으로 불러오는 api (주문번호 기준으로 불러옴)
+//     */
+//    @GetMapping(path = "/deposit/items")
+//    public ResponseEntity getShipCandidateList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+//                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+////                                      @RequestParam @Nullable String shipId,
+//                                              @RequestParam @Nullable String assortId,
+//                                              @RequestParam @Nullable String assortNm,
+//                                              @RequestParam @Nullable String storageId,
+//                                              @RequestParam @Nullable String vendorId){
+////        Date start = java.sql.Timestamp.valueOf(startDt.atStartOfDay());
+////        Date end = java.sql.Timestamp.valueOf(endDt.atTime(23,59,59));
+//        ShipCandidateListData shipCandidateListData = jpaShipService.getShipCandidateList(startDt, endDt, storageId, assortId,
+//                assortNm, vendorId, StringFactory.getStrC04(), "", StringFactory.getGbTwo());
+//        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipCandidateListData);
+//        return ResponseEntity.ok(res);
+//    }
+
+
+   /**
+    * 출고지시 화면 : 출고지시 저장용. 출고지시 할 출고내역들을 선택 후 저장 버튼을 누르면 호출되는 api (출고번호 기준으로 불러옴)
+    */
     @PostMapping(path = "/indicate")
     public ResponseEntity saveShipIndicate(@RequestBody ShipIndicateSaveListData shipIndicateSaveDataList){
         List<String> shipIdList = jpaShipService.saveShipIndicate(shipIndicateSaveDataList);
@@ -103,17 +131,16 @@ public class ShipController {
      */
     @GetMapping(path = "/indicate/items")
     public ResponseEntity getShipIndicateList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
-                                      @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
-//                                      @RequestParam @Nullable String shipId,
-                                       @RequestParam @Nullable String assortId,
-                                       @RequestParam @Nullable String assortNm,
-                                       @RequestParam @Nullable String storageId,
-                                       @RequestParam @Nullable String vendorId){
+                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+                                              @RequestParam @Nullable String shipId,
+                                              @RequestParam @Nullable String assortId,
+                                              @RequestParam @Nullable String assortNm,
+                                              @RequestParam @Nullable String vendorId){
 //        Date start = java.sql.Timestamp.valueOf(startDt.atStartOfDay());
 //        Date end = java.sql.Timestamp.valueOf(endDt.atTime(23,59,59));
-        ShipCandidateListData shipCandidateListData = jpaShipService.getShipCandidateList(startDt, endDt, storageId, assortId,
-				assortNm, vendorId, StringFactory.getStrC04(), "", StringFactory.getGbTwo());
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipCandidateListData);
+        ShipIndicateListData shipIndicateListData = jpaShipService.getShipIndList(startDt, endDt, shipId, assortId,
+                assortNm, vendorId, StringFactory.getStrD01(), "", StringFactory.getGbTwo());
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
         return ResponseEntity.ok(res);
     }
 
@@ -163,9 +190,10 @@ public class ShipController {
                                              @RequestParam @Nullable String shipId,
                                              @RequestParam @Nullable String assortId,
                                              @RequestParam @Nullable String assortNm,
+                                             @RequestParam @Nullable String storageId,
                                              @RequestParam @Nullable String vendorId){
 		ShipListDataResponse shipListDataResponse = jpaShipService.getShipList(startDt, endDt, shipId, assortId,
-				assortNm, vendorId, TrdstOrderStatus.D02.toString(), StringFactory.getGbFour());
+				assortNm, vendorId, TrdstOrderStatus.D02.toString(), StringFactory.getGbFour(), storageId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipListDataResponse);
         return ResponseEntity.ok(res);
     }

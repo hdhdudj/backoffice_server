@@ -169,7 +169,7 @@ public class JpaPurchaseService {
         lspchm.setUpdId(purchaseInsertRequestData.getUserId());
         lspchm.setPiNo(purchaseInsertRequestData.getPiNo());
         lspchm.setMemo(purchaseInsertRequestData.getMemo());
-        lspchm.setDeliFee(purchaseInsertRequestData.getDeliFee() == null? null : Float.parseFloat(purchaseInsertRequestData.getDeliFee()));
+        lspchm.setDeliFee(Utilities.nullOrEmptyFilter(purchaseInsertRequestData.getDeliFee()) == null? null : Float.parseFloat(purchaseInsertRequestData.getDeliFee()));
         jpaLspchmRepository.save(lspchm);
         for(PurchaseInsertRequestData.Items i : purchaseInsertRequestData.getItems()){
             Lspchd l = lspchdList.stream().filter(x->x.getPurchaseSeq().equals(i.getPurchaseSeq())).collect(Collectors.toList()).get(0);

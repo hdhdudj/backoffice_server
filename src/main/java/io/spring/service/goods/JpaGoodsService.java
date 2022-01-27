@@ -638,21 +638,21 @@ public class JpaGoodsService {
             }
 
             // 옵션1 관련값 찾아넣기
-            Itvari op1 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getOptionNm().equals(item.getVariationValue1()))
+            Itvari op1 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getVariationGb().equals(StringFactory.getGbOne()) && x.getOptionNm().equals(item.getVariationValue1()))
                     .collect(Utilities.toSingleton());
             if(op1 != null){
                 ititmm.setVariationGb1(op1.getOptionGb());
                 ititmm.setVariationSeq1(op1.getSeq());
             }
             // 옵션2 관련값 찾아넣기
-            Itvari op2 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getOptionNm().equals(item.getVariationValue2()))
+            Itvari op2 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getVariationGb().equals(StringFactory.getGbTwo()) && x.getOptionNm().equals(item.getVariationValue2()))
                     .collect(Utilities.toSingleton());
             if(op2 != null){
                 ititmm.setVariationGb2(op2.getOptionGb());
                 ititmm.setVariationSeq2(op2.getSeq());
             }
             // 옵션3 관련값 찾아넣기
-            Itvari op3 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getOptionNm().equals(item.getVariationValue3()))
+            Itvari op3 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getVariationGb().equals(StringFactory.getGbThree()) && x.getOptionNm().equals(item.getVariationValue3()))
                     .collect(Utilities.toSingleton());
             if(op3 != null){
                 ititmm.setVariationGb3(op3.getOptionGb());
@@ -759,8 +759,8 @@ public class JpaGoodsService {
             ititmm.setItemId(StringFactory.getFourStartCd()); // 0001
             ititmm.setVariationGb1(StringFactory.getGbOne()); // 01
             ititmm.setVariationSeq1(StringFactory.getFourStartCd()); // 0001
-    //        jpaItitmmRepository.save(ititmm);
-            em.persist(ititmm);
+            jpaItitmmRepository.save(ititmm);
+//            em.persist(ititmm);
         }
         else {
             ititmm.setDelYn(StringFactory.getGbTwo()); // 삭제 상태였던 걸 원래대로

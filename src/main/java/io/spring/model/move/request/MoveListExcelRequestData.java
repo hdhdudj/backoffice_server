@@ -87,10 +87,10 @@ public class MoveListExcelRequestData {
             private String blNo;
             private String movementKd;
             @JsonDeserialize(using = LocalDateDeserializer.class)
-            @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+            @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
             private LocalDate shipmentDt;
             @JsonDeserialize(using = LocalDateDeserializer.class)
-            @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+            @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
             private LocalDate estiArrvDt;
             private String containerKd;
             private Long containerQty;

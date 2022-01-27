@@ -1,6 +1,7 @@
 package io.spring.service.order;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -818,11 +819,8 @@ public class JpaOrderService {
 			igo.setUploadStatus("02");
 			igo.setAssortId(assortId);
 			igo.setItemId("0001");
-			igo.setRegDt(new Date());
-			igo.setModDt(new Date());
-			
-			
-			
+			igo.setRegDt(LocalDateTime.now());
+			igo.setModDt(LocalDateTime.now());
 
 		} else {
 			System.out.println("ifGoodsOption 이 이미 있습니다");
