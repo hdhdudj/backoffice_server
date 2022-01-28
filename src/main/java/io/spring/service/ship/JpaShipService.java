@@ -13,7 +13,6 @@ import io.spring.infrastructure.mapstruct.ShipItemListDataMapper;
 import io.spring.jparepos.deposit.JpaLsdpsdRepository;
 import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.goods.entity.Itvari;
-import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.ship.response.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,12 +25,9 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.deposit.JpaLsdpsmRepository;
-import io.spring.jparepos.deposit.JpaLsdpspRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.order.JpaTbOrderHistoryRepository;
-import io.spring.jparepos.order.JpaTbOrderMasterRepository;
-import io.spring.jparepos.purchase.JpaLspchdRepository;
 import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
@@ -47,7 +43,6 @@ import io.spring.model.ship.entity.Lsshpm;
 import io.spring.model.ship.entity.Lsshps;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
 import io.spring.model.ship.request.ShipSaveListData;
-import io.spring.service.common.JpaCommonService;
 import io.spring.service.move.JpaMoveService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,10 +51,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class JpaShipService {
-    private final JpaCommonService jpaCommonService;
-    private final JpaLsdpspRepository jpaLsdpspRepository;
     private final JpaMoveService jpaMoveService;
-    private final JpaLspchdRepository jpaLspchdRepository;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
     private final JpaLsshpmRepository jpaLsshpmRepository;
@@ -69,7 +61,6 @@ public class JpaShipService {
 	private final JpaLsdpsmRepository jpaLsdpsmRepository;
 	private final JpaLsdpsdRepository jpaLsdpsdRepository;
 
-	private final JpaTbOrderMasterRepository tbOrderMasterRepository;
 	private final JpaTbOrderDetailRepository tbOrderDetailRepository;
 	private final JpaTbOrderHistoryRepository tbOrderHistoryrRepository;
 
@@ -191,8 +182,7 @@ public class JpaShipService {
 			log.debug("input data is empty.");
 			return null;
 		}
-		List<TbOrderDetail> tbOrderDetailList = this
-				.makeTbOrderDetailByShipIndicateSaveListDataByDeposit(lsdpsd);
+		List<TbOrderDetail> tbOrderDetailList = this.makeTbOrderDetailByShipIndicateSaveListDataByDeposit(lsdpsd);
 		List<String> shipIdList = new ArrayList<>();
 		for (int i = 0; i < tbOrderDetailList.size(); i++) {
 			TbOrderDetail tbOrderDetail = tbOrderDetailList.get(i);
