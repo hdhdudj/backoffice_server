@@ -54,8 +54,8 @@ public class PurchaseController {
 
 
 		LocalDate lst = LocalDate.now();
-		LocalDate lst1 = lst.minusDays(60);
-		LocalDate lst2 = lst.minusDays(7);
+		LocalDate lst1 = lst.minusDays(365);
+		LocalDate lst2 = lst.minusDays(0);
 
 		if (startDt == null) {
 
@@ -102,8 +102,8 @@ public class PurchaseController {
 
 
 		LocalDate lst = LocalDate.now();
-		LocalDate lst1 = lst.minusDays(60);
-		LocalDate lst2 = lst.minusDays(7);
+		LocalDate lst1 = lst.minusDays(365);
+		LocalDate lst2 = lst.minusDays(0);
 
 		if (startDt == null) {
 			param.put("startDt", lst1.toString() + " 00:00:00");
