@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,9 +45,36 @@ public class PurchaseController {
     private final MyBatisPurchaseService myBatisPurchaseService;
 
 	@GetMapping(path = "/vendors")
-	public ResponseEntity getOrderListByPurchaseVendor() {
+	public ResponseEntity getOrderListByPurchaseVendor(
+			@RequestParam @Nullable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+			@RequestParam @Nullable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt) {
 
 		HashMap<String, Object> param = new HashMap<String, Object>();
+
+
+
+		LocalDate lst = LocalDate.now();
+		LocalDate lst1 = lst.minusDays(365);
+		LocalDate lst2 = lst.minusDays(0);
+
+		if (startDt == null) {
+
+			param.put("startDt", lst1.toString() + " 00:00:00");
+
+		} else {
+			param.put("startDt", startDt.toString() + " 00:00:00");
+		}
+
+		if (endDt == null) {
+
+			param.put("endDt", lst2.toString() + " 23:59:59");
+		} else {
+			param.put("endDt", endDt.toString() + " 23:59:59");
+
+		}
+
+
+
 
 		List<HashMap<String, Object>> responseData = myBatisPurchaseService.getOrderListByPurchaseVendor(param);
 
@@ -66,11 +92,32 @@ public class PurchaseController {
      * @return
      */
 	@GetMapping(path = "/vendors/{vendorId}")
-	public ResponseEntity getOrderListByPurchaseVendorItem(@PathVariable("vendorId") String vendorId) {
+	public ResponseEntity getOrderListByPurchaseVendorItem(@PathVariable("vendorId") String vendorId,
+			@RequestParam @Nullable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+			@RequestParam @Nullable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt) {
 
 		HashMap<String, Object> param = new HashMap<String, Object>();
 
 		param.put("vendorId", vendorId);
+
+
+		LocalDate lst = LocalDate.now();
+		LocalDate lst1 = lst.minusDays(365);
+		LocalDate lst2 = lst.minusDays(0);
+
+		if (startDt == null) {
+			param.put("startDt", lst1.toString() + " 00:00:00");
+		} else {
+			param.put("startDt", startDt.toString() + " 00:00:00");
+		}
+
+		if (endDt == null) {
+			param.put("endDt", lst2.toString() + " 23:59:59");
+		} else {
+			param.put("endDt", endDt.toString() + " 23:59:59");
+
+		}
+
 
 		List<HashMap<String, Object>> responseData = myBatisPurchaseService.getOrderListByPurchaseVendorItem(param);
         for(HashMap<String, Object> map : responseData){

@@ -1,7 +1,6 @@
 package io.spring.service.order;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -382,10 +381,10 @@ public class JpaOrderService {
 //            statusCd = this.loopItitmt(domItitmt, tbOrderDetail, DirectOrImport.imports);
 //        }
         // 3. 해외재고가 있을 가능성이 있음
-        if(statusCd == null && sumOfOvrsQty - sumOfOvrsShipIndQty - tbOrderDetail.getQty() >= 0){
-			this.loopItitmcByMove(ovrsItitmc, tbOrderDetail);
-            statusCd = StringFactory.getStrC01(); // 해외입고완료 : C01
-        }
+//        if(statusCd == null && sumOfOvrsQty - sumOfOvrsShipIndQty - tbOrderDetail.getQty() >= 0){
+//			this.loopItitmcByMove(ovrsItitmc, tbOrderDetail);
+		// statusCd = StringFactory.getStrC01(); // 해외입고완료 : C01
+		// }
 //        // 4. 해외입고예정 재고가 있을 가능성이 있음
 //        if(statusCd == null && sumOfOvrsTempQty - sumOfOvrsTempIndQty - tbOrderDetail.getQty() >= 0){
 //			System.out.println("44444444444444444444444444444444444444");
