@@ -40,10 +40,10 @@ public class CategorySelectOneResponseData extends CommonProps {
         this.dispGb = itcatg.getDispGb();
         this.templateId = itcatg.getTemplateId();
         this.userId = itcatg.getUserId();
-        this.setRegId(itcatg.getRegId());
-        this.setRegDt(itcatg.getRegDt());
-        this.setUpdDt(itcatg.getUpdDt());
-        this.setUpdId(itcatg.getUpdId());
+        super.setRegId(itcatg.getRegId());
+        super.setRegDt(itcatg.getRegDt());
+        super.setUpdDt(itcatg.getUpdDt());
+        super.setUpdId(itcatg.getUpdId());
         this.rootCategoryId = itcatg.getRootCategoryId();
         this.linkUrl = itcatg.getLinkUrl();
     }

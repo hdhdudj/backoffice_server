@@ -3,7 +3,6 @@ package io.spring.service.ship;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +20,7 @@ import io.spring.infrastructure.mapstruct.ShipListDataResponseMapper;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
+import io.spring.jparepos.deposit.JpaLsdpsdRepository;
 import io.spring.jparepos.deposit.JpaLsdpsmRepository;
 import io.spring.jparepos.deposit.JpaLsdpspRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
@@ -45,6 +45,7 @@ import io.spring.model.ship.entity.Lsshpm;
 import io.spring.model.ship.entity.Lsshps;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
 import io.spring.model.ship.request.ShipSaveListData;
+import io.spring.model.ship.response.ShipCandidateListData;
 import io.spring.model.ship.response.ShipIndicateListData;
 import io.spring.model.ship.response.ShipIndicateSaveListResponseData;
 import io.spring.model.ship.response.ShipItemListData;
@@ -73,6 +74,7 @@ public class JpaShipService {
     private final JpaLsshpdRepository jpaLsshpdRepository;
     private final JpaItitmcRepository jpaItitmcRepository;
 	private final JpaLsdpsmRepository jpaLsdpsmRepository;
+	private final JpaLsdpsdRepository jpaLsdpsdRepository;
 
 	private final JpaTbOrderMasterRepository tbOrderMasterRepository;
 	private final JpaTbOrderDetailRepository tbOrderDetailRepository;
@@ -145,7 +147,7 @@ public class JpaShipService {
     /**
      * 출고지시 저장 : 수량 입력 후 저장하는 함수
      */
-    @Transactional
+	@Transactional
     public List<String> saveShipIndicate(ShipIndicateSaveListData shipIndicateSaveListData) {
         if(shipIndicateSaveListData.getShips().size() == 0){
             log.debug("input data is empty.");
@@ -153,6 +155,7 @@ public class JpaShipService {
         }
 
         List<String> shipIdList = new ArrayList<>();
+        List<String> orderIdList = new ArrayList<>();
 		List<HashMap<String, Object>> orderList = new ArrayList<>();
 
 		// List<ShipIndicateSaveListData.Ship> l = shipIndicateSaveListData.getShips();
@@ -163,12 +166,23 @@ public class JpaShipService {
 			m.put("order_id", ship.getOrderId());
 			m.put("order_seq", ship.getOrderSeq());
 
+			orderIdList.add(ship.getOrderId());
 			orderList.add(m);
 
 			List<String> shipIdList1 = this.saveShipIndicateSaveData(ship);
 			if (shipIdList1.size() > 0) {
 				shipIdList1.stream().forEach(x -> shipIdList.add(x));
 			}
+		}
+
+		// addGoods도 추가
+		List<Lsshpd> lsshpdList = jpaLsshpdRepository.findAddGoodsByOrderIdList(orderIdList, StringFactory.getThreeTwoCd()); // 002 (추가상품) 하드코딩
+		for(Lsshpd lsshpd : lsshpdList){
+			HashMap<String, Object> m = new HashMap<String, Object>();
+			m.put("order_id", lsshpd.getOrderId());
+			m.put("order_seq", lsshpd.getOrderSeq());
+
+			orderList.add(m);
 		}
 
 		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.D01.toString());
@@ -349,8 +363,8 @@ public class JpaShipService {
 		lsshpm.setShipStatus(shipStatus); // 01 : 이동지시or출고지시, 02 : 이동지시or출고지시 접수, 04 : 출고
 		lsshpm.setDeliId(tbOrderDetail.getTbOrderMaster().getDeliId());
 
-		lsshpm.setShipOrderGb("01");
-		lsshpm.setMasterShipGb("01");
+		lsshpm.setShipOrderGb(StringFactory.getGbOne());
+		lsshpm.setMasterShipGb(StringFactory.getGbOne());
 
 		// lsshpm.setOStorageId(tbOrderDetail.getStorageId());
 
@@ -370,7 +384,7 @@ public class JpaShipService {
 		lsshpd.setRackNo(lsdpsd.getRackNo());
 		lsshpd.setVendorDealCd(StringFactory.getGbOne()); // 01 : 주문, 02 : 상품, 03 : 입고예정
 		lsshpd.setShipIndicateQty(lsdpsd.getDepositQty());
-		lsshpd.setShipGb("01"); // 주문출고지시
+		lsshpd.setShipGb(StringFactory.getGbOne()); // 주문출고지시
 		jpaLsshpdRepository.save(lsshpd);
 		return shipId;
 	}
@@ -404,10 +418,48 @@ public class JpaShipService {
 
     }
 
+	/**
+	 * 출고 : 출고지시 화면에서 list를 불러오는 함수
+	 */
+	public ShipCandidateListData getShipCandidateList(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+											   @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+											   String storageId, String assortId, String assortNm,
+											   String vendorId, String statusCd, String orderKey, String shipStatus) {
+
+		String orderId = "";
+		String orderSeq = "";
+		if(orderId != null && !orderId.trim().equals("")){
+			String[] order = orderKey.split("-");
+			orderId = order[0];
+			orderSeq = order.length > 1? order[1]:orderSeq;
+		}
+		LocalDateTime start = startDt.atStartOfDay();
+		LocalDateTime end = endDt.atTime(23,59,59);
+		ShipCandidateListData shipCandidateListData = new ShipCandidateListData(startDt, endDt,
+				assortId, assortNm, vendorId, orderId);
+
+		List<Lsdpsd> lsdpsdList = jpaLsdpsdRepository.findShipCandidateList(start, end, assortId, assortNm, vendorId, orderId, orderSeq, storageId);//query.getResultList();
+		lsdpsdList = lsdpsdList.stream().filter(x->x.getLspchd() != null).filter(y->y.getLspchd().getTbOrderDetail() != null).filter(z->z.getLspchd().getTbOrderDetail().getStatusCd().equals(statusCd)).collect(Collectors.toList());
+		List<ShipCandidateListData.Ship> shipList = new ArrayList<>();
+		for(Lsdpsd lsdpsd : lsdpsdList){
+			Ititmm ititmm = lsdpsd.getItitmm();
+			ShipCandidateListData.Ship ship = new ShipCandidateListData.Ship(lsdpsd);
+			Itvari itvari1 = ititmm.getItvari1();
+			Itvari itvari2 = ititmm.getItvari2();
+			Itvari itvari3 = ititmm.getItvari3();
+			List<Itvari> itvariList = new ArrayList<>();
+			itvariList.add(itvari1);
+			itvariList.add(itvari2);
+			itvariList.add(itvari3);
+			Utilities.setOptionNames(ship, itvariList);
+			shipList.add(ship);
+		}
+		shipCandidateListData.setShips(shipList);
+		return shipCandidateListData;
+	}
+
     /**
-     * 출고 : 출고지시리스트 화면, 출고처리 화면에서 list를 불러오는 함수
-     * 출고지시리스트 화면인지 출고처리 화면인지는 statusCd로 구분됨.
-     * (C04 : 출고지시리스트 화면, D01 : 출고처리 화면)
+     * 출고 : 출고처리 화면에서 list를 불러오는 함수
      */
     public ShipIndicateListData getShipIndList(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
 											   @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
@@ -427,7 +479,6 @@ public class JpaShipService {
 				shipId, assortId, assortNm, vendorId, orderId);
 
         List<Lsshpd> lsshpdList = jpaLsshpdRepository.findShipIndicateList(start, end, assortId, shipId, assortNm, vendorId, shipStatus, orderId, orderSeq);//query.getResultList();
-        // 출고지시리스트 : C04, 출고처리리스트 : D01, 출고리스트 statusCd = D02인 애들만 남기기
         lsshpdList = lsshpdList.stream().filter(x->x.getTbOrderDetail().getStatusCd().equals(statusCd)).collect(Collectors.toList());
         List<ShipIndicateListData.Ship> shipList = new ArrayList<>();
         for(Lsshpd lsshpd : lsshpdList){
@@ -446,7 +497,7 @@ public class JpaShipService {
 	/**
 	 *	출고 - 출고리스트
 	 */
-	public ShipListDataResponse getShipList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String vendorId, String statusCd,String shipStatus) {
+	public ShipListDataResponse getShipList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String vendorId, String statusCd,String shipStatus, String storageId) {
 		ShipListDataResponse shipListDataResponse = new ShipListDataResponse(startDt, endDt, shipId, assortId, assortNm, vendorId);
 		String shipId2 = "";
 		String shipSeq = "";
@@ -457,7 +508,7 @@ public class JpaShipService {
 		}
 		LocalDateTime start = startDt.atStartOfDay();
 		LocalDateTime end = endDt.atTime(23,59,59);
-		List<Lsshpd> lsshpdList = jpaLsshpdRepository.findShipList(start, end, shipId2, shipSeq, assortId, assortNm, vendorId, statusCd);
+		List<Lsshpd> lsshpdList = jpaLsshpdRepository.findShipList(start, end, shipId2, shipSeq, assortId, assortNm, vendorId, statusCd, storageId);
 		List<ShipListDataResponse.Ship> shipList = new ArrayList<>();
 		for(Lsshpd l : lsshpdList){
 			ShipListDataResponse.Ship ship = new ShipListDataResponse.Ship(l);
@@ -701,19 +752,18 @@ public class JpaShipService {
 	}
 
 	private void updateOrderStatusCd(String orderId, String orderSeq, String statusCd) {
-
 		TbOrderDetail tod = tbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
 		if (tod == null) {
 			log.debug("해당 주문이 존재하지 않습니다. - JpaPurchaseService.updateOrderStatusCd");
 			return;
 		}
-		Date date = Utilities.getStringToDate(StringFactory.getDoomDay());
+		LocalDateTime date = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());
 		List<TbOrderHistory> tohs = tbOrderHistoryrRepository.findByOrderIdAndOrderSeqAndEffEndDt(orderId, orderSeq,
 				date);
 
 		tod.setStatusCd(statusCd);
 
-		Date newEffEndDate = new Date();
+		LocalDateTime newEffEndDate = LocalDateTime.now();
 
 		for (int i = 0; i < tohs.size(); i++) {
 			tohs.get(i).setEffEndDt(newEffEndDate);
@@ -721,7 +771,7 @@ public class JpaShipService {
 		}
 
 		TbOrderHistory toh = new TbOrderHistory(orderId, orderSeq, statusCd, "001", newEffEndDate,
-				Utilities.getStringToDate(StringFactory.getDoomDay()));
+				Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
 
 		tohs.add(toh);
 

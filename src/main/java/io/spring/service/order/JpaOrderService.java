@@ -118,16 +118,7 @@ public class JpaOrderService {
     public void changeOrderStatus(String orderId, String orderSeq) {
         // orderId, orderSeq로 해당하는 TbOrderDetail 찾아오기
         log.debug("in changeOrderStatus ; orderId : " + orderId + ", orderSeq : " + orderSeq);
-        TypedQuery<TbOrderDetail> query =
-                em.createQuery("select td from TbOrderDetail td " +
-                                "join fetch td.tbOrderMaster tm " +
-                                "left join fetch td.ititmm it " +
-                                "left join fetch it.itasrt itasrt " +
-                                "where td.orderId = ?1" +
-                                "and td.orderSeq = ?2 "
-                        , TbOrderDetail.class);
-        query.setParameter(1, orderId).setParameter(2, orderSeq);
-        TbOrderDetail tbOrderDetail = query.getSingleResult();
+        TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq2(orderId, orderSeq);//query.getSingleResult();
         if(tbOrderDetail == null){
             log.debug("There is no TbOrderDetail of " + orderId + " and " + orderSeq);
             return;
@@ -281,10 +272,10 @@ public class JpaOrderService {
 			// this.getLsdpsdListByGoodsInfo(tbOrderDetail).get(0); // 숫자 맞는 상품입고와 그 입고에 연결된
 			// 상품발주에 orderId와 orderSeq 적어넣기
         }
-        // 2. 해외입고예정재고 있을 가능성이 있음
-        if(statusCd == null && sumOfDomTempQty - sumOfDomTempIndQty - tbOrderDetail.getQty() >= 0){
-            statusCd = this.loopItitmt(domItitmt, tbOrderDetail, DirectOrImport.direct); // 해외입고예정재고 있음 : B02 (발주완료), 없음 : B01 (발주대기)
-        }
+//        // 2. 해외입고예정재고 있을 가능성이 있음
+//        if(statusCd == null && sumOfDomTempQty - sumOfDomTempIndQty - tbOrderDetail.getQty() >= 0){
+//            statusCd = this.loopItitmt(domItitmt, tbOrderDetail, DirectOrImport.direct); // 해외입고예정재고 있음 : B02 (발주완료), 없음 : B01 (발주대기)
+//        }
         // 3. 해외재고도 없고 해외입고예정재고도 없음
         else if(statusCd == null){
             statusCd = StringFactory.getStrB01(); // 발주대기 : B01
@@ -412,11 +403,12 @@ public class JpaOrderService {
 			// statusCd = isDomStockExist? StringFactory.getStrC04() : statusCd; //
 			// 국내(현지)입고완료 : C04
         }
-        // 2. 국내입고예정 재고가 있을 가능성이 있음
-        if(statusCd == null && sumOfDomTempQty - sumOfDomTempIndQty - tbOrderDetail.getQty() >= 0){
-            statusCd = this.loopItitmt(domItitmt, tbOrderDetail, DirectOrImport.imports);
-        }
+//        // 2. 국내입고예정 재고가 있을 가능성이 있음
+//        if(statusCd == null && sumOfDomTempQty - sumOfDomTempIndQty - tbOrderDetail.getQty() >= 0){
+//            statusCd = this.loopItitmt(domItitmt, tbOrderDetail, DirectOrImport.imports);
+//        }
         // 3. 해외재고가 있을 가능성이 있음
+
         if(statusCd == null && sumOfOvrsQty - sumOfOvrsShipIndQty - tbOrderDetail.getQty() >= 0){
 
 			Ititmc im = jpaStockService.checkStockWhenImport(overseaStorageId, assortId, itemId,
@@ -438,6 +430,18 @@ public class JpaOrderService {
 
             statusCd = this.loopItitmt(ovrsItitmt, tbOrderDetail, DirectOrImport.imports);
         }
+
+//        if(statusCd == null && sumOfOvrsQty - sumOfOvrsShipIndQty - tbOrderDetail.getQty() >= 0){
+//			this.loopItitmcByMove(ovrsItitmc, tbOrderDetail);
+		// statusCd = StringFactory.getStrC01(); // 해외입고완료 : C01
+		// }
+//        // 4. 해외입고예정 재고가 있을 가능성이 있음
+//        if(statusCd == null && sumOfOvrsTempQty - sumOfOvrsTempIndQty - tbOrderDetail.getQty() >= 0){
+//			System.out.println("44444444444444444444444444444444444444");
+//
+//            statusCd = this.loopItitmt(ovrsItitmt, tbOrderDetail, DirectOrImport.imports);
+//        }
+
         // 5. 아무것도 없음
         if(statusCd == null){
             statusCd = StringFactory.getStrB01(); // 발주대기 : B01
@@ -473,7 +477,7 @@ public class JpaOrderService {
         if(isStockCandidateExist && di.equals(DirectOrImport.direct)){ // 직구
 
 			System.out.println("111111111111111111111111111");
-
+            di = DirectOrImport.purchase;
             jpaPurchaseService.makePurchaseDataByOrder(tbOrderDetail, di);
             return StringFactory.getStrB02(); // 발주완료 : B02
         }
@@ -699,7 +703,7 @@ public class JpaOrderService {
 	public void updateOrderStatusCd(String orderId, String orderSeq, String statusCd) {
 
 		TbOrderDetail tod = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
-        Date date = Utilities.getStringToDate(StringFactory.getDoomDay());
+        LocalDateTime date = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());
 		List<TbOrderHistory> tohs = jpaTbOrderHistoryRepository.findByOrderIdAndOrderSeqAndEffEndDt(orderId, orderSeq, date);
         if(statusCd.equals(tod.getStatusCd())){
             log.debug("변경하려는 주문상태가 현재 주문상태와 동일합니다.");
@@ -707,7 +711,7 @@ public class JpaOrderService {
         }
 		tod.setStatusCd(statusCd);
 
-		Date newEffEndDate = new Date();
+        LocalDateTime newEffEndDate = LocalDateTime.now();
 
 		for (int i = 0; i < tohs.size(); i++) {
 			tohs.get(i).setEffEndDt(newEffEndDate);
@@ -715,7 +719,7 @@ public class JpaOrderService {
 		 }
 
 		TbOrderHistory toh = new TbOrderHistory(orderId, orderSeq, statusCd, "001", newEffEndDate,
-				Utilities.getStringToDate(StringFactory.getDoomDay()));
+				Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
         // 임시 코드
         toh.setRegId("1");
         toh.setUpdId("1");
@@ -889,11 +893,8 @@ public class JpaOrderService {
 			igo.setUploadStatus("02");
 			igo.setAssortId(assortId);
 			igo.setItemId("0001");
-			igo.setRegDt(new Date());
-			igo.setModDt(new Date());
-			
-			
-			
+			igo.setRegDt(LocalDateTime.now());
+			igo.setModDt(LocalDateTime.now());
 
 		} else {
 			System.out.println("ifGoodsOption 이 이미 있습니다");

@@ -153,11 +153,11 @@ public class Lsdpsd extends CommonProps implements Serializable {
     })
     private List<Lsdpds> lsdpds;
 
-    // 연관 관계 itasrt
-//    @NotFound(action = NotFoundAction.IGNORE)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
-    private Itasrt itasrt;
+//    // 연관 관계 itasrt
+////    @NotFound(action = NotFoundAction.IGNORE)
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+//    private Itasrt itasrt;
 
     // 연관 관계 ititmm
     @ManyToOne(fetch = FetchType.LAZY)

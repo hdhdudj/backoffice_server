@@ -34,7 +34,7 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
     List<Lsshpd> findShipListByShipId(@Param("shipId") String shipId);
 
     /**
-     * 출고지시리스트, 출고처리화면 조회 리스트
+     * 출고처리 화면 조회 리스트
      */
     @Query("select lsd from Lsshpd lsd " +
             "join fetch lsd.lsshpm lsm " +
@@ -78,11 +78,18 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
             "and (:assortId is null or trim(:assortId)= '' or ita.assortId = :assortId) " +
             "and (:assortNm is null or trim(:assortNm)= '' or ita.assortNm like concat('%',:assortNm,'%')) " +
             "and (:vendorId is null or trim(:vendorId)= '' or ita.vendorId=:vendorId) " +
+            "and (:storageId is null or trim(:storageId)= '' or lsm.storageId=:storageId) " +
             "and tod.statusCd=:statusCd " +
             "and lsshpd.shipGb='01' and lsm.shipStatus='04'")
-    List<Lsshpd> findShipList(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end,
-                              @Param("shipId") String shipId, @Param("shipSeq") String shipSeq, @Param("assortId") String assortId,
-                              @Param("assortNm") String assortNm, @Param("vendorId") String vendorId, @Param("statusCd") String statusCd);
+    List<Lsshpd> findShipList(@Param("start") LocalDateTime start,
+                              @Param("end") LocalDateTime end,
+                              @Param("shipId") String shipId,
+                              @Param("shipSeq") String shipSeq,
+                              @Param("assortId") String assortId,
+                              @Param("assortNm") String assortNm,
+                              @Param("vendorId") String vendorId,
+                              @Param("statusCd") String statusCd,
+                              @Param("storageId") String storageId);
 
     /**
      * 국내입고처리 - 발주선택창 조회 쿼리
@@ -142,4 +149,10 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
             "join fetch lsshpd.lsshpm lm " +
             "where lsshpd.shipId in :shipIdList")
     List<Lsshpd> findShipDetailListByShipIdList(@Param("shipIdList") List<String> shipIdList);
+
+    @Query("select lsd from Lsshpd lsd " +
+            "join fetch lsd.tbOrderDetail tod " +
+            "where lsd.orderId in :orderIdList and tod.assortGb=:assortGb")
+    List<Lsshpd> findAddGoodsByOrderIdList(@Param("orderIdList") List<String> orderIdList,
+                                           @Param("assortGb") String assortGb);
 }

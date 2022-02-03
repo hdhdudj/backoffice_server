@@ -121,7 +121,7 @@ public class JpaDepositService {
 
 		// 주문입고건에 대해 상태확인후 이동지시 또는 출고지시 처리
 
-		// jpaMoveService.saveOrderMoveByDeposit(lsdpsdList);
+//		 jpaMoveService.saveOrderMoveByDeposit(lsdpsdList);
 		List<HashMap<String, Object>> retList = this.saveMoveOrShip(lsdpsdList);
 
         this.changeStatusCdOfTbOrderDetail(lsdpspList);
@@ -399,7 +399,7 @@ public class JpaDepositService {
         List<DepositSelectDetailResponseData.Item> itemList = new ArrayList<>();
         for(Lsdpsd lsdpsd : lsdpsdList){
             DepositSelectDetailResponseData.Item item = new DepositSelectDetailResponseData.Item(lsdpsd);
-            Itasrt itasrt = lsdpsd.getItasrt();
+            Itasrt itasrt = lsdpsd.getItitmm().getItasrt();
             item.setItemNm(itasrt.getAssortNm());
             Utilities.setOptionNames(item,itasrt.getItvariList());
             item.setPurchaseNo(lsdpsd.getLspchd().getPurchaseNo());
@@ -440,35 +440,13 @@ public class JpaDepositService {
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
         List<DepositSelectListResponseData.Deposit> depositList = new ArrayList<>();
-        TypedQuery<Lsdpsd> query = em.createQuery("select distinct (ld) from Lsdpsd ld " +
-                        "left join fetch ld.lsdpsm lm " +
-                        "left join fetch ld.lspchd lcd " +
-                        "left join fetch lcd.lspchm lcm " +
-//                        "left join fetch ld.lsdpsp lp " +
-//                        "left join fetch ld.lsdpds ls " +
-                        "left join fetch ld.itasrt it " +
-                        "left join fetch it.ifBrand ib " +
-                        "left join fetch it.itvariList iv " +
-                        "left join fetch lm.cmvdmr cm " +
-                        "left join fetch ld.ititmm im " +
-//                        "left join fetch im.itvari1 iv1 " +
-//                        "left join fetch im.itvari2 iv2 " +
-                        "where lm.depositDt between ?1 and ?2 " +
-                        "and (?3 is null or trim(?3)='' or it.assortId=?3) " +
-                        "and (?4 is null or trim(?4)='' or it.assortNm like concat('%', ?4, '%')) " +
-                        "and (?5 is null or trim(?5)='' or lm.vendorId=?5) " +
-				"and (?6 is null or trim(?6)='' or lm.storeCd=?6) " +
-                        "order by ld.depositNo asc, ld.depositSeq asc",
-                Lsdpsd.class);
-        query.setParameter(1, start).setParameter(2, end).setParameter(3, assortId)
-				.setParameter(4, assortNm).setParameter(5, vendorId).setParameter(6, storageId);
-//        query.setParameter(4, param.get("assortId"));
-        List<Lsdpsd> resultList = query.getResultList();
-        for(Lsdpsd lsdpsd : resultList){
+        List<Lsdpsd> lsdpsdList = jpaLsdpsdRepository.findDepositList(start, end, assortId, assortNm, vendorId, storageId);
+
+        for(Lsdpsd lsdpsd : lsdpsdList){
             DepositSelectListResponseData.Deposit deposit = new DepositSelectListResponseData.Deposit(lsdpsd);
 			deposit.setVendorId(lsdpsd.getLsdpsm().getVendorId());
             deposit.setVdNm(lsdpsd.getLsdpsm().getCmvdmr() == null? "":lsdpsd.getLsdpsm().getCmvdmr().getVdNm());
-            Itasrt itasrt = lsdpsd.getItasrt();
+            Itasrt itasrt = lsdpsd.getItitmm().getItasrt();
             deposit.setAssortNm(itasrt.getAssortNm());
             // 21-11-11 무게 추가
             deposit.setWeight(itasrt.getWeight());
@@ -787,14 +765,13 @@ public class JpaDepositService {
 						assortId2 = lsdpsd.getAssortId();
 					}
 
-					Itasrt itasrt = jpaItasrtRepository.findByAssortId(lsdpsd.getAssortId());
+//					Itasrt itasrt = jpaItasrtRepository.findByAssortId(lsdpsd.getAssortId());
 					
 					Itasrt itasrt2 = jpaItasrtRepository.findByAssortId(assortId2); // 추가상품일경우 원건의 상품구분사용
 
 					if (itasrt2.getAssortGb().equals(StringFactory.getGbOne())) { // 직구
 
-						System.out.println("-----------------------수입------------------------------");
-						System.out.println("----------------------11 saveShipIndicateByDeposit----------------------");
+
 
 						// 입고창고와 주문의 창고가 같은경우 출고지시
 						List<String> r = jpaShipService.saveShipIndicateByDeposit(lsdpsd);
@@ -809,7 +786,7 @@ public class JpaDepositService {
 
 					} else { // if(tbOrderDetail.getAssortGb().equals(StringFactory.getGbTwo())){ // 수입
 
-						System.out.println("-----------------------직구------------------------------");
+						System.out.println("-----------------------수입------------------------------");
 
 						if (tbOrderDetail.getStorageId().equals(lspchm.getStoreCd())) {
 							// 입고창고와 주문의 창고가 같은경우 출고지시

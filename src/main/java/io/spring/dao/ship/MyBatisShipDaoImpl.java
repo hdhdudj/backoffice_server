@@ -23,5 +23,4 @@ public class MyBatisShipDaoImpl implements MyBatisShipDao {
 	public List<HashMap<String, Object>> getOrderShipList(HashMap<String, Object> param) {
 		return shipMapper.getOrderShipList(param);
 	};
-
 }
