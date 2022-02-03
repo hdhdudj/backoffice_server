@@ -54,7 +54,7 @@ public interface JpaTbOrderDetailRepository extends JpaRepository<TbOrderDetail,
                                              @Param("statusCd") String statusCd
                                              );
 
-//    @Query("select tod from TbOrderDetail tod " +
-//            "where ")
-//    List<TbOrderDetail> findByTbOrderDetailWithAddGoods(String orderId, String orderSeq);
+    @Query("select tod from TbOrderDetail tod " +
+            "where ")
+    List<TbOrderDetail> findByTbOrderDetailWithAddGoods(String orderId, String orderSeq);
 }

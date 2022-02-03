@@ -182,7 +182,7 @@ public class JpaShipService {
 			log.debug("input data is empty.");
 			return null;
 		}
-		List<TbOrderDetail> tbOrderDetailList = this.makeTbOrderDetailByShipIndicateSaveListDataByDeposit(lsdpsd);
+		List<TbOrderDetail> tbOrderDetailList = tbOrderDetailRepository.findByTbOrderDetailWithAddGoods(lsdpsd.getOrderId(), lsdpsd.getOrderSeq());//this.makeTbOrderDetailByShipIndicateSaveListDataByDeposit(lsdpsd);
 		List<String> shipIdList = new ArrayList<>();
 		for (int i = 0; i < tbOrderDetailList.size(); i++) {
 			TbOrderDetail tbOrderDetail = tbOrderDetailList.get(i);
