@@ -142,7 +142,7 @@
 							where
 								tod.status_cd = 'B01'
 								and tod.order_id =tom.order_id 
-								and tom.pay_dt between #{startDt} and #{endDt}
+-- 								and tom.pay_dt between #{startDt} and #{endDt}
 								and not exists (
 								
 								select 1

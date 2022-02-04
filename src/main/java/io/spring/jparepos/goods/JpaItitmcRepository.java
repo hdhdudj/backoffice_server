@@ -27,8 +27,9 @@ public interface JpaItitmcRepository extends JpaRepository<Ititmc, ItitmcId> {
 
     List<Ititmc> findByAssortIdAndItemIdAndEffEndDtOrderByEffEndDtAsc(String assortId, String itemId, LocalDateTime excAppDt);
 
-	List<Ititmc> findByAssortIdAndItemIdAndEffEndDtAndStorageIdOrderByEffEndDtAsc(String assortId, String itemId,
-			LocalDateTime excAppDt, String storageId);
+	List<Ititmc> findByAssortIdAndItemIdAndEffEndDtAndStorageIdOrderByEffEndDtAsc(String assortId, String itemId, LocalDateTime excAppDt, String storageId);
 
     Ititmc findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(String assortId, String itemId, String storageId, String itemGrade, LocalDateTime dateToLocalDateTime);
+
+    List<Ititmc> findByAssortIdAndItemId(String assortId, String itemId);
 }

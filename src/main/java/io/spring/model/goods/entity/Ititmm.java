@@ -104,11 +104,11 @@ public class Ititmm extends CommonProps implements Serializable {
     })
     private Itvari itvari3;
 
-    // ititmc 연관 관계 (일단 단방향) - 사이즈
-    @OneToMany(fetch = FetchType.LAZY, targetEntity = Ititmc.class)
-    @JoinColumns({
-            @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
-            @JoinColumn(name = "itemId", referencedColumnName="itemId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
-    })
-    private List<Ititmc> ititmc;
+//    // ititmc 연관 관계 (일단 단방향) - 사이즈
+//    @OneToMany(fetch = FetchType.LAZY, targetEntity = Ititmc.class)
+//    @JoinColumns({
+//            @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+//            @JoinColumn(name = "itemId", referencedColumnName="itemId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+//    })
+//    private List<Ititmc> ititmc;
 }

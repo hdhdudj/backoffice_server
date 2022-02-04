@@ -161,4 +161,12 @@ public class Lsshpd extends CommonProps implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private Lspchd lspchd; // lspchd 연관관계
+
+    @JoinColumns({
+            @JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+            @JoinColumn(name = "itemId", referencedColumnName = "itemId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+    })
+    @OneToMany(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Ititmc> ititmcList; // ititmc 연관관계
 }

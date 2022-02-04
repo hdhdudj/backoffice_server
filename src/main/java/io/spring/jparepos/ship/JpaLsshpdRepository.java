@@ -155,4 +155,9 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
             "where lsd.orderId in :orderIdList and tod.assortGb=:assortGb")
     List<Lsshpd> findAddGoodsByOrderIdList(@Param("orderIdList") List<String> orderIdList,
                                            @Param("assortGb") String assortGb);
+
+    @Query("select lsd from Lsshpd lsd " +
+            "join fetch lsd.ititmcList imc " +
+            "where lsd.shipId = :shipId")
+    List<Lsshpd> findByShipIdWhitItitmc(@Param("shipId") String shipId);
 }

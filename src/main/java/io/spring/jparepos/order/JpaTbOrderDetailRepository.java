@@ -55,6 +55,6 @@ public interface JpaTbOrderDetailRepository extends JpaRepository<TbOrderDetail,
                                              );
 
     @Query("select tod from TbOrderDetail tod " +
-            "where ")
-    List<TbOrderDetail> findByTbOrderDetailWithAddGoods(String orderId, String orderSeq);
+            "where (tod.orderId = :orderId and tod.orderSeq = :orderSeq) or (tod.orderId = :orderId and tod.parentOrderSeq = :orderSeq)")
+    List<TbOrderDetail> findByTbOrderDetailWithAddGoods(@Param("orderId") String orderId, @Param("orderSeq") String orderSeq);
 }

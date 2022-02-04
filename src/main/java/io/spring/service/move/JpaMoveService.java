@@ -163,7 +163,8 @@ public class JpaMoveService {
                 "join fetch d.lsdpsm m " +
                 "join fetch d.lspchd pd " +
                 "join fetch pd.tbOrderDetail t " +
-                "join fetch d.itasrt i " +
+                "join fetch t.ititmm itm " +
+                "join fetch itm.itasrt i " +
                 "where " +
                 "m.depositDt between ?1 and ?2 " +
                 "and (?3 is null or trim(?3)='' or m.storeCd=?3) " +
@@ -348,7 +349,7 @@ public class JpaMoveService {
 
 		Ititmm ititmm = jpaItitmmRepository.findByAssortIdAndItemId(lsdpsd.getAssortId(), lsdpsd.getItemId());
 
-		List<Ititmc> ititmcList = ititmm.getItitmc();
+		List<Ititmc> ititmcList = jpaItitmcRepository.findByAssortIdAndItemId(ititmm.getAssortId(), ititmm.getItemId());//ititmm.getItitmc();
 
 		Lsdpsm lsdpsm = jpaLsdpsmRepository.findById(lsdpsd.getDepositNo()).orElse(null);
 		
@@ -736,7 +737,7 @@ public class JpaMoveService {
     @Transactional
     public List<String> changeShipStatus(MoveListSaveData moveListSaveData) {
 
-		// todo : 이동처리후 발주 생성.주문이동지시는 주문상태변경 ,상품이동지시는 주문없음.발주시에도 주문없이 만들어지도록
+		// todo : 이동처리후 발주 생성.주문이동지시는 주문상태변경, 상품이동지시는 주문없음.발주시에도 주문없이 만들어지도록
 
         List<String> newShipIdList = new ArrayList<>();
         List<String> shipIdList = new ArrayList<>();
@@ -751,10 +752,10 @@ public class JpaMoveService {
 
         // lss- 변경
         for(String shipId : shipNoSet){
-			// todo 출고건이 무조건 하나라는 가정으로 1개의건만 가져오는데 이부분 리스트로 받아서 처리되도록 수정해야함.
-            Lsshpd lsshpd = jpaLsshpdRepository.findByShipId(shipId).get(0);
+			// (일단 수정했음) todo 출고건이 무조건 하나라는 가정으로 1개의건만 가져오는데 이부분 리스트로 받아서 처리되도록 수정해야함.
+            List<Lsshpd> lsshpdList = jpaLsshpdRepository.findByShipIdWhitItitmc(shipId);//.get(0);
 
-			Lsshpm lsshpm = jpaLsshpmRepository.findByShipId(lsshpd.getShipId());
+			Lsshpm lsshpm = lsshpdList.size() > 0? lsshpdList.get(0).getLsshpm() : null;//jpaLsshpmRepository.findByShipId(lsshpd.getShipId());
             if(lsshpm == null){
                 log.debug("there's no data(lsshpm) of shipId : " + shipId);
                 continue;
@@ -765,22 +766,51 @@ public class JpaMoveService {
                 jpaLsshpmRepository.save(lsshpm);
 				// continue; // 상품이동지시여도 재고처리는 해야함.
             }
-            // ititmc.shipIndicateQty, ititmc.shipQty 차감
-            long shipIndQty = lsshpd.getShipIndicateQty();
 
-			// List<Ititmc> ititmcList =
-			// jpaItitmcRepository.findByAssortIdAndItemIdAndEffEndDtOrderByEffEndDtAsc(lsshpd.getAssortId(),
-			// lsshpd.getItemId(), lsshpd.getExcAppDt());
-			// List<Ititmc> ititmcList =
-			// jpaItitmcRepository.findByAssortIdAndItemIdAndEffEndDtOrderByEffEndDtAsc(lsshpd.getAssortId(),
-			// lsshpd.getItemId(), lsshpd.getExcAppDt());
-
-			List<Ititmc> ititmcList = jpaItitmcRepository
-					.findByAssortIdAndItemIdAndEffEndDtAndStorageIdOrderByEffEndDtAsc(
-					lsshpd.getAssortId(), lsshpd.getItemId(), lsshpd.getExcAppDt(), lsshpm.getStorageId());
-            if(this.subItitmcQties(ititmcList, shipIndQty).size() == 0){
-                continue;
+            for(Lsshpd lsshpd : lsshpdList){
+                if(this.ititmcProcess(lsshpd, lsshpm)){
+                    continue;
+                }
+                this.lsshpdProcess(lsshpd, lsshpm, newShipIdList, l2, orderList);
             }
+
+        }
+
+		// 주문상태변경
+		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.C03.toString());
+
+		jpaPurchaseService.makePurchaseDataFromOrderMoveSave2(l2);
+
+        return newShipIdList;
+    }
+
+    /**
+     * 이동처리 저장에서 ititmc 변경하는 함수
+     */
+    private boolean ititmcProcess(Lsshpd lsshpd, Lsshpm lsshpm){
+        // ititmc.shipIndicateQty, ititmc.shipQty 차감
+        long shipIndQty = lsshpd.getShipIndicateQty();
+
+        // List<Ititmc> ititmcList =
+        // jpaItitmcRepository.findByAssortIdAndItemIdAndEffEndDtOrderByEffEndDtAsc(lsshpd.getAssortId(),
+        // lsshpd.getItemId(), lsshpd.getExcAppDt());
+        // List<Ititmc> ititmcList =
+        // jpaItitmcRepository.findByAssortIdAndItemIdAndEffEndDtOrderByEffEndDtAsc(lsshpd.getAssortId(),
+        // lsshpd.getItemId(), lsshpd.getExcAppDt());
+//        String assortId = lsshpd.getAssortId();
+//        String itemId = lsshpd.getItemId();
+        LocalDateTime excAppDt = lsshpd.getExcAppDt();
+        String storageId = lsshpm.getStorageId();
+
+        List<Ititmc> ititmcList = lsshpd.getItitmcList().stream().filter(x->x.getEffEndDt().equals(excAppDt) && x.getStorageId().equals(storageId)).collect(Collectors.toList());
+//        jpaItitmcRepository.findByAssortIdAndItemIdAndEffEndDtAndStorageIdOrderByEffEndDtAsc(assortId, itemId, excAppDt, storageId);
+        return this.subItitmcQties(ititmcList, shipIndQty).size() == 0;
+    }
+
+    /**
+     * 이동처리 저장에서 lss* 변경하는 함수
+     */
+    private void lsshpdProcess(Lsshpd lsshpd, Lsshpm lsshpm, List<String> newShipIdList, List<Lsshpd> l2, List<HashMap<String, Object>> orderList){
 //            //
 //            // ititmt 수치 변경 (해외창고 입고시 생성된 ititmt의 tempIndicateQty와 tempQty에서 이동된 숫자만큼 차감, 국내창고 입고시 생성된 ititmt의 tempQty = 0)
 //            Ititmt ititmt1 = jpaItitmtRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndUpdDt(lsshpd.getAssortId(), lsshpd.getItemId(), lsshpd.getOStorageId(),
@@ -796,33 +826,23 @@ public class JpaMoveService {
 //                jpaItitmcRepository.save(ititmc);
 //            }
 
-            lsshpd.setShipQty(lsshpd.getShipIndicateQty());
-            lsshpm.setShipStatus(StringFactory.getGbFour()); // 04 하드코딩
-            lsshpm.setApplyDay(LocalDateTime.now()); // 출고일자 now date
-            newShipIdList.add(lsshpm.getShipId());
-            this.updateLssSeries(lsshpd);
+        lsshpd.setShipQty(lsshpd.getShipIndicateQty());
+        lsshpm.setShipStatus(StringFactory.getGbFour()); // 04 하드코딩
+        lsshpm.setApplyDay(LocalDateTime.now()); // 출고일자 now date
+        newShipIdList.add(lsshpm.getShipId());
+        this.updateLssSeries(lsshpd);
 
-			if (lsshpm.getShipOrderGb().equals("01")) {
-				// 주문이동지시일경우 발주데이타 생성
-				l2.add(lsshpd);
-			}
-
-			if (lsshpm.getShipOrderGb().equals("01")) {
-				HashMap<String, Object> m = new HashMap<String, Object>();
-				m.put("order_id", lsshpd.getOrderId());
-				m.put("order_seq", lsshpd.getOrderSeq());
-				orderList.add(m);
-
-			}
-
+        if (lsshpm.getShipOrderGb().equals("01")) {
+            // 주문이동지시일경우 발주데이타 생성
+            l2.add(lsshpd);
         }
 
-		// 주문상태변경
-		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.C03.toString());
-
-		jpaPurchaseService.makePurchaseDataFromOrderMoveSave2(l2);
-
-        return newShipIdList;
+        if (lsshpm.getShipOrderGb().equals("01")) {
+            HashMap<String, Object> m = new HashMap<String, Object>();
+            m.put("order_id", lsshpd.getOrderId());
+            m.put("order_seq", lsshpd.getOrderSeq());
+            orderList.add(m);
+        }
     }
 
     /**
@@ -1068,6 +1088,7 @@ public class JpaMoveService {
             long shipIndQty = ititmc.getShipIndicateQty() == null? 0l:ititmc.getShipIndicateQty(); // ititmc 출고예정량
 //            long canShipQty = qty - shipIndQty; // 출고가능량
             if(shipIndQty < shipQty){ // 출고 불가
+//                ititmcList.remove(ititmc);
                 continue;
             }
             else { // 이 차례에서 출고 완료 가능
@@ -1081,6 +1102,7 @@ public class JpaMoveService {
         if(newItitmcList.size() == 0){
            log.debug("재고량이 맞지 않아 출고가 불가합니다.");
         }
+//        return ititmcList;
         return newItitmcList;
     }
 
