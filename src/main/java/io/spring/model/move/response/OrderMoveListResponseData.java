@@ -55,15 +55,14 @@ public class OrderMoveListResponseData implements SetOptionInterface {
 
 //출처: https://lelecoder.com/115 [lelecoder]
 
-//		System.out.println(aaa.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")));
+		// System.out.println(aaa.format(DateTimeFormatter.ofPattern("yyyy/MM/dd'T'HH:mm:ss")));
 
-		this.receiptDt = aaa.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toString();
+		this.receiptDt = aaa.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")).toString();
 
-		/*
-		 * this.receiptDt = m.get("receiptDt").toString().length() > 0 ?
-		 * m.get("receiptDt").toString().substring(0,
-		 * m.get("receiptDt").toString().length() - 1) : "";
-		 */
+//		this.receiptDt = m.get("receiptDt").toString().length() > 0
+		// ? m.get("receiptDt").toString().substring(0,
+		// m.get("receiptDt").toString().length() - 1)
+		// : "";
 
 		this.orderId = (String) m.get("orderId");
 		this.orderSeq = (String) m.get("orderSeq");
