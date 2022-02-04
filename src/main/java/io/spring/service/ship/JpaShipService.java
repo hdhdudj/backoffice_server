@@ -597,7 +597,7 @@ public class JpaShipService {
 			List<Ititmc> ititmcList = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdOrderByEffEndDtAsc(
 					tbOrderDetail.getAssortId(), tbOrderDetail.getItemId(), lsshpm.getStorageId());
             // 재고에서 출고 차감 계산
-            ititmcList = jpaMoveService.subItitmcQties(ititmcList, ship.getQty()); // 주문량만큼 출고차감 (하나의 ititmc에서 모두 차감하므로 ititmcList에 값이 있다면 한 개만 들어있어야 함)
+            ititmcList = jpaMoveService.subItitmcQties(null, lsshpm.getStorageId(), ititmcList, ship.getQty()); // 주문량만큼 출고차감 (하나의 ititmc에서 모두 차감하므로 ititmcList에 값이 있다면 한 개만 들어있어야 함)
             if(ititmcList.size()==0){
                 log.debug("출고처리량 이상의 출고지시량을 가진 재고 세트가 없습니다.");
                 continue;
@@ -619,8 +619,10 @@ public class JpaShipService {
             }
         }
         // 3. lss- 시리즈 찾아서 수정하고 꺾기
+		int index = 0;
         for(Lsshpd lsshpd : lsshpdList){
-            shipIdList.add(jpaMoveService.updateLssSeries(lsshpd));
+            shipIdList.add(jpaMoveService.updateLssSeries(index, lsshpd));
+			index++;
         }
         return shipIdList;
     }

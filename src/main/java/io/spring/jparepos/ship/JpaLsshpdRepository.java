@@ -127,7 +127,7 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
             "join fetch ld.itasrt it " +
             "left join fetch it.ifBrand ib " +
             "left join fetch it.itvariList iv " +
-            "where lm.receiptDt between :start and :end " +
+            "where case :shipStatus when '04' then lm.applyDay else lm.receiptDt end between :start and :end " +
             "and lm.shipStatus=:shipStatus " +
             "and (:shipId is null or trim(:shipId)='' or ld.shipId=:shipId) " +
             "and (:assortId is null or trim(:assortId)='' or ld.assortId=:assortId) " +
@@ -157,7 +157,8 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
                                            @Param("assortGb") String assortGb);
 
     @Query("select lsd from Lsshpd lsd " +
-            "join fetch lsd.ititmcList imc " +
+            "join fetch lsd.lsshpm lsm " +
+//            "join fetch lsd.ititmcList imc " +
             "where lsd.shipId = :shipId")
-    List<Lsshpd> findByShipIdWhitItitmc(@Param("shipId") String shipId);
+    List<Lsshpd> findByShipIdWithItitmc(@Param("shipId") String shipId);
 }

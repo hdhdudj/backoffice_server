@@ -143,13 +143,11 @@
 								tod.status_cd = 'B01'
 								and tod.order_id =tom.order_id
 								and not exists (
-								
 								select 1
 								from if_order_cancel ioc 
 								where ioc.channel_order_no = tod.channel_order_no
 								and ioc.channel_order_seq = tod.channel_order_seq
 								)
-								
 								) aaa ,
 							itasrt bbb
 						where
@@ -344,15 +342,11 @@
 					where tod.status_cd in ('B01')
 					and tod.order_id =tom.order_id
 						and not exists (
-								
 								select 1
 								from if_order_cancel ioc 
 								where ioc.channel_order_no = tod.channel_order_no
 								and ioc.channel_order_seq = tod.channel_order_seq
 								)
-					
-					
-					
 					) aaa,
 				   itasrt bbb,
 				   ititmm ccc,
