@@ -13,7 +13,6 @@ import io.spring.infrastructure.mapstruct.ShipItemListDataMapper;
 import io.spring.jparepos.deposit.JpaLsdpsdRepository;
 import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.goods.entity.Itvari;
-import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.ship.response.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,12 +25,9 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.deposit.JpaLsdpsmRepository;
-import io.spring.jparepos.deposit.JpaLsdpspRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.order.JpaTbOrderHistoryRepository;
-import io.spring.jparepos.order.JpaTbOrderMasterRepository;
-import io.spring.jparepos.purchase.JpaLspchdRepository;
 import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
@@ -47,7 +43,6 @@ import io.spring.model.ship.entity.Lsshpm;
 import io.spring.model.ship.entity.Lsshps;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
 import io.spring.model.ship.request.ShipSaveListData;
-import io.spring.service.common.JpaCommonService;
 import io.spring.service.move.JpaMoveService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,10 +51,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class JpaShipService {
-    private final JpaCommonService jpaCommonService;
-    private final JpaLsdpspRepository jpaLsdpspRepository;
     private final JpaMoveService jpaMoveService;
-    private final JpaLspchdRepository jpaLspchdRepository;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
     private final JpaLsshpmRepository jpaLsshpmRepository;
@@ -69,7 +61,6 @@ public class JpaShipService {
 	private final JpaLsdpsmRepository jpaLsdpsmRepository;
 	private final JpaLsdpsdRepository jpaLsdpsdRepository;
 
-	private final JpaTbOrderMasterRepository tbOrderMasterRepository;
 	private final JpaTbOrderDetailRepository tbOrderDetailRepository;
 	private final JpaTbOrderHistoryRepository tbOrderHistoryrRepository;
 
@@ -191,8 +182,7 @@ public class JpaShipService {
 			log.debug("input data is empty.");
 			return null;
 		}
-		List<TbOrderDetail> tbOrderDetailList = this
-				.makeTbOrderDetailByShipIndicateSaveListDataByDeposit(lsdpsd);
+		List<TbOrderDetail> tbOrderDetailList = tbOrderDetailRepository.findByTbOrderDetailWithAddGoods(lsdpsd.getOrderId(), lsdpsd.getOrderSeq());//this.makeTbOrderDetailByShipIndicateSaveListDataByDeposit(lsdpsd);
 		List<String> shipIdList = new ArrayList<>();
 		for (int i = 0; i < tbOrderDetailList.size(); i++) {
 			TbOrderDetail tbOrderDetail = tbOrderDetailList.get(i);
@@ -607,7 +597,7 @@ public class JpaShipService {
 			List<Ititmc> ititmcList = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdOrderByEffEndDtAsc(
 					tbOrderDetail.getAssortId(), tbOrderDetail.getItemId(), lsshpm.getStorageId());
             // 재고에서 출고 차감 계산
-            ititmcList = jpaMoveService.subItitmcQties(ititmcList, ship.getQty()); // 주문량만큼 출고차감 (하나의 ititmc에서 모두 차감하므로 ititmcList에 값이 있다면 한 개만 들어있어야 함)
+            ititmcList = jpaMoveService.subItitmcQties(null, lsshpm.getStorageId(), ititmcList, ship.getQty()); // 주문량만큼 출고차감 (하나의 ititmc에서 모두 차감하므로 ititmcList에 값이 있다면 한 개만 들어있어야 함)
             if(ititmcList.size()==0){
                 log.debug("출고처리량 이상의 출고지시량을 가진 재고 세트가 없습니다.");
                 continue;
@@ -629,8 +619,10 @@ public class JpaShipService {
             }
         }
         // 3. lss- 시리즈 찾아서 수정하고 꺾기
+		int index = 0;
         for(Lsshpd lsshpd : lsshpdList){
-            shipIdList.add(jpaMoveService.updateLssSeries(lsshpd));
+            shipIdList.add(jpaMoveService.updateLssSeries(index, lsshpd));
+			index++;
         }
         return shipIdList;
     }

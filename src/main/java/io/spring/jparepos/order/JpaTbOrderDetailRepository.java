@@ -53,4 +53,8 @@ public interface JpaTbOrderDetailRepository extends JpaRepository<TbOrderDetail,
                                              @Param("assortNm") String assortNm,
                                              @Param("statusCd") String statusCd
                                              );
+
+    @Query("select tod from TbOrderDetail tod " +
+            "where (tod.orderId = :orderId and tod.orderSeq = :orderSeq) or (tod.orderId = :orderId and tod.parentOrderSeq = :orderSeq)")
+    List<TbOrderDetail> findByTbOrderDetailWithAddGoods(@Param("orderId") String orderId, @Param("orderSeq") String orderSeq);
 }

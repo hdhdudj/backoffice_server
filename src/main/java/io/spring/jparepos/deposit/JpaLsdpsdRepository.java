@@ -84,4 +84,10 @@ public interface JpaLsdpsdRepository extends JpaRepository<Lsdpsd, LsdpsdId> {
                                  @Param("orderSeq") String orderSeq,
                                  @Param("storageId") String storageId
                                  );
+
+    @Query("select lsd from Lsdpsd lsd " +
+            "join fetch lsd.lsdpsm lsm " +
+            "join fetch lsd.lspchd lpd " +
+            "where lsm.depositDt = :excAppDt")
+    List<Lsdpsd> findByDepositDt(@Param("excAppDt") LocalDateTime excAppDt);
 }

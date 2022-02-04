@@ -87,13 +87,11 @@
     
     
 
-    <select id="getOrderListByPurchaseVendor" parameterType="java.util.HashMap"  resultType="HashMap">
+    <select id="getOrderListByPurchaseVendor" resultType="HashMap">
     	
     	<![CDATA[
 	
-			
-
-	select
+		select
 					bbb.vendor_id purchaseVendorId,
 					bbb.vd_nm purchaseVendorName,
 					sum(bbb.qty) purchaseVendorQty
@@ -140,16 +138,16 @@
 								end order_vendor_id
 							from
 								tb_order_detail tod
+								,tb_order_master tom 
 							where
-								status_cd = 'B01'
+								tod.status_cd = 'B01'
+								and tod.order_id =tom.order_id
 								and not exists (
-								
 								select 1
 								from if_order_cancel ioc 
 								where ioc.channel_order_no = tod.channel_order_no
 								and ioc.channel_order_seq = tod.channel_order_seq
 								)
-								
 								) aaa ,
 							itasrt bbb
 						where
@@ -170,9 +168,6 @@
 				group by
 					bbb.vendor_id ,
 					bbb.vd_nm
-
-
-	
 			]]>
 		
 		 		
@@ -343,17 +338,15 @@
 																				  and vvv.assort_id = eee.assort_id)
 							   else '000000' end order_vendor_id
 					from tb_order_detail tod
-					where status_cd in ('B01')
+					,tb_order_master tom
+					where tod.status_cd in ('B01')
+					and tod.order_id =tom.order_id
 						and not exists (
-								
 								select 1
 								from if_order_cancel ioc 
 								where ioc.channel_order_no = tod.channel_order_no
 								and ioc.channel_order_seq = tod.channel_order_seq
 								)
-					
-					
-					
 					) aaa,
 				   itasrt bbb,
 				   ititmm ccc,
