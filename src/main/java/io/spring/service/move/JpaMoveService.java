@@ -12,6 +12,7 @@ import javax.transaction.Transactional;
 
 import io.spring.enums.TrdstOrderStatus;
 import io.spring.infrastructure.mapstruct.MoveCompletedListResponseDataMapper;
+import io.spring.infrastructure.mapstruct.MoveIndicateListResponseDataMapper;
 import io.spring.model.move.request.MoveListExcelRequestData;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -89,6 +90,7 @@ public class JpaMoveService {
     private final EntityManager em;
 
     private final MoveCompletedListResponseDataMapper moveCompletedListResponseDataMapper;
+    private final MoveIndicateListResponseDataMapper moveIndicateListResponseDataMapper;
 
     /**
 	 * 주문 이동지시 대상 리스트 가져오는 함수 2021-10-18 사용 안함 jb
@@ -869,9 +871,12 @@ public class JpaMoveService {
             }
             MoveIndicateListResponseData.Move move = new MoveIndicateListResponseData.Move(lsshpd);
             Utilities.setOptionNames(move, lsshpd.getItasrt().getItvariList());
+            move = moveIndicateListResponseDataMapper.to(move);
             moveList.add(move);
         }
+        moveIndicateListResponseData = moveIndicateListResponseDataMapper.to(moveIndicateListResponseData);
         moveIndicateListResponseData.setMoves(moveList);
+
         return moveIndicateListResponseData;
     }
 
@@ -886,6 +891,7 @@ public class JpaMoveService {
                         "join fetch ld.lsshpm lm " +
                         "left join fetch ld.tbOrderDetail td " +
                         "join fetch ld.itasrt it " +
+                        "join fetch it.itvariList ivs " +
                         "where lm.instructDt between ?1 and ?2 " +
 				"and lm.shipStatus ='02' and lm.masterShipGb in ('03', '04')" // 지시상태만 조회
                 ,Lsshpd.class);

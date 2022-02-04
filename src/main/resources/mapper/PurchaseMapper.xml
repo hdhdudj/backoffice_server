@@ -87,7 +87,7 @@
     
     
 
-    <select id="getOrderListByPurchaseVendor" parameterType="java.util.HashMap"  resultType="HashMap">
+    <select id="getOrderListByPurchaseVendor" resultType="HashMap">
     	
     	<![CDATA[
 	
@@ -141,8 +141,7 @@
 								,tb_order_master tom 
 							where
 								tod.status_cd = 'B01'
-								and tod.order_id =tom.order_id 
--- 								and tom.pay_dt between #{startDt} and #{endDt}
+								and tod.order_id =tom.order_id
 								and not exists (
 								
 								select 1
@@ -171,9 +170,6 @@
 				group by
 					bbb.vendor_id ,
 					bbb.vd_nm
-
-
-	
 			]]>
 		
 		 		
@@ -346,8 +342,7 @@
 					from tb_order_detail tod
 					,tb_order_master tom
 					where tod.status_cd in ('B01')
-					and tod.order_id =tom.order_id 
-					and tom.pay_dt between #{startDt} and #{endDt}
+					and tod.order_id =tom.order_id
 						and not exists (
 								
 								select 1

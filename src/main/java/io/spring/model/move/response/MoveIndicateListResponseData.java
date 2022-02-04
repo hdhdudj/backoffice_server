@@ -24,8 +24,8 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MoveIndicateListResponseData {
+    public MoveIndicateListResponseData(){}
     public MoveIndicateListResponseData(LocalDate startDt,LocalDate endDt,String storageId,String oStorageId,String assortId,String assortNm){
         this.startDt = startDt;
         this.endDt = endDt;
@@ -48,8 +48,8 @@ public class MoveIndicateListResponseData {
     private List<Move> moves;
     @Getter
     @Setter
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Move implements SetOptionInterface {
+        public Move(){}
         public Move(Lsshpd lsshpd){
             TbOrderDetail tbOrderDetail = lsshpd.getTbOrderDetail();
             Itasrt itasrt = lsshpd.getItasrt();
@@ -70,8 +70,8 @@ public class MoveIndicateListResponseData {
             this.goodsKey = Utilities.addDashInMiddle(assortId,itemId);
             this.assortNm = itasrt.getAssortNm();
             // 옵션명은 바깥에서
-            this.qty = lsshpd.getShipIndicateQty();
-            this.cost = lsshpd.getLocalPrice();
+            this.qty = Utilities.nullOrEmptyFilter(lsshpd.getShipIndicateQty()) == null? "" : lsshpd.getShipIndicateQty().toString();
+            this.cost = Utilities.nullOrEmptyFilter(lsshpd.getLocalPrice()) == null? "" : lsshpd.getLocalPrice().toString();
         }
         private String shipId;
         private String shipSeq;
@@ -92,7 +92,7 @@ public class MoveIndicateListResponseData {
         private String optionNm1;
         private String optionNm2;
         private String optionNm3;
-        private Long qty;
-        private Float cost;
+        private String qty;
+        private String cost;
     }
 }
