@@ -1246,14 +1246,17 @@ public class JpaPurchaseService {
 		System.out.println("lspchbList ==> " + lspchbList.size());
 
 		// x -> x.getPurchaseStatus().equals("04")
-		Stream<Lspchb> l05 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("05"));
-		Stream<Lspchb> l04 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("04"));
-		Stream<Lspchb> l01 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("01"));
-		
+//		Stream<Lspchb> l05 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("05"));
+//		Stream<Lspchb> l04 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("04"));
+//		Stream<Lspchb> l01 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("01"));
+        long l05 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("05")).count();
+        long l04 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("04")).count();
+        long l01 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("01")).count();
+        int size = lspchbList.size();
 		String purchaseStatus = "";
-		if (lspchbList.size() == (l04.count() + l05.count())) {
+		if (size == (l04 + l05)) {
 			purchaseStatus = "04";
-		} else if (lspchbList.size() == (l01.count() + l05.count())) {
+		} else if (size == (l01 + l05)) {
 			purchaseStatus = "01";
 		} else {
 			purchaseStatus = "03";
