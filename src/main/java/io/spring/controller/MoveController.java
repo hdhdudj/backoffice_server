@@ -173,9 +173,6 @@ public class MoveController {
                                               @RequestParam @Nullable String assortId,
                                               @RequestParam @Nullable String assortNm
                                               ){
-
-
-
         MoveIndicateListResponseData moveIndicateListResponseData = jpaMoveService.getMoveIndicateList(startDt,endDt,storageId,oStorageId,assortId,assortNm);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),moveIndicateListResponseData);
         return ResponseEntity.ok(res);
