@@ -773,19 +773,22 @@ public class JpaMoveService {
             if(lsshpm.getShipOrderGb().equals(StringFactory.getGbTwo())) { // 01 주문, 02 상품
                 log.debug("주문이동처리가 아닌 상품이동지시입니다.");
             }
-            lsshpm.setShipStatus(StringFactory.getGbFour()); // 01 이동지시or출고지시 02 이동지시or출고지시 접수 04 출고
-            jpaLsshpmRepository.save(lsshpm);
+//            lsshpm.setShipStatus(StringFactory.getGbFour()); // 01 이동지시or출고지시 02 이동지시or출고지시 접수 04 출고
+//            jpaLsshpmRepository.save(lsshpm);
             // continue; // 상품이동지시여도 재고처리는 해야함.
         }
         ititmcList = jpaItitmcRepository.findByAssortIdList(assortIdList);
         int index = 0;
         for(Lsshpd lsshpd : lsshpdList){
-            if(this.ititmcProcess(lsshpd, ititmcList)){
+            if(!this.ititmcProcess(lsshpd, ititmcList)){
                 continue;
             }
+            lsshpd.getLsshpm().setShipStatus(StringFactory.getGbFour());
+            jpaLsshpmRepository.save(lsshpd.getLsshpm());
             this.lsshpdProcess(index, lsshpd, newShipIdList, l2, orderList);
             index++;
         }
+
 
 		// 주문상태변경
 		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.C03.toString());
@@ -816,7 +819,8 @@ public class JpaMoveService {
 
 //        List<Ititmc> ititmcList = lsshpd.getItitmcList().stream().filter(x->x.getEffEndDt().equals(excAppDt) && x.getStorageId().equals(storageId)).collect(Collectors.toList());
 //        jpaItitmcRepository.findByAssortIdAndItemIdAndEffEndDtAndStorageIdOrderByEffEndDtAsc(assortId, itemId, excAppDt, storageId);
-        return this.subItitmcQties(excAppDt, storageId, ititmcList2, shipIndQty).size() == 0;
+        List<Ititmc> returnList = this.subItitmcQties(excAppDt, storageId, ititmcList2, shipIndQty);
+        return returnList != null && returnList.size() > 0;
     }
 
     /**

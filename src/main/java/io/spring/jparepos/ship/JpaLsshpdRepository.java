@@ -127,7 +127,7 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
             "join fetch ld.itasrt it " +
             "left join fetch it.ifBrand ib " +
             "left join fetch it.itvariList iv " +
-            "where case :shipStatus when '04' then lm.applyDay else lm.receiptDt end between :start and :end " +
+            "where case :shipStatus when '04' then lm.instructDt else lm.receiptDt end between :start and :end " +
             "and lm.masterShipGb in ('03', '04') " +
             "and lm.shipStatus=:shipStatus " +
             "and td.statusCd = :statusCd " +
