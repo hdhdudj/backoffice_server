@@ -1,28 +1,36 @@
 package io.spring.model.goods.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.spring.infrastructure.util.StringFactory;
-import io.spring.infrastructure.util.Utilities;
-import io.spring.model.common.entity.CommonProps;
-import io.spring.model.goods.request.GoodsInsertRequestData;
-import io.spring.model.vendor.entity.Cmvdmr;
-import jdk.vm.ci.meta.Local;
-import lombok.*;
-import org.hibernate.annotations.*;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.LazyToOne;
+import org.hibernate.annotations.LazyToOneOption;
 import org.hibernate.engine.spi.PersistentAttributeInterceptable;
 import org.hibernate.engine.spi.PersistentAttributeInterceptor;
 
-import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import io.spring.infrastructure.util.StringFactory;
+import io.spring.model.common.entity.CommonProps;
+import io.spring.model.goods.request.GoodsInsertRequestData;
+import io.spring.model.vendor.entity.Cmvdmr;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  *  ITASRT table의 Entity

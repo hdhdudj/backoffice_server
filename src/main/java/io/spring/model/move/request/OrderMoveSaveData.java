@@ -22,16 +22,18 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderMoveSaveData {
     @JsonDeserialize(using = LocalDateDeserializer.class)
-//    @JsonSerialize(using = LocalDateSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate startDt;
+
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate endDt;
+
     private String storageId;
     private String assortId;
     private String assortNm;
     private String deliMethod;
+	private String userId;
     private List<Move> moves;
 //    public OrderMoveSaveData(Lsdpsd lsdpsd){
 //        this.depositNo = lsdpsd.getDepositNo();
@@ -75,12 +77,19 @@ public class OrderMoveSaveData {
         private String orderSeq;
         private String deliMethod;
         private Long qty;
-        private String storageId;
+        
+		private String storageId;
         // itasrt
         private String assortNm;
         // itvari
         private String optionNm1;
         private String optionNm2;
         private String optionNm3;
+
+		private String orderKey;
+		private String shipKey;
+
+		private String orderStoreCd;
+
     }
 }

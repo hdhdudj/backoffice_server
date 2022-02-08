@@ -16,7 +16,6 @@ import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
-import io.spring.infrastructure.mapstruct.LspchmMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import io.spring.enums.DirectOrImport;
 import io.spring.enums.TrdstOrderStatus;
 import io.spring.infrastructure.mapstruct.ItemsMapper;
+import io.spring.infrastructure.mapstruct.LspchmMapper;
 import io.spring.infrastructure.mapstruct.PurchaseMasterListResponseDataMapper;
 import io.spring.infrastructure.mapstruct.PurchaseSelectDetailResponseDataMapper;
 import io.spring.infrastructure.util.StringFactory;
@@ -42,7 +42,6 @@ import io.spring.jparepos.purchase.JpaLspchmRepository;
 import io.spring.jparepos.purchase.JpaLspchsRepository;
 import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
-import io.spring.model.common.entity.Cmstgm;
 import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.deposit.response.PurchaseListInDepositModalData;
 import io.spring.model.goods.entity.IfBrand;
@@ -832,15 +831,17 @@ public class JpaPurchaseService {
             long takeQty = lsdpsp.getPurchaseTakeQty() == null? 0l:lsdpsp.getPurchaseTakeQty();
             purchase.setAvailableQty(planQty - takeQty);
 
-            String rackNo ="";
+			String rackNo = "999999";
             
-            List<Cmstgm> l =jpaCmstgmRepository.findByUpStorageIdAndDefaultYnAndDelYn(lspchm.getStoreCd().toString(),"01", "02");
+			// List<Cmstgm> l
+			// =jpaCmstgmRepository.findByUpStorageIdAndDefaultYnAndDelYn(lspchm.getStoreCd().toString(),"01",
+			// "02");
 
-			if (l.size() > 0) {
-				rackNo = l.get(0).getStorageId();
-			} else {
-				rackNo = "xxxxxx";
-			}
+//			if (l.size() > 0) {
+			// rackNo = l.get(0).getStorageId();
+			// } else {
+			// rackNo = "xxxxxx";
+//			}
 
 			purchase.setRackNo(rackNo);
 
@@ -1262,14 +1263,17 @@ public class JpaPurchaseService {
 		System.out.println("lspchbList ==> " + lspchbList.size());
 
 		// x -> x.getPurchaseStatus().equals("04")
-		Stream<Lspchb> l05 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("05"));
-		Stream<Lspchb> l04 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("04"));
-		Stream<Lspchb> l01 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("01"));
-		
+//		Stream<Lspchb> l05 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("05"));
+//		Stream<Lspchb> l04 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("04"));
+//		Stream<Lspchb> l01 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("01"));
+        long l05 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("05")).count();
+        long l04 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("04")).count();
+        long l01 = lspchbList.stream().filter(x -> x.getPurchaseStatus().equals("01")).count();
+        int size = lspchbList.size();
 		String purchaseStatus = "";
-		if (lspchbList.size() == (l04.count() + l05.count())) {
+		if (size == (l04 + l05)) {
 			purchaseStatus = "04";
-		} else if (lspchbList.size() == (l01.count() + l05.count())) {
+		} else if (size == (l01 + l05)) {
 			purchaseStatus = "01";
 		} else {
 			purchaseStatus = "03";

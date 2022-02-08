@@ -45,10 +45,12 @@ import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.entity.Lspchm;
+import io.spring.service.common.MyBatisCommonService;
 import io.spring.service.move.JpaMoveService;
 import io.spring.service.order.JpaOrderService;
 import io.spring.service.purchase.JpaPurchaseService;
 import io.spring.service.ship.JpaShipService;
+import io.spring.service.stock.JpaStockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -77,6 +79,10 @@ public class JpaDepositService {
 
     private final JpaOrderService jpaOrderService;
     private final EntityManager em;
+
+	private final JpaStockService jpaStockService;
+
+	private final MyBatisCommonService myBatisCommonService;
 
 //    @Transactional
 //    public String sequenceInsertDeposit(DepositInsertRequestData depositInsertRequestData){
@@ -232,7 +238,10 @@ public class JpaDepositService {
             String depositSeq = StringUtils.leftPad(Integer.toString(index), 4, '0');
             Lsdpsd lsdpsd = new Lsdpsd(depositListWithPurchaseInfoData, lsdpsm, depositSeq, deposit, imsiLsdpsp.get(0));
 
-			lsdpsd.setRackNo(deposit.getRackNo()); // 랙추가 2021-12-13
+			String rackNo = this.getDefaultRack(depositListWithPurchaseInfoData.getStorageId(), deposit.getRackNo()); //
+
+			// lsdpsd.setRackNo(deposit.getRackNo()); // 랙추가 2021-12-13
+			lsdpsd.setRackNo(rackNo); // 랙추가 2021-12-13
 
             Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(lsdpsd.getInputNo(), lsdpsd.getInputSeq());
 			// lspchd.setDepositNo(lsdpsd.getDepositNo());
@@ -558,18 +567,40 @@ public class JpaDepositService {
 					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
 
+//			String storageId = p.get("storageId").toString();
+//			LocalDateTime depositDt = (LocalDateTime) p.get("effStaDt");
+//			String assortId = p.get("assortId").toString();
+//			String itemId = p.get("itemId").toString();
+//			String itemGrade = p.get("itemGrade").toString();
+//			long qty = (long) p.get("depositQty");
+//			float price = (float) p.get("price");
+//
+//			String rackNo = p.get("rackNo").toString();
 
-			this.saveItitmc(depositListWithPurchaseInfoData, localDateTime, storageId, deposit);
+			// 입고처리를 위한 값 셋팅
 
-			// rack사용에 데이타가 있다면 데이타 입력
+			HashMap<String, Object> p = new HashMap<String, Object>();
 
-			if (deposit.getRackNo() != null && deposit.getRackNo().trim().length() > 0) {
-				System.out.println(" deposit.getRackNo() => " + deposit.getRackNo());
-				this.saveRactItitmc(depositListWithPurchaseInfoData, localDateTime, deposit.getRackNo(), deposit);
-			}
+			p.put("storageId", storageId);
+			p.put("effStaDt", localDateTime);
+			p.put("assortId", deposit.getAssortId());
+			p.put("itemId", deposit.getItemId());
+			p.put("itemGrade", "11"); // 일단 정상품만 입고
+			p.put("depositQty", deposit.getDepositQty());
+			p.put("price", deposit.getPurchaseCost());
+			p.put("vendorId", depositListWithPurchaseInfoData.getVendorId());
+
+			String rackNo = this.getDefaultRack(depositListWithPurchaseInfoData.getStorageId(), deposit.getRackNo()); //
+
+			p.put("rackNo", rackNo);
+
+			jpaStockService.plusDepositStock(p);
+
+
 
 
         }
+
         depositListWithPurchaseInfoData.setDeposits(depositList);
         return lsdpspList;
     }
@@ -726,6 +757,26 @@ public class JpaDepositService {
         depositPlanId = StringUtils.leftPad(depositPlanId,9,'0');
         return depositPlanId;
     }
+
+	private String getDefaultRack(String storageId, String rackNo) {
+
+		String r = "";
+
+		if (rackNo.equals("999999")) {
+			HashMap<String, Object> p = new HashMap<String, Object>();
+
+			p.put("storageId", storageId);
+
+			HashMap<String, Object> o = myBatisCommonService.getCommonDefaultRack(p);
+
+			r = o.get("storageId").toString();
+
+		} else {
+			r = rackNo;
+		}
+		return r;
+
+	}
 
 	private List<HashMap<String, Object>> saveMoveOrShip(List<Lsdpsd> list) {
 

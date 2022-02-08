@@ -13,6 +13,7 @@ import io.spring.jparepos.common.JpaCmstgmRepository;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.deposit.JpaLsdpsmRepository;
 import io.spring.jparepos.deposit.JpaLsdpspRepository;
+import io.spring.jparepos.goods.JpaItasrtRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.order.JpaTbOrderHistoryRepository;
@@ -22,7 +23,9 @@ import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
 import io.spring.model.common.entity.Cmstgm;
+import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
+import io.spring.model.goods.idclass.ItitmcId;
 import io.spring.service.common.JpaCommonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,11 +47,94 @@ public class JpaStockService {
 	private final JpaLsdpsmRepository jpaLsdpsmRepository;
 	private final JpaCmstgmRepository jpaCmstgmRepository;
 
+
 	private final JpaTbOrderMasterRepository tbOrderMasterRepository;
 	private final JpaTbOrderDetailRepository tbOrderDetailRepository;
 	private final JpaTbOrderHistoryRepository tbOrderHistoryrRepository;
 
+	private final JpaItasrtRepository jpaItasrtRepository;
+
 	private final EntityManager em;
+
+	public int plusDepositStock(HashMap<String, Object> p) {
+		
+		String storageId = p.get("storageId").toString();
+		LocalDateTime depositDt = (LocalDateTime) p.get("effStaDt");
+		String assortId = p.get("assortId").toString();
+		String itemId = p.get("itemId").toString();
+		String itemGrade = p.get("itemGrade").toString();
+		long qty = (long)p.get("depositQty");
+		float price = (float)p.get("price");
+
+		String rackNo = p.get("rackNo").toString();
+
+		//int qty = Integer.parseInt(p.get("depositQty").toString());
+		
+
+		String vendorId = p.get("vendorId").toString();
+		
+		// (String storageId, LocalDateTime depositDt,
+		// DepositListWithPurchaseInfoData.Deposit deposit)
+
+		// (String storageId, LocalDateTime effStaDt, String assortId, String itemId,
+		// String itemGrade) {
+		ItitmcId ititmcId = new ItitmcId(storageId, depositDt, assortId, itemId, itemGrade);
+
+		Ititmc ititmc = jpaItitmcRepository.findById(ititmcId).orElseGet(() -> null);
+
+		if (ititmc == null) {
+
+//		 Ititmc(String storageId, LocalDateTime effStaDt, String assortId, String itemId, String itemGrade,
+			// Float localPrice, Long qty)
+
+			ititmc = new Ititmc(storageId, depositDt, assortId, itemId, itemGrade, price, qty);
+			ititmc.setVendorId(vendorId);
+			Itasrt itasrt = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());
+			ititmc.setOwnerId(itasrt.getOwnerId());
+
+		} else {
+			ititmc.setQty(ititmc.getQty() + qty);
+
+		}
+
+		jpaItitmcRepository.save(ititmc);
+
+		if (rackNo != null) {
+			// 의 재고를 조회함
+			Ititmc imc_rack = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(assortId,
+					itemId, rackNo, itemGrade, depositDt);
+
+			if (imc_rack == null) {
+
+//				 Ititmc(String storageId, LocalDateTime effStaDt, String assortId, String itemId, String itemGrade,
+				// Float localPrice, Long qty)
+
+				imc_rack = new Ititmc(rackNo, depositDt, assortId, itemId, itemGrade, price, qty);
+				imc_rack.setVendorId(vendorId);
+				Itasrt itasrt = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());
+				imc_rack.setOwnerId(itasrt.getOwnerId());
+
+			} else {
+				imc_rack.setQty(ititmc.getQty() + qty);
+
+			}
+
+		}
+
+		return 1;
+
+//		p.put("assortId", lsshpd.getAssortId());
+//		p.put("itemId", lsshpd.getItemId());
+//		p.put("effStaDt", lsshpd.getExcAppDt());
+//		p.put("itemGrade", "11");
+//		p.put("storageId", lsshpm.getStorageId());
+//		p.put("rackNo", lsshpd.getRackNo());
+//		p.put("depositQty", shipIndQty);
+
+		
+		// 입고처리만들어야함.
+
+	}
 
 	public int minusIndicateStockByOrder(HashMap<String, Object> p) {
 

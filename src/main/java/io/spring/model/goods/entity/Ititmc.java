@@ -60,6 +60,20 @@ public class Ititmc extends CommonProps {
         this.qty = qty;
         this.shipIndicateQty =0l;
     }
+
+	public Ititmc(String storageId, LocalDateTime effStaDt, String assortId, String itemId, String itemGrade,
+			Float localPrice, Long qty) {
+		this.storageId = storageId;
+		this.assortId = assortId;
+		this.itemId = itemId;
+		this.effEndDt = effStaDt;
+		this.effStaDt = effStaDt;
+		this.stockGb = itemGrade; // 01 하드코딩
+		this.stockAmt = localPrice;
+		this.qty = qty;
+		this.shipIndicateQty = 0l;
+	}
+
     @Id
     private String storageId;
     @Id

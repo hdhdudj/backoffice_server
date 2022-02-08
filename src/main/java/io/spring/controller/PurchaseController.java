@@ -53,27 +53,25 @@ public class PurchaseController {
 
 
 
-		LocalDate lst = LocalDate.now();
-		LocalDate lst1 = lst.minusDays(365);
-		LocalDate lst2 = lst.minusDays(0);
-
-		if (startDt == null) {
-
-			param.put("startDt", lst1.toString() + " 00:00:00");
-
-		} else {
-			param.put("startDt", startDt.toString() + " 00:00:00");
-		}
-
-		if (endDt == null) {
-
-			param.put("endDt", lst2.toString() + " 23:59:59");
-		} else {
-			param.put("endDt", endDt.toString() + " 23:59:59");
-
-		}
-
-
+//		LocalDate lst = LocalDate.now();
+//		LocalDate lst1 = lst.minusDays(365);
+//		LocalDate lst2 = lst.minusDays(0);
+//
+//		if (startDt == null) {
+//
+//			param.put("startDt", lst1.toString() + " 00:00:00");
+//
+//		} else {
+//			param.put("startDt", startDt.toString() + " 00:00:00");
+//		}
+//
+//		if (endDt == null) {
+//
+//			param.put("endDt", lst2.toString() + " 23:59:59");
+//		} else {
+//			param.put("endDt", endDt.toString() + " 23:59:59");
+//
+//		}
 
 
 		List<HashMap<String, Object>> responseData = myBatisPurchaseService.getOrderListByPurchaseVendor(param);
@@ -101,22 +99,22 @@ public class PurchaseController {
 		param.put("vendorId", vendorId);
 
 
-		LocalDate lst = LocalDate.now();
-		LocalDate lst1 = lst.minusDays(365);
-		LocalDate lst2 = lst.minusDays(0);
-
-		if (startDt == null) {
-			param.put("startDt", lst1.toString() + " 00:00:00");
-		} else {
-			param.put("startDt", startDt.toString() + " 00:00:00");
-		}
-
-		if (endDt == null) {
-			param.put("endDt", lst2.toString() + " 23:59:59");
-		} else {
-			param.put("endDt", endDt.toString() + " 23:59:59");
-
-		}
+//		LocalDate lst = LocalDate.now();
+//		LocalDate lst1 = lst.minusDays(365);
+//		LocalDate lst2 = lst.minusDays(0);
+//
+//		if (startDt == null) {
+//			param.put("startDt", lst1.toString() + " 00:00:00");
+//		} else {
+//			param.put("startDt", startDt.toString() + " 00:00:00");
+//		}
+//
+//		if (endDt == null) {
+//			param.put("endDt", lst2.toString() + " 23:59:59");
+//		} else {
+//			param.put("endDt", endDt.toString() + " 23:59:59");
+//
+//		}
 
 
 		List<HashMap<String, Object>> responseData = myBatisPurchaseService.getOrderListByPurchaseVendorItem(param);

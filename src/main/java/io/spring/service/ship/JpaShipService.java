@@ -4,7 +4,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -22,11 +24,9 @@ import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.deposit.JpaLsdpsdRepository;
 import io.spring.jparepos.deposit.JpaLsdpsmRepository;
-import io.spring.jparepos.deposit.JpaLsdpspRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.order.JpaTbOrderHistoryRepository;
-import io.spring.jparepos.order.JpaTbOrderMasterRepository;
 import io.spring.jparepos.purchase.JpaLspchdRepository;
 import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
@@ -50,7 +50,6 @@ import io.spring.model.ship.response.ShipIndicateListData;
 import io.spring.model.ship.response.ShipIndicateSaveListResponseData;
 import io.spring.model.ship.response.ShipItemListData;
 import io.spring.model.ship.response.ShipListDataResponse;
-import io.spring.service.common.JpaCommonService;
 import io.spring.service.move.JpaMoveService;
 import io.spring.service.stock.JpaStockService;
 import lombok.RequiredArgsConstructor;
@@ -60,9 +59,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class JpaShipService {
-    private final JpaCommonService jpaCommonService;
-    private final JpaLsdpspRepository jpaLsdpspRepository;
     private final JpaMoveService jpaMoveService;
+
 
 	private final JpaStockService jpaStockService;
 
@@ -76,7 +74,6 @@ public class JpaShipService {
 	private final JpaLsdpsmRepository jpaLsdpsmRepository;
 	private final JpaLsdpsdRepository jpaLsdpsdRepository;
 
-	private final JpaTbOrderMasterRepository tbOrderMasterRepository;
 	private final JpaTbOrderDetailRepository tbOrderDetailRepository;
 	private final JpaTbOrderHistoryRepository tbOrderHistoryrRepository;
 
@@ -201,8 +198,7 @@ public class JpaShipService {
 			log.debug("input data is empty.");
 			return null;
 		}
-		List<TbOrderDetail> tbOrderDetailList = this
-				.makeTbOrderDetailByShipIndicateSaveListDataByDeposit(lsdpsd);
+		List<TbOrderDetail> tbOrderDetailList = tbOrderDetailRepository.findByTbOrderDetailWithAddGoods(lsdpsd.getOrderId(), lsdpsd.getOrderSeq());//this.makeTbOrderDetailByShipIndicateSaveListDataByDeposit(lsdpsd);
 		List<String> shipIdList = new ArrayList<>();
 		for (int i = 0; i < tbOrderDetailList.size(); i++) {
 			TbOrderDetail tbOrderDetail = tbOrderDetailList.get(i);
@@ -635,63 +631,41 @@ public class JpaShipService {
         return shipItemListData;
     }
 
+    
     /**
-     * 출고처리 - 변한 값을 저장하는 함수
+     * 출고처리2 - 변한 값을 저장하는 함수
      */
     @Transactional
-    public List<String> shipIndToShip(ShipSaveListData shipSaveListData) {
+    public List<String> shipIndToShip2(ShipSaveListData shipSaveListData) {
+
+		List<String> newShipIdList = new ArrayList<>();
+		
         List<String> shipIdList = new ArrayList<>();
-        // 1. ititmc의 두 qty에서 처리된 양만큼 빼기
         List<Lsshpd> lsshpdList = new ArrayList<>();
-        for(ShipSaveListData.Ship ship : shipSaveListData.getShips()){
-            Lsshpd lsshpd = jpaLsshpdRepository.findByShipIdAndShipSeq(ship.getShipId(), ship.getShipSeq());
+    	
+        List<ShipSaveListData.Ship> shipList = shipSaveListData.getShips();
+        
+        shipList.stream().forEach(x -> shipIdList.add(x.getShipId()));
+        
+        Set<String> shipNoSet = new HashSet(shipList);
+        
+    	List<HashMap<String, Object>> orderList = new ArrayList<>();
+        
+		for (String shipId : shipNoSet) {
+			
+			
+			Lsshpm lsshpm = jpaLsshpmRepository.findById(shipId).orElse(null);
 
-            // 수량 완전입고로 변경
-            lsshpd.setShipQty(lsshpd.getShipIndicateQty());
-            Lsshpm lsshpm = lsshpd.getLsshpm();
-            if(lsshpm.getShipStatus().equals(StringFactory.getGbFour())){ // shipStatus가 이미 04(출고)면 패스
-                log.debug("요청된 출고처리 " + Utilities.addDashInMiddle(lsshpd.getShipId(), lsshpd.getShipSeq()) + "는 이미 출고된 상태입니다.");
-                continue;
-            }
-            lsshpm.setApplyDay(LocalDateTime.now());
-            lsshpdList.add(lsshpd);
-            // 2. 해당 tbOrderDetail statusCd 변경
-            TbOrderDetail tbOrderDetail = lsshpd.getTbOrderDetail();
+			if (lsshpm.getShipOrderGb().equals(StringFactory.getGbTwo())) { // 01 주문, 02 상품
+				log.debug("상품출고입니다.");
+//				lsshpm.setShipStatus(StringFactory.getGbFour()); // 01 이동지시or출고지시 02 이동지시or출고지시 접수 04 출고
+//				jpaLsshpmRepository.save(lsshpm);
+//				continue; // 상품이동지시여도 재고처리는 해야함.
+			}
 
-            
-        	if (lsshpm.getShipOrderGb().equals(StringFactory.getGbTwo())) { // 01 주문, 02 상품
-				log.debug(
-						"**********************************************상품출고처리입니다.확인이 필요합니다!***********************************");
-				// 여기를 타면 오류일거같은데!!정상적인 프로세스에서는 주문이 있을경우에만 출고처리가 가능.그외는 기타 출고
+			List<Lsshpd> lsshpdList2 = jpaLsshpdRepository.findByShipId(shipId);
+			for (Lsshpd lsshpd : lsshpdList2) {
 				
-				
-				List<Ititmc> ititmcList = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdOrderByEffEndDtAsc(
-						tbOrderDetail.getAssortId(), tbOrderDetail.getItemId(), lsshpm.getStorageId());
-	            // 재고에서 출고 차감 계산
-	            ititmcList = jpaMoveService.subItitmcQties(ititmcList, ship.getQty()); // 주문량만큼 출고차감 (하나의 ititmc에서 모두 차감하므로 ititmcList에 값이 있다면 한 개만 들어있어야 함)
-	            if(ititmcList.size()==0){
-	                log.debug("출고처리량 이상의 출고지시량을 가진 재고 세트가 없습니다.");
-	                continue;
-				} else {
-
-					// 하나로 합쳐도 되지만 그냥 냅둠
-					List<HashMap<String, Object>> orderList = new ArrayList<HashMap<String, Object>>();
-					HashMap<String, Object> m = new HashMap<String, Object>();
-
-					m.put("order_id", lsshpd.getOrderId());
-					m.put("order_seq", lsshpd.getOrderSeq());
-
-					orderList.add(m);
-
-					this.changeStatusCdOfTbOrderDetail(orderList, "D02");
-
-					// tbOrderDetail.setStatusCd(StringFactory.getStrD02()); // D02 하드코딩
-					// jpaTbOrderDetailRepository.save(tbOrderDetail);
-	            }
-	        
-			} else {
-				log.debug("주문출고처리.");
-
 				HashMap<String, Object> p = new HashMap<String, Object>();
 
 				p.put("assortId", lsshpd.getAssortId());
@@ -700,33 +674,159 @@ public class JpaShipService {
 				p.put("itemGrade", "11");
 				p.put("storageId", lsshpm.getStorageId());
 				p.put("rackNo", lsshpd.getRackNo());
-				p.put("shipQty",ship.getQty());
+				p.put("shipQty",lsshpd.getShipIndicateQty());
 
 				int r = jpaStockService.minusShipStockByOrder(p);
+				
 
-				// 하나로 합쳐도 되지만 그냥 냅둠
-				List<HashMap<String, Object>> orderList = new ArrayList<HashMap<String, Object>>();
-				HashMap<String, Object> m = new HashMap<String, Object>();
+				lsshpd.setShipQty(lsshpd.getShipIndicateQty());
+				jpaLsshpdRepository.save(lsshpd);
+				
+				if (lsshpm.getShipOrderGb().equals("01")) {
+					//주문출고에 대한 상태변경처리를 위해 리스트정리
+				
 
-				m.put("order_id", lsshpd.getOrderId());
-				m.put("order_seq", lsshpd.getOrderSeq());
+					HashMap<String, Object> m = new HashMap<String, Object>();
+					m.put("order_id", lsshpd.getOrderId());
+					m.put("order_seq", lsshpd.getOrderSeq());
+					orderList.add(m);
 
-				orderList.add(m);
+				}
 
+				
+			}
 
-				this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.D02.toString());
-
-			}     
-            
+			lsshpm.setShipStatus(StringFactory.getGbFour()); // 04 하드코딩
+			lsshpm.setApplyDay(LocalDateTime.now()); // 출고일자 now date
+			newShipIdList.add(lsshpm.getShipId());
+			jpaLsshpmRepository.save(lsshpm);
+			this.updateLsshps(lsshpm);		
+			
+			
 		}
-            
 		
-        // 3. lss- 시리즈 찾아서 수정하고 꺾기
-        for(Lsshpd lsshpd : lsshpdList){
-            shipIdList.add(jpaMoveService.updateLssSeries(lsshpd));
-        }
-        return shipIdList;
+		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.D02.toString());
+		
+		
+		  return newShipIdList;
     }
+    
+    /**
+     * 출고처리 - 변한 값을 저장하는 함수
+     * 몬가소스가 이상해서 shipIndToShip2 로 새로 만듬
+     */
+    //여기서부터 통채로 주석 2022-02-07
+    
+//    @Transactional
+//    public List<String> shipIndToShip(ShipSaveListData shipSaveListData) {
+//        List<String> shipIdList = new ArrayList<>();
+//        // 1. ititmc의 두 qty에서 처리된 양만큼 빼기
+//        List<Lsshpd> lsshpdList = new ArrayList<>();
+//        for(ShipSaveListData.Ship ship : shipSaveListData.getShips()){
+//            Lsshpd lsshpd = jpaLsshpdRepository.findByShipIdAndShipSeq(ship.getShipId(), ship.getShipSeq());
+//
+//            // 수량 완전입고로 변경
+//            lsshpd.setShipQty(lsshpd.getShipIndicateQty());
+//            Lsshpm lsshpm = lsshpd.getLsshpm();
+//            if(lsshpm.getShipStatus().equals(StringFactory.getGbFour())){ // shipStatus가 이미 04(출고)면 패스
+//                log.debug("요청된 출고처리 " + Utilities.addDashInMiddle(lsshpd.getShipId(), lsshpd.getShipSeq()) + "는 이미 출고된 상태입니다.");
+//                continue;
+//            }
+//            lsshpm.setApplyDay(LocalDateTime.now());
+//            lsshpdList.add(lsshpd);
+//            // 2. 해당 tbOrderDetail statusCd 변경
+//            TbOrderDetail tbOrderDetail = lsshpd.getTbOrderDetail();
+//
+//            /*
+//            <<<<<<< HEAD
+//=======
+//			List<Ititmc> ititmcList = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdOrderByEffEndDtAsc(
+//					tbOrderDetail.getAssortId(), tbOrderDetail.getItemId(), lsshpm.getStorageId());
+//            // 재고에서 출고 차감 계산
+//            ititmcList = jpaMoveService.subItitmcQties(null, lsshpm.getStorageId(), ititmcList, ship.getQty()); // 주문량만큼 출고차감 (하나의 ititmc에서 모두 차감하므로 ititmcList에 값이 있다면 한 개만 들어있어야 함)
+//            if(ititmcList.size()==0){
+//                log.debug("출고처리량 이상의 출고지시량을 가진 재고 세트가 없습니다.");
+//                continue;
+//            }
+//            else {
+//>>>>>>> dev
+//            
+//            */
+//            
+//
+//            
+//        	if (lsshpm.getShipOrderGb().equals(StringFactory.getGbTwo())) { // 01 주문, 02 상품
+//				log.debug(
+//						"**********************************************상품출고처리입니다.확인이 필요합니다!***********************************");
+//				// 여기를 타면 오류일거같은데!!정상적인 프로세스에서는 주문이 있을경우에만 출고처리가 가능.그외는 기타 출고
+//				
+////				
+////				List<Ititmc> ititmcList = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdOrderByEffEndDtAsc(
+////						tbOrderDetail.getAssortId(), tbOrderDetail.getItemId(), lsshpm.getStorageId());
+////	            // 재고에서 출고 차감 계산
+////	            ititmcList = jpaMoveService.subItitmcQties(ititmcList, ship.getQty()); // 주문량만큼 출고차감 (하나의 ititmc에서 모두 차감하므로 ititmcList에 값이 있다면 한 개만 들어있어야 함)
+////	            if(ititmcList.size()==0){
+////	                log.debug("출고처리량 이상의 출고지시량을 가진 재고 세트가 없습니다.");
+////	                continue;
+////				} else {
+////
+////					// 하나로 합쳐도 되지만 그냥 냅둠
+////					List<HashMap<String, Object>> orderList = new ArrayList<HashMap<String, Object>>();
+////					HashMap<String, Object> m = new HashMap<String, Object>();
+////
+////					m.put("order_id", lsshpd.getOrderId());
+////					m.put("order_seq", lsshpd.getOrderSeq());
+////
+////					orderList.add(m);
+////
+////					this.changeStatusCdOfTbOrderDetail(orderList, "D02");
+////
+////					// tbOrderDetail.setStatusCd(StringFactory.getStrD02()); // D02 하드코딩
+////					// jpaTbOrderDetailRepository.save(tbOrderDetail);
+////	            }
+//	        
+//			} else {
+//				log.debug("주문출고처리.");
+//
+//				HashMap<String, Object> p = new HashMap<String, Object>();
+//
+//				p.put("assortId", lsshpd.getAssortId());
+//				p.put("itemId", lsshpd.getItemId());
+//				p.put("effStaDt", lsshpd.getExcAppDt());
+//				p.put("itemGrade", "11");
+//				p.put("storageId", lsshpm.getStorageId());
+//				p.put("rackNo", lsshpd.getRackNo());
+//				p.put("shipQty",ship.getQty());
+//
+//				int r = jpaStockService.minusShipStockByOrder(p);
+//
+//				// 하나로 합쳐도 되지만 그냥 냅둠
+//				List<HashMap<String, Object>> orderList = new ArrayList<HashMap<String, Object>>();
+//				HashMap<String, Object> m = new HashMap<String, Object>();
+//
+//				m.put("order_id", lsshpd.getOrderId());
+//				m.put("order_seq", lsshpd.getOrderSeq());
+//
+//				orderList.add(m);
+//
+//
+//				this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.D02.toString());
+//
+//			}     
+//            
+//		}
+//            
+//		
+//        // 3. lss- 시리즈 찾아서 수정하고 꺾기
+//		int index = 0;
+//        for(Lsshpd lsshpd : lsshpdList){
+//            shipIdList.add(jpaMoveService.updateLssSeries(index, lsshpd));
+//			index++;
+//        }
+//        return shipIdList;
+//    }
+    
+    //여기까지 통채로 주석 2022-02-07
 
 	private void updateLsshps(Lsshpm lsshpm) {
 		Lsshps lsshps = jpaLsshpsRepository.findByShipIdAndEffEndDt(lsshpm.getShipId(),

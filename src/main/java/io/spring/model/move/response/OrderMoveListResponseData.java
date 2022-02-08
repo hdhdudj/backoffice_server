@@ -1,5 +1,7 @@
 package io.spring.model.move.response;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
 import io.spring.model.common.SetOptionInterface;
@@ -44,7 +46,23 @@ public class OrderMoveListResponseData implements SetOptionInterface {
 		this.shipKey = (String) m.get("shipKey");
 		this.assortId = (String) m.get("assortId");
 		this.itemId = (String) m.get("itemId");
-		this.receiptDt = m.get("receiptDt").toString().substring(0, 19);
+		
+		
+		
+		LocalDateTime aaa = (LocalDateTime) m.get("receiptDt");
+
+		// ;
+
+//출처: https://lelecoder.com/115 [lelecoder]
+
+		// System.out.println(aaa.format(DateTimeFormatter.ofPattern("yyyy/MM/dd'T'HH:mm:ss")));
+
+		this.receiptDt = aaa.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")).toString();
+
+//		this.receiptDt = m.get("receiptDt").toString().length() > 0
+		// ? m.get("receiptDt").toString().substring(0,
+		// m.get("receiptDt").toString().length() - 1)
+		// : "";
 
 		this.orderId = (String) m.get("orderId");
 		this.orderSeq = (String) m.get("orderSeq");

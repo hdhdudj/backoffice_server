@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.idclass.ItitmcId;
+import org.springframework.data.repository.query.Param;
 
 public interface JpaItitmcRepository extends JpaRepository<Ititmc, ItitmcId> {
     @Query("select c from Ititmc c where c.assortId=?1 and c.itemId=?2 and c.storageId=?3 and c.itemGrade=?4 order by c.effEndDt desc")
@@ -28,8 +29,12 @@ public interface JpaItitmcRepository extends JpaRepository<Ititmc, ItitmcId> {
 
     List<Ititmc> findByAssortIdAndItemIdAndEffEndDtOrderByEffEndDtAsc(String assortId, String itemId, LocalDateTime excAppDt);
 
-	List<Ititmc> findByAssortIdAndItemIdAndEffEndDtAndStorageIdOrderByEffEndDtAsc(String assortId, String itemId,
-			LocalDateTime excAppDt, String storageId);
+	List<Ititmc> findByAssortIdAndItemIdAndEffEndDtAndStorageIdOrderByEffEndDtAsc(String assortId, String itemId, LocalDateTime excAppDt, String storageId);
 
     Ititmc findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(String assortId, String itemId, String storageId, String itemGrade, LocalDateTime dateToLocalDateTime);
+
+    List<Ititmc> findByAssortIdAndItemId(String assortId, String itemId);
+
+    @Query("select ic from Ititmc ic where ic.assortId in :assortIdList")
+    List<Ititmc> findByAssortIdList(@Param("assortIdList") List<String> assortIdList);
 }
