@@ -770,12 +770,12 @@ public class JpaMoveService {
                 log.debug("there's no data(lsshpm) of shipId : " + shipId);
                 continue;
             }
-            if(lsshpm.getShipOrderGb().equals(StringFactory.getGbTwo())){ // 01 주문, 02 상품
+            if(lsshpm.getShipOrderGb().equals(StringFactory.getGbTwo())) { // 01 주문, 02 상품
                 log.debug("주문이동처리가 아닌 상품이동지시입니다.");
-                lsshpm.setShipStatus(StringFactory.getGbFour()); // 01 이동지시or출고지시 02 이동지시or출고지시 접수 04 출고
-                jpaLsshpmRepository.save(lsshpm);
-                // continue; // 상품이동지시여도 재고처리는 해야함.
             }
+            lsshpm.setShipStatus(StringFactory.getGbFour()); // 01 이동지시or출고지시 02 이동지시or출고지시 접수 04 출고
+            jpaLsshpmRepository.save(lsshpm);
+            // continue; // 상품이동지시여도 재고처리는 해야함.
         }
         ititmcList = jpaItitmcRepository.findByAssortIdList(assortIdList);
         int index = 0;
