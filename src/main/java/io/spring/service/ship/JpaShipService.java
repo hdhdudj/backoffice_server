@@ -198,8 +198,27 @@ public class JpaShipService {
 			log.debug("input data is empty.");
 			return null;
 		}
-		List<TbOrderDetail> tbOrderDetailList = tbOrderDetailRepository.findByTbOrderDetailWithAddGoods(lsdpsd.getOrderId(), lsdpsd.getOrderSeq());//this.makeTbOrderDetailByShipIndicateSaveListDataByDeposit(lsdpsd);
+		// List<TbOrderDetail> tbOrderDetailList =
+		// tbOrderDetailRepository.findByTbOrderDetailWithAddGoods(lsdpsd.getOrderId(),
+		// lsdpsd.getOrderSeq());//this.makeTbOrderDetailByShipIndicateSaveListDataByDeposit(lsdpsd);
+
+		TbOrderDetail tbo = tbOrderDetailRepository.findByOrderIdAndOrderSeq(lsdpsd.getOrderId(),
+				lsdpsd.getOrderSeq());
+
+		List<TbOrderDetail> tbOrderDetailList = new ArrayList<>();
+
+		tbOrderDetailList.add(tbo);
+
+		// todo: 2022-02-09 이후에 추가상품에 대해서도 자동출고처리되도록 처리해야함.그럴려면 입고부터 자동으로 처리되야함.
+		// 추가상품에 대한 자동입고가 안되면 못처리함.
+
+
+		// List<TbOrderDetail> tbOrderDetailList =
+		// tbOrderDetailRepository.findByOrderIdAndOrderSeq(lsdpsd.getOrderId(),
+//				lsdpsd.getOrderSeq());
+
 		List<String> shipIdList = new ArrayList<>();
+
 		for (int i = 0; i < tbOrderDetailList.size(); i++) {
 			TbOrderDetail tbOrderDetail = tbOrderDetailList.get(i);
 
@@ -422,36 +441,38 @@ public class JpaShipService {
 											   String storageId, String assortId, String assortNm,
 											   String vendorId, String statusCd, String orderKey, String shipStatus) {
 
-		String orderId = "";
-		String orderSeq = "";
-		if(orderId != null && !orderId.trim().equals("")){
-			String[] order = orderKey.split("-");
-			orderId = order[0];
-			orderSeq = order.length > 1? order[1]:orderSeq;
-		}
-		LocalDateTime start = startDt.atStartOfDay();
-		LocalDateTime end = endDt.atTime(23,59,59);
-		ShipCandidateListData shipCandidateListData = new ShipCandidateListData(startDt, endDt,
-				assortId, assortNm, vendorId, orderId);
-
-		List<Lsdpsd> lsdpsdList = jpaLsdpsdRepository.findShipCandidateList(start, end, assortId, assortNm, vendorId, orderId, orderSeq, storageId);//query.getResultList();
-		lsdpsdList = lsdpsdList.stream().filter(x->x.getLspchd() != null).filter(y->y.getLspchd().getTbOrderDetail() != null).filter(z->z.getLspchd().getTbOrderDetail().getStatusCd().equals(statusCd)).collect(Collectors.toList());
-		List<ShipCandidateListData.Ship> shipList = new ArrayList<>();
-		for(Lsdpsd lsdpsd : lsdpsdList){
-			Ititmm ititmm = lsdpsd.getItitmm();
-			ShipCandidateListData.Ship ship = new ShipCandidateListData.Ship(lsdpsd);
-			Itvari itvari1 = ititmm.getItvari1();
-			Itvari itvari2 = ititmm.getItvari2();
-			Itvari itvari3 = ititmm.getItvari3();
-			List<Itvari> itvariList = new ArrayList<>();
-			itvariList.add(itvari1);
-			itvariList.add(itvari2);
-			itvariList.add(itvari3);
-			Utilities.setOptionNames(ship, itvariList);
-			shipList.add(ship);
-		}
-		shipCandidateListData.setShips(shipList);
-		return shipCandidateListData;
+//		사용안함
+//
+//		String orderId = "";
+//		String orderSeq = "";
+//		if(orderId != null && !orderId.trim().equals("")){
+//			String[] order = orderKey.split("-");
+//			orderId = order[0];
+//			orderSeq = order.length > 1? order[1]:orderSeq;
+//		}
+//		LocalDateTime start = startDt.atStartOfDay();
+//		LocalDateTime end = endDt.atTime(23,59,59);
+//		ShipCandidateListData shipCandidateListData = new ShipCandidateListData(startDt, endDt,
+//				assortId, assortNm, vendorId, orderId);
+//
+//		List<Lsdpsd> lsdpsdList = jpaLsdpsdRepository.findShipCandidateList(start, end, assortId, assortNm, vendorId, orderId, orderSeq, storageId);//query.getResultList();
+//		lsdpsdList = lsdpsdList.stream().filter(x->x.getLspchd() != null).filter(y->y.getLspchd().getTbOrderDetail() != null).filter(z->z.getLspchd().getTbOrderDetail().getStatusCd().equals(statusCd)).collect(Collectors.toList());
+//		List<ShipCandidateListData.Ship> shipList = new ArrayList<>();
+//		for(Lsdpsd lsdpsd : lsdpsdList){
+//			Ititmm ititmm = lsdpsd.getItitmm();
+//			ShipCandidateListData.Ship ship = new ShipCandidateListData.Ship(lsdpsd);
+//			Itvari itvari1 = ititmm.getItvari1();
+//			Itvari itvari2 = ititmm.getItvari2();
+//			Itvari itvari3 = ititmm.getItvari3();
+//			List<Itvari> itvariList = new ArrayList<>();
+//			itvariList.add(itvari1);
+//			itvariList.add(itvari2);
+//			itvariList.add(itvari3);
+//			Utilities.setOptionNames(ship, itvariList);
+//			shipList.add(ship);
+//		}
+//		shipCandidateListData.setShips(shipList);
+		return null;
 	}
 
     /**
@@ -481,7 +502,9 @@ public class JpaShipService {
             Lsshpm lsshpm = lsshpd.getLsshpm();
             ShipIndicateListData.Ship ship = new ShipIndicateListData.Ship(lsshpd.getTbOrderDetail(), lsshpm, lsshpd);
             // option set
-            Utilities.setOptionNames(ship, lsshpd.getTbOrderDetail().getItitmm().getItasrt().getItvariList());
+			// Utilities.setOptionNames(ship,
+			// lsshpd.getTbOrderDetail().getItitmm().getItasrt().getItvariList());
+			// //2022-02-09 사용안함
             // 출고지시 qty 설정 == 1l
             ship.setQty(lsshpd.getShipIndicateQty());
             shipList.add(ship);
@@ -647,7 +670,8 @@ public class JpaShipService {
         
         shipList.stream().forEach(x -> shipIdList.add(x.getShipId()));
         
-        Set<String> shipNoSet = new HashSet(shipList);
+
+		Set<String> shipNoSet = new HashSet(shipIdList);
         
     	List<HashMap<String, Object>> orderList = new ArrayList<>();
         

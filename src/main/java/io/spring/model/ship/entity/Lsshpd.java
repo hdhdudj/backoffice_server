@@ -2,7 +2,6 @@ package io.spring.model.ship.entity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,7 +11,6 @@ import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -23,9 +21,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
-import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
+import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.entity.Lspchd;
@@ -137,6 +135,7 @@ public class Lsshpd extends CommonProps implements Serializable {
     private String purchaseSeq;
     private String blNo;
 
+
     // 연관관계 : lsshpm
     @OneToOne(fetch = FetchType.LAZY, targetEntity = Lsshpm.class)
     @JoinColumn(name = "shipId", referencedColumnName="shipId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
@@ -179,4 +178,12 @@ public class Lsshpd extends CommonProps implements Serializable {
 //    @OneToMany(fetch = FetchType.LAZY)
 //    @JsonIgnore
 //    private List<Ititmc> ititmcList; // ititmc 연관관계
+
+	@JoinColumns({
+			@JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+			@JoinColumn(name = "itemId", referencedColumnName = "itemId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")) })
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonIgnore
+	private Ititmm ititmm; // ititmc 연관관계
+
 }

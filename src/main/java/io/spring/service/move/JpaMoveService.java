@@ -454,7 +454,7 @@ public class JpaMoveService {
 			goods.setOrderQty(0L);
 			goods.setAvailableQty(goods.getAvailableQty());
 //            goods.setStoreCd(goodsModalListResponseData.getStoreCd());
-            Utilities.setOptionNames(goods, itasrt.getItvariList());
+			// Utilities.setOptionNames(goods, itasrt.getItvariList()); //2022-02-09 사용안함
 //            List<Itvari> itvariList = itasrt.getItvariList();
 //            if(itvariList.size() > 0){
 //                Itvari itvari1 = itvariList.get(0);
@@ -550,7 +550,10 @@ public class JpaMoveService {
 
 		Query query = em
 				.createQuery("select ic from Ititmc ic " + "join fetch ic.itasrt it " + "join fetch it.ifBrand ib "
-						+ "join fetch it.itvariList iv " + "join fetch ic.cmstgm cm " + "where "
+						+ "join fetch ic.cmstgm cm " + "join fetch ic.ititmm itm "
+						+ "left join fetch itm.itvari1 itv1 " + "left join fetch itm.itvari2 itv2 "
+						+ "left join fetch itm.itvari3 itv3 " +
+						"where "
 						+ "(?1 is null or trim(?1)='' or cm.upStorageId=?1) "
 						+ "and (?2 is null or trim(?2)='' or it.vendorId=?2) "
 						+ "and (?3 is null or trim(?3)='' or ic.assortId=?3) "
@@ -1134,7 +1137,8 @@ public class JpaMoveService {
                 continue;
             }
             MoveIndicateListResponseData.Move move = new MoveIndicateListResponseData.Move(lsshpd);
-            Utilities.setOptionNames(move, lsshpd.getItasrt().getItvariList());
+			// Utilities.setOptionNames(move, lsshpd.getItasrt().getItvariList());
+			// //2022-02-09 사용안함
             move = moveIndicateListResponseDataMapper.to(move);
             moveList.add(move);
         }
@@ -1155,7 +1159,10 @@ public class JpaMoveService {
                         "join fetch ld.lsshpm lm " +
                         "left join fetch ld.tbOrderDetail td " +
                         "join fetch ld.itasrt it " +
-                        "join fetch it.itvariList ivs " +
+				// "join fetch it.itvariList ivs " +
+				"join fetch ld.ititmm itm " + "left join fetch itm.itvari1 itv1 " + "left join fetch itm.itvari2 itv2 "
+				+ "left join fetch itm.itvari3 itv3 " +
+
                         "where lm.instructDt between ?1 and ?2 " +
 				"and lm.shipStatus ='02' and lm.masterShipGb in ('03', '04')" // 지시상태만 조회
                 ,Lsshpd.class);
@@ -1203,7 +1210,7 @@ public class JpaMoveService {
 
 			move.setWeight(itasrt.getWeight());
 
-            Utilities.setOptionNames(move,lsshpd.getItasrt().getItvariList());
+			// Utilities.setOptionNames(move,lsshpd.getItasrt().getItvariList());
             moveList.add(move);
         }
 
@@ -1232,7 +1239,7 @@ public class JpaMoveService {
                 continue;
             }
             MoveListResponseData.Move move = new MoveListResponseData.Move(lsshpm, lsshpd);
-            Utilities.setOptionNames(move, lsshpd.getItasrt().getItvariList());
+			// Utilities.setOptionNames(move, lsshpd.getItasrt().getItvariList());
             moveList.add(move);
         }
         moveListResponseData.setMoves(moveList);
@@ -1270,8 +1277,11 @@ public class JpaMoveService {
         lsshpdList = lsshpdList.stream().filter(x->x.getLsshpm().getShipStatus().equals(StringFactory.getGbFour())).collect(Collectors.toList());
         List<MoveCompletedLIstReponseData.Move> moveList = new ArrayList<>();
         for(Lsshpd lsshpd : lsshpdList){
+
+			System.out.println("**------------------------------------------------------------------------------");
+			System.out.println(lsshpd.getRackNo());
             MoveCompletedLIstReponseData.Move move = new MoveCompletedLIstReponseData.Move(lsshpd.getLsshpm(), lsshpd);
-            Utilities.setOptionNames(move, lsshpd.getItasrt().getItvariList());
+			// Utilities.setOptionNames(move, lsshpd.getItasrt().getItvariList());
             move = moveCompletedListResponseDataMapper.nullToEmpty(move);
             moveList.add(move);
         }
@@ -1288,7 +1298,10 @@ public class JpaMoveService {
         List<Lsshpd> lsshpdList = em.createQuery("select lsd from Lsshpd lsd " +
                 "join fetch lsd.itasrt ita " +
                 "join fetch lsd.lsshpm lsm " +
-                "join fetch ita.itvariList iv where lsd.shipId=?1", Lsshpd.class)
+				"join fetch lsd.ititmm itm " + "left join fetch itm.itvari1 itv1 " + "left join fetch itm.itvari2 itv2 "
+				+ "left join fetch itm.itvari3 itv3 "
+				// "join fetch ita.itvariList iv "
+				+ "where lsd.shipId=?1", Lsshpd.class)
                 .setParameter(1, shipId).getResultList();
         // lsshpm의 shipStatus가 04(출고)인 놈만 남기기
         lsshpdList = lsshpdList.stream().filter(x->x.getLsshpm().getShipStatus().equals(StringFactory.getGbFour())).collect(Collectors.toList());
@@ -1300,7 +1313,7 @@ public class JpaMoveService {
         List<MovedDetailResponseData.Move> moveList = new ArrayList<>();
         for(Lsshpd lsshpd : lsshpdList){
             MovedDetailResponseData.Move move = new MovedDetailResponseData.Move(lsshpd.getLsshpm(), lsshpd);
-            Utilities.setOptionNames(move, lsshpd.getItasrt().getItvariList());
+			// Utilities.setOptionNames(move, lsshpd.getItasrt().getItvariList());
             moveList.add(move);
         }
         movedDetailResponseData.setMoves(moveList);

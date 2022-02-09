@@ -7,10 +7,12 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.Cmstgm;
@@ -104,5 +106,12 @@ public class Ititmc extends CommonProps {
 	@ManyToOne(fetch = FetchType.LAZY, targetEntity = Cmstgm.class)
 	@JoinColumn(name = "storageId", referencedColumnName = "storageId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	private Cmstgm cmstgm;
+
+	@JoinColumns({
+			@JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+			@JoinColumn(name = "itemId", referencedColumnName = "itemId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")) })
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonIgnore
+	private Ititmm ititmm; // ititmc 연관관계
 
 }

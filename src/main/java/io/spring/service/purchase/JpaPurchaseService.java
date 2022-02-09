@@ -49,7 +49,6 @@ import io.spring.model.goods.entity.Itaimg;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.goods.entity.Ititmt;
-import io.spring.model.goods.entity.Itvari;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
@@ -555,15 +554,18 @@ public class JpaPurchaseService {
                 imgList = new ArrayList<>();
             }
             PurchaseSelectDetailResponseData.Items item = new PurchaseSelectDetailResponseData.Items(lspchd, ititmm, itasrt, imgList.size() == 0? null : imgList.get(0));
-            List<Itvari> itvariList = new ArrayList<>();
-            itvariList.add(ititmm.getItvari1());
-            if(ititmm.getVariationSeq2() != null){
-                itvariList.add(ititmm.getItvari2());
-            }
-            if(ititmm.getVariationSeq3() != null){
-                itvariList.add(ititmm.getItvari3());
-            }
-            Utilities.setOptionNames(item, itvariList); // optionNm set
+
+			// 2022-02-09 옵션명처리하는부분을 new PurchaseSelectDetailResponseData.Items 에서 처리하는걸로 수정
+
+//            List<Itvari> itvariList = new ArrayList<>(); 2022-02-09
+			// itvariList.add(ititmm.getItvari1()); 2022-02-09
+			// if(ititmm.getVariationSeq2() != null){ 2022-02-09
+			// itvariList.add(ititmm.getItvari2()); 2022-02-09
+//            } 2022-02-09
+			// if(ititmm.getVariationSeq3() != null){ 2022-02-09
+			// itvariList.add(ititmm.getItvari3()); 2022-02-09
+			// } 2022-02-09
+			// Utilities.setOptionNames(item, itvariList); // optionNm set 2022-02-09
             if ((lspchd.getLspchm().getDealtypeCd().equals(StringFactory.getGbOne()) || lspchd.getLspchm().getDealtypeCd().equals(StringFactory.getGbThree()))
                     && ((lspchd.getOrderId() != null && !lspchd.getOrderId().trim().equals(""))
                     && lspchd.getOrderSeq() != null && !lspchd.getOrderSeq().trim().equals(""))) { // 주문발주인 경우
@@ -825,7 +827,9 @@ public class JpaPurchaseService {
             if(lspchd.getOrderId() != null && !lspchd.getOrderId().trim().equals("") && lspchd.getOrderSeq() != null && !lspchd.getOrderSeq().trim().equals("")){
                 purchase.setCustNm(lspchd.getTbOrderDetail().getTbOrderMaster().getOrderName());
             }
-            Utilities.setOptionNames(purchase, itasrt.getItvariList());
+			// Utilities.setOptionNames(purchase, itasrt.getItvariList()); //처리하는 방식이 잘못됨
+			// itasrt itvari쪽 연결 뺴고 각 테이블의 디테일쪽에 ititmm연결해서 사용
+			// 2022-02-09 이건 쿼리에서 그냥 가져오던지 하면됨.
 
             long planQty = lsdpsp.getPurchasePlanQty() == null? 0l:lsdpsp.getPurchasePlanQty();
             long takeQty = lsdpsp.getPurchaseTakeQty() == null? 0l:lsdpsp.getPurchaseTakeQty();
@@ -863,6 +867,9 @@ public class JpaPurchaseService {
                                 "left join fetch p.itasrt it " +
                                 "left join fetch d.lspchm m " +
                                 "left join fetch d.tbOrderDetail tod " +
+						"join fetch p.ititmm itm " + "left join fetch itm.itvari1 itv1 "
+						+ "left join fetch itm.itvari2 itv2 " + "left join fetch itm.itvari3 itv3 "
+						+
                                 "where p.purchaseNo=?1 " +
 //                                "and tod.statusCd in (?2, ?3) " +
                                 "order by p.depositPlanId asc"

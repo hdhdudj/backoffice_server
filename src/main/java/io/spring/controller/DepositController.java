@@ -62,6 +62,9 @@ public class DepositController {
 			@RequestParam @Nullable String vendorId, @RequestParam @Nullable String storageId, @RequestParam @Nullable String piNo,
                                                      @RequestParam @Nullable String blNo
             , @Nullable @RequestParam String siteOrderNo) {
+
+		System.out.println("getChoosePurchaseModalList");
+
 		PurchaseListInDepositModalData purchaseListInDepositModalData = jpaPurchaseService
 				.getPurchaseMasterListWithDetails(startDt, endDt, vendorId, storageId, piNo, siteOrderNo, blNo);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),purchaseListInDepositModalData);
@@ -92,6 +95,7 @@ public class DepositController {
         log.debug("입고처리 호출");
 
 		System.out.println(depositListWithPurchaseInfoData);
+
 
         List<String> messageList = new ArrayList<>();
         boolean flag = jpaDepositService.sequenceCreateDeposit(depositListWithPurchaseInfoData, messageList);

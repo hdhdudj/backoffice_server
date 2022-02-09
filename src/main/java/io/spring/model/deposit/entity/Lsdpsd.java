@@ -17,9 +17,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.spring.infrastructure.util.StringFactory;
@@ -152,6 +149,11 @@ public class Lsdpsd extends CommonProps implements Serializable {
             @JoinColumn(name = "depositSeq", referencedColumnName="depositSeq", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
     })
     private List<Lsdpds> lsdpds;
+
+	// 연관 관계 itasrt
+	@ManyToOne
+	@JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+	private Itasrt itasrt;
 
 //    // 연관 관계 itasrt
 ////    @NotFound(action = NotFoundAction.IGNORE)

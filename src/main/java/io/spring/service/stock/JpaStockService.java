@@ -118,8 +118,9 @@ public class JpaStockService {
 				imc_rack.setQty(ititmc.getQty() + qty);
 
 			}
-
+			jpaItitmcRepository.save(imc_rack);
 		}
+
 
 		return 1;
 
@@ -139,6 +140,8 @@ public class JpaStockService {
 	public int minusIndicateStockByOrder(HashMap<String, Object> p) {
 
 		System.out.println("----------------------minusIndicateStockByOrder----------------------");
+
+		System.out.println(p);
 
 		/*
 		 * p.get("assortId").toString() p.get("itemId").toString() p.get("effStaDt")

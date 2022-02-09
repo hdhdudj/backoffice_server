@@ -1,5 +1,7 @@
 package io.spring.model.move.response;
 
+import java.util.List;
+
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
 import io.spring.model.goods.entity.Itasrt;
@@ -8,8 +10,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 /**
  * 상품 선택창 검색 시 상품 리스트를 반환할 때 이용하는 DTO
@@ -48,6 +48,14 @@ public class GoodsModalListResponseData {
             this.cost = ititmc.getStockAmt();
 //            this.storeCd = storeCd; // 바깥에서 set
             this.moveQty = 0l;
+
+			this.optionNm1 = ititmc.getItitmm().getItvari1() == null ? ""
+					: ititmc.getItitmm().getItvari1().getOptionNm();
+			this.optionNm2 = ititmc.getItitmm().getItvari2() == null ? ""
+					: ititmc.getItitmm().getItvari2().getOptionNm();
+			this.optionNm3 = ititmc.getItitmm().getItvari3() == null ? ""
+					: ititmc.getItitmm().getItvari3().getOptionNm();
+
         }
         private String storageId;
         private String depositDt;
