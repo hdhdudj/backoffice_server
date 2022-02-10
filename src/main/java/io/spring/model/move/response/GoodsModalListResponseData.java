@@ -4,7 +4,6 @@ import java.util.List;
 
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
-import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -34,12 +33,13 @@ public class GoodsModalListResponseData {
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Goods implements SetOptionInterface {
-        public Goods(Ititmc ititmc, Itasrt itasrt){
-            this.storageId = ititmc.getStorageId();
+		public Goods(Ititmc ititmc) {
+			this.storageId = ititmc.getCmstgm().getStorageId();
+			this.rackNo = ititmc.getStorageId(); // 랙의 재고를 가져오는 방식임.
             this.assortId = ititmc.getAssortId();
             this.itemId = ititmc.getItemId();
-            this.assortNm = itasrt.getAssortNm();
-            this.channelId = itasrt.getVendorId();
+			this.assortNm = ititmc.getItasrt().getAssortNm();
+			this.channelId = ititmc.getItasrt().getVendorId();
             this.goodsKey = Utilities.addDashInMiddle(this.assortId, this.itemId);
             this.depositDt = Utilities.removeTAndTransToStr(ititmc.getEffStaDt());
 //            this.brandNm = itasrt.getIfBrand().getBrandNm(); 바깥에서 set
@@ -55,6 +55,8 @@ public class GoodsModalListResponseData {
 					: ititmc.getItitmm().getItvari2().getOptionNm();
 			this.optionNm3 = ititmc.getItitmm().getItvari3() == null ? ""
 					: ititmc.getItitmm().getItvari3().getOptionNm();
+
+			this.brandNm = ititmc.getItasrt().getItbrnd() == null ? "" : ititmc.getItasrt().getItbrnd().getBrandNm();
 
         }
         private String storageId;
@@ -73,5 +75,7 @@ public class GoodsModalListResponseData {
         private Long availableQty;
         private Long moveQty;
         private Float cost;
+		private String rackNo;
+
     }
 }

@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
-import io.spring.enums.TrdstOrderStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.spring.enums.TrdstOrderStatus;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
@@ -36,6 +36,7 @@ import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.deposit.entity.Lsdpss;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.deposit.request.DepositSelectDetailRequestData;
+import io.spring.model.deposit.request.InsertDepositEtcRequestData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.deposit.response.DepositSelectDetailResponseData;
 import io.spring.model.deposit.response.DepositSelectListResponseData;
@@ -197,6 +198,15 @@ public class JpaDepositService {
         return lsdpsm;
     }
 
+	private Lsdpsm insertEtcLsdpsm(InsertDepositEtcRequestData p) {
+		// depositNo 채번
+		String no = jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLsdpsm());
+		String depositNo = Utilities.getStringNo('D', no, 9);
+		Lsdpsm lsdpsm = new Lsdpsm(depositNo, p);
+		jpaLsdpsmRepository.save(lsdpsm);
+		return lsdpsm;
+	}
+
     private Lsdpsm saveLsdpsm(DepositInsertRequestData depositInsertRequestData){
         Lsdpsm lsdpsm = new Lsdpsm(depositInsertRequestData);
         jpaLsdpsmRepository.save(lsdpsm);
@@ -262,6 +272,25 @@ public class JpaDepositService {
         return lsdpsdList;
     }
 
+	private List<Lsdpsd> insertEtcLsdpsd(InsertDepositEtcRequestData p, Lsdpsm lsdpsm) {
+		int index = 1;
+
+		List<Lsdpsd> lsdpsdList = new ArrayList<>();
+		
+		for (InsertDepositEtcRequestData.Item deposit : p.getItems()) {
+
+
+			String depositSeq = StringUtils.leftPad(Integer.toString(index), 4, '0');
+			Lsdpsd lsdpsd = new Lsdpsd(lsdpsm, depositSeq, deposit);
+			jpaLsdpsdRepository.save(lsdpsd);
+
+			lsdpsdList.add(lsdpsd);
+			
+			index++;
+		}
+		return lsdpsdList;
+	}
+
     private void insertLsdpss(DepositInsertRequestData depositInsertRequestData){
         Lsdpss lsdpss = new Lsdpss(depositInsertRequestData);
         jpaLsdpssRepository.save(lsdpss);
@@ -280,6 +309,25 @@ public class JpaDepositService {
         return lsdpss;
     }
 
+	private Lsdpss saveEtcLsdpss(Lsdpsm lsdpsm, String depositStatus) {
+		Lsdpss lsdpss = jpaLsdpssRepository.findByDepositNoAndEffEndDt(lsdpsm.getDepositNo(),
+				Utilities.getStringToDate(StringFactory.getDoomDay()));
+
+		if (lsdpss == null) {
+			Lsdpss newLsdpss = new Lsdpss(lsdpsm, depositStatus);
+			jpaLsdpssRepository.save(newLsdpss);
+
+		} else {
+
+			jpaLsdpssRepository.save(lsdpss);
+
+			Lsdpss newLsdpss = new Lsdpss(lsdpsm, depositStatus);
+			jpaLsdpssRepository.save(newLsdpss);
+		}
+
+		return lsdpss;
+	}
+
 //    private void ssaveLsdpds(DepositInsertRequestData depositInsertRequestData) {
 //        for(DepositInsertRequestData.Item item : depositInsertRequestData.getItems()){
 //            String depositSeq = jpaLsdpdsRepository.findMaxDepositSeqByDepositNo(depositInsertRequestData.getDepositNo());
@@ -294,6 +342,27 @@ public class JpaDepositService {
 //            jpaLsdpdsRepository.save(lsdpds);
 //        }
 //    }
+
+	private void saveEtcLsdpds(List<Lsdpsd> lsdpsdList, String depositStatus) {
+		int ind = lsdpsdList.size();
+		List<Lsdpds> lsdpdsList = new ArrayList<>();
+		for (int i = 0; i < ind; i++) {
+			Lsdpsd lsdpsd = lsdpsdList.get(i);
+
+			Lsdpds lsdpds = jpaLsdpdsRepository.findByDepositNoAndDepositSeqAndEffEndDt(lsdpsd.getDepositNo(),
+					lsdpsd.getDepositSeq(), Utilities.getStringToDate(StringFactory.getDoomDay()));
+			if (lsdpds == null) {
+				Lsdpds newLsdpds = new Lsdpds(lsdpsd, depositStatus);
+				jpaLsdpdsRepository.save(newLsdpds);
+			} else {
+				jpaLsdpdsRepository.save(lsdpds);
+
+				Lsdpds newLsdpds = new Lsdpds(lsdpsd, depositStatus);
+				jpaLsdpdsRepository.save(newLsdpds);
+			}
+
+		}
+	}
 
     private void saveLsdpds(List<Lsdpsd> lsdpsdList, DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
         int ind = lsdpsdList.size();
@@ -894,5 +963,44 @@ public class JpaDepositService {
 
 		return ret;
 
+	}
+
+	@Transactional
+	public String insertEtcDeposit(InsertDepositEtcRequestData p) throws Exception {
+
+		// 1. lsdpsm 저장
+		Lsdpsm lsdpsm = this.insertEtcLsdpsm(p);
+		// 2. lsdpss 저장 (입고 마스터 이력)
+		this.saveEtcLsdpss(lsdpsm, "01");
+		// 3. lsdpsd 저장 (입고 디테일)
+		List<Lsdpsd> lsdpsdList = this.insertEtcLsdpsd(p, lsdpsm);
+		// 4. lsdpds 저장 (입고 디테일 이력)
+		this.saveEtcLsdpds(lsdpsdList, "01");
+
+		// 5.재고입력
+		for (Lsdpsd o : lsdpsdList) {
+
+			HashMap<String, Object> m = new HashMap<String, Object>();
+
+			m.put("storageId", p.getStorageId());
+			m.put("effStaDt", p.getDepositDt());
+			m.put("assortId", o.getAssortId());
+			m.put("itemId", o.getItemId());
+			m.put("itemGrade", o.getItemGrade()); // 일단 정상품만 입고
+			m.put("depositQty", o.getDepositQty());
+			m.put("price", o.getExtraUnitcost());
+			m.put("vendorId", p.getVendorId());
+
+			// String rackNo = this.getDefaultRack(p.getStorageId(), o.getRackNo()); //
+			// System.out.println("*************************************-----------------------------------------");
+			// System.out.println(rackNo);
+
+			m.put("rackNo", o.getRackNo());
+
+			jpaStockService.plusDepositStock(m);
+
+		}
+
+		return lsdpsm.getDepositNo();
 	}
 }

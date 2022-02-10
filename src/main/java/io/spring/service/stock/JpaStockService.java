@@ -27,6 +27,7 @@ import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.idclass.ItitmcId;
 import io.spring.service.common.JpaCommonService;
+import io.spring.service.common.MyBatisCommonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,6 +53,8 @@ public class JpaStockService {
 	private final JpaTbOrderDetailRepository tbOrderDetailRepository;
 	private final JpaTbOrderHistoryRepository tbOrderHistoryrRepository;
 
+	private final MyBatisCommonService myBatisCommonService;
+
 	private final JpaItasrtRepository jpaItasrtRepository;
 
 	private final EntityManager em;
@@ -66,7 +69,8 @@ public class JpaStockService {
 		long qty = (long)p.get("depositQty");
 		float price = (float)p.get("price");
 
-		String rackNo = p.get("rackNo").toString();
+		String rackNo = this.getDefaultRack(storageId, p.get("rackNo").toString());
+
 
 		//int qty = Integer.parseInt(p.get("depositQty").toString());
 		
@@ -486,6 +490,26 @@ public class JpaStockService {
 	public String getUpStorageId(String rackNo) {
 		Cmstgm cm = jpaCmstgmRepository.findById(rackNo).orElse(null);
 		return cm == null ? "" : cm.getUpStorageId();
+
+	}
+
+	private String getDefaultRack(String storageId, String rackNo) {
+
+		String r = "";
+
+		if (rackNo.equals("999999")) {
+			HashMap<String, Object> p = new HashMap<String, Object>();
+
+			p.put("storageId", storageId);
+
+			HashMap<String, Object> o = myBatisCommonService.getCommonDefaultRack(p);
+
+			r = o.get("storageId").toString();
+
+		} else {
+			r = rackNo;
+		}
+		return r;
 
 	}
 

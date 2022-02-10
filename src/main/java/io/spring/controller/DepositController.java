@@ -21,6 +21,7 @@ import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.deposit.request.DepositSelectDetailRequestData;
+import io.spring.model.deposit.request.InsertDepositEtcRequestData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.deposit.response.DepositSelectDetailResponseData;
 import io.spring.model.deposit.response.DepositSelectListResponseData;
@@ -120,6 +121,7 @@ public class DepositController {
         return ResponseEntity.ok(res);
     }
 
+
 //    @PostMapping(path="") // create
 //    public ResponseEntity saveDepositJpa(@RequestBody DepositInsertRequestData depositInsertRequestData){
 //        String depositNo = jpaCommonService.getStrNumberId(StringFactory.getDUpperStr(), depositInsertRequestData.getDepositNo(), StringFactory.getStrSeqLsdpsm(), StringFactory.getIntEight());
@@ -204,4 +206,28 @@ public class DepositController {
         depositNo = Utilities.getStringNo('D',depositNo,9);
         return depositNo;
     }
+
+	/**
+	 * 입고처리 : 화면에서 입고수량 입력 후 저장을 눌렀을 때 타는 api (create)
+	 * 
+	 * @throws Exception
+	 */
+	@PostMapping(path = "/etc")
+	public ResponseEntity insertEtcDeposit(@RequestBody InsertDepositEtcRequestData reqData)
+			throws Exception {
+		log.debug("입고처리 호출");
+
+		System.out.println(reqData);
+
+		String depositNo = "";
+
+		List<String> messageList = new ArrayList<>();
+		depositNo = jpaDepositService.insertEtcDeposit(reqData);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
+				depositNo);
+
+		return ResponseEntity.ok(res);
+	}
+
 }

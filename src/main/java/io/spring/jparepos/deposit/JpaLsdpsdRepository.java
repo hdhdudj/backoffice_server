@@ -29,7 +29,8 @@ public interface JpaLsdpsdRepository extends JpaRepository<Lsdpsd, LsdpsdId> {
             "left join fetch lm.cmvdmr cm " +
 			"left join fetch ld.itasrt it "
 			+
-            "left join fetch it.ifBrand ib " +
+			"left join fetch it.itbrnd ib "
+			+
 			"join fetch ld.ititmm itm " + "left join fetch itm.itvari1 itv1 " + "left join fetch itm.itvari2 itv2 "
 			+ "left join fetch itm.itvari3 itv3 " +
             "where lm.depositDt between :start and :end " +

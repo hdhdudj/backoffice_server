@@ -114,7 +114,8 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
             "left outer join fetch im.itvari2 iv2 " +
             "left outer join fetch im.itvari3 iv3 " +
             "join fetch im.itasrt ita " +
-            "left outer join fetch ita.ifBrand ib " +
+			"left outer join fetch ita.itbrnd ib "
+			+
             "where lm.purchaseDt between :start and :end " +
             "and (:vendorId is null or trim(:vendorId)='' or lm.vendorId=:vendorId) "
             + "and (:storeCd is null or trim(:storeCd)='' or lm.storeCd=:storeCd) "
@@ -131,7 +132,8 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
             "join fetch ld.lsshpm lm " +
             "left join fetch ld.tbOrderDetail td " +
             "join fetch ld.itasrt it " +
-            "left join fetch it.ifBrand ib " +
+			"left join fetch it.itbrnd ib "
+			+
 			"join fetch ld.ititmm itm " + "left join fetch itm.itvari1 itv1 " + "left join fetch itm.itvari2 itv2 "
 			+ "left join fetch itm.itvari3 itv3 "
 			+

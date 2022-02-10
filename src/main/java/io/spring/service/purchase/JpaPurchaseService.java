@@ -44,7 +44,6 @@ import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.model.deposit.entity.Lsdpsp;
 import io.spring.model.deposit.response.PurchaseListInDepositModalData;
-import io.spring.model.goods.entity.IfBrand;
 import io.spring.model.goods.entity.Itaimg;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmm;
@@ -462,26 +461,29 @@ public class JpaPurchaseService {
             log.debug("해당 발주번호에 해당하는 발주상세내역이 존재하지 않습니다.");
             return null;
         }
-        List<String> brandIdList = new ArrayList<>();
-        for(Lspchd lspchd : lspchdList){
-            System.out.println();
-            if(lspchd.getItitmm().getItasrt().getBrandId() != null && !brandIdList.contains(lspchd.getItitmm().getItasrt().getBrandId())){
-                brandIdList.add(lspchd.getItitmm().getItasrt().getBrandId());
-            }
-        }
-        List<IfBrand> ifBrandList = brandIdList.size() > 0? jpaIfBrandRepository.findByBrandIdListByChannelIdAndBrandIdList(StringFactory.getGbOne(), brandIdList) : null;
-//        List<PurchaseListInDepositModalData.Purchase> purchaseList = new ArrayList<>();
+
+//        List<String> brandIdList = new ArrayList<>();
+//        for(Lspchd lspchd : lspchdList){
+//            System.out.println();
+//            if(lspchd.getItitmm().getItasrt().getBrandId() != null && !brandIdList.contains(lspchd.getItitmm().getItasrt().getBrandId())){
+//                brandIdList.add(lspchd.getItitmm().getItasrt().getBrandId());
+//            }
+//        }
+//        List<IfBrand> ifBrandList = brandIdList.size() > 0? jpaIfBrandRepository.findByBrandIdListByChannelIdAndBrandIdList(StringFactory.getGbOne(), brandIdList) : null;
+
+		// List<PurchaseListInDepositModalData.Purchase> purchaseList = new
+		// ArrayList<>();
         Lspchm lspchm = lspchdList.get(0).getLspchm();
-        List<PurchaseSelectDetailResponseData.Items> itemsList = this.makeItemsList(ifBrandList, lspchdList);
+		List<PurchaseSelectDetailResponseData.Items> itemsList = this.makeItemsList(lspchdList);
         PurchaseSelectDetailResponseData purchaseSelectDetailResponseData = new PurchaseSelectDetailResponseData(lspchm);
         purchaseSelectDetailResponseData.setItems(itemsList);
         purchaseSelectDetailResponseData = purchaseSelectDetailResponseDataMapper.nullToEmpty(purchaseSelectDetailResponseData);
         return purchaseSelectDetailResponseData;
     }
 
-    private List<PurchaseSelectDetailResponseData.Items> makeItemsList(List<IfBrand> brandList, List<Lspchd> lspchdList) {
+	private List<PurchaseSelectDetailResponseData.Items> makeItemsList(List<Lspchd> lspchdList) {
         List<PurchaseSelectDetailResponseData.Items> itemsList = new ArrayList<>();
-        this.makePurchaseItem(brandList, itemsList, lspchdList);
+		this.makePurchaseItem(itemsList, lspchdList);
         return itemsList;
     }
 
@@ -541,7 +543,7 @@ public class JpaPurchaseService {
     /**
      * 이미지 주소가 itasrt의 이미지 주소를 바라보도록
      */
-    private void makePurchaseItem(List<IfBrand> brandList, List<PurchaseSelectDetailResponseData.Items> itemsList, List<Lspchd> lspchdList) {
+    private void makePurchaseItem( List<PurchaseSelectDetailResponseData.Items> itemsList, List<Lspchd> lspchdList) {
         for(Lspchd lspchd : lspchdList){
             Ititmm ititmm = lspchd.getItitmm();
             Itasrt itasrt = ititmm.getItasrt();
@@ -590,6 +592,7 @@ public class JpaPurchaseService {
 //                item.setCustNm(tbMember.getCustNm());
                 item.setChannelOrderNo(tbOrderDetail.getChannelOrderNo());
                 item.setBrandId(itasrt.getBrandId());
+				item.setBrandNm(itasrt.getItbrnd() == null ? "" : itasrt.getItbrnd().getBrandNm());
             }
 
             List<Lspchb> lspchbList = lspchd.getLspchb();
@@ -603,13 +606,13 @@ public class JpaPurchaseService {
             itemsList.add(item);
         }
 
-        if(brandList != null){
-            for(PurchaseSelectDetailResponseData.Items item : itemsList){
-                List<IfBrand> ifBrandList1 = brandList.stream().filter(x->x.getBrandId().equals(item.getBrandId())).collect(Collectors.toList());
-                IfBrand ifBrand = ifBrandList1.size() == 0? null : ifBrandList1.get(0);
-                item.setBrandNm(ifBrand == null? "" : ifBrand.getBrandNm());
-            }
-        }
+//        if(brandList != null){
+  //          for(PurchaseSelectDetailResponseData.Items item : itemsList){
+    //            List<IfBrand> ifBrandList1 = brandList.stream().filter(x->x.getBrandId().equals(item.getBrandId())).collect(Collectors.toList());
+//                IfBrand ifBrand = ifBrandList1.size() == 0? null : ifBrandList1.get(0);
+  //              item.setBrandNm(ifBrand == null? "" : ifBrand.getBrandNm());
+    //        }
+     //   }
     }
 
 
@@ -686,12 +689,15 @@ public class JpaPurchaseService {
             lspchmList.add(lspchd.getLspchm());
             purchaseNoSet.add(lspchd.getPurchaseNo());
         }
-        List<IfBrand> ifBrandList = brandIdList.size() > 0? jpaIfBrandRepository.findByBrandIdListByChannelIdAndBrandIdList(StringFactory.getGbOne(), brandIdList) : null;
+		// List<IfBrand> ifBrandList = brandIdList.size() > 0?
+		// jpaIfBrandRepository.findByBrandIdListByChannelIdAndBrandIdList(StringFactory.getGbOne(),
+		// brandIdList) : null;
         List<PurchaseListInDepositModalData.Purchase> purchaseList = new ArrayList<>();
 
         for(Lspchm lspchm : lspchmList){
             PurchaseListInDepositModalData.Purchase purchase = new PurchaseListInDepositModalData.Purchase(lspchm);
-            List<PurchaseSelectDetailResponseData.Items> itemsList = this.makeItemsList(ifBrandList, lspchdList.stream().filter(x->x.getPurchaseNo().equals(lspchm.getPurchaseNo()))
+			List<PurchaseSelectDetailResponseData.Items> itemsList = this.makeItemsList(lspchdList.stream()
+					.filter(x -> x.getPurchaseNo().equals(lspchm.getPurchaseNo()))
                     .collect(Collectors.toList()));
             purchase.setItems(itemsList);
             purchaseList.add(purchase);

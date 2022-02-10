@@ -23,6 +23,7 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.idclass.LsdpsdId;
 import io.spring.model.deposit.request.DepositInsertRequestData;
+import io.spring.model.deposit.request.InsertDepositEtcRequestData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmm;
@@ -91,6 +92,28 @@ public class Lsdpsd extends CommonProps implements Serializable {
         this.orderId = lsdpsp.getOrderId();
         this.orderSeq = lsdpsp.getOrderSeq();
     }
+
+	public Lsdpsd(Lsdpsm lsdpsm, String depositSeq, InsertDepositEtcRequestData.Item o) {
+
+		this.depositNo = lsdpsm.getDepositNo();
+		this.depositSeq = depositSeq;
+		this.assortId = o.getAssortId();
+		this.itemId = o.getItemId();
+		this.itemGrade = o.getItemGrade(); // 11 하드코딩
+		this.extraClsCd = StringFactory.getGbOne(); // 01 하드코딩
+		this.depositQty = o.getDepositQty();
+		this.extraUnitcost = o.getExtraUnitcost();
+		this.deliPrice = extraUnitcost * depositQty; // 단가 * 개수
+		this.extraCost = extraUnitcost * depositQty; // 단가 * 개수
+		this.extraQty = o.getDepositQty();
+		this.finishYymm = LocalDateTime.parse(StringFactory.getDoomDay(),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // 9999-12-31 하드코딩
+		this.depositType = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01' 입고
+		this.siteGb = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
+		this.rackNo = o.getRackNo();
+		this.excAppDt = lsdpsm.getDepositDt();
+	}
+
     @Id
     private String depositNo;
     @Id

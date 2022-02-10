@@ -40,7 +40,6 @@ import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
 import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.deposit.entity.Lsdpsm;
-import io.spring.model.goods.entity.IfBrand;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmm;
@@ -437,13 +436,16 @@ public class JpaMoveService {
      * 상품 선택창 : 상품이동지시 상품추가 모달에서 상품을 선택하고 확인을 눌렀을 때 리스트를 반환
      */
     public GoodsModalListResponseData getGoodsList(String storageId, String purchaseVendorId, String assortId, String assortNm) {
+
+		System.out.println("getGoodsList");
 		List<Ititmc> ititmcList = this.getItitmc2(storageId, purchaseVendorId, assortId, assortNm);
         List<GoodsModalListResponseData.Goods> goodsList = new ArrayList<>();
         GoodsModalListResponseData goodsModalListResponseData = new GoodsModalListResponseData(storageId, purchaseVendorId, assortId, assortNm);
         for(Ititmc ititmc : ititmcList){
-            Itasrt itasrt = ititmc.getItasrt();
-            GoodsModalListResponseData.Goods goods = new GoodsModalListResponseData.Goods(ititmc, itasrt);
-            IfBrand ifBrand = itasrt.getIfBrand();//jpaIfBrandRepository.findByChannelGbAndChannelBrandId(StringFactory.getGbOne(), itasrt.getBrandId()); // 채널은 01 하드코딩
+
+			GoodsModalListResponseData.Goods goods = new GoodsModalListResponseData.Goods(ititmc);
+//	          Itasrt itasrt = ititmc.getItasrt();
+//            IfBrand ifBrand = itasrt.getIfBrand();//jpaIfBrandRepository.findByChannelGbAndChannelBrandId(StringFactory.getGbOne(), itasrt.getBrandId()); // 채널은 01 하드코딩
 
 			// 주문관련 이동지시나 출고지시할떄 indicateqty 에 이미 적용이 되어있으므로 밑에 로직 삭제
 
@@ -464,9 +466,9 @@ public class JpaMoveService {
 //                Itvari itvari2 = itvariList.get(1);
 //                goods.setOptionNm2(itvari2.getOptionNm());
 //            }
-            if(ifBrand != null){
-                goods.setBrandNm(ifBrand.getBrandNm());
-            }
+//            if(ifBrand != null){
+			// goods.setBrandNm(ifBrand.getBrandNm());
+			// }
             goodsList.add(goods);
         }
 //        goodsList = this.removeDuplicate(goodsList); // goodsKey로 group by
@@ -527,7 +529,8 @@ public class JpaMoveService {
     private List<Ititmc> getItitmc(String storageId, String purchaseVendorId, String assortId, String assortNm) {
         Query query = em.createQuery("select distinct(ic) from Ititmc ic " +
                 "join fetch ic.itasrt it " +
-                "join fetch it.ifBrand ib " +
+				"left join fetch it.itbrnd ib "
+				+
                 "join fetch it.itvariList iv " +
                 "where " +
                 "(?1 is null or trim(?1)='' or ic.storageId=?1) " +
@@ -549,7 +552,7 @@ public class JpaMoveService {
 		// 랙재고를 가져옴.
 
 		Query query = em
-				.createQuery("select ic from Ititmc ic " + "join fetch ic.itasrt it " + "join fetch it.ifBrand ib "
+				.createQuery("select ic from Ititmc ic " + "join fetch ic.itasrt it " + "left join fetch it.itbrnd ib "
 						+ "join fetch ic.cmstgm cm " + "join fetch ic.ititmm itm "
 						+ "left join fetch itm.itvari1 itv1 " + "left join fetch itm.itvari2 itv2 "
 						+ "left join fetch itm.itvari3 itv3 " +
@@ -919,6 +922,7 @@ public class JpaMoveService {
 
 
 		}
+		// 2022-02-10 주석시작
 //=======
 //        // lss- 변경
 //        for(String shipId : shipNoSet) {
@@ -952,7 +956,7 @@ public class JpaMoveService {
 //            index++;
 //        }
 //>>>>>>> dev
-
+		// 2022-02-10 주석끝
 
 		// 주문상태변경
 		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.C03.toString());
@@ -961,6 +965,8 @@ public class JpaMoveService {
 
 		return newShipIdList;
 	}
+
+	// 2022-02-10 주석시작
 //=======
 //
 //        return newShipIdList;
@@ -991,6 +997,7 @@ public class JpaMoveService {
 //        return returnList != null && returnList.size() > 0;
 //    }
 //>>>>>>> dev
+	// 2022-02-10 주석끝
 
     /**
      * 이동처리(lsshpm.shipStatus를 01에서 04로 변경)
