@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import io.spring.enums.TrdstOrderStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -172,14 +173,14 @@ public class JpaDepositService {
 				Itasrt itasrt2 = jpaItasrtRepository.findByAssortId(assortId2);
 
 				if (itasrt2.getAssortGb().equals(StringFactory.getGbOne())) { // 직구
-                    statusCd = StringFactory.getStrC04();
+                    statusCd = TrdstOrderStatus.C04.toString();
                 }
                 else{ //if(tbOrderDetail.getAssortGb().equals(StringFactory.getGbTwo())){ // 수입
                     if (tbOrderDetail.getStorageId().equals(lspchm.getStoreCd())){
-                        statusCd = StringFactory.getStrC04(); // 국내입고완료
+                        statusCd = TrdstOrderStatus.C04.toString(); // 국내입고완료
                     }
                     else {
-                        statusCd = StringFactory.getStrC01(); // 해외입고완료
+                        statusCd = TrdstOrderStatus.C01.toString(); // 해외입고완료
                     }
                 }
                 jpaOrderService.updateOrderStatusCd(orderId, orderSeq, statusCd);

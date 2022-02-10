@@ -136,7 +136,9 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
 			+ "left join fetch itm.itvari3 itv3 "
 			+
             "where case :shipStatus when '04' then lm.applyDay else lm.receiptDt end between :start and :end " +
+            "and lm.masterShipGb in ('03', '04') " +
             "and lm.shipStatus=:shipStatus " +
+            "and td.statusCd = :statusCd " +
             "and (:shipId is null or trim(:shipId)='' or ld.shipId=:shipId) " +
             "and (:assortId is null or trim(:assortId)='' or ld.assortId=:assortId) " +
             "and (:assortNm is null or trim(:assortNm)='' or it.assortNm like concat('%',:assortNm,'%')) " +
@@ -149,7 +151,8 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
                                     @Param("assortNm")String assortNm,
                                     @Param("storageId")String storageId,
                                     @Param("deliMethod")String deliMethod,
-                                    @Param("shipStatus")String shipStatus);
+                                    @Param("shipStatus")String shipStatus,
+                                    @Param("statusCd")String statusCd);
 
     List<Lsshpd> findByShipId(String shipId);
 
@@ -171,4 +174,28 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
 //            "join fetch lsd.ititmcList imc " +
             "where lsd.shipId = :shipId")
     List<Lsshpd> findByShipIdWithItitmc(@Param("shipId") String shipId);
+
+    /**
+     * 이동지시리스트 조회
+     */
+    @Query("select distinct ld from Lsshpd ld " +
+            "join fetch ld.lsshpm lm " +
+            "left join fetch ld.tbOrderDetail td " +
+            "join fetch ld.itasrt it " +
+			"join fetch ld.ititmm itm " + "left join fetch itm.itvari1 itv1 " + "left join fetch itm.itvari2 itv2 "
+			+ "left join fetch itm.itvari3 itv3 " +
+			// "join fetch it.itvariList ivs " +
+            "where lm.receiptDt between :start and :end " +
+            "and (:oStorageId is null or trim(:oStorageId)='' or lm.storageId=:oStorageId) " +
+            "and (:storageId is null or trim(:storageId)='' or lm.oStorageId=:storageId) " +
+            "and (:assortId is null or trim(:assortId)='' or it.assortId=:assortId) " +
+            "and (:assortNm is null or trim(:assortNm)='' or it.assortNm like concat('%',:assortNm,'%')) " +
+            "and lm.shipStatus ='02' and ld.shipGb in ('03', '04') and lm.masterShipGb in ('03', '04')")
+    List<Lsshpd> findMoveIndList(@Param("start") LocalDateTime start,
+                                 @Param("end") LocalDateTime end,
+                                 @Param("storageId") String storageId,
+                                 @Param("oStorageId") String oStorageId,
+                                 @Param("assortId") String assortId,
+                                 @Param("assortNm") String assortNm
+                                 );
 }

@@ -908,6 +908,7 @@ public class JpaMoveService {
 				}
 
 
+
 			}
 
 			lsshpm.setShipStatus(StringFactory.getGbFour()); // 04 하드코딩
@@ -918,13 +919,78 @@ public class JpaMoveService {
 
 
 		}
+//=======
+//        // lss- 변경
+//        for(String shipId : shipNoSet) {
+//            // (일단 수정했음) todo 출고건이 무조건 하나라는 가정으로 1개의건만 가져오는데 이부분 리스트로 받아서 처리되도록 수정해야함.
+//            List<Lsshpd> lsshpdList2 = jpaLsshpdRepository.findByShipIdWithItitmc(shipId);//.get(0);
+//            for (Lsshpd lsd : lsshpdList2) {
+//                lsshpdList.add(lsd);
+//                assortIdList.add(lsd.getAssortId());
+//            }
+//            Lsshpm lsshpm = lsshpdList2.size() > 0? lsshpdList2.get(0).getLsshpm() : null;//jpaLsshpmRepository.findByShipId(lsshpd.getShipId());
+//            if(lsshpm == null){
+//                log.debug("there's no data(lsshpm) of shipId : " + shipId);
+//                continue;
+//            }
+//            if(lsshpm.getShipOrderGb().equals(StringFactory.getGbTwo())) { // 01 주문, 02 상품
+//                log.debug("주문이동처리가 아닌 상품이동지시입니다.");
+//            }
+////            lsshpm.setShipStatus(StringFactory.getGbFour()); // 01 이동지시or출고지시 02 이동지시or출고지시 접수 04 출고
+////            jpaLsshpmRepository.save(lsshpm);
+//            // continue; // 상품이동지시여도 재고처리는 해야함.
+//        }
+//        ititmcList = jpaItitmcRepository.findByAssortIdList(assortIdList);
+//        int index = 0;
+//        for(Lsshpd lsshpd : lsshpdList){
+//            if(!this.ititmcProcess(lsshpd, ititmcList)){
+//                continue;
+//            }
+//            lsshpd.getLsshpm().setShipStatus(StringFactory.getGbFour());
+//            jpaLsshpmRepository.save(lsshpd.getLsshpm());
+//            this.lsshpdProcess(index, lsshpd, newShipIdList, l2, orderList);
+//            index++;
+//        }
+//>>>>>>> dev
+
 
 		// 주문상태변경
 		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.C03.toString());
 
 		jpaPurchaseService.makePurchaseDataFromOrderMoveSave2(l2);
+
 		return newShipIdList;
 	}
+//=======
+//
+//        return newShipIdList;
+//    }
+//
+//    /**
+//     * 이동처리 저장에서 ititmc 변경하는 함수
+//     */
+//    private boolean ititmcProcess(Lsshpd lsshpd, List<Ititmc> ititmcList){
+//        // ititmc.shipIndicateQty, ititmc.shipQty 차감
+//        long shipIndQty = lsshpd.getShipIndicateQty();
+//        List<Ititmc> ititmcList2 = ititmcList.stream().filter(x->x.getEffEndDt().equals(lsshpd.getExcAppDt()) && x.getStorageId().equals(lsshpd.getLsshpm().getStorageId())).collect(Collectors.toList());
+//
+//        // List<Ititmc> ititmcList =
+//        // jpaItitmcRepository.findByAssortIdAndItemIdAndEffEndDtOrderByEffEndDtAsc(lsshpd.getAssortId(),
+//        // lsshpd.getItemId(), lsshpd.getExcAppDt());
+//        // List<Ititmc> ititmcList =
+//        // jpaItitmcRepository.findByAssortIdAndItemIdAndEffEndDtOrderByEffEndDtAsc(lsshpd.getAssortId(),
+//        // lsshpd.getItemId(), lsshpd.getExcAppDt());
+////        String assortId = lsshpd.getAssortId();
+////        String itemId = lsshpd.getItemId();
+//        LocalDateTime excAppDt = lsshpd.getExcAppDt();
+//        String storageId = lsshpd.getLsshpm().getStorageId();
+//
+////        List<Ititmc> ititmcList = lsshpd.getItitmcList().stream().filter(x->x.getEffEndDt().equals(excAppDt) && x.getStorageId().equals(storageId)).collect(Collectors.toList());
+////        jpaItitmcRepository.findByAssortIdAndItemIdAndEffEndDtAndStorageIdOrderByEffEndDtAsc(assortId, itemId, excAppDt, storageId);
+//        List<Ititmc> returnList = this.subItitmcQties(excAppDt, storageId, ititmcList2, shipIndQty);
+//        return returnList != null && returnList.size() > 0;
+//    }
+//>>>>>>> dev
 
     /**
      * 이동처리(lsshpm.shipStatus를 01에서 04로 변경)
@@ -1155,19 +1221,25 @@ public class JpaMoveService {
 
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
-        TypedQuery<Lsshpd> query = em.createQuery("select ld from Lsshpd ld " +
-                        "join fetch ld.lsshpm lm " +
-                        "left join fetch ld.tbOrderDetail td " +
-                        "join fetch ld.itasrt it " +
-				// "join fetch it.itvariList ivs " +
-				"join fetch ld.ititmm itm " + "left join fetch itm.itvari1 itv1 " + "left join fetch itm.itvari2 itv2 "
-				+ "left join fetch itm.itvari3 itv3 " +
+//<<<<<<< HEAD
+//        TypedQuery<Lsshpd> query = em.createQuery("select ld from Lsshpd ld " +
+//                        "join fetch ld.lsshpm lm " +
+//                        "left join fetch ld.tbOrderDetail td " +
+//                        "join fetch ld.itasrt it " +
+//				// "join fetch it.itvariList ivs " +
+//				"join fetch ld.ititmm itm " + "left join fetch itm.itvari1 itv1 " + "left join fetch itm.itvari2 itv2 "
+//				+ "left join fetch itm.itvari3 itv3 " +
+//
+//                        "where lm.instructDt between ?1 and ?2 " +
+//				"and lm.shipStatus ='02' and lm.masterShipGb in ('03', '04')" // 지시상태만 조회
+//                ,Lsshpd.class);
+//		query.setParameter(1, start).setParameter(2, end);
+//        List<Lsshpd> lsshpdList = query.getResultList();
+//=======
 
-                        "where lm.instructDt between ?1 and ?2 " +
-				"and lm.shipStatus ='02' and lm.masterShipGb in ('03', '04')" // 지시상태만 조회
-                ,Lsshpd.class);
-		query.setParameter(1, start).setParameter(2, end);
-        List<Lsshpd> lsshpdList = query.getResultList();
+		List<Lsshpd> lsshpdList = jpaLsshpdRepository.findMoveIndList(start, end, storageId, oStorageId, assortId,
+				assortNm);// query.getResultList();
+
 
         return lsshpdList;
     }
@@ -1225,7 +1297,7 @@ public class JpaMoveService {
      * @return 이동지시 목록 반환 DTO
      */
     public MoveListResponseData getMoveList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId, String deliMethod) {
-        List<Lsshpd> lsshpdList = this.getLsshpdMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, deliMethod, StringFactory.getGbTwo()); // shitStatus = 02
+        List<Lsshpd> lsshpdList = this.getLsshpdMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, deliMethod, StringFactory.getGbTwo(), TrdstOrderStatus.C02.toString()); // shitStatus = 02
         // 03 : 주문이동지시, 04 : 상품이동지시인 애들만 남겨둠
         lsshpdList = lsshpdList.stream().filter(x->x.getShipGb().equals(StringFactory.getGbThree())||x.getShipGb().equals(StringFactory.getGbFour())).collect(Collectors.toList());
         if(lsshpdList.size()==0){
@@ -1247,15 +1319,15 @@ public class JpaMoveService {
     }
 
     /**
-     * 조건에 맞는 lsshpd의 리스트를 반환
+     * 조건에 맞는 lsshpd의 리스트를 반환 (이동처리 대상 리스트(=이동지시리스트), 이동리스트 호출시 사용)
      */
-    private List<Lsshpd> getLsshpdMoveList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId, String deliMethod, String shipStatus) {
+    private List<Lsshpd> getLsshpdMoveList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId, String deliMethod, String shipStatus, String statusCd) {
 
 		System.out.println("getLsshpdMoveList");
 
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
-        List<Lsshpd> lsshpdList = jpaLsshpdRepository.findLsshpdMoveList(start, end, shipId, assortId, assortNm, storageId, deliMethod, shipStatus);
+        List<Lsshpd> lsshpdList = jpaLsshpdRepository.findLsshpdMoveList(start, end, shipId, assortId, assortNm, storageId, deliMethod, shipStatus, statusCd);
 
         return lsshpdList;
     }
@@ -1272,7 +1344,7 @@ public class JpaMoveService {
      */
     public MoveCompletedLIstReponseData getMovedList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId) {
         MoveCompletedLIstReponseData moveCompletedLIstReponseData = new MoveCompletedLIstReponseData(startDt, endDt, shipId, assortId, assortNm, storageId);
-        List<Lsshpd> lsshpdList = this.getLsshpdMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, null, StringFactory.getGbFour()); // shiptStatus = 04
+        List<Lsshpd> lsshpdList = this.getLsshpdMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, null, StringFactory.getGbFour(), TrdstOrderStatus.C03.toString()); // shiptStatus = 04
         // lsshpm의 shipStatus가 04(출고)인 놈만 남기기
         lsshpdList = lsshpdList.stream().filter(x->x.getLsshpm().getShipStatus().equals(StringFactory.getGbFour())).collect(Collectors.toList());
         List<MoveCompletedLIstReponseData.Move> moveList = new ArrayList<>();
