@@ -1,0 +1,24 @@
+FROM gradle:jdk-alpine
+
+WORKDIR ./
+
+EXPOSE 8080
+
+USER root
+
+RUN apk update
+
+ENV GRADLE_USER_HOME ./
+
+COPY . ./
+
+RUN gradle build
+
+
+FROM java:jre-alpine
+
+WORKDIR ./
+
+COPY --from=0 ./build/libs/project-0.0.1-SNAPSHOT.jar .
+
+ENTRYPOINT java -jar project-0.0.1-SNAPSHOT.jar
