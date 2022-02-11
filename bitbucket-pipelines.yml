@@ -14,8 +14,16 @@ pipelines:
             - docker
           services:
             - docker
+          deployment: deployment
           script:
             - docker build -t erp-back-backoffice-dev:latest -f Dockerfile-dev .
+            - pipe: atlassian/aws-ecr-push-image:1.5.0
+              variables:
+                AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+                AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+                AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+                AWS_REGISTRY_URL: $AWS_REGISTRY_URL
+                IMAGE_NAME: erp-back-backoffice-dev
 definitions:
   services:
     docker:
