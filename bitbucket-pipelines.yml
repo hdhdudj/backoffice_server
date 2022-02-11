@@ -14,7 +14,6 @@ pipelines:
             - docker
           services:
             - docker
-          deployment: deployment
           script:
             - docker build -t erp-back-backoffice-dev:latest -f Dockerfile-dev .
             - pipe: atlassian/aws-ecr-push-image:1.5.0
