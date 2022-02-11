@@ -288,7 +288,6 @@
 			   bbb1.order_name                                              custNm,
 			   bbb1.origin                                               origin,
 			   bbb1.main_image_url                                               imagePath
--- 			   concat('https://trdst.hgodo.com/', itaimg.image_path, itaimg.image_name) imagePath
 		from (select case
 						 when aaa.order_vendor_id <> '000000' then ifnull(aaa.order_vendor_id, '000000')
 						 else ifnull(bbb.vendor_id, '000000') end                                               vendor_id,
