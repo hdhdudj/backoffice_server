@@ -15,7 +15,7 @@ pipelines:
           services:
             - docker
           script:
-            - docker build -t erp-back-backoffice-dev:latest -f Dockerfile2-dev .
+            - docker build -t erp-back-backoffice-dev:latest -f Dockerfile-dev .
 definitions:
   services:
     docker:
