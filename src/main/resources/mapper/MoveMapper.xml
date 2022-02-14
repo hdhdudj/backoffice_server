@@ -41,6 +41,7 @@ where b2.assort_id=tod.assort_id
   And  b2.assort_id = b1.assort_id
   and b2.variation_gb3 = b1.variation_gb
   and  b2.variation_seq3=b1.seq) optionNm3
+  ,ld.rack_no rackNo
 from lsshpm lm
 ,lsshpd ld
 ,itasrt it

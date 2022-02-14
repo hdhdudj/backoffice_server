@@ -5,8 +5,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
-import io.spring.enums.TrdstOrderStatus;
-import io.spring.model.ship.response.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -18,10 +16,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.spring.enums.TrdstOrderStatus;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
 import io.spring.model.ship.request.ShipSaveListData;
+import io.spring.model.ship.response.ShipIndicateListData;
+import io.spring.model.ship.response.ShipIndicateSaveListResponseData;
+import io.spring.model.ship.response.ShipItemListData;
+import io.spring.model.ship.response.ShipListDataResponse;
 import io.spring.service.ship.JpaShipService;
 import io.spring.service.ship.MyBatisShipService;
 import lombok.RequiredArgsConstructor;
@@ -175,7 +178,7 @@ public class ShipController {
      */
     @PostMapping(path = "")
     public ResponseEntity shipIndToShip(@RequestBody ShipSaveListData shipSaveListData){
-        List<String> shipIdList = jpaShipService.shipIndToShip(shipSaveListData);
+		List<String> shipIdList = jpaShipService.shipIndToShip2(shipSaveListData);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIdList);
         return ResponseEntity.ok(res);
     }

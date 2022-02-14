@@ -1,14 +1,14 @@
 package io.spring.jparepos.ship;
 
-import io.spring.model.ship.entity.Lsshpd;
-import io.spring.model.ship.entity.Lsshpm;
-import io.spring.model.ship.idclass.LsshpdId;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import io.spring.model.ship.entity.Lsshpd;
+import io.spring.model.ship.idclass.LsshpdId;
 
 public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
     @Query("select max(d.shipSeq) from Lsshpd d where d.shipId=?1")
@@ -39,8 +39,12 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
     @Query("select lsd from Lsshpd lsd " +
             "join fetch lsd.lsshpm lsm " +
             "join fetch lsd.tbOrderDetail td " +
-            "join fetch td.ititmm im "+
-            "join fetch im.itasrt it "+
+			"join fetch td.ititmm itm " +
+			"join fetch lsd.itasrt it "
+			+
+			"left join fetch itm.itvari1 itv1 " + "left join fetch itm.itvari2 itv2 "
+			+ "left join fetch itm.itvari3 itv3 "
+			+ 
             "where lsm.instructDt between :start and :end " +
             "and (:assortId is null or trim(:assortId)='' or td.assortId=:assortId) " +
             "and (:shipId is null or trim(:shipId)='' or lsd.shipId=:shipId) " +
@@ -67,8 +71,10 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
             "join fetch lsshpd.lsshpm lsm " +
             "join fetch tod.tbOrderMaster tom " +
             "join fetch tom.tbMemberAddress tma " +
-            "join fetch tod.ititmm itm " +
-            "join fetch itm.itasrt ita " +
+			"join fetch lsshpd.ititmm itm "
+			+
+			"join fetch lsshpd.itasrt ita "
+			+
             "join fetch itm.itvari1 iv1 " +
             "left outer join fetch itm.itvari2 iv2 " +
             "left outer join fetch itm.itvari3 iv3 " +
@@ -108,7 +114,8 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
             "left outer join fetch im.itvari2 iv2 " +
             "left outer join fetch im.itvari3 iv3 " +
             "join fetch im.itasrt ita " +
-            "left outer join fetch ita.ifBrand ib " +
+			"left outer join fetch ita.itbrnd ib "
+			+
             "where lm.purchaseDt between :start and :end " +
             "and (:vendorId is null or trim(:vendorId)='' or lm.vendorId=:vendorId) "
             + "and (:storeCd is null or trim(:storeCd)='' or lm.storeCd=:storeCd) "
@@ -121,13 +128,16 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
     /**
      * 이동지시리스트, 이동리스트
      */
-    @Query("select distinct ld from Lsshpd ld " +
+	@Query("select ld from Lsshpd ld " +
             "join fetch ld.lsshpm lm " +
             "left join fetch ld.tbOrderDetail td " +
             "join fetch ld.itasrt it " +
-            "left join fetch it.ifBrand ib " +
-            "left join fetch it.itvariList iv " +
-            "where case :shipStatus when '04' then lm.instructDt else lm.receiptDt end between :start and :end " +
+			"left join fetch it.itbrnd ib "
+			+
+			"join fetch ld.ititmm itm " + "left join fetch itm.itvari1 itv1 " + "left join fetch itm.itvari2 itv2 "
+			+ "left join fetch itm.itvari3 itv3 "
+			+
+            "where case :shipStatus when '04' then lm.applyDay else lm.receiptDt end between :start and :end " +
             "and lm.masterShipGb in ('03', '04') " +
             "and lm.shipStatus=:shipStatus " +
             "and td.statusCd = :statusCd " +
@@ -150,6 +160,8 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
 
     @Query("select lsshpd from Lsshpd lsshpd " +
             "join fetch lsshpd.lsshpm lm " +
+			"join fetch lsshpd.ititmm itm " + "left join fetch itm.itvari1 itv1 " + "left join fetch itm.itvari2 itv2 "
+			+ "left join fetch itm.itvari3 itv3 " +
             "where lsshpd.shipId in :shipIdList")
     List<Lsshpd> findShipDetailListByShipIdList(@Param("shipIdList") List<String> shipIdList);
 
@@ -172,7 +184,9 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
             "join fetch ld.lsshpm lm " +
             "left join fetch ld.tbOrderDetail td " +
             "join fetch ld.itasrt it " +
-            "join fetch it.itvariList ivs " +
+			"join fetch ld.ititmm itm " + "left join fetch itm.itvari1 itv1 " + "left join fetch itm.itvari2 itv2 "
+			+ "left join fetch itm.itvari3 itv3 " +
+			// "join fetch it.itvariList ivs " +
             "where lm.receiptDt between :start and :end " +
             "and (:oStorageId is null or trim(:oStorageId)='' or lm.storageId=:oStorageId) " +
             "and (:storageId is null or trim(:storageId)='' or lm.oStorageId=:storageId) " +

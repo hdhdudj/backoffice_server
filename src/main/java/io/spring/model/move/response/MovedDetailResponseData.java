@@ -52,6 +52,16 @@ public class MovedDetailResponseData {
             // 옵션은 밖에서
             this.qty = lsshpd.getShipQty();
             this.cost = lsshpd.getLocalPrice();
+
+			this.optionNm1 = lsshpd.getItitmm().getItvari1() == null ? ""
+					: lsshpd.getItitmm().getItvari1().getOptionNm();
+			this.optionNm2 = lsshpd.getItitmm().getItvari2() == null ? ""
+					: lsshpd.getItitmm().getItvari2().getOptionNm();
+			this.optionNm3 = lsshpd.getItitmm().getItvari3() == null ? ""
+					: lsshpd.getItitmm().getItvari3().getOptionNm();
+
+			this.rackNo = lsshpd.getRackNo();
+
         }
         private String shipId;
         private String shipSeq;
@@ -68,5 +78,7 @@ public class MovedDetailResponseData {
         private String optionNm3;
         private Long qty;
         private Float cost;
+
+		private String rackNo;
     }
 }

@@ -12,7 +12,6 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
-import io.spring.model.order.entity.TbMember;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
@@ -75,6 +74,15 @@ public class ShipIndicateListData {
             this.orderId = lsshpd.getOrderId();
             this.orderSeq = lsshpd.getOrderSeq();
             this.orderKey = Utilities.addDashInMiddle(orderId, orderSeq);
+			this.rackNo = lsshpd.getRackNo();
+
+			this.optionNm1 = lsshpd.getItitmm().getItvari1() == null ? ""
+					: lsshpd.getItitmm().getItvari1().getOptionNm();
+			this.optionNm2 = lsshpd.getItitmm().getItvari2() == null ? ""
+					: lsshpd.getItitmm().getItvari2().getOptionNm();
+			this.optionNm3 = lsshpd.getItitmm().getItvari3() == null ? ""
+					: lsshpd.getItitmm().getItvari3().getOptionNm();
+
             // 옵션은 외부 set
             // qty는 외부 set
         }
@@ -102,5 +110,6 @@ public class ShipIndicateListData {
         private String optionNm2;
         private String optionNm3;
         private Long qty;
+		private String rackNo;
     }
 }

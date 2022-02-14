@@ -60,4 +60,10 @@ public class MyBatisCommonDaoImpl implements MyBatisCommonDao {
 		// TODO Auto-generated method stub
 		return commonMapper.getCommonOrderStatus(param);
 	}
+
+	@Override
+	public HashMap<String, Object> getCommonDefaultRack(HashMap<String, Object> param) {
+		// TODO Auto-generated method stub
+		return commonMapper.getCommonDefaultRack(param);
+	}
 }

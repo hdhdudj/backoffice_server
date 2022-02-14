@@ -1,5 +1,10 @@
 package io.spring.model.purchase.response;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
 import io.spring.model.goods.entity.Itaimg;
@@ -11,10 +16,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-
-import java.util.List;
 
 /**
  * 발주내역(발주사후) get DTO
@@ -91,6 +92,14 @@ public class PurchaseSelectDetailResponseData {
             this.material = ititmm.getMaterial();
             this.imagePath = itasrt.getListImageData();
             this.compleDt = lspchd.getCompleDt() == null? "" : lspchd.getCompleDt().toString();
+
+			this.optionNm1 = lspchd.getItitmm().getItvari1() == null ? ""
+					: lspchd.getItitmm().getItvari1().getOptionNm();
+			this.optionNm2 = lspchd.getItitmm().getItvari2() == null ? ""
+					: lspchd.getItitmm().getItvari2().getOptionNm();
+			this.optionNm3 = lspchd.getItitmm().getItvari3() == null ? ""
+					: lspchd.getItitmm().getItvari3().getOptionNm();
+
         }
 //        public Items(Lspchd lspchd, TbOrderDetail tbOrderDetail, Itasrt itasrt){
 //            this.purchaseId = lspchd.getPurchaseNo();

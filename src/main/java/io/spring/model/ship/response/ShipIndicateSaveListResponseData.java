@@ -10,12 +10,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
 import io.spring.model.goods.entity.Itasrt;
-import io.spring.model.order.entity.TbMember;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderMaster;
 import lombok.AccessLevel;
@@ -99,6 +98,7 @@ public class ShipIndicateSaveListResponseData {
 			this.optionNm1 = (String) map.get("optionNm1");
 			this.optionNm2 = (String) map.get("optionNm2");
 			this.optionNm3 = (String) map.get("optionNm3");
+			this.rackNo = (String) map.get("rackNo");
 
 		}
 
@@ -123,5 +123,6 @@ public class ShipIndicateSaveListResponseData {
 		private String shipSeq;
 		private String storageId;
 		private String receiptDt;
+		private String rackNo;
     }
 }

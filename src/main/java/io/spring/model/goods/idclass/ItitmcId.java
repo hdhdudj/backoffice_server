@@ -6,7 +6,12 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -24,6 +29,15 @@ public class ItitmcId implements Serializable {
 		this.itemGrade = "11";
 		this.effStaDt = depositDt;
 		this.effEndDt = depositDt;
+	}
+
+	public ItitmcId(String storageId, LocalDateTime effStaDt, String assortId, String itemId, String itemGrade) {
+		this.storageId = storageId;
+		this.assortId = assortId;
+		this.itemId = itemId;
+		this.itemGrade = itemGrade;
+		this.effStaDt = effStaDt;
+		this.effEndDt = effStaDt;
 	}
 
     private String storageId;

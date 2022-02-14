@@ -1,8 +1,12 @@
 package io.spring.model.move.response;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
 import io.spring.model.ship.entity.Lsshpd;
@@ -11,9 +15,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * 이동처리 조회 DTO
@@ -62,6 +63,15 @@ public class MoveListResponseData {
             this.assortNm = lsshpd.getItasrt().getAssortNm();
             // 옵션은 바깥에서 set
             this.qty = lsshpd.getShipIndicateQty();
+			this.rackNo = lsshpd.getRackNo();
+
+			this.optionNm1 = lsshpd.getItitmm().getItvari1() == null ? ""
+					: lsshpd.getItitmm().getItvari1().getOptionNm();
+			this.optionNm2 = lsshpd.getItitmm().getItvari2() == null ? ""
+					: lsshpd.getItitmm().getItvari2().getOptionNm();
+			this.optionNm3 = lsshpd.getItitmm().getItvari3() == null ? ""
+					: lsshpd.getItitmm().getItvari3().getOptionNm();
+
         }
         private String moveIndDt;
         private String shipId;
@@ -78,5 +88,6 @@ public class MoveListResponseData {
         private String optionNm2;
         private String optionNm3;
         private Long qty;
+		private String rackNo;
     }
 }
