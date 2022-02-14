@@ -275,7 +275,10 @@
 			   bbb1.assort_id                                                    assortId,
 			   bbb1.assort_nm                                                    assortNm,
 			   bbb1.item_id                                                      itemId,
-			   concat(bbb1.option_nm1, ifnull(CONCAT('-', bbb1.option_nm2), '')) optionNm,
+			   /*concat(bbb1.option_nm1, ifnull(CONCAT('-', bbb1.option_nm2), '')) optionNm,*/
+			   bbb1.option_nm1 optionNm1,
+			   bbb1.option_nm2 optionNm2,
+			   bbb1.option_nm3 optionNm3,
 			   bbb1.option_info                                                  optionInfo,
 			   bbb1.qty                                                          purchaseQty,
 			   bbb1.md_rrp                                                        rrp,
@@ -319,7 +322,13 @@
 					  where iv.assort_id = ccc.assort_id
 						and iv.seq = ccc.variation_seq2
 						and iv.variation_gb = '02'
-						and del_yn = '02')                                                                      option_nm2
+						and del_yn = '02')                                                                      option_nm2,
+(select iv.option_nm
+					  from itvari iv
+					  where iv.assort_id = ccc.assort_id
+						and iv.seq = ccc.variation_seq3
+						and iv.variation_gb = '03'
+						and del_yn = '02')                                                                      option_nm3						
 			  from (select tod.order_id,
 						   tod.order_seq,
 						   tod.parent_order_seq,

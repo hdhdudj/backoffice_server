@@ -2,15 +2,19 @@ package io.spring.model.ship.entity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
-import io.spring.model.deposit.entity.Lsdpsd;
-import io.spring.model.purchase.entity.Lspchd;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -19,8 +23,10 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
+import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.move.request.GoodsMoveSaveData;
 import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.ship.idclass.LsshpdId;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -61,6 +67,7 @@ public class Lsshpd extends CommonProps implements Serializable {
         this.oStorageId = tbOrderDetail.getStorageId();
         this.shipGb = StringFactory.getGbThree(); // 01:일반출고 03:주문이동지시 04:상품이동지시
     }
+
     // 상품이동지시 저장시 작동하는 생성자
     public Lsshpd(String shipId, String shipSeq, Ititmc ititmc, GoodsMoveSaveData.Goods goods, String userId) {
         this.shipId = shipId;
@@ -122,10 +129,12 @@ public class Lsshpd extends CommonProps implements Serializable {
     private Float localTax;
     private Float disPrice;
     private String oStorageId;
+	private String rackNo;
     // 21-12-29 컬럼 추가
     private String purchaseNo;
     private String purchaseSeq;
     private String blNo;
+
 
     // 연관관계 : lsshpm
     @OneToOne(fetch = FetchType.LAZY, targetEntity = Lsshpm.class)
@@ -169,4 +178,12 @@ public class Lsshpd extends CommonProps implements Serializable {
 //    @OneToMany(fetch = FetchType.LAZY)
 //    @JsonIgnore
 //    private List<Ititmc> ititmcList; // ititmc 연관관계
+
+	@JoinColumns({
+			@JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+			@JoinColumn(name = "itemId", referencedColumnName = "itemId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")) })
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonIgnore
+	private Ititmm ititmm; // ititmc 연관관계
+
 }

@@ -57,6 +57,14 @@ public class DepositSelectDetailResponseData {
             this.extraUnitcost = lsdpsd.getExtraUnitcost();
             this.purchaseGb = lsdpsd.getLspchd().getLspchm().getPurchaseGb();
             this.memo = lsdpsd.getMemo();
+
+			this.optionNm1 = lsdpsd.getItitmm().getItvari1() == null ? ""
+					: lsdpsd.getItitmm().getItvari1().getOptionNm();
+			this.optionNm2 = lsdpsd.getItitmm().getItvari2() == null ? ""
+					: lsdpsd.getItitmm().getItvari2().getOptionNm();
+			this.optionNm3 = lsdpsd.getItitmm().getItvari3() == null ? ""
+					: lsdpsd.getItitmm().getItvari3().getOptionNm();
+
         }
         private String depositNo;
         private String depositSeq;
@@ -83,5 +91,8 @@ public class DepositSelectDetailResponseData {
         private String depositStatus;
         // 21-12-08 추가
         private String memo;
+
+		// 22-02-08
+		private String rackNo;
     }
 }

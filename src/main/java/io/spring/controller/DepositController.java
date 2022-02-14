@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.spring.model.deposit.request.DepositSelectDetailRequestData;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -21,6 +20,8 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.model.deposit.request.DepositInsertRequestData;
+import io.spring.model.deposit.request.DepositSelectDetailRequestData;
+import io.spring.model.deposit.request.InsertDepositEtcRequestData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.deposit.response.DepositSelectDetailResponseData;
 import io.spring.model.deposit.response.DepositSelectListResponseData;
@@ -62,6 +63,9 @@ public class DepositController {
 			@RequestParam @Nullable String vendorId, @RequestParam @Nullable String storageId, @RequestParam @Nullable String piNo,
                                                      @RequestParam @Nullable String blNo
             , @Nullable @RequestParam String siteOrderNo) {
+
+		System.out.println("getChoosePurchaseModalList");
+
 		PurchaseListInDepositModalData purchaseListInDepositModalData = jpaPurchaseService
 				.getPurchaseMasterListWithDetails(startDt, endDt, vendorId, storageId, piNo, siteOrderNo, blNo);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),purchaseListInDepositModalData);
@@ -90,6 +94,10 @@ public class DepositController {
 	public ResponseEntity createDepositListJpa(
 			@RequestBody DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) throws Exception {
         log.debug("입고처리 호출");
+
+		System.out.println(depositListWithPurchaseInfoData);
+
+
         List<String> messageList = new ArrayList<>();
         boolean flag = jpaDepositService.sequenceCreateDeposit(depositListWithPurchaseInfoData, messageList);
         ApiResponseMessage res = null;
@@ -112,6 +120,7 @@ public class DepositController {
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), depositNo);
         return ResponseEntity.ok(res);
     }
+
 
 //    @PostMapping(path="") // create
 //    public ResponseEntity saveDepositJpa(@RequestBody DepositInsertRequestData depositInsertRequestData){
@@ -197,4 +206,28 @@ public class DepositController {
         depositNo = Utilities.getStringNo('D',depositNo,9);
         return depositNo;
     }
+
+	/**
+	 * 입고처리 : 화면에서 입고수량 입력 후 저장을 눌렀을 때 타는 api (create)
+	 * 
+	 * @throws Exception
+	 */
+	@PostMapping(path = "/etc")
+	public ResponseEntity insertEtcDeposit(@RequestBody InsertDepositEtcRequestData reqData)
+			throws Exception {
+		log.debug("입고처리 호출");
+
+		System.out.println(reqData);
+
+		String depositNo = "";
+
+		List<String> messageList = new ArrayList<>();
+		depositNo = jpaDepositService.insertEtcDeposit(reqData);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
+				depositNo);
+
+		return ResponseEntity.ok(res);
+	}
+
 }

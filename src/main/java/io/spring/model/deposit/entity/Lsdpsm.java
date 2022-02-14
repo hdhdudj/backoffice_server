@@ -15,14 +15,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.request.DepositInsertRequestData;
+import io.spring.model.deposit.request.InsertDepositEtcRequestData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.vendor.entity.Cmvdmr;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Getter
@@ -43,6 +42,22 @@ public class Lsdpsm extends CommonProps {
 		// this.ownerId =
 		// StringUtils.leftPad("1",6,'0');//depositInsertRequestData.getOwnerId();
     }
+
+	public Lsdpsm(String depositNo, InsertDepositEtcRequestData p) {
+		this.depositNo = depositNo;
+		this.depositDt = p.getDepositDt();
+		this.storeCd = p.getStorageId();
+		this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
+		this.depositGb = p.getDepositGb(); // 01 하드코딩
+		this.vendorId = p.getVendorId();// StringUtils.leftPad("1",6,'0'); // 발주등록(주문) 화면의 '구매처'
+		this.finishYymm = LocalDateTime.parse(StringFactory.getDoomDay(),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+		this.depositType = p.getDepositType();
+		this.setRegId(p.getUserId());
+		this.setUpdId(p.getUserId());
+		// this.ownerId =
+		// StringUtils.leftPad("1",6,'0');//depositInsertRequestData.getOwnerId();
+	}
 
     public Lsdpsm(String depositNo, DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) {
 		this.vendorId = depositListWithPurchaseInfoData.getVendorId();

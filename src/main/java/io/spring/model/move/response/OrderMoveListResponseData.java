@@ -79,6 +79,7 @@ public class OrderMoveListResponseData implements SetOptionInterface {
 		this.optionNm1 = (String) m.get("optionNm1");
 		this.optionNm2 = (String) m.get("optionNm2");
 		this.optionNm3 = (String) m.get("optionNm3");
+		this.rackNo = (String) m.get("rackNo");
 	}
 
 	private String orderStoreCd;
@@ -105,4 +106,5 @@ public class OrderMoveListResponseData implements SetOptionInterface {
     private String optionNm1;
     private String optionNm2;
     private String optionNm3;
+	private String rackNo;
 }

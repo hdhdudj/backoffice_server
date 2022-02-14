@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
-import io.spring.model.move.request.MoveListExcelRequestData;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -19,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.move.request.GoodsMoveSaveData;
+import io.spring.model.move.request.MoveListExcelRequestData;
 import io.spring.model.move.request.MoveListSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
 import io.spring.model.move.response.GoodsModalListResponseData;
@@ -211,7 +212,7 @@ public class MoveController {
      */
     @PostMapping(path = "/move")
     public ResponseEntity changeShipStatus(@RequestBody MoveListSaveData moveListSaveData){
-        List<String> shipIdList = jpaMoveService.changeShipStatus(moveListSaveData);
+		List<String> shipIdList = jpaMoveService.changeShipStatus2(moveListSaveData);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipIdList);
         return ResponseEntity.ok(res);
     }
@@ -253,4 +254,25 @@ public class MoveController {
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), movedDetailResponseData);
         return ResponseEntity.ok(res);
     }
+
+	@GetMapping(path = "/moved/ititmc")
+	public ResponseEntity getMovedItitmc() {
+		// jpaMoveService.get
+		/*
+		 * 000002 000092802 0001
+		 */
+
+		List<Ititmc> l = jpaMoveService.getItitmc2("000002", null, null, null);
+
+		for (Ititmc o : l) {
+			System.out.println(o);
+		}
+
+
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
+				"");
+		return ResponseEntity.ok(res);
+	}
+
 }

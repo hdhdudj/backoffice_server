@@ -1,13 +1,14 @@
 package io.spring.jparepos.deposit;
 
-import io.spring.model.deposit.entity.Lsdpsd;
-import io.spring.model.deposit.idclass.LsdpsdId;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import io.spring.model.deposit.entity.Lsdpsd;
+import io.spring.model.deposit.idclass.LsdpsdId;
 
 public interface JpaLsdpsdRepository extends JpaRepository<Lsdpsd, LsdpsdId> {
     @Query("select max(d.depositSeq) from Lsdpsd d where d.depositNo = ?1")
@@ -20,19 +21,18 @@ public interface JpaLsdpsdRepository extends JpaRepository<Lsdpsd, LsdpsdId> {
     /**
      * 입고리스트 가져오는 쿼리
      */
-    @Query("select distinct (ld) from Lsdpsd ld " +
+	@Query("select distinct(ld) from Lsdpsd ld "
+			+
             "left join fetch ld.lsdpsm lm " +
             "left join fetch ld.lspchd lcd " +
             "left join fetch lcd.lspchm lcm " +
-//                        "left join fetch ld.lsdpsp lp " +
-//                        "left join fetch ld.lsdpds ls " +
             "left join fetch lm.cmvdmr cm " +
-            "left join fetch ld.ititmm im " +
-            "left join fetch im.itasrt it " +
-            "left join fetch it.ifBrand ib " +
-            "left join fetch it.itvariList iv " +
-//                        "left join fetch im.itvari1 iv1 " +
-//                        "left join fetch im.itvari2 iv2 " +
+			"left join fetch ld.itasrt it "
+			+
+			"left join fetch it.itbrnd ib "
+			+
+			"join fetch ld.ititmm itm " + "left join fetch itm.itvari1 itv1 " + "left join fetch itm.itvari2 itv2 "
+			+ "left join fetch itm.itvari3 itv3 " +
             "where lm.depositDt between :start and :end " +
             "and (:assortId is null or trim(:assortId)='' or it.assortId=:assortId) " +
             "and (:assortNm is null or trim(:assortNm)='' or it.assortNm like concat('%', :assortNm, '%')) " +
@@ -57,13 +57,9 @@ public interface JpaLsdpsdRepository extends JpaRepository<Lsdpsd, LsdpsdId> {
             "left join fetch lcd.tbOrderDetail tod " +
             "left join fetch tod.tbOrderMaster tom " +
             "left join fetch lcd.lspchm lcm " +
-//                        "left join fetch ld.lsdpsp lp " +
-//                        "left join fetch ld.lsdpds ls " +
             "left join fetch lm.cmvdmr cm " +
-            "left join fetch ld.ititmm im " +
-            "left join fetch im.itasrt it " +
-//            "left join fetch it.ifBrand ib " +
-//            "left join fetch it.itvariList iv " +
+			"left join fetch ld.ititmm im " + "left join fetch ld.itasrt it "
+			+
             "left join fetch im.itvari1 iv1 " +
             "left join fetch im.itvari2 iv2 " +
             "left join fetch im.itvari3 iv3 " +

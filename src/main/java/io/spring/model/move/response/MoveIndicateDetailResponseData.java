@@ -63,6 +63,15 @@ public class MoveIndicateDetailResponseData {
             this.purchaseSeq = lspchd.getPurchaseSeq();
             this.purchaseKey = Utilities.addDashInMiddle(this.purchaseNo, this.purchaseSeq);
             this.purchaseDt = Utilities.removeTAndTransToStr(lspchd.getLspchm().getPurchaseDt());
+
+			this.optionNm1 = lsshpd.getItitmm().getItvari1() == null ? ""
+					: lsshpd.getItitmm().getItvari1().getOptionNm();
+			this.optionNm2 = lsshpd.getItitmm().getItvari2() == null ? ""
+					: lsshpd.getItitmm().getItvari2().getOptionNm();
+			this.optionNm3 = lsshpd.getItitmm().getItvari3() == null ? ""
+					: lsshpd.getItitmm().getItvari3().getOptionNm();
+
+			this.rackNo = lsshpd.getRackNo();
         }
         private String shipId;
         private String shipSeq;
@@ -88,6 +97,10 @@ public class MoveIndicateDetailResponseData {
 
 		// 21-11-15 무게추가
 		private Float weight;
+
+		// 2022-02-09
+		private String rackNo;
+
 
     }
 }

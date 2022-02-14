@@ -12,11 +12,10 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
 import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.ship.entity.Lsshpd;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -53,6 +52,7 @@ public class MoveIndicateListResponseData {
         public Move(Lsshpd lsshpd){
             TbOrderDetail tbOrderDetail = lsshpd.getTbOrderDetail();
             Itasrt itasrt = lsshpd.getItasrt();
+			Ititmm ititmm = lsshpd.getItitmm();
 
             this.shipId = lsshpd.getShipId();
             this.shipSeq = lsshpd.getShipSeq();
@@ -72,6 +72,16 @@ public class MoveIndicateListResponseData {
             // 옵션명은 바깥에서
             this.qty = Utilities.nullOrEmptyFilter(lsshpd.getShipIndicateQty()) == null? "" : lsshpd.getShipIndicateQty().toString();
             this.cost = Utilities.nullOrEmptyFilter(lsshpd.getLocalPrice()) == null? "" : lsshpd.getLocalPrice().toString();
+
+			this.optionNm1 = lsshpd.getItitmm().getItvari1() == null ? ""
+					: lsshpd.getItitmm().getItvari1().getOptionNm();
+			this.optionNm2 = lsshpd.getItitmm().getItvari2() == null ? ""
+					: lsshpd.getItitmm().getItvari2().getOptionNm();
+			this.optionNm3 = lsshpd.getItitmm().getItvari3() == null ? ""
+					: lsshpd.getItitmm().getItvari3().getOptionNm();
+
+			this.rackNo = lsshpd.getRackNo();
+
         }
         private String shipId;
         private String shipSeq;
@@ -94,5 +104,6 @@ public class MoveIndicateListResponseData {
         private String optionNm3;
         private String qty;
         private String cost;
+		private String rackNo;
     }
 }

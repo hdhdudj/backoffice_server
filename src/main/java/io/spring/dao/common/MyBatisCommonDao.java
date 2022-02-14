@@ -16,4 +16,6 @@ public interface MyBatisCommonDao {
 
 	List<HashMap<String, Object>> getCommonOrderStatus(HashMap<String, Object> param);
 
+	HashMap<String, Object> getCommonDefaultRack(HashMap<String, Object> param);
+
 }

@@ -2,7 +2,6 @@ package io.spring.model.purchase.response;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -10,7 +9,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
-import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
 import io.spring.model.deposit.entity.Lsdpsp;
@@ -87,6 +85,7 @@ public class PurchaseSelectListResponseData {
          * 발주리스트 get 시 작동하는 생성자 
          */
         public Purchase(Lspchm lspchm, Lsdpsp lsdpsp, Itasrt itasrt){
+
             this.purchaseNo = lspchm.getPurchaseNo();
             this.purchaseSeq = lsdpsp.getPurchaseSeq();
             this.purchaseKey = Utilities.addDashInMiddle(this.purchaseNo, this.purchaseSeq);
@@ -108,6 +107,15 @@ public class PurchaseSelectListResponseData {
             this.purchaseQty = lsdpsp.getPurchasePlanQty();
 
             this.purchaseCost = lsdpsp.getLspchd().getPurchaseUnitAmt();
+
+			this.optionNm1 = lsdpsp.getItitmm().getItvari1() == null ? ""
+					: lsdpsp.getItitmm().getItvari1().getOptionNm(); // 색상
+			this.optionNm2 = lsdpsp.getItitmm().getItvari2() == null ? ""
+					: lsdpsp.getItitmm().getItvari2().getOptionNm(); // 사이즈
+			this.optionNm3 = lsdpsp.getItitmm().getItvari3() == null ? ""
+					: lsdpsp.getItitmm().getItvari3().getOptionNm();
+			; // 재질
+
         }
         public Purchase(Lspchm lspchm, Lspchd lspchd){
             this.purchaseNo = lspchm.getPurchaseNo();
@@ -164,7 +172,12 @@ public class PurchaseSelectListResponseData {
         private Long depositQty; // 입고수량
         private Float purchaseCost; // 발주금액
 		private String optionInfo;
+
+
+		private String rackNo = "";
+
         // 21-12-20 추가
         private String custNm;
+
     }
 }

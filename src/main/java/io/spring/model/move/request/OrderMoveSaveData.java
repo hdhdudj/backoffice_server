@@ -65,9 +65,12 @@ public class OrderMoveSaveData {
         private String assortId;
         private String itemId;
 		// lsshpm
+
         @JsonDeserialize(using = LocalDateTimeDeserializer.class)
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
 		private LocalDateTime receiptDt;
+
+
 
         // tbOrderDetail
         private String orderId;

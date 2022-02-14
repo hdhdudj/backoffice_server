@@ -36,7 +36,8 @@ public interface JpaLspchdRepository extends JpaRepository<Lspchd, LspchdId> {
             "left outer join fetch im.itvari2 iv2 " +
             "left outer join fetch im.itvari3 iv3 " +
             "join fetch im.itasrt ita " +
-            "left outer join fetch ita.ifBrand ib " +
+			"left outer join fetch ita.itbrnd ib "
+			+
             "where lm.purchaseDt between :start and :end " +
             "and (:vendorId is null or trim(:vendorId)='' or lm.vendorId=:vendorId) "
             + "and (:storeCd is null or trim(:storeCd)='' or lm.storeCd=:storeCd) "
@@ -66,7 +67,8 @@ public interface JpaLspchdRepository extends JpaRepository<Lspchd, LspchdId> {
             "left outer join fetch tom.tbMember tm " +
             "left outer join fetch ld.ititmm itm " +
             "left outer join fetch itm.itasrt ita " +
-            "left outer join fetch ita.ifBrand ib " +
+			"left outer join fetch ita.itbrnd ib "
+			+
             "left outer join fetch ita.itvariList iv " +
             "where lm.purchaseDt between :start and :end " +
 //                "and (tod.statusCd in ('B01','C03') or lm.dealtypeCd='02') " +
@@ -114,7 +116,8 @@ public interface JpaLspchdRepository extends JpaRepository<Lspchd, LspchdId> {
             "left outer join fetch im.itvari2 iv2 " +
             "left outer join fetch im.itvari3 iv3 " +
             "left outer join fetch im.itasrt ita " +
-            "left outer join fetch ita.ifBrand ib " +
+			"left outer join fetch ita.itbrnd ib "
+			+
             "where ld.purchaseNo=:purchaseNo " +
             "and lb.effEndDt='9999-12-31T23:59:59' and lb.purchaseStatus <> '05'"
             )
