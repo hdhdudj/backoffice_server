@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.model.common.entity.CommonProps;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +22,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Table(name = "if_order_cancel")
-public class IfOrderCancel {
+public class IfOrderCancel extends CommonProps {
 
 
 	@Id
