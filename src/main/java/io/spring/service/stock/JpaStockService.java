@@ -341,6 +341,86 @@ public class JpaStockService {
 		return 1;
 
 	}
+	
+	// 출고처리하는로직을 만들어야함.
+	public int minusEtcShipStockByGoods(HashMap<String, Object> p) {
+		System.out.println("----------------------minusEtcShipStockByGoods----------------------");
+
+		long shipQty = (Long) p.get("shipQty");
+
+		Ititmc imc_storage = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(
+				p.get("assortId").toString(), p.get("itemId").toString(), p.get("storageId").toString(),
+				p.get("itemGrade").toString(), (LocalDateTime) p.get("effStaDt")
+
+		);
+
+		Ititmc imc_rack = null;
+
+		if (p.get("rackNo") != null) {
+			// imc_rack의 재고를 조회함
+			imc_rack = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(
+					p.get("assortId").toString(), p.get("itemId").toString(), p.get("rackNo").toString(),
+					p.get("itemGrade").toString(), (LocalDateTime) p.get("effStaDt")
+
+			);
+		}
+
+
+		if (imc_storage == null) {
+			throw new IllegalArgumentException("no ShipStockQty check..");
+			// return -1;
+		} else {
+			// long shipAvailQty = imc_storage.getQty() - imc_storage.getShipIndicateQty();
+			// if (shipAvailQty < qty) { // ititmc에 있는 해당 상품 총량보다 주문량이 많은 경우
+			// log.debug("주문량이 출고가능 재고량보다 많습니다. 출고가능 재고량 : " + shipAvailQty + ", 주문량 : " +
+			// qty);
+			// return -1;
+			// }
+
+			long qty = imc_storage.getQty() == null ? 0l : imc_storage.getQty(); // ititmc 재고량
+			long shipIndQty = imc_storage.getShipIndicateQty() == null ? 0l : imc_storage.getShipIndicateQty(); // ititmc
+
+			long ableQty = qty - shipIndQty; // 출고가능수량
+
+			if (ableQty < shipQty) {
+				log.debug("출고수량이 출고가능 수량보다 많습니다. 출고가능수량 : " + ableQty + ", 출고량 : " + shipQty);
+				log.debug("기타출고 불가.");
+				throw new IllegalArgumentException("no stockQty check..");
+			}
+
+			// imc_storage.setShipIndicateQty(shipIndQty - shipQty);
+			imc_storage.setQty(qty - shipQty);
+
+			jpaItitmcRepository.save(imc_storage);
+
+		}
+
+		if (imc_rack == null) {
+			log.debug("해당건의 rackNo 정보없음");
+		} else {
+
+			long qty = imc_rack.getQty() == null ? 0l : imc_rack.getQty(); // ititmc 재고량
+			long shipIndQty = imc_rack.getShipIndicateQty() == null ? 0l : imc_rack.getShipIndicateQty(); // ititmc
+
+			long ableQty = qty - shipIndQty; // 출고가능수량
+
+			if (ableQty < shipQty) {
+				log.debug("rack 출고수량이 출고가능 수량보다 많습니다. 출고가능수량 : " + ableQty + ", 출고량 : " + shipQty);
+				log.debug("rack 기타출고 불가.");
+				throw new IllegalArgumentException("no stockQty check..");
+			}
+
+
+
+			imc_rack.setQty(qty - shipQty);
+
+			jpaItitmcRepository.save(imc_rack);
+
+		}
+
+		return 1;
+
+	}	
 
 	public Ititmc checkStockWhenDirect(String storageId, String assortId, String itemId, Long orderQty) {
 
@@ -511,6 +591,24 @@ public class JpaStockService {
 		}
 		return r;
 
+	}
+
+	public List<Ititmc> getItitmc(String storageId, String purchaseVendorId, String assortId, String assortNm) {
+
+		// 랙재고를 가져옴.
+
+		Query query = em.createQuery("select ic from Ititmc ic " + "join fetch ic.itasrt it "
+				+ "left join fetch it.itbrnd ib " + "join fetch ic.cmstgm cm " + "join fetch ic.ititmm itm "
+				+ "left join fetch itm.itvari1 itv1 " + "left join fetch itm.itvari2 itv2 "
+				+ "left join fetch itm.itvari3 itv3 " + "where " + "(?1 is null or trim(?1)='' or cm.upStorageId=?1) "
+				+ "and (?2 is null or trim(?2)='' or it.vendorId=?2) "
+				+ "and (?3 is null or trim(?3)='' or ic.assortId=?3) "
+				+ "and (?4 is null or trim(?4)='' or it.assortNm like concat('%',?4,'%')) and ic.qty > 0 "
+				+ "order by ic.assortId,ic.effStaDt ");
+		query.setParameter(1, storageId).setParameter(2, purchaseVendorId).setParameter(3, assortId).setParameter(4,
+				assortNm);
+		List<Ititmc> ititmcList = query.getResultList();
+		return ititmcList;
 	}
 
 }

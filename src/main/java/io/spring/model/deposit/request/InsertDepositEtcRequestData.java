@@ -17,7 +17,7 @@ public class InsertDepositEtcRequestData {
 	@JsonDeserialize(using = CustomLocalDateTimeDeSerializer.class)
     private LocalDateTime depositDt;
     private String storageId;
-	private String vendorId; // AAAAAA trdst 고정
+	private String vendorId = "AAAAAA"; // AAAAAA trdst 고정
 	private String depositGb; // 기타입고 11
 	private String depositType = "01"; // 입고 01
     private List<Item> items;

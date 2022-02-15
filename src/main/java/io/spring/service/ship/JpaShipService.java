@@ -22,8 +22,10 @@ import io.spring.infrastructure.mapstruct.ShipListDataResponseMapper;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
+import io.spring.jparepos.deposit.JpaLsdpdsRepository;
 import io.spring.jparepos.deposit.JpaLsdpsdRepository;
 import io.spring.jparepos.deposit.JpaLsdpsmRepository;
+import io.spring.jparepos.deposit.JpaLsdpssRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.order.JpaTbOrderHistoryRepository;
@@ -31,8 +33,10 @@ import io.spring.jparepos.purchase.JpaLspchdRepository;
 import io.spring.jparepos.ship.JpaLsshpdRepository;
 import io.spring.jparepos.ship.JpaLsshpmRepository;
 import io.spring.jparepos.ship.JpaLsshpsRepository;
+import io.spring.model.deposit.entity.Lsdpds;
 import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.deposit.entity.Lsdpsm;
+import io.spring.model.deposit.entity.Lsdpss;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmm;
@@ -43,6 +47,7 @@ import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import io.spring.model.ship.entity.Lsshps;
+import io.spring.model.ship.request.InsertShipEtcRequestData;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
 import io.spring.model.ship.request.ShipSaveListData;
 import io.spring.model.ship.response.ShipCandidateListData;
@@ -73,6 +78,8 @@ public class JpaShipService {
     private final JpaItitmcRepository jpaItitmcRepository;
 	private final JpaLsdpsmRepository jpaLsdpsmRepository;
 	private final JpaLsdpsdRepository jpaLsdpsdRepository;
+	private final JpaLsdpssRepository jpaLsdpssRepository;
+	private final JpaLsdpdsRepository jpaLsdpdsRepository;
 
 	private final JpaTbOrderDetailRepository tbOrderDetailRepository;
 	private final JpaTbOrderHistoryRepository tbOrderHistoryrRepository;
@@ -910,4 +917,94 @@ public class JpaShipService {
 	private String getShipId(){
 		return Utilities.getStringNo('L',jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLsshpm()),9);
 	}
+
+	@Transactional
+	public String insertEtcShip(InsertShipEtcRequestData p) throws Exception {
+
+		// depositNo 채번
+		String no = jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLsdpsm());
+		String depositNo = Utilities.getStringNo('D', no, 9);
+		Lsdpsm lsdpsm = new Lsdpsm(depositNo, p);
+
+		jpaLsdpsmRepository.save(lsdpsm);
+
+		String depositStatus = "01";
+
+		Lsdpss lsdpss = jpaLsdpssRepository.findByDepositNoAndEffEndDt(lsdpsm.getDepositNo(),
+				Utilities.getStringToDate(StringFactory.getDoomDay()));
+
+		if (lsdpss == null) {
+			Lsdpss newLsdpss = new Lsdpss(lsdpsm, depositStatus);
+			jpaLsdpssRepository.save(newLsdpss);
+
+		} else {
+
+			jpaLsdpssRepository.save(lsdpss);
+
+			Lsdpss newLsdpss = new Lsdpss(lsdpsm, depositStatus);
+			jpaLsdpssRepository.save(newLsdpss);
+		}
+
+		int index = 1;
+
+		List<Lsdpsd> lsdpsdList = new ArrayList<>();
+
+		for (InsertShipEtcRequestData.Item ship : p.getItems()) {
+
+			String depositSeq = StringUtils.leftPad(Integer.toString(index), 4, '0');
+			Lsdpsd lsdpsd = new Lsdpsd(lsdpsm, depositSeq, ship);
+			jpaLsdpsdRepository.save(lsdpsd);
+
+			lsdpsdList.add(lsdpsd);
+
+			// index++;
+		}
+
+		int ind = lsdpsdList.size();
+		List<Lsdpds> lsdpdsList = new ArrayList<>();
+		for (int i = 0; i < ind; i++) {
+			Lsdpsd lsdpsd = lsdpsdList.get(i);
+
+			Lsdpds lsdpds = jpaLsdpdsRepository.findByDepositNoAndDepositSeqAndEffEndDt(lsdpsd.getDepositNo(),
+					lsdpsd.getDepositSeq(), Utilities.getStringToDate(StringFactory.getDoomDay()));
+			if (lsdpds == null) {
+				Lsdpds newLsdpds = new Lsdpds(lsdpsd, depositStatus);
+				jpaLsdpdsRepository.save(newLsdpds);
+			} else {
+				jpaLsdpdsRepository.save(lsdpds);
+
+				Lsdpds newLsdpds = new Lsdpds(lsdpsd, depositStatus);
+				jpaLsdpdsRepository.save(newLsdpds);
+			}
+
+		}
+
+
+		// 5.재고입력
+		for (Lsdpsd o : lsdpsdList) {
+
+			HashMap<String, Object> m = new HashMap<String, Object>();
+
+			m.put("storageId", p.getStorageId());
+			m.put("effStaDt", o.getExcAppDt());
+			m.put("assortId", o.getAssortId());
+			m.put("itemId", o.getItemId());
+			m.put("itemGrade", o.getItemGrade()); // 일단 정상품만 입고
+			m.put("shipQty", o.getDepositQty());
+			m.put("price", o.getExtraUnitcost());
+			m.put("vendorId", p.getVendorId());
+
+			// String rackNo = this.getDefaultRack(p.getStorageId(), o.getRackNo()); //
+			// System.out.println("*************************************-----------------------------------------");
+			// System.out.println(rackNo);
+
+			m.put("rackNo", o.getRackNo());
+
+			jpaStockService.minusEtcShipStockByGoods(m);
+
+		}
+
+		return lsdpsm.getDepositNo();
+	}
+
 }

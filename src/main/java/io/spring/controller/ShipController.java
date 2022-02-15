@@ -2,6 +2,7 @@ package io.spring.controller;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.spring.enums.TrdstOrderStatus;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.model.ship.request.InsertShipEtcRequestData;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
 import io.spring.model.ship.request.ShipSaveListData;
 import io.spring.model.ship.response.ShipIndicateListData;
@@ -210,4 +212,28 @@ public class ShipController {
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipItemListData);
         return ResponseEntity.ok(res);
     }
+
+	/**
+	 * 입고처리 : 화면에서 입고수량 입력 후 저장을 눌렀을 때 타는 api (create)
+	 * 
+	 * @throws Exception
+	 */
+	@PostMapping(path = "/etc")
+	public ResponseEntity insertEtcShip(@RequestBody InsertShipEtcRequestData reqData) throws Exception {
+		log.debug("출고처리 호출");
+
+		System.out.println(reqData);
+
+		String depositNo = "";
+
+		List<String> messageList = new ArrayList<>();
+		depositNo = jpaShipService.insertEtcShip(reqData);
+		// depositNo = jpaDepositService.insertEtcDeposit(reqData);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
+				depositNo);
+
+		return ResponseEntity.ok(res);
+	}
+
 }

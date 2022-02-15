@@ -37,17 +37,20 @@ import io.spring.model.goods.entity.Itasrd;
 import io.spring.model.goods.entity.Itasrn;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Itbrnd;
+import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmd;
 import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.goods.entity.Itvari;
 import io.spring.model.goods.entity.Tmitem;
 import io.spring.model.goods.entity.Tmmapi;
 import io.spring.model.goods.request.GoodsInsertRequestData;
+import io.spring.model.goods.response.GetStockListResponseData;
 import io.spring.model.goods.response.GoodsInsertResponseData;
 import io.spring.model.goods.response.GoodsSelectDetailResponseData;
 import io.spring.model.goods.response.GoodsSelectListResponseData;
 import io.spring.model.vendor.entity.Cmvdmr;
 import io.spring.service.file.FileService;
+import io.spring.service.stock.JpaStockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -72,6 +75,8 @@ public class JpaGoodsService {
     private final JpaTmitemRepository jpaTmitemRepository;
 
     private final FileService fileService;
+
+	private final JpaStockService jpaStockService;
 
     private final EntityManager em;
 
@@ -1040,6 +1045,7 @@ public class JpaGoodsService {
 //        return null;
 //    }
     
+
     @Transactional
     public Itaimg saveItaimg(String imageGb,FileVo f) {
     	Itaimg ii =new Itaimg(imageGb,f);
@@ -1067,4 +1073,33 @@ public class JpaGoodsService {
     public void batchSizeTest() {
         Itasrt itasrt = jpaItasrtRepository.findById("000075775").orElseGet(()->null);
     }
+
+	public GetStockListResponseData getStockList(String storageId, String purchaseVendorId, String assortId,
+			String assortNm) {
+
+		System.out.println("getGoodsList");
+		List<Ititmc> ititmcList = jpaStockService.getItitmc(storageId, purchaseVendorId, assortId, assortNm);
+		List<GetStockListResponseData.Goods> goodsList = new ArrayList<>();
+		GetStockListResponseData ret = new GetStockListResponseData(storageId, purchaseVendorId, assortId, assortNm);
+		for (Ititmc ititmc : ititmcList) {
+
+			GetStockListResponseData.Goods goods = new GetStockListResponseData.Goods(ititmc);
+//	          Itasrt itasrt = ititmc.getItasrt();
+//            IfBrand ifBrand = itasrt.getIfBrand();//jpaIfBrandRepository.findByChannelGbAndChannelBrandId(StringFactory.getGbOne(), itasrt.getBrandId()); // 채널은 01 하드코딩
+
+			// 주문관련 이동지시나 출고지시할떄 indicateqty 에 이미 적용이 되어있으므로 밑에 로직 삭제
+
+//            List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository.findByAssortIdAndItemId(ititmc.getAssortId(),ititmc.getItemId())
+			// .stream().filter(x->x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList());
+			// long qtyOfC01 = tbOrderDetailList.size();
+
+			goods.setOrderQty(0L);
+			goods.setAvailableQty(goods.getAvailableQty());
+
+			goodsList.add(goods);
+		}
+
+		ret.setGoods(goodsList);
+		return ret;
+	}
 }

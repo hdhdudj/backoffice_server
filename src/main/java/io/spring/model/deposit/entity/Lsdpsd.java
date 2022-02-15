@@ -28,6 +28,7 @@ import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.purchase.entity.Lspchd;
+import io.spring.model.ship.request.InsertShipEtcRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -112,6 +113,27 @@ public class Lsdpsd extends CommonProps implements Serializable {
 		this.siteGb = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
 		this.rackNo = o.getRackNo();
 		this.excAppDt = lsdpsm.getDepositDt();
+	}
+
+	public Lsdpsd(Lsdpsm lsdpsm, String depositSeq, InsertShipEtcRequestData.Item o) {
+
+		this.depositNo = lsdpsm.getDepositNo();
+		this.depositSeq = depositSeq;
+		this.assortId = o.getAssortId();
+		this.itemId = o.getItemId();
+		this.itemGrade = o.getItemGrade(); // 11 하드코딩
+		this.extraClsCd = StringFactory.getGbOne(); // 01 하드코딩
+		this.depositQty = o.getShipQty();
+		this.extraUnitcost = o.getExtraUnitcost();
+		this.deliPrice = extraUnitcost * depositQty; // 단가 * 개수
+		this.extraCost = extraUnitcost * depositQty; // 단가 * 개수
+		this.extraQty = o.getShipQty();
+		this.finishYymm = LocalDateTime.parse(StringFactory.getDoomDay(),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // 9999-12-31 하드코딩
+		this.depositType = StringFactory.getGbTwo(); // 출고 02
+		this.siteGb = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
+		this.rackNo = o.getRackNo();
+		this.excAppDt = o.getEffStaDt(); // 재고 일자
 	}
 
     @Id
