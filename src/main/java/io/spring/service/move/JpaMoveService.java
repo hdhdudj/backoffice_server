@@ -1196,9 +1196,9 @@ public class JpaMoveService {
      * @param assortNm
      * @return 이동지시리스트를 가진 DTO
      */
-    public MoveIndicateListResponseData getMoveIndicateList(LocalDate startDt, LocalDate endDt, String storageId, String oStorageId, String assortId, String assortNm) {
+    public MoveIndicateListResponseData getMoveIndicateList(LocalDate startDt, LocalDate endDt, String shipId, String storageId, String oStorageId, String assortId, String assortNm, String deliMethod) {
 
-        List<Lsshpd> lsshpdList = this.getLsshpdMoveIndList(startDt, endDt, storageId, oStorageId, assortId, assortNm);
+        List<Lsshpd> lsshpdList = this.getLsshpdMoveIndList(startDt, endDt, shipId, storageId, oStorageId, assortId, assortNm, deliMethod);
 
         MoveIndicateListResponseData moveIndicateListResponseData = new MoveIndicateListResponseData(startDt, endDt, storageId, oStorageId, assortId, assortNm);
         List<MoveIndicateListResponseData.Move> moveList = new ArrayList<>();
@@ -1224,7 +1224,7 @@ public class JpaMoveService {
     /**
      * 조건에 맞는 lsshpd 리스트를 반환하는 함수
     */
-    private List<Lsshpd> getLsshpdMoveIndList(LocalDate startDt, LocalDate endDt, String storageId, String oStorageId, String assortId, String assortNm) {
+    private List<Lsshpd> getLsshpdMoveIndList(LocalDate startDt, LocalDate endDt, String shipId, String storageId, String oStorageId, String assortId, String assortNm, String deliMethod) {
 
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
@@ -1244,8 +1244,8 @@ public class JpaMoveService {
 //        List<Lsshpd> lsshpdList = query.getResultList();
 //=======
 
-		List<Lsshpd> lsshpdList = jpaLsshpdRepository.findMoveIndList(start, end, storageId, oStorageId, assortId,
-				assortNm);// query.getResultList();
+		List<Lsshpd> lsshpdList = jpaLsshpdRepository.findMoveIndList(start, end, shipId, storageId, oStorageId, assortId,
+				assortNm, deliMethod);// query.getResultList();
 
 
         return lsshpdList;
@@ -1409,6 +1409,10 @@ public class JpaMoveService {
         for(MoveListExcelRequestData.Move move : moveList){
             shipIdList.add(move.getShipId());
         }
+        if(shipIdList.size() == 0){
+            log.debug("조건 shipIdList가 존재하지 않습니다.");
+            return;
+        }
         List<Lsshpm> lsshpmList = jpaLsshpmRepository.findShipMasterListByShipIdList(shipIdList);
         for(MoveListExcelRequestData.Move move : moveList){
             if(lsshpmList.stream().filter(x->x.getShipId().equals(move.getShipId())).count() == 0){
@@ -1417,7 +1421,7 @@ public class JpaMoveService {
             }
             Lsshpm lsshpm = lsshpmList.stream().filter(x->x.getShipId().equals(move.getShipId())).collect(Collectors.toList()).get(0);//lsshpmList.get(0);
             lsshpm.setBlNo(Utilities.nullOrEmptyFilter(move.getBlNo()));
-            lsshpm.setMovementKd(Utilities.nullOrEmptyFilter(move.getBlNo()));
+            lsshpm.setMovementKd(Utilities.nullOrEmptyFilter(move.getMovementKd()));
             lsshpm.setShipmentDt(Utilities.nullOrEmptyFilter(move.getShipmentDt()));
             lsshpm.setEstiArrvDt(Utilities.nullOrEmptyFilter(move.getEstiArrvDt()));
             lsshpm.setContainerKd(Utilities.nullOrEmptyFilter(move.getContainerKd()));

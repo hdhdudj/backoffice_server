@@ -174,7 +174,7 @@ public class MoveController {
                                               @RequestParam @Nullable String assortId,
                                               @RequestParam @Nullable String assortNm
                                               ){
-        MoveIndicateListResponseData moveIndicateListResponseData = jpaMoveService.getMoveIndicateList(startDt,endDt,storageId,oStorageId,assortId,assortNm);
+        MoveIndicateListResponseData moveIndicateListResponseData = jpaMoveService.getMoveIndicateList(startDt,endDt,null,storageId,oStorageId,assortId,assortNm, null);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),moveIndicateListResponseData);
         return ResponseEntity.ok(res);
     }
@@ -202,8 +202,9 @@ public class MoveController {
                                       @RequestParam @Nullable String assortNm,
                                       @RequestParam @Nullable String storageId,
                                       @RequestParam @Nullable String deliMethod) {
-        MoveListResponseData moveListResponseData = jpaMoveService.getMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, deliMethod, null, null, null);
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveListResponseData);
+//        MoveListResponseData moveListResponseData = jpaMoveService.getMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, deliMethod, null, null, null);
+        MoveIndicateListResponseData moveIndicateListResponseData = jpaMoveService.getMoveIndicateList(startDt, endDt, shipId, storageId, null, assortId, assortNm, deliMethod);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveIndicateListResponseData);
         return ResponseEntity.ok(res);
     }
     
