@@ -202,7 +202,7 @@ public class MoveController {
                                       @RequestParam @Nullable String assortNm,
                                       @RequestParam @Nullable String storageId,
                                       @RequestParam @Nullable String deliMethod) {
-        MoveListResponseData moveListResponseData = jpaMoveService.getMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, deliMethod, null);
+        MoveListResponseData moveListResponseData = jpaMoveService.getMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, deliMethod, null, null, null);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveListResponseData);
         return ResponseEntity.ok(res);
     }
@@ -228,8 +228,10 @@ public class MoveController {
                                            @RequestParam @Nullable String assortId,
                                            @RequestParam @Nullable String assortNm,
                                            @RequestParam @Nullable String blNo,
+                                           @RequestParam @Nullable LocalDate staEstiArrDt,
+                                           @RequestParam @Nullable LocalDate endEstiArrDt,
                                            @RequestParam @Nullable String storageId){
-        MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.getMovedList(startDt, endDt, shipId, assortId, assortNm, storageId, blNo);
+        MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.getMovedList(startDt, endDt, shipId, assortId, assortNm, storageId, blNo, staEstiArrDt, endEstiArrDt);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveCompletedLIstReponseData);
         return ResponseEntity.ok(res);
     }
@@ -240,7 +242,7 @@ public class MoveController {
     @PostMapping(path = "/excel")
     public ResponseEntity saveExcelList(@RequestBody MoveListExcelRequestData moveListExcelRequestData){
         jpaMoveService.saveExcelList(moveListExcelRequestData);
-        MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.getMovedList(moveListExcelRequestData.getStartDt(), moveListExcelRequestData.getEndDt(), moveListExcelRequestData.getShipId(), moveListExcelRequestData.getAssortId(), moveListExcelRequestData.getAssortNm(), moveListExcelRequestData.getStorageId(), null);
+        MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.getMovedList(moveListExcelRequestData.getStartDt(), moveListExcelRequestData.getEndDt(), moveListExcelRequestData.getShipId(), moveListExcelRequestData.getAssortId(), moveListExcelRequestData.getAssortNm(), moveListExcelRequestData.getStorageId(), null, null, null);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveCompletedLIstReponseData);
         return ResponseEntity.ok(res);
     }

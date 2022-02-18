@@ -1,5 +1,6 @@
 package io.spring.jparepos.ship;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -146,6 +147,7 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
             "and (:assortNm is null or trim(:assortNm)='' or it.assortNm like concat('%',:assortNm,'%')) " +
             "and (:storageId is null or trim(:storageId)='' or lm.oStorageId=:storageId) " +
             "and (:blNo is null or trim(:blNo)='' or lm.blNo=:blNo) " +
+            "and (lm.estiArrvDt between COALESCE(:staEstiArrvDt, '0000-01-01') and COALESCE(:endEstiArrvDt, '9999-12-31')) " +
             "and (:deliMethod is null or trim(:deliMethod)='' or lm.delMethod=:deliMethod)")
     List<Lsshpd> findLsshpdMoveList(@Param("start")LocalDateTime start,
                                     @Param("end")LocalDateTime end,
@@ -156,7 +158,9 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
                                     @Param("deliMethod")String deliMethod,
                                     @Param("shipStatus")String shipStatus,
                                     @Param("statusCd")String statusCd,
-                                    @Param("blNo")String blNo
+                                    @Param("blNo")String blNo,
+                                    @Param("staEstiArrvDt") LocalDate staEstiArrvDt,
+                                    @Param("endEstiArrvDt") LocalDate endEstiArrvDt
     );
 
     List<Lsshpd> findByShipId(String shipId);

@@ -1303,8 +1303,8 @@ public class JpaMoveService {
      * 이동처리 화면 조회시 이동지시 목록을 반환해주는 함수
      * @return 이동지시 목록 반환 DTO
      */
-    public MoveListResponseData getMoveList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId, String deliMethod, String blNo) {
-        List<Lsshpd> lsshpdList = this.getLsshpdMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, deliMethod, StringFactory.getGbTwo(), TrdstOrderStatus.C02.toString(), blNo); // shitStatus = 02
+    public MoveListResponseData getMoveList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId, String deliMethod, String blNo, LocalDate staEstiArrDt, LocalDate endEstiArrDt) {
+        List<Lsshpd> lsshpdList = this.getLsshpdMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, deliMethod, StringFactory.getGbTwo(), TrdstOrderStatus.C02.toString(), blNo, staEstiArrDt, endEstiArrDt); // shitStatus = 02
         // 03 : 주문이동지시, 04 : 상품이동지시인 애들만 남겨둠
         lsshpdList = lsshpdList.stream().filter(x->x.getShipGb().equals(StringFactory.getGbThree())||x.getShipGb().equals(StringFactory.getGbFour())).collect(Collectors.toList());
         if(lsshpdList.size()==0){
@@ -1328,13 +1328,13 @@ public class JpaMoveService {
     /**
      * 조건에 맞는 lsshpd의 리스트를 반환 (이동처리 대상 리스트(=이동지시리스트), 이동리스트 호출시 사용)
      */
-    private List<Lsshpd> getLsshpdMoveList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId, String deliMethod, String shipStatus, String statusCd, String blNo) {
+    private List<Lsshpd> getLsshpdMoveList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId, String deliMethod, String shipStatus, String statusCd, String blNo, LocalDate staEstiArrDt, LocalDate endEstiArrDt) {
 
 		System.out.println("getLsshpdMoveList");
 
         LocalDateTime start = startDt == null? Utilities.strToLocalDateTime(StringFactory.getStartDayT()) : startDt.atStartOfDay();
         LocalDateTime end = endDt == null? Utilities.strToLocalDateTime(StringFactory.getDoomDayT()) : endDt.atTime(23,59,59);
-        List<Lsshpd> lsshpdList = jpaLsshpdRepository.findLsshpdMoveList(start, end, shipId, assortId, assortNm, storageId, deliMethod, shipStatus, statusCd, blNo);
+        List<Lsshpd> lsshpdList = jpaLsshpdRepository.findLsshpdMoveList(start, end, shipId, assortId, assortNm, storageId, deliMethod, shipStatus, statusCd, blNo, staEstiArrDt, endEstiArrDt);
 
         return lsshpdList;
     }
@@ -1349,9 +1349,9 @@ public class JpaMoveService {
      * @param storageId
      * @return 이동리스트 조회 리스트 DTO 반환
      */
-    public MoveCompletedLIstReponseData getMovedList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId, String blNo) {
+    public MoveCompletedLIstReponseData getMovedList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId, String blNo, LocalDate staEstiArrDt, LocalDate endEstiArrDt) {
         MoveCompletedLIstReponseData moveCompletedLIstReponseData = new MoveCompletedLIstReponseData(startDt, endDt, shipId, assortId, assortNm, storageId, blNo);
-        List<Lsshpd> lsshpdList = this.getLsshpdMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, null, StringFactory.getGbFour(), TrdstOrderStatus.C03.toString(), blNo); // shiptStatus = 04
+        List<Lsshpd> lsshpdList = this.getLsshpdMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, null, StringFactory.getGbFour(), TrdstOrderStatus.C03.toString(), blNo, staEstiArrDt, endEstiArrDt); // shiptStatus = 04
         // lsshpm의 shipStatus가 04(출고)인 놈만 남기기
         lsshpdList = lsshpdList.stream().filter(x->x.getLsshpm().getShipStatus().equals(StringFactory.getGbFour())).collect(Collectors.toList());
         List<MoveCompletedLIstReponseData.Move> moveList = new ArrayList<>();
