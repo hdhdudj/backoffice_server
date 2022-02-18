@@ -145,6 +145,7 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
             "and (:assortId is null or trim(:assortId)='' or ld.assortId=:assortId) " +
             "and (:assortNm is null or trim(:assortNm)='' or it.assortNm like concat('%',:assortNm,'%')) " +
             "and (:storageId is null or trim(:storageId)='' or lm.oStorageId=:storageId) " +
+            "and (:blNo is null or trim(:blNo)='' or lm.blNo=:blNo) " +
             "and (:deliMethod is null or trim(:deliMethod)='' or lm.delMethod=:deliMethod)")
     List<Lsshpd> findLsshpdMoveList(@Param("start")LocalDateTime start,
                                     @Param("end")LocalDateTime end,
@@ -154,7 +155,9 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
                                     @Param("storageId")String storageId,
                                     @Param("deliMethod")String deliMethod,
                                     @Param("shipStatus")String shipStatus,
-                                    @Param("statusCd")String statusCd);
+                                    @Param("statusCd")String statusCd,
+                                    @Param("blNo")String blNo
+    );
 
     List<Lsshpd> findByShipId(String shipId);
 
