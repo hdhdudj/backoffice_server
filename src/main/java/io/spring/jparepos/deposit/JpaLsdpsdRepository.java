@@ -86,4 +86,14 @@ public interface JpaLsdpsdRepository extends JpaRepository<Lsdpsd, LsdpsdId> {
             "join fetch lsd.lspchd lpd " +
             "where lsm.depositDt = :excAppDt")
     List<Lsdpsd> findByDepositDt(@Param("excAppDt") LocalDateTime excAppDt);
+
+	@Query("select ld from Lsdpsd ld " + "left join fetch ld.lsdpsm lm " + "left join fetch lm.cmvdmr cm "
+			+ "left join fetch ld.itasrt it "
+			+ "left join fetch it.itbrnd ib " + "join fetch ld.ititmm itm " + "left join fetch itm.itvari1 itv1 "
+			+ "left join fetch itm.itvari2 itv2 " + "left join fetch itm.itvari3 itv3 "
+			+ "where ld.depositNo =:depositNo "
+			+ "and lm.depositGb=:depositGb " 
+			+ "order by ld.depositNo asc, ld.depositSeq asc")
+	List<Lsdpsd> findEtcItem(@Param("depositNo") String depositNo,@Param("depositGb") String depositGb);
+
 }

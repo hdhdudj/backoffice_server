@@ -37,6 +37,7 @@ import io.spring.model.deposit.entity.Lsdpss;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.deposit.request.DepositSelectDetailRequestData;
 import io.spring.model.deposit.request.InsertDepositEtcRequestData;
+import io.spring.model.deposit.response.DepositEtcItemResponseData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.deposit.response.DepositSelectDetailResponseData;
 import io.spring.model.deposit.response.DepositSelectListResponseData;
@@ -1003,4 +1004,29 @@ public class JpaDepositService {
 
 		return lsdpsm.getDepositNo();
 	}
+
+	public DepositEtcItemResponseData getDepositEtcItem(String etcId, String depositGb) {
+		Lsdpsm lsdpsm = jpaLsdpsmRepository.findByDepositNoAndDepositGb(etcId, depositGb);
+		List<Lsdpsd> l = jpaLsdpsdRepository.findEtcItem(etcId, depositGb);
+
+		if (lsdpsm == null) {
+			return null;
+		}
+
+		DepositEtcItemResponseData r = new DepositEtcItemResponseData(lsdpsm);
+
+		List<DepositEtcItemResponseData.Item> items = new ArrayList<>();
+
+		for (Lsdpsd o : l) {
+			DepositEtcItemResponseData.Item item = new DepositEtcItemResponseData.Item(o);
+
+			items.add(item);
+		}
+
+		r.setItems(items);
+
+		return r;
+
+	}
+
 }

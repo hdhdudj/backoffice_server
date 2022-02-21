@@ -22,6 +22,7 @@ import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.deposit.request.DepositSelectDetailRequestData;
 import io.spring.model.deposit.request.InsertDepositEtcRequestData;
+import io.spring.model.deposit.response.DepositEtcItemResponseData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.deposit.response.DepositSelectDetailResponseData;
 import io.spring.model.deposit.response.DepositSelectListResponseData;
@@ -227,6 +228,14 @@ public class DepositController {
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
 				depositNo);
 
+		return ResponseEntity.ok(res);
+	}
+
+	@GetMapping(path = "/etc/items/{etcId}")
+	public ResponseEntity getDepositEtcItem(@PathVariable String etcId) {
+
+		DepositEtcItemResponseData r = jpaDepositService.getDepositEtcItem(etcId, "11");
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
 		return ResponseEntity.ok(res);
 	}
 

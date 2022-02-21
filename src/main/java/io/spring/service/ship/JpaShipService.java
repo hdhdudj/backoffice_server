@@ -51,6 +51,7 @@ import io.spring.model.ship.request.InsertShipEtcRequestData;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
 import io.spring.model.ship.request.ShipSaveListData;
 import io.spring.model.ship.response.ShipCandidateListData;
+import io.spring.model.ship.response.ShipEtcItemResponseData;
 import io.spring.model.ship.response.ShipIndicateListData;
 import io.spring.model.ship.response.ShipIndicateSaveListResponseData;
 import io.spring.model.ship.response.ShipItemListData;
@@ -1006,5 +1007,31 @@ public class JpaShipService {
 
 		return lsdpsm.getDepositNo();
 	}
+
+	public ShipEtcItemResponseData getShipEtcItem(String etcId, String depositGb) {
+		Lsdpsm lsdpsm = jpaLsdpsmRepository.findByDepositNoAndDepositGb(etcId, depositGb);
+		List<Lsdpsd> l = jpaLsdpsdRepository.findEtcItem(etcId, depositGb);
+
+		if (lsdpsm == null) {
+			return null;
+		}
+
+		ShipEtcItemResponseData r = new ShipEtcItemResponseData(lsdpsm);
+
+		List<ShipEtcItemResponseData.Item> items = new ArrayList<>();
+
+		for (Lsdpsd o : l) {
+			ShipEtcItemResponseData.Item item = new ShipEtcItemResponseData.Item(o);
+
+			items.add(item);
+		}
+
+		r.setItems(items);
+
+		return r;
+
+	}
+
+
 
 }
