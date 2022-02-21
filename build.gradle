@@ -6,7 +6,7 @@ plugins {
     id 'eclipse'
 }
 
-ext['log4j2.version'] = '2.15.0'
+ext['log4j2.version'] = '2.17.0'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -40,6 +40,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.3'
     implementation 'org.flywaydb:flyway-core'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'joda-time:joda-time:2.10.6'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
@@ -105,15 +106,11 @@ dependencies {
     // https://mvnrepository.com/artifact/com.google.code.gson/gson
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
 
-// https://mvnrepository.com/artifact/commons-io/commons-io
-implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
-
-
 
     configurations.all {
         resolutionStrategy.eachDependency { DependencyResolveDetails details ->
             if (details.requested.group == 'org.apache.logging.log4j') {
-                details.useVersion '2.15.0'
+                details.useVersion '2.17.0'
             }
         }
     }
