@@ -229,10 +229,10 @@ public class MoveController {
                                            @RequestParam @Nullable String assortId,
                                            @RequestParam @Nullable String assortNm,
                                            @RequestParam @Nullable String blNo,
-                                           @RequestParam @Nullable LocalDate staEstiArrDt,
-                                           @RequestParam @Nullable LocalDate endEstiArrDt,
+                                           @RequestParam @Nullable LocalDate staEstiArrvDt,
+                                           @RequestParam @Nullable LocalDate endEstiArrvDt,
                                            @RequestParam @Nullable String storageId){
-        MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.getMovedList(startDt, endDt, shipId, assortId, assortNm, storageId, blNo, staEstiArrDt, endEstiArrDt);
+        MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.getMovedList(startDt, endDt, shipId, assortId, assortNm, storageId, blNo, staEstiArrvDt, endEstiArrvDt);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveCompletedLIstReponseData);
         return ResponseEntity.ok(res);
     }

@@ -1328,13 +1328,13 @@ public class JpaMoveService {
     /**
      * 조건에 맞는 lsshpd의 리스트를 반환 (이동처리 대상 리스트(=이동지시리스트), 이동리스트 호출시 사용)
      */
-    private List<Lsshpd> getLsshpdMoveList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId, String deliMethod, String shipStatus, String statusCd, String blNo, LocalDate staEstiArrDt, LocalDate endEstiArrDt) {
+    private List<Lsshpd> getLsshpdMoveList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId, String deliMethod, String shipStatus, String statusCd, String blNo, LocalDate staEstiArrvDt, LocalDate endEstiArrvDt) {
 
 		System.out.println("getLsshpdMoveList");
 
         LocalDateTime start = startDt == null? Utilities.strToLocalDateTime(StringFactory.getStartDayT()) : startDt.atStartOfDay();
         LocalDateTime end = endDt == null? Utilities.strToLocalDateTime(StringFactory.getDoomDayT()) : endDt.atTime(23,59,59);
-        List<Lsshpd> lsshpdList = jpaLsshpdRepository.findLsshpdMoveList(start, end, shipId, assortId, assortNm, storageId, deliMethod, shipStatus, statusCd, blNo, staEstiArrDt, endEstiArrDt);
+        List<Lsshpd> lsshpdList = jpaLsshpdRepository.findLsshpdMoveList(start, end, shipId, assortId, assortNm, storageId, deliMethod, shipStatus, statusCd, blNo, staEstiArrvDt, endEstiArrvDt);
 
         return lsshpdList;
     }
@@ -1349,9 +1349,9 @@ public class JpaMoveService {
      * @param storageId
      * @return 이동리스트 조회 리스트 DTO 반환
      */
-    public MoveCompletedLIstReponseData getMovedList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId, String blNo, LocalDate staEstiArrDt, LocalDate endEstiArrDt) {
+    public MoveCompletedLIstReponseData getMovedList(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId, String blNo, LocalDate staEstiArrvDt, LocalDate endEstiArrvDt) {
         MoveCompletedLIstReponseData moveCompletedLIstReponseData = new MoveCompletedLIstReponseData(startDt, endDt, shipId, assortId, assortNm, storageId, blNo);
-        List<Lsshpd> lsshpdList = this.getLsshpdMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, null, StringFactory.getGbFour(), TrdstOrderStatus.C03.toString(), blNo, staEstiArrDt, endEstiArrDt); // shiptStatus = 04
+        List<Lsshpd> lsshpdList = this.getLsshpdMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, null, StringFactory.getGbFour(), TrdstOrderStatus.C03.toString(), blNo, staEstiArrvDt, endEstiArrvDt); // shiptStatus = 04
         // lsshpm의 shipStatus가 04(출고)인 놈만 남기기
         lsshpdList = lsshpdList.stream().filter(x->x.getLsshpm().getShipStatus().equals(StringFactory.getGbFour())).collect(Collectors.toList());
         List<MoveCompletedLIstReponseData.Move> moveList = new ArrayList<>();
