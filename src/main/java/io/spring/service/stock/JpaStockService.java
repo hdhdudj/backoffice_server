@@ -119,7 +119,7 @@ public class JpaStockService {
 				imc_rack.setOwnerId(itasrt.getOwnerId());
 
 			} else {
-				imc_rack.setQty(ititmc.getQty() + qty);
+				imc_rack.setQty(imc_rack.getQty() + qty);
 
 			}
 			jpaItitmcRepository.save(imc_rack);

@@ -957,7 +957,7 @@ public class JpaShipService {
 
 			lsdpsdList.add(lsdpsd);
 
-			// index++;
+			index++;
 		}
 
 		int ind = lsdpsdList.size();
