@@ -242,7 +242,7 @@ public class GoodsController {
 
 	// @PathVariable("assortId") String assortId
 	@GetMapping(path = "/stock/storage/{storageId}")
-	public ResponseEntity getStockList(@PathVariable("assortId") String storageId,
+	public ResponseEntity getStockList(@PathVariable("storageId") String storageId,
 			@RequestParam @Nullable String vendorId, @RequestParam @Nullable String assortId,
 			@RequestParam @Nullable String assortNm) {
 
