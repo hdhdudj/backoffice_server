@@ -20,13 +20,14 @@ import lombok.Setter;
 @Setter
 public class MoveCompletedLIstReponseData {
     public MoveCompletedLIstReponseData(){}
-    public MoveCompletedLIstReponseData(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId){
-        this.startDt = startDt.toString();
-        this.endDt = endDt.toString();
+    public MoveCompletedLIstReponseData(LocalDate startDt, LocalDate endDt, String shipId, String assortId, String assortNm, String storageId, String blNo){
+        this.startDt = startDt == null? "" : startDt.toString();
+        this.endDt = endDt == null? "" : endDt.toString();
         this.shipId = shipId;
         this.assortId = assortId;
         this.assortNm = assortNm;
         this.storageId = storageId;
+        this.blNo = blNo;
     }
     public MoveCompletedLIstReponseData(MoveListExcelRequestData moveListExcelRequestData){
         this.startDt = moveListExcelRequestData.getStartDt().toString();
@@ -42,6 +43,7 @@ public class MoveCompletedLIstReponseData {
     private String assortId;
     private String assortNm;
     private String storageId;
+    private String blNo;
     private List<Move> moves;
 
     @Getter
