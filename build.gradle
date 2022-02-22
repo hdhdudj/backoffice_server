@@ -46,6 +46,10 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
     implementation 'junit:junit:4.13.1'
     implementation 'org.junit.jupiter:junit-jupiter:5.7.0'
+    
+    // https://mvnrepository.com/artifact/org.hibernate/hibernate-validator
+implementation group: 'org.hibernate', name: 'hibernate-validator', version: '6.2.0.Final'
+    
 
 
     // https://mvnrepository.com/artifact/com.mashape.unirest/unirest-java

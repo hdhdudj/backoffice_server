@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -22,6 +24,7 @@ import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.deposit.request.DepositSelectDetailRequestData;
 import io.spring.model.deposit.request.InsertDepositEtcRequestData;
+import io.spring.model.deposit.response.DepositEtcItemListResponseData;
 import io.spring.model.deposit.response.DepositEtcItemResponseData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.deposit.response.DepositSelectDetailResponseData;
@@ -214,11 +217,11 @@ public class DepositController {
 	 * @throws Exception
 	 */
 	@PostMapping(path = "/etc")
-	public ResponseEntity insertEtcDeposit(@RequestBody InsertDepositEtcRequestData reqData)
+	public ResponseEntity insertEtcDeposit(@RequestBody @Valid InsertDepositEtcRequestData reqData)
 			throws Exception {
 		log.debug("입고처리 호출");
 
-		System.out.println(reqData);
+		// System.out.println(reqData.getDepositDtLdt());
 
 		String depositNo = "";
 
@@ -235,6 +238,32 @@ public class DepositController {
 	public ResponseEntity getDepositEtcItem(@PathVariable String etcId) {
 
 		DepositEtcItemResponseData r = jpaDepositService.getDepositEtcItem(etcId, "11");
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
+		return ResponseEntity.ok(res);
+	}
+
+	@GetMapping(path = "/etc/items")
+	public ResponseEntity getDepositEtcItems(
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+			@RequestParam @Nullable String depositNo, @RequestParam @Nullable String assortId,
+			@RequestParam @Nullable String assortNm, @RequestParam @Nullable String storageId,
+			@RequestParam String depositGb) {
+
+		DepositEtcItemListResponseData r = null;
+
+		boolean isValid = true;
+
+		if (depositGb == null || depositGb.equals("") || !depositGb.substring(0, 1).equals("1")) {
+			isValid = false;
+			System.out.println("depositGb =>" + depositGb);
+		}
+
+		if (isValid) {
+			r = jpaDepositService.getDepositEtcItems(startDt, endDt, depositNo, assortId, assortNm, storageId,
+					depositGb);
+		}
+
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
 		return ResponseEntity.ok(res);
 	}

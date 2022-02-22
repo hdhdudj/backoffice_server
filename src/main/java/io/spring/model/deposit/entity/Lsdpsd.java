@@ -133,7 +133,8 @@ public class Lsdpsd extends CommonProps implements Serializable {
 		this.depositType = StringFactory.getGbTwo(); // 출고 02
 		this.siteGb = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
 		this.rackNo = o.getRackNo();
-		this.excAppDt = o.getEffStaDt(); // 재고 일자
+		this.excAppDt = LocalDateTime.parse(o.getEffStaDt(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // 재고
+																													// 일자
 	}
 
     @Id
