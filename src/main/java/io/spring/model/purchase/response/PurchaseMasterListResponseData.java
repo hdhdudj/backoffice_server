@@ -43,6 +43,7 @@ public class PurchaseMasterListResponseData {
             this.purchaseDt = Utilities.removeTAndTransToStr(lspchm.getPurchaseDt());
             this.purchaseGb = lspchm.getPurchaseGb();
             this.purchaseStatus = lspchm.getPurchaseStatus();
+            this.piNo = lspchm.getPiNo();
         }
         private String purchaseNo;
         private String siteOrderNo;
