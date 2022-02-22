@@ -1334,7 +1334,8 @@ public class JpaMoveService {
 
         LocalDateTime start = startDt == null? Utilities.strToLocalDateTime(StringFactory.getStartDayT()) : startDt.atStartOfDay();
         LocalDateTime end = endDt == null? Utilities.strToLocalDateTime(StringFactory.getDoomDayT()) : endDt.atTime(23,59,59);
-        List<Lsshpd> lsshpdList = jpaLsshpdRepository.findLsshpdMoveList(start, end, shipId, assortId, assortNm, storageId, deliMethod, shipStatus, statusCd, blNo, staEstiArrvDt, endEstiArrvDt);
+        boolean isEstiArrvDtNotExist = staEstiArrvDt == null && endEstiArrvDt == null;
+        List<Lsshpd> lsshpdList = jpaLsshpdRepository.findLsshpdMoveList(start, end, shipId, assortId, assortNm, storageId, deliMethod, shipStatus, statusCd, blNo, staEstiArrvDt, endEstiArrvDt, isEstiArrvDtNotExist);
 
         return lsshpdList;
     }

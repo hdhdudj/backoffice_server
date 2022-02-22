@@ -133,11 +133,11 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
             "join fetch ld.lsshpm lm " +
             "left join fetch ld.tbOrderDetail td " +
             "join fetch ld.itasrt it " +
-			"left join fetch it.itbrnd ib "
-			+
-			"join fetch ld.ititmm itm " + "left join fetch itm.itvari1 itv1 " + "left join fetch itm.itvari2 itv2 "
-			+ "left join fetch itm.itvari3 itv3 "
-			+
+			"left join fetch it.itbrnd ib "+
+			"join fetch ld.ititmm itm " +
+            "left join fetch itm.itvari1 itv1 " +
+            "left join fetch itm.itvari2 itv2 "+
+            "left join fetch itm.itvari3 itv3 "+
             "where case :shipStatus when '04' then lm.applyDay else lm.receiptDt end between :start and :end " +
             "and lm.masterShipGb in ('03', '04') " +
             "and lm.shipStatus=:shipStatus " +
@@ -147,7 +147,8 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
             "and (:assortNm is null or trim(:assortNm)='' or it.assortNm like concat('%',:assortNm,'%')) " +
             "and (:storageId is null or trim(:storageId)='' or lm.oStorageId=:storageId) " +
             "and (:blNo is null or trim(:blNo)='' or lm.blNo=:blNo) " +
-            "and (lm.estiArrvDt between COALESCE(:staEstiArrvDt, '0000-01-01') and COALESCE(:endEstiArrvDt, '9999-12-31')) " +
+            "and ((lm.estiArrvDt between COALESCE(:staEstiArrvDt, '0000-01-01') and COALESCE(:endEstiArrvDt, '9999-12-31')) " +
+            "or :isEstiArrvDtNotExist is true) " +
             "and (:deliMethod is null or trim(:deliMethod)='' or lm.delMethod=:deliMethod)")
     List<Lsshpd> findLsshpdMoveList(@Param("start")LocalDateTime start,
                                     @Param("end")LocalDateTime end,
@@ -160,7 +161,8 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
                                     @Param("statusCd")String statusCd,
                                     @Param("blNo")String blNo,
                                     @Param("staEstiArrvDt") LocalDate staEstiArrvDt,
-                                    @Param("endEstiArrvDt") LocalDate endEstiArrvDt
+                                    @Param("endEstiArrvDt") LocalDate endEstiArrvDt,
+                                    @Param("isEstiArrvDtNotExist") boolean isEstiArrvDtNotExist
     );
 
     List<Lsshpd> findByShipId(String shipId);
