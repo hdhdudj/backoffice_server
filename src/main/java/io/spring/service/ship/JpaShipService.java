@@ -51,6 +51,7 @@ import io.spring.model.ship.request.InsertShipEtcRequestData;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
 import io.spring.model.ship.request.ShipSaveListData;
 import io.spring.model.ship.response.ShipCandidateListData;
+import io.spring.model.ship.response.ShipEtcItemListResponseData;
 import io.spring.model.ship.response.ShipEtcItemResponseData;
 import io.spring.model.ship.response.ShipIndicateListData;
 import io.spring.model.ship.response.ShipIndicateSaveListResponseData;
@@ -987,6 +988,7 @@ public class JpaShipService {
 			HashMap<String, Object> m = new HashMap<String, Object>();
 
 			m.put("storageId", p.getStorageId());
+
 			m.put("effStaDt", o.getExcAppDt());
 			m.put("assortId", o.getAssortId());
 			m.put("itemId", o.getItemId());
@@ -1033,5 +1035,30 @@ public class JpaShipService {
 	}
 
 
+	public ShipEtcItemListResponseData getShipEtcItems(LocalDate startDt, LocalDate endDt, String depositNo,
+			String assortId, String assortNm, String storageId, String depositGb) {
+
+		LocalDateTime start = startDt.atStartOfDay();
+		LocalDateTime end = endDt.atTime(23, 59, 59);
+
+		List<Lsdpsd> l = jpaLsdpsdRepository.findEtcItems(start, end, depositNo, depositGb, assortId, assortNm,
+				storageId);
+
+
+		List<ShipEtcItemListResponseData.Item> items = new ArrayList<>();
+
+		ShipEtcItemListResponseData r = new ShipEtcItemListResponseData(startDt, endDt, assortId, assortNm,
+				depositNo, depositGb, storageId);
+
+		for (Lsdpsd o : l) {
+			ShipEtcItemListResponseData.Item item = new ShipEtcItemListResponseData.Item(o);
+			items.add(item);
+		}
+
+		r.setItems(items);
+
+		return r;
+
+	}
 
 }

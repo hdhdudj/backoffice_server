@@ -87,13 +87,28 @@ public interface JpaLsdpsdRepository extends JpaRepository<Lsdpsd, LsdpsdId> {
             "where lsm.depositDt = :excAppDt")
     List<Lsdpsd> findByDepositDt(@Param("excAppDt") LocalDateTime excAppDt);
 
-	@Query("select ld from Lsdpsd ld " + "left join fetch ld.lsdpsm lm " + "left join fetch lm.cmvdmr cm "
-			+ "left join fetch ld.itasrt it "
+	@Query("select ld from Lsdpsd ld " + "join fetch ld.lsdpsm lm " + "left join fetch lm.cmvdmr cm "
+			+ "join fetch ld.itasrt it "
 			+ "left join fetch it.itbrnd ib " + "join fetch ld.ititmm itm " + "left join fetch itm.itvari1 itv1 "
 			+ "left join fetch itm.itvari2 itv2 " + "left join fetch itm.itvari3 itv3 "
 			+ "where ld.depositNo =:depositNo "
 			+ "and lm.depositGb=:depositGb " 
 			+ "order by ld.depositNo asc, ld.depositSeq asc")
 	List<Lsdpsd> findEtcItem(@Param("depositNo") String depositNo,@Param("depositGb") String depositGb);
+
+	@Query("select ld from Lsdpsd ld " + "join fetch ld.lsdpsm lm " + "left join fetch lm.cmvdmr cm "
+			+ "join fetch ld.itasrt it " + "left join fetch it.itbrnd ib " + "join fetch ld.ititmm itm "
+			+ "left join fetch itm.itvari1 itv1 " + "left join fetch itm.itvari2 itv2 "
+			+ "left join fetch itm.itvari3 itv3 " + "where lm.depositDt between :start and :end "
+			+ "and (:depositNo is null or trim(:depositNo)='' or ld.depositNo=:depositNo) "
+			+ "and (:depositGb is null or trim(:depositGb)='' or  lm.depositGb=:depositGb) "
+			+ "and (:storageId is null or trim(:storageId)='' or lm.storeCd=:storageId) "
+			+ "and (:assortId is null or trim(:assortId)='' or it.assortId=:assortId) "
+			+ "and (:assortNm is null or trim(:assortNm)='' or it.assortNm like concat('%', :assortNm, '%')) "
+			+ "order by ld.depositNo asc, ld.depositSeq asc")
+	List<Lsdpsd> findEtcItems(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end,
+			@Param("depositNo") String depositNo, @Param("depositGb") String depositGb,
+			@Param("assortId") String assortId, @Param("assortNm") String assortNm,
+			@Param("storageId") String storageId);
 
 }

@@ -55,6 +55,8 @@ public class GetStockListResponseData {
 
 			this.brandNm = ititmc.getItasrt().getItbrnd() == null ? "" : ititmc.getItasrt().getItbrnd().getBrandNm();
 
+			this.itemGrade = ititmc.getItemGrade();
+
 		}
 
 		private String storageId;
@@ -74,6 +76,7 @@ public class GetStockListResponseData {
 		private Long moveQty;
 		private Float cost;
 		private String rackNo;
+		private String itemGrade;
 
 	}
 }

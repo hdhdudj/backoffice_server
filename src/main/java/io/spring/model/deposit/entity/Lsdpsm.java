@@ -46,7 +46,7 @@ public class Lsdpsm extends CommonProps {
 
 	public Lsdpsm(String depositNo, InsertDepositEtcRequestData p) {
 		this.depositNo = depositNo;
-		this.depositDt = p.getDepositDt();
+		this.depositDt = LocalDateTime.parse(p.getDepositDt(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 		this.storeCd = p.getStorageId();
 		this.siteGb = StringFactory.getGbOne(); // 01 하드코딩
 		this.depositGb = p.getDepositGb(); // 01 하드코딩
@@ -63,7 +63,8 @@ public class Lsdpsm extends CommonProps {
 	public Lsdpsm(String depositNo, InsertShipEtcRequestData p) {
 		// 기타출고
 		this.depositNo = depositNo;
-		this.depositDt = p.getShipDt();
+		this.depositDt = LocalDateTime.parse(p.getShipDt(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+		;
 		this.storeCd = p.getStorageId();
 		this.siteGb = StringFactory.getGbOne();
 		this.depositGb = p.getDepositGb();

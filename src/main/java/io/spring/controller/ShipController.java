@@ -23,6 +23,7 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.ship.request.InsertShipEtcRequestData;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
 import io.spring.model.ship.request.ShipSaveListData;
+import io.spring.model.ship.response.ShipEtcItemListResponseData;
 import io.spring.model.ship.response.ShipEtcItemResponseData;
 import io.spring.model.ship.response.ShipIndicateListData;
 import io.spring.model.ship.response.ShipIndicateSaveListResponseData;
@@ -237,32 +238,37 @@ public class ShipController {
 		return ResponseEntity.ok(res);
 	}
 
-	/*
-	 * @GetMapping(path = "/etc/items") public ResponseEntity
-	 * getEtcShipList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd")
-	 * LocalDate startDt,
-	 * 
-	 * @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
-	 * 
-	 * @RequestParam @Nullable String shipId, @RequestParam @Nullable String
-	 * assortId,
-	 * 
-	 * @RequestParam @Nullable String assortNm, @RequestParam @Nullable String
-	 * storageId,
-	 * 
-	 * @RequestParam @Nullable String vendorId) { ShipListDataResponse
-	 * shipListDataResponse = jpaShipService.getShipList(startDt, endDt, shipId,
-	 * assortId, assortNm, vendorId, TrdstOrderStatus.D02.toString(),
-	 * StringFactory.getGbFour(), storageId); ApiResponseMessage res = new
-	 * ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
-	 * shipListDataResponse); return ResponseEntity.ok(res); }
-	 */
+
 	@GetMapping(path = "/etc/items/{etcId}")
 	public ResponseEntity getShipEtcItem(@PathVariable String etcId) {
 
 		ShipEtcItemResponseData r = jpaShipService.getShipEtcItem(etcId, "21");
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
 				r);
+		return ResponseEntity.ok(res);
+	}
+
+	@GetMapping(path = "/etc/items")
+	public ResponseEntity getShipEtcItems(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+			@RequestParam @Nullable String depositNo, @RequestParam @Nullable String assortId,
+			@RequestParam @Nullable String assortNm, @RequestParam @Nullable String storageId,
+			@RequestParam @Nullable String depositGb) {
+
+		ShipEtcItemListResponseData r = null;
+
+		boolean isValid = true;
+
+		if (depositGb == null || depositGb.equals("") || !depositGb.substring(0, 1).equals("2")) {
+			isValid = false;
+			System.out.println("depositGb =>" + depositGb);
+		}
+
+		if (isValid) {
+			r = jpaShipService.getShipEtcItems(startDt, endDt, depositNo, assortId, assortNm, storageId, depositGb);
+		}
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
 		return ResponseEntity.ok(res);
 	}
 

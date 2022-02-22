@@ -37,6 +37,7 @@ import io.spring.model.deposit.entity.Lsdpss;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.deposit.request.DepositSelectDetailRequestData;
 import io.spring.model.deposit.request.InsertDepositEtcRequestData;
+import io.spring.model.deposit.response.DepositEtcItemListResponseData;
 import io.spring.model.deposit.response.DepositEtcItemResponseData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.deposit.response.DepositSelectDetailResponseData;
@@ -983,8 +984,10 @@ public class JpaDepositService {
 
 			HashMap<String, Object> m = new HashMap<String, Object>();
 
+
 			m.put("storageId", p.getStorageId());
-			m.put("effStaDt", p.getDepositDt());
+			m.put("effStaDt",
+					LocalDateTime.parse(p.getDepositDt(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 			m.put("assortId", o.getAssortId());
 			m.put("itemId", o.getItemId());
 			m.put("itemGrade", o.getItemGrade()); // 일단 정상품만 입고
@@ -1022,6 +1025,33 @@ public class JpaDepositService {
 
 			items.add(item);
 		}
+
+		r.setItems(items);
+
+		return r;
+
+	}
+
+	public DepositEtcItemListResponseData getDepositEtcItems(LocalDate startDt, LocalDate endDt, String depositNo,
+			String assortId, String assortNm, String storageId, String depositGb) {
+
+		LocalDateTime start = startDt.atStartOfDay();
+		LocalDateTime end = endDt.atTime(23, 59, 59);
+
+		List<Lsdpsd> l = jpaLsdpsdRepository.findEtcItems(start, end, depositNo, depositGb, assortId, assortNm,
+				storageId);
+
+		List<DepositEtcItemListResponseData.Item> items = new ArrayList<>();
+
+		DepositEtcItemListResponseData r = new DepositEtcItemListResponseData(startDt, endDt, assortId,
+				assortNm, depositNo, depositGb, storageId);
+
+		for (Lsdpsd o : l) {
+			DepositEtcItemListResponseData.Item item = new DepositEtcItemListResponseData.Item(o);
+			items.add(item);
+		}
+
+
 
 		r.setItems(items);
 

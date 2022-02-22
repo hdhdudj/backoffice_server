@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -44,4 +45,35 @@ public class CustomizeExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ErrorMessage(HttpStatus.FORBIDDEN.value(), new Date(), ex.getMessage(),
 				request.getDescription(false));
 	}
+
+	@Override
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+		String errorMessage = ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
+		String validationList = ex.getBindingResult().getFieldErrors().stream()
+				.map(fieldError -> fieldError.getDefaultMessage()).collect(Collectors.joining(","));
+		// List<String> validationList = ex.getBindingResult().getFieldErrors().stream()
+		// .map(fieldError ->
+		// fieldError.getDefaultMessage()).collect(Collectors.toList());
+
+//		System.out.println(validationList);
+		// String errMsg = "";
+//		for (String o : validationList) {
+		// if (errMsg.equals("")) {
+		// errMsg = o;
+//			} else {
+		// errMsg = errMsg + "^,^" + o;
+		// }
+
+//		}
+
+		ErrorMessage err = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), validationList,
+				request.getDescription(false));
+		
+		
+		return new ResponseEntity<>(err, status);
+	}
+
+
+
 }

@@ -45,7 +45,7 @@ public class ShipEtcItemResponseData {
 
 			this.assortId = lsdpsd.getAssortId();
 			this.itemId = lsdpsd.getAssortId();
-			this.itemKey = Utilities.addDashInMiddle(assortId, itemId);
+			this.goodsKey = Utilities.addDashInMiddle(assortId, itemId);
 			this.itemGrade = lsdpsd.getItemGrade();
 			this.assortNm = lsdpsd.getItasrt().getAssortNm();
 
@@ -72,7 +72,7 @@ public class ShipEtcItemResponseData {
 
 		private String assortId;
 		private String itemId;
-		private String itemKey;
+		private String goodsKey;
 
 		private String assortNm;
 		private String brandNm;
