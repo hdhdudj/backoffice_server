@@ -17,7 +17,7 @@ pipelines:
           deployment: test
           script:
             - echo `pwd`
-            - docker build -t erp-back-backoffice-dev:latest -f Dockerfile-dev .
+            - docker build -t erp-back-backoffice-dev:latest -f Dockerfile .
             - pipe: atlassian/aws-ecr-push-image:1.5.0
               variables:
                 AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
@@ -25,17 +25,17 @@ pipelines:
                 AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
                 AWS_REGISTRY_URL: $AWS_REGISTRY_URL
                 IMAGE_NAME: erp-back-backoffice-dev
-      - step:
-      name: ssh script run
-      image: atlassian/pipelines-awscli
-      script:
-        - echo run
-        - pipe: atlassian/ssh-run:0.4.0
-          variables:
-            SSH_USER: $SSH_USER
-            SERVER: $SERVER
-            #  MODE: "script"
-            COMMAND: "echo $HOSTNAME;pwd;./deploy-master.sh"
+#      - step:
+#      name: ssh script run
+#      image: atlassian/pipelines-awscli
+#      script:
+#        - echo run
+#        - pipe: atlassian/ssh-run:0.4.0
+#          variables:
+#            SSH_USER: $SSH_USER
+#            SERVER: $SERVER
+#            #  MODE: "script"
+#            COMMAND: "echo $HOSTNAME;pwd;./deploy-master.sh"
 definitions:
   services:
     docker:
