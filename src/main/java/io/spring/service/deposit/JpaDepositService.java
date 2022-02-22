@@ -284,6 +284,10 @@ public class JpaDepositService {
 
 			String depositSeq = StringUtils.leftPad(Integer.toString(index), 4, '0');
 			Lsdpsd lsdpsd = new Lsdpsd(lsdpsm, depositSeq, deposit);
+
+			String rackNo = this.getDefaultRack(lsdpsm.getStoreCd(), deposit.getRackNo()); //
+			lsdpsd.setRackNo(rackNo);
+
 			jpaLsdpsdRepository.save(lsdpsd);
 
 			lsdpsdList.add(lsdpsd);

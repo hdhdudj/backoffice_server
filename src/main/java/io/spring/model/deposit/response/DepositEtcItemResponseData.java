@@ -44,7 +44,7 @@ public class DepositEtcItemResponseData {
 
 
 			this.assortId = lsdpsd.getAssortId();
-			this.itemId = lsdpsd.getAssortId();
+			this.itemId = lsdpsd.getItemId();
 
 			this.goodsKey = Utilities.addDashInMiddle(assortId, itemId);
 
