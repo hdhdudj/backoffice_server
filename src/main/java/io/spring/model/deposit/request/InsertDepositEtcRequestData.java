@@ -20,6 +20,7 @@ public class InsertDepositEtcRequestData {
 	private String depositDt;
 	@NotNull(message = "storageId는 필수 값입니다.")
     private String storageId;
+
 	@NotNull(message = "vendorId는 필수 값입니다.")
 	private String vendorId = "AAAAAA"; // AAAAAA trdst 고정
 	@NotNull(message = "depositGb는 필수 값입니다.")

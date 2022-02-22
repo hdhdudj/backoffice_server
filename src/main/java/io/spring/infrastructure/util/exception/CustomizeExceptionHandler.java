@@ -50,20 +50,24 @@ public class CustomizeExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
 		String errorMessage = ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
-		List<String> validationList = ex.getBindingResult().getFieldErrors().stream()
-				.map(fieldError -> fieldError.getDefaultMessage()).collect(Collectors.toList());
-		System.out.println(validationList);
-		String errMsg = "";
-		for (String o : validationList) {
-			if (errMsg.equals("")) {
-				errMsg = o;
-			} else {
-				errMsg = errMsg + "^,^" + o;
-			}
+		String validationList = ex.getBindingResult().getFieldErrors().stream()
+				.map(fieldError -> fieldError.getDefaultMessage()).collect(Collectors.joining(","));
+		// List<String> validationList = ex.getBindingResult().getFieldErrors().stream()
+		// .map(fieldError ->
+		// fieldError.getDefaultMessage()).collect(Collectors.toList());
 
-		}
+//		System.out.println(validationList);
+		// String errMsg = "";
+//		for (String o : validationList) {
+		// if (errMsg.equals("")) {
+		// errMsg = o;
+//			} else {
+		// errMsg = errMsg + "^,^" + o;
+		// }
 
-		ErrorMessage err = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), errMsg,
+//		}
+
+		ErrorMessage err = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), validationList,
 				request.getDescription(false));
 		
 		
