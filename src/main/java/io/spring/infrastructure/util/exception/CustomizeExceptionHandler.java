@@ -46,6 +46,16 @@ public class CustomizeExceptionHandler extends ResponseEntityExceptionHandler {
 				request.getDescription(false));
 	}
 
+
+	@ExceptionHandler(value = ReqCheckException.class)
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	public ErrorMessage handleReqCheckException(ReqCheckException ex, WebRequest request) {
+		System.out.println(ex.getMessage());
+
+		return new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), new Date(), ex.getMessage(),
+				request.getDescription(false));
+	}
+
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {

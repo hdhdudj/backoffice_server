@@ -58,6 +58,14 @@ public class MyBatisCommonService {
 			return o;
 		}
 
+
+
+		public HashMap<String, Object> checkRack(HashMap<String, Object> param) {
+			HashMap<String, Object> o = myBatisCommonDao.checkRack(param);
+
+			return o;
+		}
+
 		public LinkedList<String> findUpperCategory(String categoryId) {
 			
 			System.out.println("findUpperCategory");

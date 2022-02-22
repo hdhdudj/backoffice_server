@@ -22,6 +22,8 @@ public interface CommonMapper {
 
 	HashMap<String, Object> getCommonDefaultRack(HashMap<String, Object> param);
 
+	HashMap<String, Object> checkRack(HashMap<String, Object> param);
+
 
 
 }

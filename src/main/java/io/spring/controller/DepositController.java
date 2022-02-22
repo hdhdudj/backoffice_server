@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.infrastructure.util.exception.ReqCheckException;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.model.deposit.request.DepositInsertRequestData;
 import io.spring.model.deposit.request.DepositSelectDetailRequestData;
@@ -34,6 +36,7 @@ import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.deposit.JpaDepositService;
 import io.spring.service.purchase.JpaPurchaseService;
+import io.spring.service.stock.JpaStockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,6 +50,7 @@ public class DepositController {
     private final JpaPurchaseService jpaPurchaseService;
     private final JpaCommonService jpaCommonService;
 
+	private final JpaStockService jpaStockService;
 
 //    @PostMapping(path="") // create
 //    public ResponseEntity createDepositJpa(@RequestBody DepositInsertRequestData depositInsertRequestData){
@@ -217,13 +221,29 @@ public class DepositController {
 	 * @throws Exception
 	 */
 	@PostMapping(path = "/etc")
-	public ResponseEntity insertEtcDeposit(@RequestBody @Valid InsertDepositEtcRequestData reqData)
+	public ResponseEntity insertEtcDeposit(@RequestBody @Valid InsertDepositEtcRequestData reqData,
+			BindingResult bindingResult)
 			throws Exception {
 		log.debug("입고처리 호출");
 
-		// System.out.println(reqData.getDepositDtLdt());
-
 		String depositNo = "";
+
+		String storageId = reqData.getStorageId();
+		
+		for (InsertDepositEtcRequestData.Item o : reqData.getItems()) {
+			boolean isCheckRack = jpaStockService.checkRack(storageId, o.getRackNo());
+
+			
+			
+			String errMsg = "not found rackNo => " + o.getRackNo();
+			
+			if (!isCheckRack) {
+				throw new ReqCheckException(errMsg); // runtime error 여서 롤백처리가능
+			}
+
+		}
+
+		log.debug("aaaa");
 
 		List<String> messageList = new ArrayList<>();
 		depositNo = jpaDepositService.insertEtcDeposit(reqData);
