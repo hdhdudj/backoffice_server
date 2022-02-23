@@ -29,6 +29,7 @@ import io.spring.model.order.request.OrderStockMngInsertRequestData;
 import io.spring.model.order.response.CancelOrderListResponse;
 import io.spring.model.order.response.OrderDetailResponseData;
 import io.spring.model.order.response.OrderMasterListResponseData;
+import io.spring.model.order.response.OrderStatusWatingItemListResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.order.JpaOrderService;
 import io.spring.service.order.MyBatisOrderService;
@@ -515,6 +516,21 @@ public class OrderController {
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
 		return ResponseEntity.ok(res);
 
+	}
+
+	// 미발주
+	// unpurchased
+	@GetMapping(path = "/waitStatus/items")
+	public ResponseEntity getOrderStatusWatingItems(@RequestParam String statusCd, @RequestParam int waitCnt) {
+
+		OrderStatusWatingItemListResponseData r = jpaOrderService.getOrderStatusWatingItems(statusCd, waitCnt);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
+		if (res == null) {
+			return null;
+		}
+
+		return ResponseEntity.ok(res);
 	}
 
 }

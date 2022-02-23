@@ -73,6 +73,8 @@ public class TbOrderMaster extends CommonProps {
     private String orderTel; // 주문자 전화
     private String orderHp; // 주문자 폰
 
+	private LocalDateTime payDt;
+
     @JoinColumn(name = "custId", referencedColumnName = "custId", insertable = false, updatable = false, foreignKey = @ForeignKey(name = "none"))
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore

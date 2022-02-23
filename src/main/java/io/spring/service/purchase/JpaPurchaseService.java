@@ -1713,4 +1713,5 @@ public class JpaPurchaseService {
 		return true;
 	}
 
+
 }

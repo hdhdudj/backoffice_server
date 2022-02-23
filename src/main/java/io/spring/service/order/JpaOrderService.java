@@ -3,6 +3,7 @@ package io.spring.service.order;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +58,7 @@ import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
 import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.order.request.OrderStockMngInsertRequestData;
+import io.spring.model.order.response.OrderStatusWatingItemListResponseData;
 import io.spring.model.purchase.entity.Lspchb;
 import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.ship.entity.Lsshpd;
@@ -1107,6 +1109,28 @@ public class JpaOrderService {
 		return true;
 	}
 
+	// 미발주조회
+
+	public OrderStatusWatingItemListResponseData getOrderStatusWatingItems(String statusCd, int waitCnt) {
+
+		List<TbOrderDetail> l = jpaTbOrderDetailRepository.findOrderStatusWatingDay(statusCd, waitCnt);
+
+		OrderStatusWatingItemListResponseData r = new OrderStatusWatingItemListResponseData(statusCd, waitCnt);
+
+		List<OrderStatusWatingItemListResponseData.Item> items = new ArrayList<>();
+		
+		for (TbOrderDetail o : l) {
+
+			OrderStatusWatingItemListResponseData.Item item = new OrderStatusWatingItemListResponseData.Item(o);
+
+			items.add(item);
+		}
+
+		r.setItems(items);
+
+		return r;
+
+	}
 
 }
 

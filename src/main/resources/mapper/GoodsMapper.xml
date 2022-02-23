@@ -216,6 +216,7 @@
 			,aaa.assortNm assortNm
 			,aaa.shortageYn shortageYn
 			,aaa.itemId
+			,concat(aaa.assortId,'-',aaa.itemId) goodsKey
 			,aaa.itemShortageYn
 			,aaa.optionNm1
 			,aaa.optionNm2
