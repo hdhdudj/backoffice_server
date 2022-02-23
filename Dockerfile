@@ -2,7 +2,7 @@ FROM gradle:jdk-alpine
 
 WORKDIR /backoffice_server
 
-EXPOSE 8081
+EXPOSE 8080
 
 USER root
 
