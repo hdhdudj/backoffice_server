@@ -34,7 +34,7 @@ public class OrderStatusWatingItemListResponseData {
 			this.custNm = tod.getTbOrderMaster().getOrderName();
 			this.assortId = tod.getAssortId();
 			this.itemId = tod.getItemId();
-			this.goodsKey = Utilities.addDashInMiddle(this.itemId, this.itemId);
+			this.goodsKey = Utilities.addDashInMiddle(this.assortId, this.itemId);
 			this.assortNm = tod.getGoodsNm();
 			this.optionInfo = tod.getOptionInfo();
 			this.optionNm1 = tod.getItitmm().getItvari1() == null ? "" : tod.getItitmm().getItvari1().getOptionNm();
