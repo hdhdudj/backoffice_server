@@ -35,7 +35,7 @@ pipelines:
                 SSH_USER: $SSH_USER
                 SERVER: $SERVER
                 #  MODE: "script"
-                COMMAND: "echo $HOSTNAME;pwd;./deploy-master.sh"
+                COMMAND: "echo $HOSTNAME;pwd;cd trdst_back_office;./deploy-test.sh"
 definitions:
   services:
     docker:
