@@ -277,6 +277,7 @@ public class JpaDepositService {
 	private List<Lsdpsd> insertEtcLsdpsd(InsertDepositEtcRequestData p, Lsdpsm lsdpsm) {
 		int index = 1;
 
+
 		List<Lsdpsd> lsdpsdList = new ArrayList<>();
 		
 		for (InsertDepositEtcRequestData.Item deposit : p.getItems()) {
@@ -973,6 +974,9 @@ public class JpaDepositService {
 
 	@Transactional
 	public String insertEtcDeposit(InsertDepositEtcRequestData p) throws Exception {
+
+
+
 
 		// 1. lsdpsm 저장
 		Lsdpsm lsdpsm = this.insertEtcLsdpsm(p);

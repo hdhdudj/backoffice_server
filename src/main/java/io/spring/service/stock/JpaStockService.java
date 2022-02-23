@@ -593,6 +593,31 @@ public class JpaStockService {
 
 	}
 
+	public boolean checkRack(String storageId, String rackNo) {
+
+		boolean isCheck = false;
+		String r = "";
+
+		if (rackNo.equals("999999")) {
+			isCheck = true;
+		} else {
+			HashMap<String, Object> p = new HashMap<String, Object>();
+			p.put("storageId", storageId);
+			p.put("rackNo", rackNo);
+
+
+			HashMap<String, Object> o = myBatisCommonService.checkRack(p);
+
+			if (o != null) {
+				isCheck = true;
+			}
+
+		}
+
+		return isCheck;
+
+	}
+
 	public List<Ititmc> getItitmc(String storageId, String purchaseVendorId, String assortId, String assortNm) {
 
 		// 랙재고를 가져옴.

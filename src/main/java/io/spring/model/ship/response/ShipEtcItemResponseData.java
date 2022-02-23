@@ -44,7 +44,7 @@ public class ShipEtcItemResponseData {
 			this.depositKey = Utilities.addDashInMiddle(depositNo, depositSeq);
 
 			this.assortId = lsdpsd.getAssortId();
-			this.itemId = lsdpsd.getAssortId();
+			this.itemId = lsdpsd.getItemId();
 			this.goodsKey = Utilities.addDashInMiddle(assortId, itemId);
 			this.itemGrade = lsdpsd.getItemGrade();
 			this.assortNm = lsdpsd.getItasrt().getAssortNm();

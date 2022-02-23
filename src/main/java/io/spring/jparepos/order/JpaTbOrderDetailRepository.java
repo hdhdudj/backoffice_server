@@ -1,13 +1,14 @@
 package io.spring.jparepos.order;
 
-import io.spring.model.order.entity.TbOrderDetail;
-import io.spring.model.order.idclass.TbOrderDetailId;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.order.idclass.TbOrderDetailId;
 
 
 public interface JpaTbOrderDetailRepository extends JpaRepository<TbOrderDetail, TbOrderDetailId> {
@@ -53,6 +54,22 @@ public interface JpaTbOrderDetailRepository extends JpaRepository<TbOrderDetail,
                                              @Param("assortNm") String assortNm,
                                              @Param("statusCd") String statusCd
                                              );
+
+												@Query("select td from TbOrderDetail td "
+														+ "join fetch td.tbOrderMaster to "
+														+ "join fetch td.ititmm itm " + "join fetch itm.itasrt it "
+														+ "left join fetch it.itbrnd ib "
+														+ "left join fetch itm.itvari1 itv1 "
+														+ "left join fetch itm.itvari2 itv2 "
+														+ "left join fetch itm.itvari3 itv3 "
+														+ "left join fetch it.cmvdmr cm "
+														+ "where td.statusCd=:statusCd "
+														+ "and datediff(current_timestamp,to.payDt) > :waitCnt "
+
+												)
+												List<TbOrderDetail> findOrderStatusWatingDay(
+														@Param("statusCd") String statusCd,
+														@Param("waitCnt") int waitCnt);
 
     @Query("select tod from TbOrderDetail tod " +
             "where (tod.orderId = :orderId and tod.orderSeq = :orderSeq) or (tod.orderId = :orderId and tod.parentOrderSeq = :orderSeq)")
