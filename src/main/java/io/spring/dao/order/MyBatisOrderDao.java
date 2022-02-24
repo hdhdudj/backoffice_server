@@ -24,4 +24,6 @@ public interface MyBatisOrderDao {
 
 	HashMap<String, Object> getOrderStatusDate(HashMap<String, Object> param);
 
+	List<HashMap<String, Object>> getSpecialOrderMasterList(HashMap<String, Object> param);
+
 }

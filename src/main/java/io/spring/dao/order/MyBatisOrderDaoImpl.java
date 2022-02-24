@@ -56,5 +56,10 @@ public class MyBatisOrderDaoImpl implements MyBatisOrderDao {
 		return orderMapper.getOrderStatusDate(param);
 	}
 
+	@Override
+	public List<HashMap<String, Object>> getSpecialOrderMasterList(HashMap<String, Object> param) {
+		return orderMapper.getSpecialOrderMasterList(param);
+	}
+
 }
 

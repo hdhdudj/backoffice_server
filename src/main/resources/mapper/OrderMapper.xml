@@ -233,7 +233,17 @@ from (select aa.channel_gb channel_gb,
 			<![CDATA[
 				and tom.channel_order_no =#{channelOrderNo}
 			]]>
+		</if>
+		<if test='assortId != null'>
+			<![CDATA[
+				and tod.assort_id =#{assortId}
+			]]>
 		</if>	
+		<if test='assortNm != null'>
+			<![CDATA[
+				and ita.assort_nm like concat('%',#{assortNm},'%')
+			]]>
+		</if>						
 	
 	</select>
 
@@ -612,6 +622,68 @@ and lm.ship_status <> 'X1'
 		
 		</select>
 	
+	<!-- 특별관리 주문리스트 -->
+	<select id="getSpecialOrderMasterList" parameterType="java.util.HashMap"  resultType="HashMap">
+	<![CDATA[
+		select tom.channel_gb channelGb
+		,tom.order_date orderDate
+		,tom.order_id orderId
+		,tod.order_seq orderSeq
+		,case
+		when SUBSTR(order_status FROM 1 FOR 1) in ('s','d','g','p') then
+			'결제완료'
+		when SUBSTR(order_status FROM 1 FOR 1) ='o' then
+		'결제전'	
+		else
+		'결제실패 및 취소'
+		end payStatus
+		,tom.channel_order_no channelOrderNo 
+		,tod.channel_order_seq channelOrderSeq
+		 ,tom.cust_id custId
+		 ,tom.order_name custNm
+		 ,tom.order_hp custHp
+		 ,tom.order_tel custTel
+		 ,tod.goods_nm goodsNm
+		 ,ita.assort_id assortId
+		 ,itm.item_id itemId
+		 ,tod.status_cd orderStatus
+		,(select iv.option_nm from itvari iv where iv.assort_id = itm.assort_id and iv.seq = itm.variation_seq1 and iv.variation_gb='01' and del_yn='02' ) optionNm1
+		,(select iv.option_nm from itvari iv where iv.assort_id = itm.assort_id and iv.seq = itm.variation_seq2 and iv.variation_gb='02' and del_yn='02' ) optionNm2
+		,(select iv.option_nm from itvari iv where iv.assort_id = itm.assort_id and iv.seq = itm.variation_seq3 and iv.variation_gb='03' and del_yn='03' ) optionNm3
+		,tod.qty qty
+		,tod.goods_price goodsPrice
+		,tod.deli_price deliPrice
+		,tod.deli_method deliMethod
+		,tod.delivery_info deliveryInfo
+		,tod.scm_no scmNo
+		,tom.total_goods_price totalGoodsPrice
+		,tom.total_delivery_charge  totalDeliveryCharge
+		,tom.total_goods_price +  tom.total_delivery_charge totalPrice
+		,tom.order_amt orderAmt
+		,tom.pay_gb payGb
+		,tom.pay_dt payDt
+-- 		,tma.deli_nm deliNm
+		,tma.deli_nm deliNm
+		,tma.deli_hp deliHp
+		,tma.deli_tel deliTel
+		,tma.deli_addr1 deliAddr
+		from tb_order_detail tod
+		inner join tb_order_master as tom
+		    on tom.order_id = tod.order_id
+		JOIN itasrt as ita
+		    on tod.assort_id = ita.assort_id
+		LEFT OUTER JOIN ititmm as itm
+		    on tod.assort_id = itm.assort_id and tod.item_id = itm.item_id
+		 LEFT OUTER JOIN tb_member AS tm    -- A_TABLE 기준
+		              ON tom.cust_id = tm.cust_id
+		 LEFT OUTER JOIN tb_member_address AS tma    -- A_TABLE 기준
+			  ON tom.deli_id = tma.deli_id
+		where  1=1
+		and tom.order_date between #{startDt} and  #{endDt}
+		and ita.assort_nm like '%Saarinen%198%'
+	]]>
 	
+	
+	</select>	
 	
 </mapper>

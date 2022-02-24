@@ -162,4 +162,25 @@ public class MyBatisOrderService {
 
 	}
 
+	public List<OrderMasterListResponseData> getSpecialOrderMasterList(HashMap<String, Object> map) {
+
+		List<HashMap<String, Object>> list = myBatisOrderDao.getSpecialOrderMasterList(map);
+
+		List<OrderMasterListResponseData> orderMasterListDataListResponseList = new ArrayList<>();
+
+		for (HashMap<String, Object> o : list) {
+
+			// HashMap<String, Object> m = new HashMap<String, Object>();
+
+			// m = myBatisOrderDao.getOrderStatusDate(o);
+
+			OrderMasterListResponseData orderMasterListResponseData = new OrderMasterListResponseData(o);
+			orderMasterListResponseData.setScmNm(this.matchScmNoToScmNm(orderMasterListResponseData.getScmNo()));
+
+			orderMasterListDataListResponseList.add(orderMasterListResponseData);
+		}
+
+		return orderMasterListDataListResponseList;
+	}
+
 }
