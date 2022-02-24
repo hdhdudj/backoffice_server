@@ -1,5 +1,6 @@
 package io.spring.service.order;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import io.spring.dao.order.MyBatisOrderDao;
 import io.spring.enums.Scm;
+import io.spring.infrastructure.util.Utilities;
 import io.spring.model.order.response.CancelOrderListResponse;
 import io.spring.model.order.response.OrderDetailListResponse;
 import io.spring.model.order.response.OrderDetailResponseData;
@@ -28,8 +30,33 @@ public class MyBatisOrderService {
 		List<OrderMasterListResponseData> orderMasterListDataListResponseList = new ArrayList<>();
 
 		for (HashMap<String, Object> o : list) {
+			
+			HashMap<String, Object> m = new HashMap<String, Object>();
+			
+			m = myBatisOrderDao.getOrderStatusDate(o);
+			
+			System.out.println("******************************************************************");
+			System.out.println(m);
+
+
 			OrderMasterListResponseData orderMasterListResponseData = new OrderMasterListResponseData(o);
 			orderMasterListResponseData.setScmNm(this.matchScmNoToScmNm(orderMasterListResponseData.getScmNo()));
+
+
+			orderMasterListResponseData.setPurchaseCompleteDt(
+					m.get("purchaseCompleteDt") == null ? ""
+							: Utilities.removeTAndTransToStr((LocalDateTime) m.get("purchaseCompleteDt")));
+			orderMasterListResponseData
+					.setMakeCompleteDt(m.get("makeCompleteDt") == null ? ""
+							: m.get("makeCompleteDt").toString());
+			orderMasterListResponseData
+					.setShipmentDt(m.get("shipmentDt") == null ? "" : m.get("shipmentDt").toString());
+			orderMasterListResponseData
+					.setEstiArrvDt(m.get("estiArrvDt") == null ? "" : m.get("estiArrvDt").toString());
+
+			orderMasterListResponseData.setCancelDt(
+					m.get("cancelDt") == null ? "" : Utilities.removeTAndTransToStr((LocalDateTime) m.get("cancelDt")));
+
 			orderMasterListDataListResponseList.add(orderMasterListResponseData);
 		}
 

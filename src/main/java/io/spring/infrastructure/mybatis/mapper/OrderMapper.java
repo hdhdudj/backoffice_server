@@ -19,4 +19,6 @@ public interface OrderMapper {
 	List<HashMap<String, Object>> getOrderDetailList(HashMap<String, Object> param);
 	
 	List<HashMap<String, Object>> getOrderCancelList(HashMap<String, Object> param);
+
+	HashMap<String, Object> getOrderStatusDate(HashMap<String, Object> param);
 }
