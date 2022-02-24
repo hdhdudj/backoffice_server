@@ -107,10 +107,10 @@ public class OrderMasterListResponseData {
 	private String deliHp;
 	private String deliTel;
 	private String deliAddr;
-	private String purchaseCompleteDt;
-	private String makeCompleteDt;
-	private String shipmentDt;
-	private String estiArrvDt;
-	private String cancelDt;
+//		private String purchaseCompleteDt;
+	// private String makeCompleteDt;
+	// private String shipmentDt;
+	// private String estiArrvDt;
+	// private String cancelDt;
 
 }

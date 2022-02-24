@@ -362,7 +362,6 @@ from (select aa.channel_gb channel_gb,
 		,tom.order_addr1  custAddr1
 		,tom.order_addr2 custAddr2
 -- 		,tma.deli_nm  deliNm
-		,iom.receiver_name deliNm
 		,tma.deli_tel  deliTel
 		,tma.deli_hp  deliHp
 		,tma.deli_zipcode  deliZipcode
@@ -377,10 +376,8 @@ from (select aa.channel_gb channel_gb,
 		from tb_order_master tom
 		,tb_member tm 
 		,tb_member_address tma
-		,if_order_master iom
 		where tom.order_id =#{orderId}
 		and tom.cust_id  = tm.cust_id 
-		and tom.order_id  = iom.order_id
 		and tom.deli_id  = tma.deli_id
 		
 		
