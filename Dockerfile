@@ -22,4 +22,4 @@ WORKDIR /backoffice_server
 COPY --from=0 /backoffice_server/build/libs/backoffice_server-0.0.1-SNAPSHOT.jar .
 
 #ENTRYPOINT java -jar backoffice_server-0.0.1-SNAPSHOT.jar
-#ENTRYPOINT java -Dlog4j2.formatMsgNoLookups=true -jar ./backoffice_server-0.0.1-SNAPSHOT.jar --spring.config.location=./config/application.properties,./config/kakaobizmessage.yml /bin/sh
+ENTRYPOINT java -Dlog4j2.formatMsgNoLookups=true -jar ./backoffice_server-0.0.1-SNAPSHOT.jar --spring.config.location=./config/application.properties,./config/kakaobizmessage.yml
