@@ -6,7 +6,7 @@ options:
 
 pipelines:
   branches:
-    feature/tmp:
+    dev:
       - step:
           name: Build and Push Docker Image
           image: atlassian/pipelines-awscli
@@ -25,17 +25,17 @@ pipelines:
                 AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
                 AWS_REGISTRY_URL: $AWS_REGISTRY_URL
                 IMAGE_NAME: erp-back-backoffice-dev
-#      - step:
-#      name: ssh script run
-#      image: atlassian/pipelines-awscli
-#      script:
-#        - echo run
-#        - pipe: atlassian/ssh-run:0.4.0
-#          variables:
-#            SSH_USER: $SSH_USER
-#            SERVER: $SERVER
-#            #  MODE: "script"
-#            COMMAND: "echo $HOSTNAME;pwd;./deploy-master.sh"
+      - step:
+          name: ssh script run
+          image: atlassian/pipelines-awscli
+          script:
+            - echo run
+            - pipe: atlassian/ssh-run:0.4.0
+              variables:
+                SSH_USER: $SSH_USER
+                SERVER: $SERVER
+                #  MODE: "script"
+                COMMAND: "echo $HOSTNAME;pwd;cd trdst_back_office;./deploy-test.sh"
 definitions:
   services:
     docker:
