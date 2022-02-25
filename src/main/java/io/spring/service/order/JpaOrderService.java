@@ -224,7 +224,7 @@ public class JpaOrderService {
         orderLog.setPrevStatus(prevStatus);
         jpaOrderLogRepository.save(orderLog);
     }
-    
+
     /**
      * 직구(해외창고 -> 국내(현지)주문자)일 때 주문상태 처리 함수
      * Ititmc : 상품재고

@@ -38,5 +38,5 @@ pipelines:
                 COMMAND: "echo $HOSTNAME;pwd;cd trdst_back_office;./deploy-test.sh"
 definitions:
   services:
-    docker:
-      memory: 4096
+  docker:
+    memory: 4096
