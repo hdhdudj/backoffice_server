@@ -586,39 +586,39 @@ select aa.channel_gb channelGb
 	
 	
 	<select id="getOrderStatusDate" parameterType="java.util.HashMap"  resultType="HashMap">
-	<![CDATA[
-select  
-aaa.status_b02 purchaseCompleteDt
-,bbb.make_complete_dt makeCompleteDt 
-,bbb.shipment_dt shipmentDt
-,bbb.esti_arrv_dt estiArrvDt
-,aaa.status_X01 cancelDt
-from (
-select 
-min(case  
-when status_cd ='B02' then eff_start_dt end) status_B02
-,min(case  
-when status_cd ='X01' then eff_start_dt end) status_X01
-from tb_order_history toh
-where toh.order_id  = #{orderId}
-and toh.order_seq =#{orderSeq}
-) aaa,
-(select 
-max(lm.shipment_dt)  shipment_dt
-,max(lm.esti_arrv_dt) esti_arrv_dt
-,max(case 
-when lm.shipment_dt is not null then date_add(lm.shipment_dt,interval -30 day )
-end) make_complete_dt 
-from  lsshpd ld
-,lsshpm lm
-where 1=1  
-and ld.order_id  = #{orderId}
-and ld.order_seq =#{orderSeq}
-and ld.ship_id =lm.ship_id 
-and lm.ship_gb='02'
-and lm.ship_status <> 'X1'
-) bbb
-	]]>
+				<![CDATA[
+			select  
+			aaa.status_b02 purchaseCompleteDt
+			,bbb.make_complete_dt makeCompleteDt 
+			,bbb.shipment_dt shipmentDt
+			,bbb.esti_arrv_dt estiArrvDt
+			,aaa.status_X01 cancelDt
+			from (
+			select 
+			min(case  
+			when status_cd ='B02' then eff_start_dt end) status_B02
+			,min(case  
+			when status_cd ='X01' then eff_start_dt end) status_X01
+			from tb_order_history toh
+			where toh.order_id  = #{orderId}
+			and toh.order_seq =#{orderSeq}
+			) aaa,
+			(select 
+			max(lm.shipment_dt)  shipment_dt
+			,max(lm.esti_arrv_dt) esti_arrv_dt
+			,max(case 
+			when lm.shipment_dt is not null then date_add(lm.shipment_dt,interval -30 day )
+			end) make_complete_dt 
+			from  lsshpd ld
+			,lsshpm lm
+			where 1=1  
+			and ld.order_id  = #{orderId}
+			and ld.order_seq =#{orderSeq}
+			and ld.ship_id =lm.ship_id 
+			and lm.ship_gb='02'
+			and lm.ship_status <> 'X1'
+			) bbb
+				]]>
 		
 		</select>
 	

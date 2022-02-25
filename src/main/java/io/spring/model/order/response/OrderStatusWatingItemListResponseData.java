@@ -10,13 +10,15 @@ import lombok.Setter;
 @Getter
 @Setter
 public class OrderStatusWatingItemListResponseData {
-	public OrderStatusWatingItemListResponseData(String statusCd, int waitCnt) {
+	public OrderStatusWatingItemListResponseData(String statusCd, int waitCnt, String assortGb) {
 		this.statusCd = statusCd;
 		this.waitCnt = waitCnt;
+		this.assortGb = assortGb;
 	}
 
 	private String statusCd;
 	private int waitCnt;
+	private String assortGb;
 
 	private List<Item> items;
 
@@ -57,6 +59,21 @@ public class OrderStatusWatingItemListResponseData {
 			this.brandNm = tod.getItitmm().getItasrt().getItbrnd() == null ? ""
 					: tod.getItitmm().getItasrt().getItbrnd().getBrandNm();
 
+			this.custNm = tod.getTbOrderMaster().getOrderName();
+			this.custAddr = tod.getTbOrderMaster().getOrderAddr1() + " " + tod.getTbOrderMaster().getOrderAddr2();
+			this.custHp = tod.getTbOrderMaster().getOrderHp();
+			this.custTel = tod.getTbOrderMaster().getOrderTel();
+
+			this.deliNm = tod.getTbOrderMaster().getTbMemberAddress() == null ? ""
+					: tod.getTbOrderMaster().getTbMemberAddress().getDeliNm();
+			this.deliHp = tod.getTbOrderMaster().getTbMemberAddress() == null ? ""
+					: tod.getTbOrderMaster().getTbMemberAddress().getDeliHp();
+			this.deliTel = tod.getTbOrderMaster().getTbMemberAddress() == null ? ""
+					: tod.getTbOrderMaster().getTbMemberAddress().getDeliTel();
+			this.deliAddr = tod.getTbOrderMaster().getTbMemberAddress() == null ? ""
+					: tod.getTbOrderMaster().getTbMemberAddress().getDeliAddr1() + " "
+							+ tod.getTbOrderMaster().getTbMemberAddress().getDeliAddr2();
+
 		}
 
 		private String channelGb;
@@ -67,7 +84,7 @@ public class OrderStatusWatingItemListResponseData {
 		private String orderSeq; // 주문순번
 		private String orderKey; // 주문키
 		private String statusCd; // 주문상태
-		private String custNm;
+
 		private String assortId; // 품목코드
 		private String itemId; // 상품코드
 		private String goodsKey;
@@ -86,6 +103,17 @@ public class OrderStatusWatingItemListResponseData {
 		private String payDt;
 		private String vendorNm;
 		private String brandNm;
+
+		private String custNm;
+		private String custAddr;
+		private String custHp;
+		private String custTel;
+
+		private String deliNm;
+		private String deliHp;
+		private String deliTel;
+		private String deliAddr;
+
 	}
 
 }

@@ -1111,11 +1111,13 @@ public class JpaOrderService {
 
 	// 미발주조회
 
-	public OrderStatusWatingItemListResponseData getOrderStatusWatingItems(String statusCd, int waitCnt) {
+	public OrderStatusWatingItemListResponseData getOrderStatusWatingItems(String statusCd, int waitCnt,
+			String assortGb) {
 
-		List<TbOrderDetail> l = jpaTbOrderDetailRepository.findOrderStatusWatingDay(statusCd, waitCnt);
+		List<TbOrderDetail> l = jpaTbOrderDetailRepository.findOrderStatusWatingDay(statusCd, waitCnt, assortGb);
 
-		OrderStatusWatingItemListResponseData r = new OrderStatusWatingItemListResponseData(statusCd, waitCnt);
+		OrderStatusWatingItemListResponseData r = new OrderStatusWatingItemListResponseData(statusCd, waitCnt,
+				assortGb);
 
 		List<OrderStatusWatingItemListResponseData.Item> items = new ArrayList<>();
 		

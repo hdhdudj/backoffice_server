@@ -531,9 +531,11 @@ public class OrderController {
 	// 미발주
 	// unpurchased
 	@GetMapping(path = "/waitStatus/items")
-	public ResponseEntity getOrderStatusWatingItems(@RequestParam String statusCd, @RequestParam int waitCnt) {
+	public ResponseEntity getOrderStatusWatingItems(@RequestParam String statusCd, @RequestParam int waitCnt,
+			@RequestParam @Nullable String assortGb) {
 
-		OrderStatusWatingItemListResponseData r = jpaOrderService.getOrderStatusWatingItems(statusCd, waitCnt);
+		OrderStatusWatingItemListResponseData r = jpaOrderService.getOrderStatusWatingItems(statusCd, waitCnt,
+				assortGb);
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
 		if (res == null) {
