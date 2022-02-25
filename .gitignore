@@ -48,3 +48,4 @@ application.properties
 *.yml
 *.yaml
 
+src/main/resources/application.properties
