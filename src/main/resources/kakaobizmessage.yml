@@ -1,15 +1,16 @@
-appKey :
-  alimtalk : 6Tt6xBHx7coMPcBX
-  sms : LA7wRUF8SPbiYMI5
-secretKey :
-  alimtalk : wUiXwVR5
-  sms : u6k1Htb7
-senderKey :
-  alimtalk : 16facfeb928b85c9817e5d44fd5bd81cff5a9342
-alimtalk:
-  url : https://api-alimtalk.cloud.toast.com/alimtalk/v2.2/appkeys/
-  messages : /messages
-sms:
-  url : https://api-sms.cloud.toast.com/sms/v3.0/appKeys/
-  sms : /sender/sms
-  sendNo : 16681097
+root :
+  appKey :
+    alimtalk : 6Tt6xBHx7coMPcBX
+    sms : LA7wRUF8SPbiYMI5
+  secretKey :
+    alimtalk : wUiXwVR5
+    sms : u6k1Htb7
+  senderKey :
+    alimtalk : 16facfeb928b85c9817e5d44fd5bd81cff5a9342
+  alimtalk:
+    url : https://api-alimtalk.cloud.toast.com/alimtalk/v2.2/appkeys/
+    messages : /messages
+  sms:
+    url : https://api-sms.cloud.toast.com/sms/v3.0/appKeys/
+    sms : /sender/sms
+    sendNo : 16681097
