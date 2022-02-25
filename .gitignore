@@ -35,7 +35,7 @@ bin/
 
 
 ### properties ###
-application.properties
+#application.properties
 
 
 ### logs ###
@@ -45,5 +45,5 @@ application.properties
 .DS_Store
 
 ### yaml ###
-*.yml
-*.yaml
+#*.yml
+#*.yaml

@@ -26,7 +26,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@PropertySource("classpath:kakaobizmessage.yml")
+@PropertySource("classpath:/kakaobizmessage.yml")
 public class KakaoBizMessageService {
     private final TemplateMap templateMap;
     private final ObjectMapper objectMapper;
