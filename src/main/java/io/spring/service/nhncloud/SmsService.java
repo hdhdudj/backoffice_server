@@ -36,16 +36,16 @@ public class SmsService {
 
     private final JpaSendMessageLogRepository jpaSendMessageLogRepository;
     // api 주소 : nhnCloudUrl + appKey + sms
-    @Value("${sms.url}")
+    @Value("${root.sms.url}")
     private String nhnCloudUrl;
-    @Value("${appKey.sms}")
+    @Value("${root.appKey.sms}")
     private String appKey;
-    @Value("${sms.sms}")
+    @Value("${root.sms.sms}")
     private String sms;
-    @Value("${sms.sendNo}")
+    @Value("${root.sms.sendNo}")
     private String sendNo;
 
-    @Value("${secretKey.sms}")
+    @Value("${root.secretKey.sms}")
     private String secretKey;
 
     public void sendSmsMessage(String body, TbOrderDetail tod){
