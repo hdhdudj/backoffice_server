@@ -8,6 +8,9 @@ pipelines:
   branches:
     dev:
       - step:
+          - script :
+              - gradle build
+      - step:
           name: Build and Push Docker Image
           image: atlassian/pipelines-awscli
           caches:
