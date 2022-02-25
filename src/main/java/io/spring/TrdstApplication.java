@@ -23,8 +23,8 @@ import java.util.TimeZone;
 public class TrdstApplication {
 	private static final String PROPERTIES =
 			"spring.config.location="
-					+"classpath:./application.properties"
-					+",classpath:./kakaobizmessage.yml";
+					+"classpath:/application.properties"
+					+",classpath:/kakaobizmessage.yml";
 	@PostConstruct
 	void started() {
 		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
