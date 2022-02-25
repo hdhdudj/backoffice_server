@@ -29,23 +29,23 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@PropertySource(value = "classpath:kakaobizmessage.yml")
+@PropertySource("classpath:kakaobizmessage.yml")
 public class SmsService {
     private final ObjectMapper objectMapper;
     private final HttpApiService httpApiService;
 
     private final JpaSendMessageLogRepository jpaSendMessageLogRepository;
     // api 주소 : nhnCloudUrl + appKey + sms
-    @Value("${root.sms.url}")
+    @Value("${sms.url}")
     private String nhnCloudUrl;
-    @Value("${root.appKey.sms}")
+    @Value("${appKey.sms}")
     private String appKey;
-    @Value("${root.sms.sms}")
+    @Value("${sms.sms}")
     private String sms;
-    @Value("${root.sms.sendNo}")
+    @Value("${sms.sendNo}")
     private String sendNo;
 
-    @Value("${root.secretKey.sms}")
+    @Value("${secretKey.sms}")
     private String secretKey;
 
     public void sendSmsMessage(String body, TbOrderDetail tod){

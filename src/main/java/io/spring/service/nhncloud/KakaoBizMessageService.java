@@ -1,6 +1,5 @@
 package io.spring.service.nhncloud;
 
-import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.spring.enums.MessageType;
 import io.spring.enums.TrdstOrderStatus;
@@ -27,7 +26,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@PropertySource(value = "classpath:kakaobizmessage.yml")
+@PropertySource("classpath:kakaobizmessage.yml")
 public class KakaoBizMessageService {
     private final TemplateMap templateMap;
     private final ObjectMapper objectMapper;
@@ -35,16 +34,16 @@ public class KakaoBizMessageService {
 
     private final JpaSendMessageLogRepository jpaSendMessageLogRepository;
     // api 주소 : nhnCloudUrl + alimtalkUrl + appKey + message
-    @Value("${root.alimtalk.url}")
+    @Value("${alimtalk.url}")
     private String nhnCloudUrl;
-    @Value("${root.appKey.alimtalk}")
+    @Value("${appKey.alimtalk}")
     private String appKey;
-    @Value("${root.alimtalk.messages}")
+    @Value("${alimtalk.messages}")
     private String message;
 
-    @Value("${root.secretKey.alimtalk}")
+    @Value("${secretKey.alimtalk}")
     private String secretKey;
-    @Value("${root.senderKey.alimtalk}")
+    @Value("${senderKey.alimtalk}")
     private String senderKey;
 
     public void sendKakaoBizMessage(String statusCd, TbOrderDetail tod){
