@@ -12,7 +12,7 @@ ENV GRADLE_USER_HOME /backoffice_server
 
 COPY . /backoffice_server
 
-#RUN gradle build
+RUN gradle build
 
 
 FROM java:jre-alpine
