@@ -16,15 +16,17 @@ pipelines:
             - docker
           deployment: test
           script:
+            - cd /
+            - echo `ls`
             - echo `pwd`
-            - docker build -t erp-back-backoffice-dev:latest -f Dockerfile .
-            - pipe: atlassian/aws-ecr-push-image:1.5.0
-              variables:
-                AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
-                AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
-                AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
-                AWS_REGISTRY_URL: $AWS_REGISTRY_URL
-                IMAGE_NAME: erp-back-backoffice-dev
+#            - docker build -t erp-back-backoffice-dev:latest -f Dockerfile .
+#            - pipe: atlassian/aws-ecr-push-image:1.5.0
+#              variables:
+#                AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+#                AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+#                AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+#                AWS_REGISTRY_URL: $AWS_REGISTRY_URL
+#                IMAGE_NAME: erp-back-backoffice-dev
       - step:
           name: ssh script run
           image: atlassian/pipelines-awscli
@@ -38,5 +40,5 @@ pipelines:
                 COMMAND: "echo $HOSTNAME;pwd;cd trdst_back_office;./deploy-test.sh"
 definitions:
   services:
-    docker:
-      memory: 4096
+  docker:
+    memory: 4096

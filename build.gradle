@@ -3,7 +3,6 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
     id 'idea'
-    id 'eclipse'
 }
 
 ext['log4j2.version'] = '2.17.0'

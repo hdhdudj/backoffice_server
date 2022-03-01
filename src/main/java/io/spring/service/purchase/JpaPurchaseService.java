@@ -592,7 +592,7 @@ public class JpaPurchaseService {
 //                item.setCustNm(tbMember.getCustNm());
                 item.setChannelOrderNo(tbOrderDetail.getChannelOrderNo());
                 item.setBrandId(itasrt.getBrandId());
-				item.setBrandNm(itasrt.getItbrnd() == null ? "" : itasrt.getItbrnd().getBrandNm());
+				item.setBrandNm(itasrt.getBrandId() != null && !itasrt.getBrandId().trim().equals("") && itasrt.getItbrnd() != null? itasrt.getItbrnd().getBrandNm() : "");
             }
 
             List<Lspchb> lspchbList = lspchd.getLspchb();
