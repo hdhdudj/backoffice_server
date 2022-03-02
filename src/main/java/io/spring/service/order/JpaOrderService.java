@@ -224,7 +224,7 @@ public class JpaOrderService {
         orderLog.setPrevStatus(prevStatus);
         jpaOrderLogRepository.save(orderLog);
     }
-    
+
     /**
      * 직구(해외창고 -> 국내(현지)주문자)일 때 주문상태 처리 함수
      * Ititmc : 상품재고
@@ -1111,11 +1111,13 @@ public class JpaOrderService {
 
 	// 미발주조회
 
-	public OrderStatusWatingItemListResponseData getOrderStatusWatingItems(String statusCd, int waitCnt) {
+	public OrderStatusWatingItemListResponseData getOrderStatusWatingItems(String statusCd, int waitCnt,
+			String assortGb) {
 
-		List<TbOrderDetail> l = jpaTbOrderDetailRepository.findOrderStatusWatingDay(statusCd, waitCnt);
+		List<TbOrderDetail> l = jpaTbOrderDetailRepository.findOrderStatusWatingDay(statusCd, waitCnt, assortGb);
 
-		OrderStatusWatingItemListResponseData r = new OrderStatusWatingItemListResponseData(statusCd, waitCnt);
+		OrderStatusWatingItemListResponseData r = new OrderStatusWatingItemListResponseData(statusCd, waitCnt,
+				assortGb);
 
 		List<OrderStatusWatingItemListResponseData.Item> items = new ArrayList<>();
 		

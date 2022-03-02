@@ -90,7 +90,7 @@ public class PurchaseSelectDetailResponseData {
             this.origin = itasrt.getOrigin();
             this.custCategory = itasrt.getCustCategory();
             this.material = ititmm.getMaterial();
-            this.imagePath = itasrt.getListImageData();
+            this.imagePath = itasrt.getMainImageUrl();
             this.compleDt = lspchd.getCompleDt() == null? "" : lspchd.getCompleDt().toString();
 
 			this.optionNm1 = lspchd.getItitmm().getItvari1() == null ? ""
