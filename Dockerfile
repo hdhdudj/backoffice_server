@@ -1,6 +1,6 @@
 FROM gradle:jdk-alpine
 
-WORKDIR /backoffice_server
+#WORKDIR /backoffice_server
 
 EXPOSE 8080
 
@@ -8,9 +8,9 @@ USER root
 
 RUN apk update
 
-ENV GRADLE_USER_HOME /backoffice_server
+#ENV GRADLE_USER_HOME /backoffice_server
 
-COPY . /backoffice_server
+#COPY . /backoffice_server
 
 RUN gradle build
 
