@@ -26,7 +26,7 @@ public class TrdstApplication {
 
 	public static void main(String[] args) {
 		new SpringApplicationBuilder(TrdstApplication.class)
-//				.properties(PROPERTIES)
+				.properties(PROPERTIES)
 				.run(args);
 //		SpringApplication.run(TrdstApplication.class, args);
 	}
