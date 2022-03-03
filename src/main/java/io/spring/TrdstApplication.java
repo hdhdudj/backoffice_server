@@ -17,8 +17,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableJpaRepositories
 @EntityScan("io.spring.model.*")
 public class TrdstApplication {
-	private static final String PROPERTIES = "spring.config.location=" + "classpath:application.properties"
-			+ ",classpath:kakaobizmessage.yml";
+//	private static final String PROPERTIES = "spring.config.location=" + "classpath:application.properties"
+	//		+ ",classpath:kakaobizmessage.yml";
+	private static final String PROPERTIES = "spring.config.location=" + "/config/application.properties,/config/kakaobizmessage.yml"
+	;
+
 	@PostConstruct
 	void started() {
 		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
