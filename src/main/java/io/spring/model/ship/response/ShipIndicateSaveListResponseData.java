@@ -62,7 +62,7 @@ public class ShipIndicateSaveListResponseData {
 			TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
 			Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
 //			TbMember tbMember = tbOrderMaster.getTbMember();
-			this.orderDt = tbOrderDetail.getTbOrderMaster().getOrderDate();
+			this.orderDt = tbOrderDetail.getTbOrderMaster().getOrderDate().toString();
 			this.assortGb = itasrt.getAssortGb();
 			this.orderId = tbOrderDetail == null ? null : tbOrderDetail.getOrderId();
 			this.orderSeq = tbOrderDetail == null ? null : tbOrderDetail.getOrderSeq();
@@ -81,7 +81,7 @@ public class ShipIndicateSaveListResponseData {
 			this.assortGb = (String) map.get("assortGb");
 			this.orderId = (String) map.get("orderId");
 			this.orderSeq = (String) map.get("orderSeq");
-			this.orderDt = (LocalDateTime) map.get("orderDt");
+			this.orderDt = ((LocalDateTime) map.get("orderDt")).toString().replace('T', ' ');
 			this.orderKey = (String) map.get("orderKey");
 			this.deliMethod = (String) map.get("deliMethod");
 			this.assortId = (String) map.get("assortId");
@@ -102,9 +102,9 @@ public class ShipIndicateSaveListResponseData {
 
 		}
 
-		@JsonSerialize(using = LocalDateTimeSerializer.class)
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-        private LocalDateTime orderDt;
+//		@JsonSerialize(using = LocalDateTimeSerializer.class)
+//        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        private String orderDt;
         private String orderId;
         private String orderSeq;
         private String orderKey;
