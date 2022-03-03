@@ -852,7 +852,6 @@ public class JpaOrderService {
         TEMPQTY, TEMPINDQTY
     }
 
-
     public void testSms(String body, String tbOrderNo){
         TbOrderDetail td = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(tbOrderNo, "0001");
         smsService.sendSmsMessage(body, td);
