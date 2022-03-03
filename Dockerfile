@@ -21,8 +21,6 @@ EXPOSE 8080
 
 #FROM java:jre-alpine
 
-
-
 #WORKDIR /backoffice_server
 #ARG JAR_FILE=target/*.jar
 #COPY ${JAR_FILE} app.ja
