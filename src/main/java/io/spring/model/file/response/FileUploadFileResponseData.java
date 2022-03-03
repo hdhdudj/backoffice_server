@@ -1,7 +1,5 @@
 package io.spring.model.file.response;
 
-import org.springframework.context.annotation.PropertySource;
-
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 import io.spring.infrastructure.util.PropertyUtil;
@@ -13,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@PropertySource("classpath:application.properties")
+//@PropertySource("classpath:application.properties")
 @JsonRootName(value = "file")
 public class FileUploadFileResponseData {
 
