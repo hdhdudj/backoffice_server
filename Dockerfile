@@ -1,4 +1,4 @@
-FROM gradle:jdk-alpine
+FROM gradle:jdk-alpine AS builder 
 
 WORKDIR /backoffice_server
 
@@ -16,9 +16,9 @@ RUN gradle build
 
 
 FROM openjdk:8-jdk-alpine
-ARG JAR_FILE=/backoffice_server/build/libs/*.jar
-COPY ${JAR_FILE} app.jar
-ENTRYPOINT ["java","-Dexternal.app.properties=file:/config/kakaobizmessage.yml","-Dlog4j2.formatMsgNoLookups=true","-jar","/app.jar","--spring.config.location=/config/application.properties,/config/kakaobizmessage.yml"]
+#ARG JAR_FILE=/backoffice_server/*.jar
+COPY --from=builder /backoffice_server/build/libs/*.jar app.jar
+ENTRYPOINT ["java","-Dlog4j2.formatMsgNoLookups=true","-jar","/app.jar","--spring.config.location=/config/application.properties,/config/kakaobizmessage.yml"]
 
 #FROM java:jre-alpine
 
