@@ -66,6 +66,11 @@ public class JpaStockService {
 		String assortId = p.get("assortId").toString();
 		String itemId = p.get("itemId").toString();
 		String itemGrade = p.get("itemGrade").toString();
+
+		String userId = p.get("userId") == null ? "plusDepositStock did" : p.get("userId").toString();
+		// String userId = p.get("userId") == null ? "minusShipStockByOrder did" :
+		// p.get("userId").toString();
+
 		long qty = (long)p.get("depositQty");
 		float price = (float)p.get("price");
 
@@ -261,6 +266,8 @@ public class JpaStockService {
 
 		long shipQty = (Long) p.get("shipQty");
 
+		String userId = p.get("userId") == null ? "minusShipStockByOrder did" : p.get("userId").toString();
+
 		Ititmc imc_storage = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(
 				p.get("assortId").toString(), p.get("itemId").toString(), p.get("storageId").toString(),
 				p.get("itemGrade").toString(), (LocalDateTime) p.get("effStaDt")
@@ -307,6 +314,7 @@ public class JpaStockService {
 
 			imc_storage.setShipIndicateQty(shipIndQty - shipQty);
 			imc_storage.setQty(qty - shipQty);
+			imc_storage.setUpdId(userId);
 
 			jpaItitmcRepository.save(imc_storage);
 
@@ -333,6 +341,8 @@ public class JpaStockService {
 
 			imc_rack.setShipIndicateQty(shipIndQty - shipQty);
 			imc_rack.setQty(qty - shipQty);
+
+			imc_rack.setUpdId(userId);
 
 			jpaItitmcRepository.save(imc_rack);
 

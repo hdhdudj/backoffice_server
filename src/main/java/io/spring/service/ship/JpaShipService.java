@@ -166,6 +166,8 @@ public class JpaShipService {
 
 		// List<ShipIndicateSaveListData.Ship> l = shipIndicateSaveListData.getShips();
 
+		String userId = shipIndicateSaveListData.getUserId();
+
 		for (ShipIndicateSaveListData.Ship ship : shipIndicateSaveListData.getShips()) {
 
 			HashMap<String, Object> m = new HashMap<String, Object>();
@@ -175,7 +177,7 @@ public class JpaShipService {
 			orderIdList.add(ship.getOrderId());
 			orderList.add(m);
 
-			List<String> shipIdList1 = this.saveShipIndicateSaveData(ship);
+			List<String> shipIdList1 = this.saveShipIndicateSaveData(ship, userId);
 			if (shipIdList1.size() > 0) {
 				shipIdList1.stream().forEach(x -> shipIdList.add(x));
 			}
@@ -416,7 +418,7 @@ public class JpaShipService {
 	/**
 	 * ShipIndicateSaveData 객체로 lsshpm,s,d 생성 tbOrderDetail를 변경
 	 */
-	private List<String> saveShipIndicateSaveData(ShipIndicateSaveListData.Ship ship) {
+	private List<String> saveShipIndicateSaveData(ShipIndicateSaveListData.Ship ship, String userId) {
 
 		List<String> ret = new ArrayList<String>();
 
@@ -426,6 +428,8 @@ public class JpaShipService {
 
 		lsshpm.setInstructDt(LocalDateTime.now());
 		lsshpm.setShipStatus(StringFactory.getGbTwo()); // 01 : 이동지시or출고지시, 02 : 이동지시or출고지시 접수, 04 : 출고
+
+		lsshpm.setUpdId(userId);
 
 		this.updateLsshps(lsshpm);
 
@@ -674,6 +678,8 @@ public class JpaShipService {
 		
         List<String> shipIdList = new ArrayList<>();
         List<Lsshpd> lsshpdList = new ArrayList<>();
+
+		String userId = shipSaveListData.getUserId();
     	
         List<ShipSaveListData.Ship> shipList = shipSaveListData.getShips();
         
@@ -708,11 +714,15 @@ public class JpaShipService {
 				p.put("storageId", lsshpm.getStorageId());
 				p.put("rackNo", lsshpd.getRackNo());
 				p.put("shipQty",lsshpd.getShipIndicateQty());
+				p.put("userId", userId);
 
 				int r = jpaStockService.minusShipStockByOrder(p);
 				
 
 				lsshpd.setShipQty(lsshpd.getShipIndicateQty());
+
+				lsshpd.setUpdId(userId);
+
 				jpaLsshpdRepository.save(lsshpd);
 				
 				if (lsshpm.getShipOrderGb().equals("01")) {
@@ -731,6 +741,9 @@ public class JpaShipService {
 
 			lsshpm.setShipStatus(StringFactory.getGbFour()); // 04 하드코딩
 			lsshpm.setApplyDay(LocalDateTime.now()); // 출고일자 now date
+
+			lsshpm.setUpdId(userId);
+
 			newShipIdList.add(lsshpm.getShipId());
 			jpaLsshpmRepository.save(lsshpm);
 			this.updateLsshps(lsshpm);		
@@ -866,7 +879,11 @@ public class JpaShipService {
 				Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
 		Lsshps newLsshps = new Lsshps(lsshpm);
 		lsshps.setEffEndDt(LocalDateTime.now());
+
+		lsshps.setUpdId(lsshpm.getUpdId());
 		jpaLsshpsRepository.save(lsshps);
+
+		newLsshps.setUpdId(lsshpm.getUpdId());
 		jpaLsshpsRepository.save(newLsshps);
 	}
 

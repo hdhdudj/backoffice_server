@@ -2,14 +2,12 @@ package io.spring.model.ship.request;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+
 import io.spring.infrastructure.custom.CustomLocalDateDeSerializer;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.entity.Itasrt;
@@ -47,6 +45,9 @@ public class ShipIndicateSaveListData {
     private String assortNm;
     private String vendorId;
     private String orderId;
+
+	private String userId;
+
     private List<Ship> ships;
     @Getter
     @Setter
