@@ -259,7 +259,6 @@ public class JpaOrderService {
         // 1. 해외재고 있을 가능성이 있음
         if(sumOfDomQty - sumOfDomShipIndQty - tbOrderDetail.getQty() >= 0){
 			// isStockExist = this.loopItitmc(domItitmc, tbOrderDetail); //20211217
-
 			// 국내재고 있는경우 랙에서 지시수량 차감 ,창고에서 지시수량 차감
 			Ititmc im = jpaStockService.checkStockWhenDirect(goodsStorageId, assortId, itemId, tbOrderDetail.getQty());
 
