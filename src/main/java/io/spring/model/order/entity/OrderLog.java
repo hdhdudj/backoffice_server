@@ -15,8 +15,8 @@ import javax.persistence.*;
 public class OrderLog extends CommonProps {
     public OrderLog(TbOrderDetail tbOrderDetail){
         // 임시 코드
-        super.setRegId("1");
-        super.setUpdId("1");
+        super.setRegId("order log");
+        super.setUpdId("order log");
         this.orderId = tbOrderDetail.getOrderId();
         this.orderSeq = tbOrderDetail.getOrderSeq();
         this.prevStatus = tbOrderDetail.getStatusCd();

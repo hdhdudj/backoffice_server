@@ -1,11 +1,11 @@
 package io.spring.model.common.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -28,4 +28,5 @@ public class Cmstgm extends CommonProps{
     private String userNm;
     private String areaGb;
     private String delYn;
+	private String defaultYn;
 }

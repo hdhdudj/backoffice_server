@@ -1,0 +1,70 @@
+image: atlassian/default-image:2
+
+options:
+  docker: true
+  size: 2x
+
+pipelines:
+  branches:
+    dev:
+      - step:
+          name: Build and Push Docker Image
+          image: atlassian/pipelines-awscli
+          caches:
+            - docker
+          services:
+            - docker
+          deployment: test
+          script:
+            - docker build -t erp-back-backoffice-dev:latest -f Dockerfile .
+            - pipe: atlassian/aws-ecr-push-image:1.5.0
+              variables:
+                AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+                AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+                AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+                AWS_REGISTRY_URL: $AWS_REGISTRY_URL
+                IMAGE_NAME: erp-back-backoffice-dev
+      - step:
+          name: ssh script run
+          image: atlassian/pipelines-awscli
+          script:
+            - echo run
+            - pipe: atlassian/ssh-run:0.4.0
+              variables:
+                SSH_USER: $SSH_USER
+                SERVER: $DEV_SERVER
+                #  MODE: "script"
+                COMMAND: "echo $HOSTNAME;pwd;cd trdst_back_office;./deploy-test.sh"
+    master:
+      - step:
+          name: Build and Push Docker Image
+          image: atlassian/pipelines-awscli
+          caches:
+            - docker
+          services:
+            - docker
+          deployment: test
+          script:
+            - docker build -t erp-back-backoffice-dev:latest -f Dockerfile .
+            - pipe: atlassian/aws-ecr-push-image:1.5.0
+              variables:
+                AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+                AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+                AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+                AWS_REGISTRY_URL: $AWS_REGISTRY_URL
+                IMAGE_NAME: erp-back-backoffice-dev
+      - step:
+          name: ssh script run
+          image: atlassian/pipelines-awscli
+          script:
+            - echo run
+            - pipe: atlassian/ssh-run:0.4.0
+              variables:
+                SSH_USER: $SSH_USER
+                SERVER: $MASTER_SERVER
+                #  MODE: "script"
+                COMMAND: "echo $HOSTNAME;pwd;cd trdst_back_office;./deploy-master.sh"
+definitions:
+  services:
+  docker:
+    memory: 4096

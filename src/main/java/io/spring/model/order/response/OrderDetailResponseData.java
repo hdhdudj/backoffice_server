@@ -132,6 +132,12 @@ public class OrderDetailResponseData {
 		private String deliMethod; // 배송구분
 		private String listImageData; // 이미지
 
+		private String purchaseCompleteDt;
+		private String makeCompleteDt;
+		private String shipmentDt;
+		private String estiArrvDt;
+		private String cancelDt;
+
 	}
 
 }

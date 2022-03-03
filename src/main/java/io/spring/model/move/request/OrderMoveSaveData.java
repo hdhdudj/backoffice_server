@@ -7,8 +7,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,16 +22,18 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderMoveSaveData {
     @JsonDeserialize(using = LocalDateDeserializer.class)
-//    @JsonSerialize(using = LocalDateSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate startDt;
+
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate endDt;
+
     private String storageId;
     private String assortId;
     private String assortNm;
     private String deliMethod;
+	private String userId;
     private List<Move> moves;
 //    public OrderMoveSaveData(Lsdpsd lsdpsd){
 //        this.depositNo = lsdpsd.getDepositNo();
@@ -63,21 +65,31 @@ public class OrderMoveSaveData {
         private String assortId;
         private String itemId;
 		// lsshpm
+
         @JsonDeserialize(using = LocalDateTimeDeserializer.class)
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
 		private LocalDateTime receiptDt;
+
+
 
         // tbOrderDetail
         private String orderId;
         private String orderSeq;
         private String deliMethod;
         private Long qty;
-        private String storageId;
+        
+		private String storageId;
         // itasrt
         private String assortNm;
         // itvari
         private String optionNm1;
         private String optionNm2;
         private String optionNm3;
+
+		private String orderKey;
+		private String shipKey;
+
+		private String orderStoreCd;
+
     }
 }

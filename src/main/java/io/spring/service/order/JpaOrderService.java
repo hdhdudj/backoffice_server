@@ -3,6 +3,7 @@ package io.spring.service.order;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +58,7 @@ import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
 import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.order.request.OrderStockMngInsertRequestData;
+import io.spring.model.order.response.OrderStatusWatingItemListResponseData;
 import io.spring.model.purchase.entity.Lspchb;
 import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.ship.entity.Lsshpd;
@@ -65,6 +67,7 @@ import io.spring.model.ship.entity.Lsshps;
 import io.spring.service.nhncloud.KakaoBizMessageService;
 import io.spring.service.nhncloud.SmsService;
 import io.spring.service.purchase.JpaPurchaseService;
+import io.spring.service.stock.JpaStockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -109,6 +112,8 @@ public class JpaOrderService {
 
     private final KakaoBizMessageService kakaoBizMessageService;
     private final SmsService smsService;
+
+	private final JpaStockService jpaStockService;
 
     // orderId, orderSeq를 받아 주문 상태를 변경해주는 함수
     @Transactional
@@ -219,7 +224,7 @@ public class JpaOrderService {
         orderLog.setPrevStatus(prevStatus);
         jpaOrderLogRepository.save(orderLog);
     }
-    
+
     /**
      * 직구(해외창고 -> 국내(현지)주문자)일 때 주문상태 처리 함수
      * Ititmc : 상품재고
@@ -253,17 +258,28 @@ public class JpaOrderService {
         String statusCd = null;
         // 1. 해외재고 있을 가능성이 있음
         if(sumOfDomQty - sumOfDomShipIndQty - tbOrderDetail.getQty() >= 0){
-            isStockExist = this.loopItitmc(domItitmc, tbOrderDetail);
-            statusCd = isStockExist? StringFactory.getStrC04() : statusCd; // 국내입고완료(해외지만 거기서 바로 쏘므로) : C04
+			// isStockExist = this.loopItitmc(domItitmc, tbOrderDetail); //20211217
+
+			// 국내재고 있는경우 랙에서 지시수량 차감 ,창고에서 지시수량 차감
+			Ititmc im = jpaStockService.checkStockWhenDirect(goodsStorageId, assortId, itemId, tbOrderDetail.getQty());
+
+			// 지시수량 차감처리가 되었다면 출고지시데이타 생성
+			if (im != null) {
+				this.makeShipDataByDeposit(im, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
+			}
+
+			
+			// 재고처리가 제대로 되었다면 주문상태 업데이트
+			statusCd = im != null ? StringFactory.getStrC04() : statusCd; // 국내입고완료(해외지만 거기서 바로 쏘므로) : C04
 			// this.getLsdpsdListByGoodsInfo(tbOrderDetail).get(0); // 숫자 맞는 상품입고와 그 입고에 연결된
 			// 상품발주에 orderId와 orderSeq 적어넣기
-        }
+		}
 //        // 2. 해외입고예정재고 있을 가능성이 있음
 //        if(statusCd == null && sumOfDomTempQty - sumOfDomTempIndQty - tbOrderDetail.getQty() >= 0){
 //            statusCd = this.loopItitmt(domItitmt, tbOrderDetail, DirectOrImport.direct); // 해외입고예정재고 있음 : B02 (발주완료), 없음 : B01 (발주대기)
 //        }
-        // 3. 해외재고도 없고 해외입고예정재고도 없음
-        else if(statusCd == null){
+
+		if (statusCd == null) {
             statusCd = StringFactory.getStrB01(); // 발주대기 : B01
         }
         this.updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), statusCd);
@@ -373,24 +389,62 @@ public class JpaOrderService {
         String statusCd = null;
         // 1. 국내재고가 있을 가능성이 있음
         if(sumOfDomQty - sumOfDomShipIndQty - tbOrderDetail.getQty() >= 0){
-			boolean isDomStockExist = this.loopItitmcByDomestic(domItitmc, tbOrderDetail);
-            statusCd = isDomStockExist? StringFactory.getStrC04() : statusCd; // 국내(현지)입고완료 : C04
+
+			Ititmc im = jpaStockService.checkStockWhenImport(domesticStorageId, assortId, itemId,
+					tbOrderDetail.getQty());
+
+			// 지시수량 차감처리가 되었다면 출고지시데이타 생성
+			if (im != null) {
+				this.makeDomesticShipDataByDeposit(im, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
+			}
+
+			statusCd = im != null ? StringFactory.getStrC04() : statusCd;
+
+			// boolean isDomStockExist = this.loopItitmcByDomestic(domItitmc,
+			// tbOrderDetail);
+			// statusCd = isDomStockExist? StringFactory.getStrC04() : statusCd; //
+			// 국내(현지)입고완료 : C04
         }
 //        // 2. 국내입고예정 재고가 있을 가능성이 있음
 //        if(statusCd == null && sumOfDomTempQty - sumOfDomTempIndQty - tbOrderDetail.getQty() >= 0){
 //            statusCd = this.loopItitmt(domItitmt, tbOrderDetail, DirectOrImport.imports);
 //        }
         // 3. 해외재고가 있을 가능성이 있음
+
         if(statusCd == null && sumOfOvrsQty - sumOfOvrsShipIndQty - tbOrderDetail.getQty() >= 0){
-			this.loopItitmcByMove(ovrsItitmc, tbOrderDetail);
-            statusCd = StringFactory.getStrC01(); // 해외입고완료 : C01
+
+			Ititmc im = jpaStockService.checkStockWhenImport(overseaStorageId, assortId, itemId,
+					tbOrderDetail.getQty());
+
+			// 지시수량 차감처리가 되었다면 출고지시데이타 생성
+			if (im != null) {
+				this.makeMoveDataByDeposit(im, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
+			}
+
+			statusCd = im != null ? StringFactory.getStrC01() : statusCd;
+
+			// this.loopItitmcByMove(ovrsItitmc, tbOrderDetail);
+			// statusCd = StringFactory.getStrC01(); // 해외입고완료 : C01
         }
+        // 4. 해외입고예정 재고가 있을 가능성이 있음
+//        if(statusCd == null && sumOfOvrsTempQty - sumOfOvrsTempIndQty - tbOrderDetail.getQty() >= 0){
+		// System.out.println("44444444444444444444444444444444444444");
+
+		// statusCd = this.loopItitmt(ovrsItitmt, tbOrderDetail,
+		// DirectOrImport.imports);
+///        }
+
+//        if(statusCd == null && sumOfOvrsQty - sumOfOvrsShipIndQty - tbOrderDetail.getQty() >= 0){
+//			this.loopItitmcByMove(ovrsItitmc, tbOrderDetail);
+		// statusCd = StringFactory.getStrC01(); // 해외입고완료 : C01
+		// }
 //        // 4. 해외입고예정 재고가 있을 가능성이 있음
 //        if(statusCd == null && sumOfOvrsTempQty - sumOfOvrsTempIndQty - tbOrderDetail.getQty() >= 0){
 //			System.out.println("44444444444444444444444444444444444444");
 //
 //            statusCd = this.loopItitmt(ovrsItitmt, tbOrderDetail, DirectOrImport.imports);
 //        }
+
         // 5. 아무것도 없음
         if(statusCd == null){
             statusCd = StringFactory.getStrB01(); // 발주대기 : B01
@@ -457,48 +511,72 @@ public class JpaOrderService {
      * Ititmc list를 loop 돌면서 qty 관련 계산
      */
     private boolean loopItitmc(List<Ititmc> ititmcList, TbOrderDetail tbOrderDetail){
-        long orderQty = tbOrderDetail.getQty();
-        boolean isBigOneExist = false;
-        for(Ititmc ititmc : ititmcList){
-            if(ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()){
-                ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
-                this.makeShipDataByDeposit(ititmc, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
-                return true;
-            }
-        }
-        return false;
+
+
+		throw new IllegalArgumentException("loopItitmc use ititmc");
+//
+//    	
+//        long orderQty = tbOrderDetail.getQty();
+//        for(Ititmc ititmc : ititmcList){
+//            if(ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()){
+//
+//                ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
+//
+//                this.makeShipDataByDeposit(ititmc, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
+//                return true;
+//            }
+//        }
+//        return false;
+
+		// 이부분은 일부러 오류낼려고 처리한 내역임.랙처리되면서 사라지는 내용 2022-01-14
+//        long orderQty = tbOrderDetail.getQty();
+//        boolean isBigOneExist = false;
+//        for(Ititmc ititmc : ititmcList){
+//            if(ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()){
+//                ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
+//                this.makeShipDataByDeposit(ititmc, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
+//                return true;
+//            }
+//        }
+//        return false;
+
     }
 
 	/**
 	 * Ititmc list를 loop 돌면서 qty 관련 계산
 	 */
 	private boolean loopItitmcByDomestic(List<Ititmc> ititmcList, TbOrderDetail tbOrderDetail) {
-		long orderQty = tbOrderDetail.getQty();
-		for (Ititmc ititmc : ititmcList) {
-			if (ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()) {
-				ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
-				this.makeDomesticShipDataByDeposit(ititmc, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
-				return true;
-			}
-		}
-		return false;
+		throw new IllegalArgumentException("loopItitmcByDomestic use ititmc");
+
+//		
+//		long orderQty = tbOrderDetail.getQty();
+//		for (Ititmc ititmc : ititmcList) {
+//			if (ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()) {
+//				ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
+//				this.makeDomesticShipDataByDeposit(ititmc, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
+//				return true;
+//			}
+//		}
+//		return false;
 	}
 
 	/**
 	 * Ititmc list를 loop 돌면서 qty 관련 계산
 	 */
 	private boolean loopItitmcByMove(List<Ititmc> ititmcList, TbOrderDetail tbOrderDetail) {
-		// 해외입고건은 이동지시 생성
 
-		long orderQty = tbOrderDetail.getQty();
-		for (Ititmc ititmc : ititmcList) {
-			if (ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()) {
-				ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
-				this.makeMoveDataByDeposit(ititmc, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
-				return true;
-			}
-		}
-		return false;
+		throw new IllegalArgumentException("loopItitmcByMove use ititmc");
+//		// 해외입고건은 이동지시 생성
+//
+//		long orderQty = tbOrderDetail.getQty();
+//		for (Ititmc ititmc : ititmcList) {
+//			if (ititmc.getQty() >= orderQty + ititmc.getShipIndicateQty()) {
+//				ititmc.setShipIndicateQty(orderQty + ititmc.getShipIndicateQty());
+//				this.makeMoveDataByDeposit(ititmc, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
+//				return true;
+//			}
+//		}
+//		return false;
 	}
 
 	/**
@@ -818,11 +896,8 @@ public class JpaOrderService {
 			igo.setUploadStatus("02");
 			igo.setAssortId(assortId);
 			igo.setItemId("0001");
-			igo.setRegDt(new Date());
-			igo.setModDt(new Date());
-			
-			
-			
+			igo.setRegDt(LocalDateTime.now());
+			igo.setModDt(LocalDateTime.now());
 
 		} else {
 			System.out.println("ifGoodsOption 이 이미 있습니다");
@@ -1034,6 +1109,30 @@ public class JpaOrderService {
 		return true;
 	}
 
+	// 미발주조회
+
+	public OrderStatusWatingItemListResponseData getOrderStatusWatingItems(String statusCd, int waitCnt,
+			String assortGb) {
+
+		List<TbOrderDetail> l = jpaTbOrderDetailRepository.findOrderStatusWatingDay(statusCd, waitCnt, assortGb);
+
+		OrderStatusWatingItemListResponseData r = new OrderStatusWatingItemListResponseData(statusCd, waitCnt,
+				assortGb);
+
+		List<OrderStatusWatingItemListResponseData.Item> items = new ArrayList<>();
+		
+		for (TbOrderDetail o : l) {
+
+			OrderStatusWatingItemListResponseData.Item item = new OrderStatusWatingItemListResponseData.Item(o);
+
+			items.add(item);
+		}
+
+		r.setItems(items);
+
+		return r;
+
+	}
 
 }
 

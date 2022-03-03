@@ -22,4 +22,8 @@ public interface MyBatisOrderDao {
 
 	List<HashMap<String, Object>> getOrderCancelList(HashMap<String, Object> param);
 
+	HashMap<String, Object> getOrderStatusDate(HashMap<String, Object> param);
+
+	List<HashMap<String, Object>> getSpecialOrderMasterList(HashMap<String, Object> param);
+
 }

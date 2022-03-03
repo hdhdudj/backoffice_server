@@ -2,10 +2,12 @@ package io.spring.controller;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
-import io.spring.infrastructure.util.Utilities;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -21,8 +23,9 @@ import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.request.GoodsInsertRequestData;
-import io.spring.model.goods.response.GoodsInsertResponseData;
+import io.spring.model.goods.response.GetStockListResponseData;
 import io.spring.model.goods.response.GoodsSelectDetailResponseData;
 import io.spring.model.goods.response.GoodsSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
@@ -41,6 +44,8 @@ public class GoodsController {
 	private final JpaGoodsService jpaGoodsService;
 	private final JpaCommonService jpaCommonService;
 	private final MyBatisCommonService myBatisCommonService;
+
+
 
 	@RequestMapping(path = "/select")
 	public ResponseEntity selectGoodsListAll() {
@@ -231,6 +236,19 @@ public class GoodsController {
 		if (responseData == null) {
 			return null;
 		}
+		return ResponseEntity.ok(res);
+
+	}
+
+	// @PathVariable("assortId") String assortId
+	@GetMapping(path = "/stock/storage/{storageId}")
+	public ResponseEntity getStockList(@PathVariable("storageId") String storageId,
+			@RequestParam @Nullable String vendorId, @RequestParam @Nullable String assortId,
+			@RequestParam @Nullable String assortNm) {
+
+		GetStockListResponseData r = jpaGoodsService.getStockList(storageId, vendorId, assortId, assortNm);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
 		return ResponseEntity.ok(res);
 
 	}

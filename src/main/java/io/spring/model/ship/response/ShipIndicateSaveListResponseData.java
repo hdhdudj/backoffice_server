@@ -1,6 +1,7 @@
 package io.spring.model.ship.response;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,11 +10,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
 import io.spring.model.goods.entity.Itasrt;
-import io.spring.model.order.entity.TbMember;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderMaster;
 import lombok.AccessLevel;
@@ -61,7 +62,7 @@ public class ShipIndicateSaveListResponseData {
 			TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
 			Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
 //			TbMember tbMember = tbOrderMaster.getTbMember();
-			this.orderDt = Utilities.removeTAndTransToStr(tbOrderDetail.getTbOrderMaster().getOrderDate());
+			this.orderDt = tbOrderDetail.getTbOrderMaster().getOrderDate();
 			this.assortGb = itasrt.getAssortGb();
 			this.orderId = tbOrderDetail == null ? null : tbOrderDetail.getOrderId();
 			this.orderSeq = tbOrderDetail == null ? null : tbOrderDetail.getOrderSeq();
@@ -80,6 +81,7 @@ public class ShipIndicateSaveListResponseData {
 			this.assortGb = (String) map.get("assortGb");
 			this.orderId = (String) map.get("orderId");
 			this.orderSeq = (String) map.get("orderSeq");
+			this.orderDt = (LocalDateTime) map.get("orderDt");
 			this.orderKey = (String) map.get("orderKey");
 			this.deliMethod = (String) map.get("deliMethod");
 			this.assortId = (String) map.get("assortId");
@@ -96,11 +98,13 @@ public class ShipIndicateSaveListResponseData {
 			this.optionNm1 = (String) map.get("optionNm1");
 			this.optionNm2 = (String) map.get("optionNm2");
 			this.optionNm3 = (String) map.get("optionNm3");
+			this.rackNo = (String) map.get("rackNo");
 
 		}
 
-//        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-        private String orderDt;
+		@JsonSerialize(using = LocalDateTimeSerializer.class)
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        private LocalDateTime orderDt;
         private String orderId;
         private String orderSeq;
         private String orderKey;
@@ -119,5 +123,6 @@ public class ShipIndicateSaveListResponseData {
 		private String shipSeq;
 		private String storageId;
 		private String receiptDt;
+		private String rackNo;
     }
 }

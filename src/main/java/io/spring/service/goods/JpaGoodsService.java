@@ -1,30 +1,58 @@
 package io.spring.service.goods;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.persistence.EntityManager;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.infrastructure.mapstruct.GoodsSelectDetailResponseDataMapper;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.jparepos.category.JpaIfCategoryRepository;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
-import io.spring.jparepos.goods.*;
+import io.spring.jparepos.goods.JpaIfBrandRepository;
+import io.spring.jparepos.goods.JpaItaimgRepository;
+import io.spring.jparepos.goods.JpaItasrdRepository;
+import io.spring.jparepos.goods.JpaItasrnRepository;
+import io.spring.jparepos.goods.JpaItasrtRepository;
+import io.spring.jparepos.goods.JpaItitmdRepository;
+import io.spring.jparepos.goods.JpaItitmmRepository;
+import io.spring.jparepos.goods.JpaItvariRepository;
+import io.spring.jparepos.goods.JpaTmitemRepository;
+import io.spring.jparepos.goods.JpaTmmapiRepository;
 import io.spring.model.file.FileVo;
-import io.spring.model.goods.entity.*;
+import io.spring.model.goods.entity.IfCategory;
+import io.spring.model.goods.entity.Itaimg;
+import io.spring.model.goods.entity.Itasrd;
+import io.spring.model.goods.entity.Itasrn;
+import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.goods.entity.Itbrnd;
+import io.spring.model.goods.entity.Ititmc;
+import io.spring.model.goods.entity.Ititmd;
+import io.spring.model.goods.entity.Ititmm;
+import io.spring.model.goods.entity.Itvari;
+import io.spring.model.goods.entity.Tmitem;
+import io.spring.model.goods.entity.Tmmapi;
 import io.spring.model.goods.request.GoodsInsertRequestData;
+import io.spring.model.goods.response.GetStockListResponseData;
 import io.spring.model.goods.response.GoodsInsertResponseData;
 import io.spring.model.goods.response.GoodsSelectDetailResponseData;
 import io.spring.model.goods.response.GoodsSelectListResponseData;
 import io.spring.model.vendor.entity.Cmvdmr;
 import io.spring.service.file.FileService;
+import io.spring.service.stock.JpaStockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -47,6 +75,8 @@ public class JpaGoodsService {
     private final JpaTmitemRepository jpaTmitemRepository;
 
     private final FileService fileService;
+
+	private final JpaStockService jpaStockService;
 
     private final EntityManager em;
 
@@ -638,21 +668,21 @@ public class JpaGoodsService {
             }
 
             // 옵션1 관련값 찾아넣기
-            Itvari op1 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getOptionNm().equals(item.getVariationValue1()))
+            Itvari op1 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getVariationGb().equals(StringFactory.getGbOne()) && x.getOptionNm().equals(item.getVariationValue1()))
                     .collect(Utilities.toSingleton());
             if(op1 != null){
                 ititmm.setVariationGb1(op1.getOptionGb());
                 ititmm.setVariationSeq1(op1.getSeq());
             }
             // 옵션2 관련값 찾아넣기
-            Itvari op2 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getOptionNm().equals(item.getVariationValue2()))
+            Itvari op2 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getVariationGb().equals(StringFactory.getGbTwo()) && x.getOptionNm().equals(item.getVariationValue2()))
                     .collect(Utilities.toSingleton());
             if(op2 != null){
                 ititmm.setVariationGb2(op2.getOptionGb());
                 ititmm.setVariationSeq2(op2.getSeq());
             }
             // 옵션3 관련값 찾아넣기
-            Itvari op3 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getOptionNm().equals(item.getVariationValue3()))
+            Itvari op3 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getVariationGb().equals(StringFactory.getGbThree()) && x.getOptionNm().equals(item.getVariationValue3()))
                     .collect(Utilities.toSingleton());
             if(op3 != null){
                 ititmm.setVariationGb3(op3.getOptionGb());
@@ -759,8 +789,8 @@ public class JpaGoodsService {
             ititmm.setItemId(StringFactory.getFourStartCd()); // 0001
             ititmm.setVariationGb1(StringFactory.getGbOne()); // 01
             ititmm.setVariationSeq1(StringFactory.getFourStartCd()); // 0001
-    //        jpaItitmmRepository.save(ititmm);
-            em.persist(ititmm);
+            jpaItitmmRepository.save(ititmm);
+//            em.persist(ititmm);
         }
         else {
             ititmm.setDelYn(StringFactory.getGbTwo()); // 삭제 상태였던 걸 원래대로
@@ -834,10 +864,11 @@ public class JpaGoodsService {
             goodsSelectDetailResponseData.setVendorNm(itasrt.getVendorId() != null && !itasrt.getVendorId().trim().equals("")? cmvdmr.getVdNm() : "");
         }
         // brand
-        IfBrand ifBrand;
+		// IfBrand ifBrand;
+		Itbrnd itbrnd;
         if(itasrt.getBrandId() != null && !itasrt.getBrandId().trim().equals("")){
-            ifBrand = itasrt.getIfBrand();//jpaIfBrandRepository.findByChannelGbAndBrandId(StringFactory.getGbOne(),itasrt.getBrandId());
-            goodsSelectDetailResponseData.setBrandNm(ifBrand == null? null : ifBrand.getBrandNm());
+			itbrnd = itasrt.getItbrnd();// jpaIfBrandRepository.findByChannelGbAndBrandId(StringFactory.getGbOne(),itasrt.getBrandId());
+			goodsSelectDetailResponseData.setBrandNm(itbrnd == null ? null : itbrnd.getBrandNm());
         }
         List<GoodsSelectDetailResponseData.Description> descriptions = this.makeDescriptions(jpaItasrdRepository.findByAssortId(itasrt.getAssortId()));
         List<GoodsSelectDetailResponseData.Attributes> attributesList = this.makeAttributesList(itasrt.getItvariList());
@@ -985,19 +1016,25 @@ public class JpaGoodsService {
             goodsSelectListResponseData.setGoodsList(goodsList);
             return goodsSelectListResponseData;
         }
-        List<IfBrand> brandList;
-        List<String> brandIdList = new ArrayList<>();
-        for(Itasrt itasrt : itasrtList){
-            if(!brandIdList.contains(itasrt.getBrandId())){
-                brandIdList.add(itasrt.getBrandId());
-            }
-        }
-        brandList = jpaIfBrandRepository.findByBrandIdListByChannelIdAndBrandIdList(StringFactory.getGbOne(), brandIdList);
+//		List<Itbrnd> brandList;
+		// List<String> brandIdList = new ArrayList<>();
+///        for(Itasrt itasrt : itasrtList){
+		// if(!brandIdList.contains(itasrt.getBrandId())){
+		// brandIdList.add(itasrt.getBrandId());
+//            }
+		// }
+		// brandList =
+		// jpaIfBrandRepository.findByBrandIdListByChannelIdAndBrandIdList(StringFactory.getGbOne(),
+		// brandIdList);
+		// brand
         for(Itasrt itasrt : itasrtList){
             GoodsSelectListResponseData.Goods goods = new GoodsSelectListResponseData.Goods(itasrt);
-            List<IfBrand> brandList1 = brandList.stream().filter(x->x.getBrandId().equals(itasrt.getBrandId())).collect(Collectors.toList());
-            IfBrand ifBrand = brandList1 == null || brandList1.size() == 0? null : brandList1.get(0);//jpaIfBrandRepository.findByChannelGbAndChannelBrandId(StringFactory.getGbOne(),itasrt.getBrandId()); // 채널은 01 하드코딩
-            goods.setBrandNm(ifBrand==null? null:ifBrand.getBrandNm());
+			// List<IfBrand> brandList1 =
+			// brandList.stream().filter(x->x.getBrandId().equals(itasrt.getBrandId())).collect(Collectors.toList());
+			// IfBrand ifBrand = brandList1 == null || brandList1.size() == 0? null :
+			// brandList1.get(0);//jpaIfBrandRepository.findByChannelGbAndChannelBrandId(StringFactory.getGbOne(),itasrt.getBrandId());
+			// // 채널은 01 하드코딩
+//            goods.setBrandNm(ifBrand==null? null:ifBrand.getBrandNm());
             goodsList.add(goods);
         }
         goodsSelectListResponseData.setGoodsList(goodsList);
@@ -1008,6 +1045,7 @@ public class JpaGoodsService {
 //        return null;
 //    }
     
+
     @Transactional
     public Itaimg saveItaimg(String imageGb,FileVo f) {
     	Itaimg ii =new Itaimg(imageGb,f);
@@ -1035,4 +1073,33 @@ public class JpaGoodsService {
     public void batchSizeTest() {
         Itasrt itasrt = jpaItasrtRepository.findById("000075775").orElseGet(()->null);
     }
+
+	public GetStockListResponseData getStockList(String storageId, String purchaseVendorId, String assortId,
+			String assortNm) {
+
+		System.out.println("getGoodsList");
+		List<Ititmc> ititmcList = jpaStockService.getItitmc(storageId, purchaseVendorId, assortId, assortNm);
+		List<GetStockListResponseData.Goods> goodsList = new ArrayList<>();
+		GetStockListResponseData ret = new GetStockListResponseData(storageId, purchaseVendorId, assortId, assortNm);
+		for (Ititmc ititmc : ititmcList) {
+
+			GetStockListResponseData.Goods goods = new GetStockListResponseData.Goods(ititmc);
+//	          Itasrt itasrt = ititmc.getItasrt();
+//            IfBrand ifBrand = itasrt.getIfBrand();//jpaIfBrandRepository.findByChannelGbAndChannelBrandId(StringFactory.getGbOne(), itasrt.getBrandId()); // 채널은 01 하드코딩
+
+			// 주문관련 이동지시나 출고지시할떄 indicateqty 에 이미 적용이 되어있으므로 밑에 로직 삭제
+
+//            List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository.findByAssortIdAndItemId(ititmc.getAssortId(),ititmc.getItemId())
+			// .stream().filter(x->x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList());
+			// long qtyOfC01 = tbOrderDetailList.size();
+
+			goods.setOrderQty(0L);
+			goods.setAvailableQty(goods.getAvailableQty());
+
+			goodsList.add(goods);
+		}
+
+		ret.setGoods(goodsList);
+		return ret;
+	}
 }

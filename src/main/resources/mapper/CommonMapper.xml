@@ -100,5 +100,33 @@
 	</select>    
 	
 
+	<select id="getCommonDefaultRack" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    	<![CDATA[
+					select storage_id as storageId,storage_nm as storageNm
+					from cmstgm 
+					where 1=1
+					and  up_storage_id =#{storageId}
+					and default_yn ='01'
+					limit 0,1	    
+			]]>	
+				    	
+				    	
+
+	</select>    
+
+
+	<select id="checkRack" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    	<![CDATA[
+					select storage_id as storageId,storage_nm as storageNm
+					from cmstgm 
+					where 1=1
+					and  up_storage_id =#{storageId}
+					and storage_id =#{rackNo}
+					limit 0,1	    
+			]]>	
+				    	
+				    	
+
+	</select>  
 
 </mapper>

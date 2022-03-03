@@ -14,6 +14,7 @@ select ld.ship_id shipId
 ,ld.item_id  itemId
 ,lm.receipt_dt receiptDt 
 ,tom.order_date orderDt
+,tom.order_name custNm
 ,tod.order_id orderId 
 ,tod.order_seq orderSeq
 ,concat(tod.order_id  ,'-',tod.order_seq) orderKey
@@ -44,6 +45,7 @@ where b2.assort_id=tod.assort_id
   and b2.variation_gb3 = b1.variation_gb
   and  b2.variation_seq3=b1.seq) optionNm3
   ,lm.storage_id storageId
+  ,ld.rack_no rackNo
 from lsshpm lm
 ,lsshpd ld
 ,itasrt it
@@ -58,32 +60,34 @@ and ld.order_id = tod.order_id
 and ld.order_seq = tod.order_seq
 and tod.status_cd ='C04'
 and tod.order_id = tom.order_id
-and it.add_goods_yn='02'
+-- and it.add_goods_yn='02'
     	 ]]>
-    	 <if test='storageId != null'>
+    	 <if test='storageId != null and storageId.trim() != ""'>
 			 <![CDATA[
 			 and lm.storage_id =#{storageId}	
 			 ]]>
 			</if>
-<if test='assortId != null'>
+<if test='assortId != null and storageId.trim() != ""'>
 			 <![CDATA[
 			 and it.assort_id =#{assortId}	
 			 ]]>
 			</if>
 			
-	<if test='assortNm != null'>
+	<if test='assortNm != null and assortNm.trim() != ""'>
 			 <![CDATA[		
 		and it.assort_nm like CONCAT( '%',  #{assortNm}, '%') 
 			 ]]>
 			</if>		
 			
-<if test='orderId != null'>
+<if test='orderId != null and orderId.trim() != ""'>
 			 <![CDATA[		
-		and tod.order_id =#{orderId}	
+		and (tod.order_id =#{orderId} or tom.channel_order_no = #{orderId})
 			 ]]>
-			</if>					
-		
-			
-					
-    </select>
+			</if>
+		<if test='orderSeq != null and orderSeq.trim() != ""'>
+			<![CDATA[
+		and tod.order_seq =#{orderSeq}
+			 ]]>
+		</if>
+	</select>
 </mapper>

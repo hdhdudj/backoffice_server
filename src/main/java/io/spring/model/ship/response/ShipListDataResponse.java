@@ -1,8 +1,11 @@
 package io.spring.model.ship.response;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmm;
@@ -11,13 +14,9 @@ import io.spring.model.order.entity.TbMemberAddress;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.ship.entity.Lsshpd;
-import lombok.AccessLevel;
+import io.spring.model.ship.entity.Lsshpm;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * 출고 - 출고리스트 : 출고리스트 화면에서 조건 검색으로 리스트 가져올 때도 이용됨.
@@ -54,12 +53,22 @@ public class ShipListDataResponse {
             TbOrderDetail tod = lsshpd.getTbOrderDetail();
             TbOrderMaster tom = tod.getTbOrderMaster();
             TbMemberAddress tma = tom.getTbMemberAddress();
-            Ititmm ititmm = tod.getItitmm();
+			Ititmm ititmm = lsshpd.getItitmm();
             Itasrt itasrt = ititmm.getItasrt();
             Itvari itvari1 = ititmm.getItvari1();
             Itvari itvari2 = ititmm.getItvari2();
             Itvari itvari3 = ititmm.getItvari3();
+
+			Lsshpm lsshpm = lsshpd.getLsshpm();
+
+			this.shipDt = Utilities.removeTAndTransToStr(lsshpm.getApplyDay());
+			this.shipIndDt = Utilities.removeTAndTransToStr(lsshpm.getReceiptDt());
+
+
             this.shipId = lsshpd.getShipId();
+			this.shipSeq = lsshpd.getShipSeq();
+			this.shipKey = Utilities.addDashInMiddle(shipId, shipSeq);
+
             this.orderId = tod.getOrderId();
             this.orderSeq = tod.getOrderSeq();
             this.orderKey = Utilities.addDashInMiddle(orderId, orderSeq);
@@ -76,10 +85,16 @@ public class ShipListDataResponse {
             this.optionNm2 = itvari2 == null? "" : itvari2.getOptionNm();
             this.optionNm3 = itvari3 == null? "" : itvari3.getOptionNm();
             this.imagePath = tod.getListImageData();
-            this.purchaseQty = tod.getQty();
+			this.purchaseQty = tod.getQty();
+            this.qty = tod.getQty();
             this.assortId = itasrt.getAssortId();
             this.itemId = ititmm.getItemId();
             this.itemKey = Utilities.addDashInMiddle(assortId, itemId);
+			this.rackNo = lsshpd.getRackNo();
+
+			this.deliMethod = lsshpm.getDelMethod();
+			this.assortGb = itasrt.getAssortGb();
+
         }
         private String shipId;
         private String orderId;
@@ -98,9 +113,24 @@ public class ShipListDataResponse {
         private String optionNm2;
         private String optionNm3;
         private String imagePath;
-        private Long purchaseQty;
+		private Long purchaseQty;
         private String assortId;
         private String itemId;
         private String itemKey;
+		private String rackNo;
+
+		private String shipDt;
+		private String shipIndDt;
+		private String shipKey;
+
+		private String shipSeq;
+
+		private Long qty;
+		private String deliMethod;
+		private String assortGb;
+
+		// 2022-02-08
+		// private
+
     }
 }
