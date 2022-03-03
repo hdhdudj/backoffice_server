@@ -6,7 +6,7 @@ options:
 
 pipelines:
   branches:
-    feature/tmp:
+    dev:
       - step:
           name: Build and Push Docker Image
           image: atlassian/pipelines-awscli
