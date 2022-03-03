@@ -17,10 +17,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableJpaRepositories
 @EntityScan("io.spring.model.*")
 public class TrdstApplication {
-//	private static final String PROPERTIES = "spring.config.location=" + "classpath:application.properties"
-	//		+ ",classpath:kakaobizmessage.yml";
-	private static final String PROPERTIES = "spring.config.location=" + "/config/application.properties,/config/kakaobizmessage.yml"
-	;
+	// private static final String PROPERTIES = "spring.config.location=" +
+	// "classpath:application.properties"
+	// + ",classpath:kakaobizmessage.yml";
+
+	// ;
 
 	@PostConstruct
 	void started() {
@@ -29,7 +30,7 @@ public class TrdstApplication {
 
 	public static void main(String[] args) {
 		new SpringApplicationBuilder(TrdstApplication.class)
-				.properties(PROPERTIES)
+				// .properties(PROPERTIES)
 				.run(args);
 //		SpringApplication.run(TrdstApplication.class, args);
 	}
