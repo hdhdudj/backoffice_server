@@ -3,7 +3,6 @@ package io.spring.model.purchase.response;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
@@ -23,7 +22,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
-@PropertySource("classpath:application.properties")
+//@PropertySource("classpath:application.properties")
 public class PurchaseSelectDetailResponseData {
     public PurchaseSelectDetailResponseData(Lspchm lspchm){
         this.purchaseId = lspchm.getPurchaseNo();
