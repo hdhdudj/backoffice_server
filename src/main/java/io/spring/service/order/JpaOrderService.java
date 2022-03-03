@@ -267,7 +267,6 @@ public class JpaOrderService {
 				this.makeShipDataByDeposit(im, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
 			}
 
-			
 			// 재고처리가 제대로 되었다면 주문상태 업데이트
 			statusCd = im != null ? StringFactory.getStrC04() : statusCd; // 국내입고완료(해외지만 거기서 바로 쏘므로) : C04
 			// this.getLsdpsdListByGoodsInfo(tbOrderDetail).get(0); // 숫자 맞는 상품입고와 그 입고에 연결된
