@@ -1,18 +1,5 @@
 package io.spring.service.file;
 
-import io.spring.model.file.FileVo;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPReply;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,9 +9,22 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPReply;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import io.spring.model.file.FileVo;
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 @Service
-@PropertySource("classpath:application.properties")
+//@PropertySource("classpath:application.properties")
 public class FileService {
 	
 	private Logger logger = LoggerFactory.getLogger(getClass());

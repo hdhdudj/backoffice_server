@@ -1,33 +1,21 @@
 package io.spring.model.goods.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-import io.spring.infrastructure.custom.CustomLocalDateTimeDeSerializer;
+import java.util.LinkedList;
+import java.util.List;
+
 import io.spring.infrastructure.util.PropertyUtil;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.entity.Itaimg;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Itvari;
-import io.spring.model.vendor.entity.Cmvdmr;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.context.annotation.PropertySource;
-
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 @Getter
 @Setter
-@PropertySource("classpath:application.properties")
+//@PropertySource("classpath:application.properties")
 public class GoodsSelectDetailResponseData {
     public GoodsSelectDetailResponseData(){
 
