@@ -1,12 +1,16 @@
 package io.spring.service.stock;
 
+import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 
+import io.spring.model.stock.request.GoodsStockXml;
 import org.springframework.stereotype.Service;
 
 import io.spring.jparepos.common.JpaCmstgmRepository;
@@ -634,6 +638,49 @@ public class JpaStockService {
 				assortNm);
 		List<Ititmc> ititmcList = query.getResultList();
 		return ititmcList;
+	}
+
+	/**
+	 * 고도몰 goods_stock api로 재고숫자변경하는 함수
+	 */
+	public String godoGoodsStock(String goodsNo, String optionFl, Long totalStock){
+		GoodsStockXml goodsStockXml = new GoodsStockXml(goodsNo, optionFl, totalStock);
+
+		return this.makeGoodsStockXml(goodsStockXml,null);
+	}
+
+	private String makeGoodsStockXml(GoodsStockXml goodsStockXml, String assortId){
+		String xmlContent = null;
+		String ret="";
+		System.out.println("sdklfjslkdjfsldkj");
+		try {
+			// Create JAXB Context
+			JAXBContext jaxbContext = JAXBContext.newInstance(GoodsStockXml.class);
+
+			// Create Marshaller
+			Marshaller marshaller = jaxbContext.createMarshaller();
+
+			// Print XML String to Console
+			StringWriter stringWriter = new StringWriter();
+
+			// Write XML to StringWriter
+			marshaller.marshal(goodsStockXml, stringWriter);
+
+			// Verify XML Content
+			xmlContent = stringWriter.toString();
+			System.out.println("----- : 저장할 xml : \\n"+xmlContent);
+			log.debug("----- : 저장할 xml : \\n"+xmlContent);
+//			ret =  getXmlUrl(assortId, xmlContent);
+//            System.out.println("ret : "+ret);
+
+		} catch (Exception e) {
+			e.getMessage();
+			System.out.println(e.getMessage());
+		}
+
+//		return ret;
+		System.out.println("dsfsdsdfs + " + xmlContent);
+		return xmlContent;
 	}
 
 }
