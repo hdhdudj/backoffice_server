@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
@@ -81,7 +80,9 @@ public class ShipIndicateSaveListResponseData {
 			this.assortGb = (String) map.get("assortGb");
 			this.orderId = (String) map.get("orderId");
 			this.orderSeq = (String) map.get("orderSeq");
-			this.orderDt = ((LocalDateTime) map.get("orderDt")).toString().replace('T', ' ');
+			LocalDateTime locTm = (LocalDateTime) map.get("orderDt");
+			String addLocTm = locTm.getSecond() == 0? ":00" : "";
+			this.orderDt = ((LocalDateTime) map.get("orderDt")).toString().replace('T', ' ') + addLocTm;
 			this.orderKey = (String) map.get("orderKey");
 			this.deliMethod = (String) map.get("deliMethod");
 			this.assortId = (String) map.get("assortId");
