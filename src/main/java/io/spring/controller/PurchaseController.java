@@ -360,7 +360,8 @@ public class PurchaseController {
     }
 
 	// 20220307 rjb80 cancelPurchase requestbody 추가
-
+	// 사용안하는 api임
+	// 발주취소테스트용 api
 	@PostMapping(path = "/orders/{orderId}/{orderSeq}/cancel") // 취소처리
 	public ResponseEntity cancelPurchase(@PathVariable("orderId") String orderId,
 			@PathVariable("orderSeq") String orderSeq
@@ -369,17 +370,20 @@ public class PurchaseController {
 
 		log.debug("cancelPurchase");
 
-		String userId = req.getUserId();
+		// 20220307 rjb80 테스트용 코드라서 주석처리 시작
+//		String userId = req.getUserId();
+//
+//		HashMap<String, Object> p = new HashMap<String, Object>();
+//
+//		p.put("orderId", "O00043303");
+//
+//		p.put("orderSeq", "0001");
+//		p.put("cancelGb", "00");
+//		p.put("cancelMsg", "etc");
+//
+//		jpaPurchaseService.cancelOrderPurchase(p, userId);
 
-		HashMap<String, Object> p = new HashMap<String, Object>();
-
-		p.put("orderId", "O00043303");
-
-		p.put("orderSeq", "0001");
-		p.put("cancelGb", "00");
-		p.put("cancelMsg", "etc");
-
-		jpaPurchaseService.cancelOrderPurchase(p, userId);
+		// 20220307 rjb80 테스트용 코드라서 주석처리 끝
 
 		// String purchaseNo2 = jpaPurchaseService.createPurchaseSquence(purchaseNo,
 		// purchaseInsertRequestData);
@@ -387,7 +391,7 @@ public class PurchaseController {
 		// jpaOrderService.updateStatusCd("O2106100714498480", "0001", "B02");
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
-				"");
+				"테스트api 처리안됨!!!!!");
 		if (res == null) {
 			return null;
 		}

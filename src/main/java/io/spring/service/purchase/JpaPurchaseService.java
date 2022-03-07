@@ -196,6 +196,11 @@ public class JpaPurchaseService {
      * * printDt가 없던 발주면 저장하고 반환
      */
 	public String savePrintDt(String purchaseNo, Date printDt, String userId) {
+
+		System.out.println(purchaseNo);
+		System.out.println(printDt);
+		System.out.println(userId);
+
         Lspchm lspchm = jpaLspchmRepository.findByPurchaseNo(purchaseNo).orElseGet(() -> null);
         if(lspchm == null){
             log.debug("해당하는 발주번호의 발주데이터가 존재하지 않습니다.");
@@ -209,6 +214,9 @@ public class JpaPurchaseService {
 		lspchm.setUpdId(userId);
 
         jpaLspchmRepository.save(lspchm);
+
+		System.out.println("printDt => " + printDt);
+
         return Utilities.dateToString(printDt);
     }
 

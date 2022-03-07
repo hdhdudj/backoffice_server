@@ -413,6 +413,7 @@ public class OrderController {
 	}
 
 	// 20220307 rjb80 requestbody 추가
+	// 20220307 rjb80 현재사용안하는 api임.
 	@PostMapping(path = "/ifoption")
 	public ResponseEntity saveOrderOption(
 			@RequestBody OrderOptionRequestData req) {

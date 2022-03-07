@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -250,11 +252,14 @@ public class MoveController {
      */
 	// 20220307 rjb80 requestbody 추가
     @PostMapping(path = "/excel")
-    public ResponseEntity saveExcelList(@RequestBody MoveListExcelRequestData moveListExcelRequestData){
+	public ResponseEntity saveExcelList(@RequestBody @Valid MoveListExcelRequestData moveListExcelRequestData) {
 
 		String userId = moveListExcelRequestData.getUserId();
 
 		jpaMoveService.saveExcelList(moveListExcelRequestData, userId);
+
+		// 조회조건이 이상함.위에 저장리스트에서 저장된건의 ship_id를 가지고 조회해도 될거같음.
+
         MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.getMovedList(moveListExcelRequestData.getStartDt(), moveListExcelRequestData.getEndDt(), moveListExcelRequestData.getShipId(), moveListExcelRequestData.getAssortId(), moveListExcelRequestData.getAssortNm(), moveListExcelRequestData.getStorageId(), null, null, null);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveCompletedLIstReponseData);
         return ResponseEntity.ok(res);
