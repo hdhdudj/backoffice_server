@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -181,7 +183,7 @@ public class PurchaseController {
      * @return
      */
 	@PostMapping(path = "") // create 
-    public ResponseEntity savePurchaseJpa(@RequestBody PurchaseInsertRequestData purchaseInsertRequestData){
+	public ResponseEntity savePurchaseJpa(@RequestBody @Valid PurchaseInsertRequestData purchaseInsertRequestData) {
         log.debug("insert purchase by jpa");
 
 		String purchaseNo = jpaPurchaseService.createPurchaseSquence(null, purchaseInsertRequestData);
@@ -200,7 +202,8 @@ public class PurchaseController {
      * 발주사후 업데이트 : 마스터 부분, 디테일에선 발주가와 제작완료일자만
      */
     @PostMapping(path = "/{purchaseNo}/update") // update
-    public ResponseEntity savePurchaseJpa(@PathVariable("purchaseNo") String purchaseNo, @RequestBody PurchaseInsertRequestData purchaseInsertRequestData){
+	public ResponseEntity savePurchaseJpa(@PathVariable("purchaseNo") String purchaseNo,
+			@RequestBody @Valid PurchaseInsertRequestData purchaseInsertRequestData) {
         log.debug("update purchase by jpa");
 
 		String userId = purchaseInsertRequestData.getUserId();
@@ -248,7 +251,7 @@ public class PurchaseController {
 
 	@PostMapping(path = "/{purchaseNo}")
 	public ResponseEntity updatePurchaseJpa(@PathVariable("purchaseNo") String purchaseNo,
-			@RequestBody PurchaseUpdateRequestData req) {
+			@RequestBody @Valid PurchaseUpdateRequestData req) {
         log.debug("insert or update purchase by jpa");
 
 //		req.setPurchaseNo(jpaCommonService.getStrNumberId(StringFactory.getCUpperStr(), req.getPurchaseNo(),

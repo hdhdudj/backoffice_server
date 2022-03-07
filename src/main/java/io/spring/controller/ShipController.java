@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -127,7 +129,7 @@ public class ShipController {
     * 출고지시 화면 : 출고지시 저장용. 출고지시 할 출고내역들을 선택 후 저장 버튼을 누르면 호출되는 api (출고번호 기준으로 불러옴)
     */
     @PostMapping(path = "/indicate")
-    public ResponseEntity saveShipIndicate(@RequestBody ShipIndicateSaveListData shipIndicateSaveDataList){
+	public ResponseEntity saveShipIndicate(@RequestBody @Valid ShipIndicateSaveListData shipIndicateSaveDataList) {
 
 		String userId = shipIndicateSaveDataList.getUserId();
 
@@ -183,7 +185,7 @@ public class ShipController {
      * 출고처리 화면 : 출고 수량을 입력하면 관련된 값을 변경함.
      */
     @PostMapping(path = "")
-    public ResponseEntity shipIndToShip(@RequestBody ShipSaveListData shipSaveListData){
+	public ResponseEntity shipIndToShip(@RequestBody @Valid ShipSaveListData shipSaveListData) {
 		String userId = shipSaveListData.getUserId();
 		List<String> shipIdList = jpaShipService.shipIndToShip2(shipSaveListData, userId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIdList);
@@ -224,7 +226,7 @@ public class ShipController {
 	 * @throws Exception
 	 */
 	@PostMapping(path = "/etc")
-	public ResponseEntity insertEtcShip(@RequestBody InsertShipEtcRequestData reqData) throws Exception {
+	public ResponseEntity insertEtcShip(@RequestBody @Valid InsertShipEtcRequestData reqData) throws Exception {
 		log.debug("출고처리 호출");
 
 		String userId = reqData.getUserId();

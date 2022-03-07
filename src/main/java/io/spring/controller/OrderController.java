@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -442,7 +444,7 @@ public class OrderController {
 
 	@PostMapping(path = "/items/cancel")
 	public ResponseEntity cancelOrder(
-			@RequestBody CancelOrderRequestData param) {
+			@RequestBody @Valid CancelOrderRequestData param) {
 
 
 //CancelOrderRequestData

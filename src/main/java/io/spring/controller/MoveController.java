@@ -98,7 +98,7 @@ public class MoveController {
      * 주문이동지시 저장
      */
     @PostMapping(path="/indicate/order")
-    public ResponseEntity saveOrderMove(@RequestBody OrderMoveSaveData orderMoveSaveData){
+	public ResponseEntity saveOrderMove(@RequestBody @Valid OrderMoveSaveData orderMoveSaveData) {
 
 		String userId = orderMoveSaveData.getUserId();
 
@@ -153,7 +153,7 @@ public class MoveController {
      * 상품이동지시 저장
      */
     @PostMapping(path="/indicate/goods")
-    public ResponseEntity saveGoodsMove(@RequestBody GoodsMoveSaveData goodsMoveSaveData){
+	public ResponseEntity saveGoodsMove(@RequestBody @Valid GoodsMoveSaveData goodsMoveSaveData) {
         System.out.println("========== : " + goodsMoveSaveData.getOStorageId());
 
 		String userId = goodsMoveSaveData.getUserId();
@@ -219,7 +219,7 @@ public class MoveController {
      * 이동처리 저장
      */
     @PostMapping(path = "/move")
-    public ResponseEntity changeShipStatus(@RequestBody MoveListSaveData moveListSaveData){
+	public ResponseEntity changeShipStatus(@RequestBody @Valid MoveListSaveData moveListSaveData) {
 
 		String userId = moveListSaveData.getUserId();
 
@@ -254,11 +254,13 @@ public class MoveController {
     @PostMapping(path = "/excel")
 	public ResponseEntity saveExcelList(@RequestBody @Valid MoveListExcelRequestData moveListExcelRequestData) {
 
+
 		String userId = moveListExcelRequestData.getUserId();
 
 		jpaMoveService.saveExcelList(moveListExcelRequestData, userId);
 
 		// 조회조건이 이상함.위에 저장리스트에서 저장된건의 ship_id를 가지고 조회해도 될거같음.
+
 
         MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.getMovedList(moveListExcelRequestData.getStartDt(), moveListExcelRequestData.getEndDt(), moveListExcelRequestData.getShipId(), moveListExcelRequestData.getAssortId(), moveListExcelRequestData.getAssortNm(), moveListExcelRequestData.getStorageId(), null, null, null);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveCompletedLIstReponseData);
