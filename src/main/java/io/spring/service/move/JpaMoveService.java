@@ -196,7 +196,8 @@ public class JpaMoveService {
      * 주문 이동지시 저장 함수
      */
     @Transactional
-    public List<String> saveOrderMove(OrderMoveSaveData orderMoveSaveData) {
+	public List<String> saveOrderMove(OrderMoveSaveData orderMoveSaveData, String userId) {
+
         List<OrderMoveSaveData.Move> moveList = orderMoveSaveData.getMoves();
         if(moveList.size() == 0){
             log.debug("input data is empty.");
@@ -215,7 +216,7 @@ public class JpaMoveService {
 
 			orderList.add(m);
 
-			List<String> shipIdList = this.saveOrderMoveSaveData(move);
+			List<String> shipIdList = this.saveOrderMoveSaveData(move, userId);
             if(shipIdList.size() > 0){
                 shipIdList.stream().forEach(x->newShipIdList.add(x));
             }
@@ -224,7 +225,7 @@ public class JpaMoveService {
 		// jpaPurchaseService.makePurchaseDataFromOrderMoveSave(lsdpsdList, moveList);
 		// 이동처리를 할떄 생성함..2021-10-18
 
-		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.C02.toString());
+		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.C02.toString(), userId);
 
 		// moveList
 
@@ -235,7 +236,7 @@ public class JpaMoveService {
      * 주문 이동지시 저장 함수
      */
     @Transactional
-	public List<String> saveOrderMoveByDeposit(Lsdpsd lsdpsd) {
+	public List<String> saveOrderMoveByDeposit(Lsdpsd lsdpsd, String userId) {
 
         //List<OrderMoveSaveData.Move> moveList = orderMoveSaveData.getMoves();
 		if (lsdpsd == null) {
@@ -259,7 +260,7 @@ public class JpaMoveService {
 
 		if (lsdpsd.getOrderId() != null) {
 
-			List<String> shipIdList = this.saveOrderMoveSaveDataByDeposit(lsdpsd);
+			List<String> shipIdList = this.saveOrderMoveSaveDataByDeposit(lsdpsd, userId);
 			if (shipIdList.size() > 0) {
 				shipIdList.stream().forEach(x -> newShipIdList.add(x));
 			}
@@ -284,7 +285,7 @@ public class JpaMoveService {
      * lsdpsm,d,s,b, lsdpsp, ititmt(발주데이터) 생성
      * tbOrderDetail를 변경
      */
-	private List<String> saveOrderMoveSaveData(OrderMoveSaveData.Move move) {
+	private List<String> saveOrderMoveSaveData(OrderMoveSaveData.Move move, String userId) {
 
 		List<String> ret = new ArrayList<String>();
 
@@ -295,7 +296,7 @@ public class JpaMoveService {
 		lsshpm.setShipStatus("02");
 
 		Lsshps lsshps = new Lsshps(lsshpm);
-		this.updateLsshps(lsshpm);
+		this.updateLsshps(lsshpm, userId);
 
 		ret.add(move.getShipId());
 
@@ -377,7 +378,7 @@ public class JpaMoveService {
 		p.put("rackNo", lsdpsd.getRackNo());
 		p.put("qty", lsdpsd.getDepositQty());
 
-		int r = jpaStockService.minusIndicateStockByOrder(p);
+		int r = jpaStockService.minusIndicateStockByOrder(p, userId);
 
 		LocalDateTime depositDt = lsdpsm.getDepositDt();
 		String storageId = lsdpsm.getStoreCd();
@@ -709,7 +710,7 @@ public class JpaMoveService {
 			p.put("rackNo", rackNo);
 			p.put("qty", moveQty);
 
-			jpaStockService.minusIndicateStockByOrder(p);
+			jpaStockService.minusIndicateStockByOrder(p, userId);
 
 
 			// 2. 발주 data 생성 이동 //발주데이타는 이동처리에서 만드므로 처리안함.
@@ -728,7 +729,7 @@ public class JpaMoveService {
 
 		// 상품이동지시의 경우 이동지시에 걸려있는상황에서 발주가 없으면 ititmc 에만 데이타가 있는거기 떄문에 신규주문에 대한 처리가 안됨 그래서
 		// 상품발주는 이동발주를 이동지시와 같이 처리함,
-        jpaPurchaseService.makePurchaseDataFromOrderMoveSave2(lsshpdList);
+		jpaPurchaseService.makePurchaseDataFromOrderMoveSave2(lsshpdList, userId);
 
 
         return shipIdList;
@@ -915,7 +916,7 @@ public class JpaMoveService {
 				p.put("rackNo", lsshpd.getRackNo());
 				p.put("shipQty", shipIndQty);
 
-				int r = jpaStockService.minusShipStockByOrder(p);
+				int r = jpaStockService.minusShipStockByOrder(p, userId);
 
 				lsshpd.setShipQty(lsshpd.getShipIndicateQty());
 
@@ -945,7 +946,7 @@ public class JpaMoveService {
 			lsshpm.setUpdId(userId);
 
 			jpaLsshpmRepository.save(lsshpm);
-			this.updateLsshps(lsshpm);
+			this.updateLsshps(lsshpm, userId);
 
 
 		}
@@ -986,9 +987,9 @@ public class JpaMoveService {
 		// 2022-02-10 주석끝
 
 		// 주문상태변경
-		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.C03.toString());
+		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.C03.toString(), userId);
 
-		jpaPurchaseService.makePurchaseDataFromOrderMoveSave2(l2);
+		jpaPurchaseService.makePurchaseDataFromOrderMoveSave2(l2, userId);
 
 		return newShipIdList;
 	}
@@ -1557,7 +1558,7 @@ public class JpaMoveService {
         }
         // 2-3. lsshps 꺾어주기
 
-        this.updateLsshps(lsshpm);
+		this.updateLsshps(lsshpm, userId);
         return lsshpd.getShipSeq();
     }
 
@@ -1618,12 +1619,12 @@ public class JpaMoveService {
 	/**
 	 * 이동지시 또는 이동처리 후 주문상태변경
 	 */
-	private void changeStatusCdOfTbOrderDetail(List<HashMap<String, Object>> list, String statusCd) {
+	private void changeStatusCdOfTbOrderDetail(List<HashMap<String, Object>> list, String statusCd, String userId) {
 		for (HashMap<String, Object> o : list) {
 //            TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(lspchd.getOrderId(),lspchd.getOrderSeq());
 //            if(tbOrderDetail != null){ // 01 : 주문이동, 02 : 상품이동
 //                tbOrderDetail.setStatusCd(StringFactory.getStrB02());
-			this.updateOrderStatusCd(o.get("order_id").toString(), o.get("order_seq").toString(), statusCd);
+			this.updateOrderStatusCd(o.get("order_id").toString(), o.get("order_seq").toString(), statusCd, userId);
 //                jpaTbOrderDetailRepository.save(tbOrderDetail);
 //            }
 		}

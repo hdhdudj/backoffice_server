@@ -3,6 +3,8 @@ package io.spring.model.ship.request;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AccessLevel;
@@ -25,6 +27,7 @@ public class ShipSaveListData {
     private String assortId;
     private String assortNm;
     private String vendorId;
+	@NotNull(message = "userId는 필수 값입니다.")
 	private String userId;
     private List<Ship> ships;
 

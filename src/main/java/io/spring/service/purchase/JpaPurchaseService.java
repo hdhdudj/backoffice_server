@@ -105,6 +105,8 @@ public class JpaPurchaseService {
     @Transactional
     public String createPurchaseSquence(String purchaseNo, PurchaseInsertRequestData purchaseInsertRequestData) {
 
+		String userId = purchaseInsertRequestData.getUserId();
+
 		System.out.println(purchaseInsertRequestData);
 
         if(purchaseNo == null){
@@ -112,20 +114,20 @@ public class JpaPurchaseService {
         }
         purchaseInsertRequestData.setPurchaseId(purchaseNo);
         // lspchd (발주 디테일)
-        List<Lspchd> lspchdList = this.saveLspchd(purchaseInsertRequestData);
+		List<Lspchd> lspchdList = this.saveLspchd(purchaseInsertRequestData, userId);
         // lspchm (발주마스터)
-        Lspchm lspchm = this.saveLspchm(purchaseInsertRequestData, lspchdList);
+		Lspchm lspchm = this.saveLspchm(purchaseInsertRequestData, lspchdList, userId);
         // lspchb (발주디테일 이력)
-        List<Lspchb> lspchbList = this.saveLspchb(lspchdList, purchaseInsertRequestData);
+		List<Lspchb> lspchbList = this.saveLspchb(lspchdList, purchaseInsertRequestData, userId);
         // lspchs (발주마스터 이력)
-        Lspchs lspchs = this.saveLspchs(lspchm, purchaseInsertRequestData);
+		Lspchs lspchs = this.saveLspchs(lspchm, purchaseInsertRequestData, userId);
         // lsdpsp (입고 예정)
-        List<Lsdpsp> lsdpsp = this.saveLsdpsp(purchaseInsertRequestData);
+		List<Lsdpsp> lsdpsp = this.saveLsdpsp(purchaseInsertRequestData, userId);
         // ititmt (예정 재고)
-        List<Ititmt> ititmt = this.saveItitmt(purchaseInsertRequestData, lspchm);
+		List<Ititmt> ititmt = this.saveItitmt(purchaseInsertRequestData, lspchm, userId);
         // tbOrderDetail 상태변경
         if(purchaseInsertRequestData.getDealtypeCd().equals(StringFactory.getGbOne())){ // 주문발주일 때만
-            this.changeStatusCdOfTbOrderDetail(lspchdList);
+			this.changeStatusCdOfTbOrderDetail(lspchdList, userId);
         }
 
         return lspchm.getPurchaseNo();
@@ -134,12 +136,12 @@ public class JpaPurchaseService {
     /**
      * 발주등록(주문) 저장 후 tbOrderDetail의 statusCd를 B01에서 B02로 변경해주는 함수
      */
-    private void changeStatusCdOfTbOrderDetail(List<Lspchd> lspchdList) {
+	private void changeStatusCdOfTbOrderDetail(List<Lspchd> lspchdList, String userId) {
         for(Lspchd lspchd : lspchdList){
 //            TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(lspchd.getOrderId(),lspchd.getOrderSeq());
 //            if(tbOrderDetail != null){ // 01 : 주문이동, 02 : 상품이동
 //                tbOrderDetail.setStatusCd(StringFactory.getStrB02());
-                this.updateOrderStatusCd(lspchd.getOrderId(),lspchd.getOrderSeq(), StringFactory.getStrB02());
+			this.updateOrderStatusCd(lspchd.getOrderId(), lspchd.getOrderSeq(), StringFactory.getStrB02(), userId);
 //                jpaTbOrderDetailRepository.save(tbOrderDetail);
 //            }
         }
@@ -281,7 +283,8 @@ public class JpaPurchaseService {
         }
         else{ // update
             lspchs.setUpdId(purchaseInsertRequestData.getUserId());
-            lspchs = this.updateLspchs(lspchs, lspchm.getPurchaseNo(), purchaseInsertRequestData.getPurchaseStatus());
+			lspchs = this.updateLspchs(lspchs, lspchm.getPurchaseNo(), purchaseInsertRequestData.getPurchaseStatus(),
+					userId);
         }
         return lspchs;
     }
@@ -344,7 +347,7 @@ public class JpaPurchaseService {
                 jpaLspchbRepository.save(lspchb);
             }
             else{ // update (꺾기)
-                lspchb = this.updateLspchbd(lspchd, lspchd.getPurchaseQty());
+				lspchb = this.updateLspchbd(lspchd, lspchd.getPurchaseQty(), userId);
 
 				lspchb.setUpdId(purchaseInsertRequestData.getUserId());
             }
@@ -1012,7 +1015,7 @@ public class JpaPurchaseService {
             return false;
         }
         // lspchm, lspchd, lspchb, lspchs 생성
-        Lspchd lspchd = this.saveLspchByOrder(tbOrderDetail, origLspchm, origLspchd, di);
+		Lspchd lspchd = this.saveLspchByOrder(tbOrderDetail, origLspchm, origLspchd, di, userId);
         // 기존 lsdpsp update하고 새로운 lsdpsp 추가
         if(lspchd != null){
 //            this.minusLsdpsp(lsdpsp, tbOrderDetail);
@@ -1030,7 +1033,7 @@ public class JpaPurchaseService {
 
 			// jpaItitmtRepository.save(it);
 
-            this.updateLsdpspWhenCandidateExist(lsdpsp, lspchd, tbOrderDetail);
+			this.updateLsdpspWhenCandidateExist(lsdpsp, lspchd, tbOrderDetail, userId);
 
         }
 
@@ -1340,7 +1343,7 @@ public class JpaPurchaseService {
 			lspchm.setUpdId(userId);
 
 			jpaLspchmRepository.save(lspchm);
-			updateLspchsStatus(lspchm, purchaseStatus);
+			updateLspchsStatus(lspchm, purchaseStatus, userId);
 
 		}
 

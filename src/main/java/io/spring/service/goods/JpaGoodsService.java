@@ -93,29 +93,34 @@ public class JpaGoodsService {
      * @param goodsInsertRequestData
      * @return GoodsResponseData
      */
+
+	// 20220307 rjb80 requestbody 추가
     @Transactional
     public String sequenceInsertOrUpdateGoods(GoodsInsertRequestData goodsInsertRequestData){
+
+		String userId = goodsInsertRequestData.getUserId();
+
         // itasrt에 goods 정보 저장
         Itasrt itasrt = this.saveItasrt(goodsInsertRequestData);
         // tmmapi에 저장
         this.saveTmmapi(itasrt);
         // itasrn에 goods 이력 저장
-        Itasrn itasrn = this.saveItasrn(goodsInsertRequestData);
+		Itasrn itasrn = this.saveItasrn(goodsInsertRequestData, userId);
         // itasrd에 문구 저장
-        List<Itasrd> itasrd = this.saveItasrd(goodsInsertRequestData);
+		List<Itasrd> itasrd = this.saveItasrd(goodsInsertRequestData, userId);
         // itvari에 assort_id별 옵션요소 저장(색상, 사이즈)
         List<Itvari> existItvariList = jpaItvariRepository.findByAssortId(goodsInsertRequestData.getAssortId());
-        List<Itvari> itvariList = this.saveItvariList(goodsInsertRequestData, existItvariList);
+		List<Itvari> itvariList = this.saveItvariList(goodsInsertRequestData, existItvariList, userId);
         // ititmm에 assort_id별 item 저장
         List<Ititmm> existItitmmList = jpaItitmmRepository.findByAssortId(goodsInsertRequestData.getAssortId());
-        List<Ititmm> ititmmList = this.saveItemList(goodsInsertRequestData, existItitmmList, itvariList);
+		List<Ititmm> ititmmList = this.saveItemList(goodsInsertRequestData, existItitmmList, itvariList, userId);
         // tmitem에 저장
         this.saveTmitem(ititmmList);
         // ititmd에 item 이력 저장
-        List<Ititmd> ititmdList = this.saveItemHistoryList(goodsInsertRequestData, ititmmList);
+		List<Ititmd> ititmdList = this.saveItemHistoryList(goodsInsertRequestData, ititmmList, userId);
 
         // itaimg에 assortId 업데이트 시켜주기
-        this.updateItaimgAssortId(goodsInsertRequestData, itasrt.getAssortId());
+		this.updateItaimgAssortId(goodsInsertRequestData, itasrt.getAssortId(), userId);
 //        List<GoodsInsertResponseData.Attributes> attributesList = this.makeGoodsResponseAttributes(itvariList);
 //        List<GoodsInsertResponseData.Items> itemsList = this.makeGoodsResponseItems(ititmmList, itvariList);
 //        return this.makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
@@ -415,7 +420,7 @@ public class JpaGoodsService {
      * 상품 insert 시
      */
 	private List<Itvari> insertItvariList(GoodsInsertRequestData goodsInsertRequestData, String userId) {
-        List<Itvari> itvariList = saveSingleOption(goodsInsertRequestData);
+		List<Itvari> itvariList = saveSingleOption(goodsInsertRequestData, userId);
         if(goodsInsertRequestData.getOptionUseYn().equals(StringFactory.getGbTwo())){ // optionUseYn이 02, 즉 단품인 경우
             return itvariList; // 단품 옵션 1개를 저장하는 함수
         }
@@ -615,7 +620,7 @@ public class JpaGoodsService {
      */
 	private List<Ititmm> insertItitmmList(GoodsInsertRequestData goodsInsertRequestData, List<Itvari> itvariList,
 			String userId) {
-        List<Ititmm> ititmmList = this.saveSingleItem(goodsInsertRequestData);
+		List<Ititmm> ititmmList = this.saveSingleItem(goodsInsertRequestData, userId);
         if(goodsInsertRequestData.getOptionUseYn().equals(StringFactory.getGbTwo())){ // optionUseYn이 02, 즉 단품인 경우
             return ititmmList; // 단품 옵션 1개를 저장하는 함수
         }

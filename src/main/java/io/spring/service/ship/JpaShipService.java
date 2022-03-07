@@ -154,7 +154,7 @@ public class JpaShipService {
      * 출고지시 저장 : 수량 입력 후 저장하는 함수
      */
 	@Transactional
-    public List<String> saveShipIndicate(ShipIndicateSaveListData shipIndicateSaveListData) {
+	public List<String> saveShipIndicate(ShipIndicateSaveListData shipIndicateSaveListData, String userId) {
         if(shipIndicateSaveListData.getShips().size() == 0){
             log.debug("input data is empty.");
             return null;
@@ -166,7 +166,7 @@ public class JpaShipService {
 
 		// List<ShipIndicateSaveListData.Ship> l = shipIndicateSaveListData.getShips();
 
-		String userId = shipIndicateSaveListData.getUserId();
+		// String userId = shipIndicateSaveListData.getUserId();
 
 		for (ShipIndicateSaveListData.Ship ship : shipIndicateSaveListData.getShips()) {
 
@@ -193,7 +193,7 @@ public class JpaShipService {
 			orderList.add(m);
 		}
 
-		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.D01.toString());
+		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.D01.toString(), userId);
 
         return shipIdList;
     }
@@ -201,7 +201,7 @@ public class JpaShipService {
 	/**
 	 * 출고지시 저장 : 수량 입력 후 저장하는 함수
 	 */
-	public List<String> saveShipIndicateByDeposit(Lsdpsd lsdpsd) {
+	public List<String> saveShipIndicateByDeposit(Lsdpsd lsdpsd, String userId) {
 
 		System.out.println("----------------------saveShipIndicateByDeposit----------------------");
 
@@ -262,7 +262,7 @@ public class JpaShipService {
 			p.put("rackNo", lsdpsd.getRackNo());
 			p.put("qty", lsdpsd.getDepositQty());
 
-			int r = jpaStockService.minusIndicateStockByOrder(p);
+			int r = jpaStockService.minusIndicateStockByOrder(p, userId);
 
 
 
@@ -297,7 +297,7 @@ public class JpaShipService {
 			// 2. 출고 data 생성
 			// todo 출고지시데이타에 rack이 들어가야함.
 			String shipId = this.makeShipDataByDeposit(imc_storage, lsdpsd, tbOrderDetail,
-					StringFactory.getGbOne()); // 01 :
+					StringFactory.getGbOne(), userId); // 01 :
 																													// :
 			if (shipId != null) {
 				shipIdList.add(shipId);
@@ -447,7 +447,7 @@ public class JpaShipService {
 
 		lsshpm.setUpdId(userId);
 
-		this.updateLsshps(lsshpm);
+		this.updateLsshps(lsshpm, userId);
 
 		ret.add(ship.getShipId());
 
@@ -732,7 +732,7 @@ public class JpaShipService {
 				p.put("shipQty",lsshpd.getShipIndicateQty());
 				p.put("userId", userId);
 
-				int r = jpaStockService.minusShipStockByOrder(p);
+				int r = jpaStockService.minusShipStockByOrder(p, userId);
 				
 
 				lsshpd.setShipQty(lsshpd.getShipIndicateQty());
@@ -763,12 +763,12 @@ public class JpaShipService {
 
 			newShipIdList.add(lsshpm.getShipId());
 			jpaLsshpmRepository.save(lsshpm);
-			this.updateLsshps(lsshpm);		
+			this.updateLsshps(lsshpm, userId);
 			
 			
 		}
 		
-		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.D02.toString());
+		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.D02.toString(), userId);
 		
 		
 		  return newShipIdList;
@@ -907,12 +907,12 @@ public class JpaShipService {
 	/**
 	 * 이동지시 또는 이동처리 후 주문상태변경
 	 */
-	private void changeStatusCdOfTbOrderDetail(List<HashMap<String, Object>> list, String statusCd) {
+	private void changeStatusCdOfTbOrderDetail(List<HashMap<String, Object>> list, String statusCd, String userId) {
 		for (HashMap<String, Object> o : list) {
 //            TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(lspchd.getOrderId(),lspchd.getOrderSeq());
 //            if(tbOrderDetail != null){ // 01 : 주문이동, 02 : 상품이동
 //                tbOrderDetail.setStatusCd(StringFactory.getStrB02());
-			this.updateOrderStatusCd(o.get("order_id").toString(), o.get("order_seq").toString(), statusCd);
+			this.updateOrderStatusCd(o.get("order_id").toString(), o.get("order_seq").toString(), statusCd, userId);
 //                jpaTbOrderDetailRepository.save(tbOrderDetail);
 //            }
 		}
@@ -1061,7 +1061,7 @@ public class JpaShipService {
 
 			m.put("rackNo", o.getRackNo());
 
-			jpaStockService.minusEtcShipStockByGoods(m);
+			jpaStockService.minusEtcShipStockByGoods(m, userId);
 
 		}
 

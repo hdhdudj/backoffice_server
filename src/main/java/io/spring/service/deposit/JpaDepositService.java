@@ -132,9 +132,9 @@ public class JpaDepositService {
 		// 주문입고건에 대해 상태확인후 이동지시 또는 출고지시 처리
 
 //		 jpaMoveService.saveOrderMoveByDeposit(lsdpsdList);
-		List<HashMap<String, Object>> retList = this.saveMoveOrShip(lsdpsdList);
+		List<HashMap<String, Object>> retList = this.saveMoveOrShip(lsdpsdList, userId);
 
-        this.changeStatusCdOfTbOrderDetail(lsdpspList);
+		this.changeStatusCdOfTbOrderDetail(lsdpspList, userId);
 
         messageList.add(lsdpsm.getDepositNo());
         return true;
@@ -147,7 +147,7 @@ public class JpaDepositService {
     public void sequenceUpdateDeposit(DepositInsertRequestData depositInsertRequestData) {
     }
 
-    private void changeStatusCdOfTbOrderDetail(List<Lsdpsp> lsdpspList){
+	private void changeStatusCdOfTbOrderDetail(List<Lsdpsp> lsdpspList, String userId) {
         for(Lsdpsp lsdpsp : lsdpspList){
             if(lsdpsp.getDealtypeCd().equals(StringFactory.getGbOne())){ // dealtypeCd가 01(주문발주)인 애들만 해당
                 Lspchd lspchd = lsdpsp.getLspchd();
@@ -186,7 +186,7 @@ public class JpaDepositService {
                         statusCd = TrdstOrderStatus.C01.toString(); // 해외입고완료
                     }
                 }
-                jpaOrderService.updateOrderStatusCd(orderId, orderSeq, statusCd);
+				jpaOrderService.updateOrderStatusCd(orderId, orderSeq, statusCd, userId);
             }
         }
     }
@@ -741,7 +741,7 @@ public class JpaDepositService {
 			System.out.println(rackNo);
 			p.put("rackNo", rackNo);
 
-			jpaStockService.plusDepositStock(p);
+			jpaStockService.plusDepositStock(p, userId);
 
 
 
@@ -934,7 +934,7 @@ public class JpaDepositService {
 
 	}
 
-	private List<HashMap<String, Object>> saveMoveOrShip(List<Lsdpsd> list) {
+	private List<HashMap<String, Object>> saveMoveOrShip(List<Lsdpsd> list, String userId) {
 
 		List<HashMap<String, Object>> ret = new ArrayList<HashMap<String, Object>>();
 
@@ -981,7 +981,7 @@ public class JpaDepositService {
 
 
 						// 입고창고와 주문의 창고가 같은경우 출고지시
-						List<String> r = jpaShipService.saveShipIndicateByDeposit(lsdpsd);
+						List<String> r = jpaShipService.saveShipIndicateByDeposit(lsdpsd, userId);
 						if (r.size() > 0) {
 							HashMap<String, Object> p = new HashMap<String, Object>();
 
@@ -1000,7 +1000,7 @@ public class JpaDepositService {
 							System.out.println(
 									"----------------------22 saveShipIndicateByDeposit----------------------");
 
-							List<String> r = jpaShipService.saveShipIndicateByDeposit(lsdpsd);
+							List<String> r = jpaShipService.saveShipIndicateByDeposit(lsdpsd, userId);
 							if (r.size() > 0) {
 								HashMap<String, Object> p = new HashMap<String, Object>();
 
@@ -1013,7 +1013,7 @@ public class JpaDepositService {
 							// 입고창고와 주문의 창고가 다른경우 이동지시
 							System.out.println("----------------------33 saveOrderMoveByDeposit----------------------");
 
-							List<String> r = jpaMoveService.saveOrderMoveByDeposit(lsdpsd);
+							List<String> r = jpaMoveService.saveOrderMoveByDeposit(lsdpsd, userId);
 
 							if (r.size() > 0) {
 								HashMap<String, Object> p = new HashMap<String, Object>();

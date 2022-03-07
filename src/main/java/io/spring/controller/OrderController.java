@@ -408,22 +408,25 @@ public class OrderController {
 
 	@GetMapping(path = "/test/sms")
 	public ResponseEntity smsSendTest(@RequestParam String body, @RequestParam String tbOrderNo){
-		jpaOrderService.testSms(body, tbOrderNo);
+		jpaOrderService.testSms(body, tbOrderNo, "test");
 		return null;
 	}
 
+	// 20220307 rjb80 requestbody 추가
 	@PostMapping(path = "/ifoption")
 	public ResponseEntity saveOrderOption(
 			@RequestBody OrderOptionRequestData req) {
 
 		System.out.println(req);
 
+		String userId = req.getUserId();
+
 		Boolean ret = jpaOrderService.saveGoodsIfoption(req.getOrderId(), req.getOrderSeq(), req.getAssortId(),
 				req.getChannelGoodsNo(),
-				req.getChannelOptionSno());
+				req.getChannelOptionSno(), userId);
 
 		if (ret) {
-			jpaOrderService.noOptionChangeOrderStatus(req.getOrderId(), req.getOrderSeq());
+			jpaOrderService.noOptionChangeOrderStatus(req.getOrderId(), req.getOrderSeq(), userId);
 		}
 
 		ApiResponseMessage res = null;

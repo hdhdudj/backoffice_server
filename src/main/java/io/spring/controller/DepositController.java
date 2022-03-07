@@ -105,9 +105,10 @@ public class DepositController {
 
 		System.out.println(depositListWithPurchaseInfoData);
 
+		String userId = depositListWithPurchaseInfoData.getUserId();
 
         List<String> messageList = new ArrayList<>();
-        boolean flag = jpaDepositService.sequenceCreateDeposit(depositListWithPurchaseInfoData, messageList);
+		boolean flag = jpaDepositService.sequenceCreateDeposit(depositListWithPurchaseInfoData, messageList, userId);
         ApiResponseMessage res = null;
         if(flag){
             res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), messageList.get(0));
@@ -155,7 +156,10 @@ public class DepositController {
     @PostMapping(path="/items/update/{depositNo}")
     public ResponseEntity updateDepositDetail(@PathVariable String depositNo, @RequestBody DepositSelectDetailRequestData depositSelectDetailRequestData){
         depositSelectDetailRequestData.setDepositNo(depositNo);
-        depositSelectDetailRequestData = jpaDepositService.updateDetail(depositSelectDetailRequestData);
+
+		String userId = depositSelectDetailRequestData.getUserId();
+
+		depositSelectDetailRequestData = jpaDepositService.updateDetail(depositSelectDetailRequestData, userId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositSelectDetailRequestData);
         return ResponseEntity.ok(res);
     }

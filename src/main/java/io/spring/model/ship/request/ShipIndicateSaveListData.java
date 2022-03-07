@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -45,7 +47,7 @@ public class ShipIndicateSaveListData {
     private String assortNm;
     private String vendorId;
     private String orderId;
-
+	@NotNull(message = "userId는 필수 값입니다.")
 	private String userId;
 
     private List<Ship> ships;

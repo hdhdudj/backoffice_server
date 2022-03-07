@@ -128,7 +128,10 @@ public class ShipController {
     */
     @PostMapping(path = "/indicate")
     public ResponseEntity saveShipIndicate(@RequestBody ShipIndicateSaveListData shipIndicateSaveDataList){
-        List<String> shipIdList = jpaShipService.saveShipIndicate(shipIndicateSaveDataList);
+
+		String userId = shipIndicateSaveDataList.getUserId();
+
+		List<String> shipIdList = jpaShipService.saveShipIndicate(shipIndicateSaveDataList, userId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIdList);
         return ResponseEntity.ok(res);
     }
@@ -181,7 +184,8 @@ public class ShipController {
      */
     @PostMapping(path = "")
     public ResponseEntity shipIndToShip(@RequestBody ShipSaveListData shipSaveListData){
-		List<String> shipIdList = jpaShipService.shipIndToShip2(shipSaveListData);
+		String userId = shipSaveListData.getUserId();
+		List<String> shipIdList = jpaShipService.shipIndToShip2(shipSaveListData, userId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIdList);
         return ResponseEntity.ok(res);
     }

@@ -97,7 +97,10 @@ public class MoveController {
      */
     @PostMapping(path="/indicate/order")
     public ResponseEntity saveOrderMove(@RequestBody OrderMoveSaveData orderMoveSaveData){
-        List<String> shipIdList = jpaMoveService.saveOrderMove(orderMoveSaveData);
+
+		String userId = orderMoveSaveData.getUserId();
+
+		List<String> shipIdList = jpaMoveService.saveOrderMove(orderMoveSaveData, userId);
 //        depositInsertRequestData.setDepositNo(depositNo); // deposit no 채번
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipIdList);
         return ResponseEntity.ok(res);
@@ -150,7 +153,10 @@ public class MoveController {
     @PostMapping(path="/indicate/goods")
     public ResponseEntity saveGoodsMove(@RequestBody GoodsMoveSaveData goodsMoveSaveData){
         System.out.println("========== : " + goodsMoveSaveData.getOStorageId());
-        List<String> shipIdList = jpaMoveService.saveGoodsMove(goodsMoveSaveData);
+
+		String userId = goodsMoveSaveData.getUserId();
+
+		List<String> shipIdList = jpaMoveService.saveGoodsMove(goodsMoveSaveData, userId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipIdList);
         return ResponseEntity.ok(res);
     }
@@ -242,9 +248,13 @@ public class MoveController {
     /**
      * 이동리스트 화면에서 엑셀 업로드한 값 저장
      */
+	// 20220307 rjb80 requestbody 추가
     @PostMapping(path = "/excel")
     public ResponseEntity saveExcelList(@RequestBody MoveListExcelRequestData moveListExcelRequestData){
-        jpaMoveService.saveExcelList(moveListExcelRequestData);
+
+		String userId = moveListExcelRequestData.getUserId();
+
+		jpaMoveService.saveExcelList(moveListExcelRequestData, userId);
         MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.getMovedList(moveListExcelRequestData.getStartDt(), moveListExcelRequestData.getEndDt(), moveListExcelRequestData.getShipId(), moveListExcelRequestData.getAssortId(), moveListExcelRequestData.getAssortNm(), moveListExcelRequestData.getStorageId(), null, null, null);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveCompletedLIstReponseData);
         return ResponseEntity.ok(res);

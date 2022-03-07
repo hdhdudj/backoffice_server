@@ -306,12 +306,12 @@ public class JpaOrderService {
         Lsdpsd lsdpsd = lsdpsdList.get(0);
         lsdpsd.setOrderId(tbOrderDetail.getOrderId());
         lsdpsd.setOrderSeq(tbOrderDetail.getOrderSeq());
-        this.updateLsdpsds(lsdpsd);
+		this.updateLsdpsds(lsdpsd, userId);
 
         Lspchd lspchd = lsdpsd.getLspchd();
         lspchd.setOrderId(tbOrderDetail.getOrderId());
         lspchd.setOrderSeq(tbOrderDetail.getOrderSeq());
-        this.updateLspchds(lspchd);
+		this.updateLspchds(lspchd, userId);
 
 		lspchd.setUpdId(userId);
 
@@ -905,9 +905,9 @@ public class JpaOrderService {
     }
 
 
-    public void testSms(String body, String tbOrderNo){
+	public void testSms(String body, String tbOrderNo, String userId) {
         TbOrderDetail td = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(tbOrderNo, "0001");
-        smsService.sendSmsMessage(body, td);
+		smsService.sendSmsMessage(body, td, userId);
     }
 
 
@@ -1159,7 +1159,7 @@ public class JpaOrderService {
 
 				jpaTbOrderMasterRepository.save(om);
 
-				updateOrderStatusCd(p.get("orderId").toString(), p.get("orderSeq").toString(), "X01");
+				updateOrderStatusCd(p.get("orderId").toString(), p.get("orderSeq").toString(), "X01", userId);
 
 				}
 
