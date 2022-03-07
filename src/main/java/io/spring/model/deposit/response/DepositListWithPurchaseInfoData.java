@@ -38,6 +38,7 @@ public class DepositListWithPurchaseInfoData {
     private String depositDt;
     private String storageId;
     private String regId;
+	private String userId;
     private List<Deposit> deposits;
 
     @Getter

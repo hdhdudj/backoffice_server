@@ -117,9 +117,9 @@ public class JpaOrderService {
 
     // orderId, orderSeq를 받아 주문 상태를 변경해주는 함수
     @Transactional
-    public void changeOrderStatus(String orderId, String orderSeq) {
+	public void changeOrderStatus(String orderId, String orderSeq, String userId) {
         // orderId, orderSeq로 해당하는 TbOrderDetail 찾아오기
-        log.debug("in changeOrderStatus ; orderId : " + orderId + ", orderSeq : " + orderSeq);
+		log.debug("in changeOrderStatus ; orderId : " + orderId + ", orderSeq : " + orderSeq + ", userId : " + userId);
         TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq2(orderId, orderSeq);//query.getSingleResult();
         if(tbOrderDetail == null){
             log.debug("There is no TbOrderDetail of " + orderId + " and " + orderSeq);
@@ -142,21 +142,23 @@ public class JpaOrderService {
             itasrt = this.getParentAssortGb(orderId, orderSeq, itasrt);
         }
 
+		tbOrderDetail.setUpdId(userId);
+
 		System.out.println(assortGb);
 
         if(StringFactory.getGbOne().equals(assortGb)){ // assortGb == '01' : 직구
             this.changeOrderStatusWhenDirect(tbOrderDetail);
         }
         else if(StringFactory.getGbTwo().equals(assortGb)){ // assortGb == '02' : 수입
-            this.changeOrderStatusWhenImport(tbOrderDetail);
+			this.changeOrderStatusWhenImport(tbOrderDetail, userId);
         }
 
-        this.saveOrderLog(prevStatus, tbOrderDetail);
+		this.saveOrderLog(prevStatus, tbOrderDetail, userId);
     }
 
 	// orderId, orderSeq를 받아 주문 상태를 변경해주는 함수
 	@Transactional
-	public void noOptionChangeOrderStatus(String orderId, String orderSeq) {
+	public void noOptionChangeOrderStatus(String orderId, String orderSeq, String userId) {
 		// orderId, orderSeq로 해당하는 TbOrderDetail 찾아오기
 		log.debug("in changeOrderStatus ; orderId : " + orderId + ", orderSeq : " + orderSeq);
 		TypedQuery<TbOrderDetail> query = em.createQuery(
@@ -196,10 +198,10 @@ public class JpaOrderService {
 		if (StringFactory.getGbOne().equals(assortGb)) { // assortGb == '01' : 직구
 			this.changeOrderStatusWhenDirect(tbOrderDetail);
 		} else if (StringFactory.getGbTwo().equals(assortGb)) { // assortGb == '02' : 수입
-			this.changeOrderStatusWhenImport(tbOrderDetail);
+			this.changeOrderStatusWhenImport(tbOrderDetail, userId);
 		}
 
-		this.saveOrderLog(prevStatus, tbOrderDetail);
+		this.saveOrderLog(prevStatus, tbOrderDetail, userId);
 	}
 
     /**
@@ -219,9 +221,12 @@ public class JpaOrderService {
     /**
      * tbOrderDetail.statusCd가 변동될 때마다 로그를 기록함.
      */
-    private void saveOrderLog(String prevStatus, TbOrderDetail tbOrderDetail) {
+	private void saveOrderLog(String prevStatus, TbOrderDetail tbOrderDetail, String userId) {
         OrderLog orderLog = new OrderLog(tbOrderDetail);
         orderLog.setPrevStatus(prevStatus);
+
+		orderLog.setUpdId(userId);
+
         jpaOrderLogRepository.save(orderLog);
     }
 
@@ -235,6 +240,7 @@ public class JpaOrderService {
         String assortId = tbOrderDetail.getAssortId();
         String itemId = tbOrderDetail.getItemId();
         String goodsStorageId = "000002";//tbOrderDetail.getStorageId(); // 물건이 도착하는 창고 id (해외창고. 직구이므로 국내창고 거치지 않음)
+		String userId = tbOrderDetail.getUpdId();
 
         // 국내창고 ititmc 불러오기
         List<Ititmc> domItitmc = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGrade(assortId, itemId, goodsStorageId, StringFactory.getStrEleven());
@@ -261,11 +267,12 @@ public class JpaOrderService {
 			// isStockExist = this.loopItitmc(domItitmc, tbOrderDetail); //20211217
 
 			// 국내재고 있는경우 랙에서 지시수량 차감 ,창고에서 지시수량 차감
-			Ititmc im = jpaStockService.checkStockWhenDirect(goodsStorageId, assortId, itemId, tbOrderDetail.getQty());
+			Ititmc im = jpaStockService.checkStockWhenDirect(goodsStorageId, assortId, itemId, tbOrderDetail.getQty(),
+					userId);
 
 			// 지시수량 차감처리가 되었다면 출고지시데이타 생성
 			if (im != null) {
-				this.makeShipDataByDeposit(im, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
+				this.makeShipDataByDeposit(im, tbOrderDetail, StringFactory.getGbOne(), userId); // 01 (출고지시) 하드코딩
 			}
 
 			
@@ -282,13 +289,13 @@ public class JpaOrderService {
 		if (statusCd == null) {
             statusCd = StringFactory.getStrB01(); // 발주대기 : B01
         }
-        this.updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), statusCd);
+		this.updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), statusCd, userId);
     }
 
     /**
      * orderStatus 판단시 assortId, itemId, qty로 lsdpsd를 가져오는 함수
      */
-    private List<Lsdpsd> getLsdpsdListByGoodsInfo(TbOrderDetail tbOrderDetail){
+	private List<Lsdpsd> getLsdpsdListByGoodsInfo(TbOrderDetail tbOrderDetail, String userId) {
         TypedQuery<Lsdpsd> q = em.createQuery("select lsdpsd from Lsdpsd lsdpsd " +
                         "join fetch lsdpsd.lspchd ld " +
                         "where lsdpsd.assortId=?1 and lsdpsd.itemId=?2 and lsdpsd.depositQty=?3",Lsdpsd.class)
@@ -305,6 +312,9 @@ public class JpaOrderService {
         lspchd.setOrderId(tbOrderDetail.getOrderId());
         lspchd.setOrderSeq(tbOrderDetail.getOrderSeq());
         this.updateLspchds(lspchd);
+
+		lspchd.setUpdId(userId);
+
         jpaLspchdRepository.save(lspchd);
 
         return lsdpsdList;
@@ -313,11 +323,16 @@ public class JpaOrderService {
     /**
      * lspchd와 lspchb 업데이트
      */
-    private void updateLspchds(Lspchd lspchd) {
+	private void updateLspchds(Lspchd lspchd, String userId) {
         Lspchb lspchb = jpaLspchbRepository.findByPurchaseNoAndPurchaseSeqAndEffEndDt(lspchd.getPurchaseNo(), lspchd.getPurchaseSeq(), Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
         lspchb.setEffEndDt(LocalDateTime.now());
         Lspchb newLspchb = new Lspchb(lspchd, "regId"); // regId 임시 하드코딩
         newLspchb.setPurchaseStatus(lspchb.getPurchaseStatus());
+
+		lspchd.setUpdId(userId);
+		lspchb.setUpdId(userId);
+		newLspchb.setUpdId(userId);
+
         jpaLspchdRepository.save(lspchd);
         jpaLspchbRepository.save(lspchb);
         jpaLspchbRepository.save(newLspchb);
@@ -326,10 +341,15 @@ public class JpaOrderService {
     /**
      * lsdpsd와 lsdpds 업데이트
      */
-    private void updateLsdpsds(Lsdpsd lsdpsd){
+	private void updateLsdpsds(Lsdpsd lsdpsd, String userId) {
         Lsdpds lsdpds = jpaLsdpdsRepository.findByDepositNoAndDepositSeqAndEffEndDt(lsdpsd.getDepositNo(), lsdpsd.getDepositSeq(), Utilities.getStringToDate(StringFactory.getDoomDay()));
         lsdpds.setEffEndDt(new Date());
         Lsdpds newLsdpds = new Lsdpds(lsdpsd);
+
+		lsdpds.setUpdId(userId);
+		newLsdpds.setUpdId(userId);
+		lsdpsd.setUpdId(userId);
+
         jpaLsdpdsRepository.save(lsdpds);
         jpaLsdpdsRepository.save(newLsdpds);
         jpaLsdpsdRepository.save(lsdpsd);
@@ -341,7 +361,7 @@ public class JpaOrderService {
      * Ititmt : 상품입고예정재고
      * @param tbOrderDetail
      */
-    private void  changeOrderStatusWhenImport(TbOrderDetail tbOrderDetail) {
+	private void changeOrderStatusWhenImport(TbOrderDetail tbOrderDetail, String userId) {
 
 		System.out.println("changeOrderStatusWhenImport");
 
@@ -391,11 +411,12 @@ public class JpaOrderService {
         if(sumOfDomQty - sumOfDomShipIndQty - tbOrderDetail.getQty() >= 0){
 
 			Ititmc im = jpaStockService.checkStockWhenImport(domesticStorageId, assortId, itemId,
-					tbOrderDetail.getQty());
+					tbOrderDetail.getQty(), userId);
 
 			// 지시수량 차감처리가 되었다면 출고지시데이타 생성
 			if (im != null) {
-				this.makeDomesticShipDataByDeposit(im, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
+				this.makeDomesticShipDataByDeposit(im, tbOrderDetail, StringFactory.getGbOne(), userId); // 01 (출고지시)
+																											// 하드코딩
 			}
 
 			statusCd = im != null ? StringFactory.getStrC04() : statusCd;
@@ -414,11 +435,11 @@ public class JpaOrderService {
         if(statusCd == null && sumOfOvrsQty - sumOfOvrsShipIndQty - tbOrderDetail.getQty() >= 0){
 
 			Ititmc im = jpaStockService.checkStockWhenImport(overseaStorageId, assortId, itemId,
-					tbOrderDetail.getQty());
+					tbOrderDetail.getQty(), userId);
 
 			// 지시수량 차감처리가 되었다면 출고지시데이타 생성
 			if (im != null) {
-				this.makeMoveDataByDeposit(im, tbOrderDetail, StringFactory.getGbOne()); // 01 (출고지시) 하드코딩
+				this.makeMoveDataByDeposit(im, tbOrderDetail, StringFactory.getGbOne(), userId); // 01 (출고지시) 하드코딩
 			}
 
 			statusCd = im != null ? StringFactory.getStrC01() : statusCd;
@@ -449,14 +470,14 @@ public class JpaOrderService {
         if(statusCd == null){
             statusCd = StringFactory.getStrB01(); // 발주대기 : B01
         }
-        this.updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), statusCd);
+		this.updateOrderStatusCd(tbOrderDetail.getOrderId(), tbOrderDetail.getOrderSeq(), statusCd, userId);
     }
 
     /**
      * Ititmt list를 loop 돌면서 qty 관련 계산
      * 10-21 수정 : 해당 주문 이상의 숫자를 가진 ititmt가 존재해야 함.
      */
-    private String loopItitmt(List<Ititmt> ititmtList, TbOrderDetail tbOrderDetail, DirectOrImport di) {
+	private String loopItitmt(List<Ititmt> ititmtList, TbOrderDetail tbOrderDetail, DirectOrImport di, String userId) {
 
 		System.out.println("loopItitmt");
 
@@ -481,7 +502,7 @@ public class JpaOrderService {
 
 			System.out.println("111111111111111111111111111");
             di = DirectOrImport.purchase;
-            jpaPurchaseService.makePurchaseDataByOrder(tbOrderDetail, di);
+			jpaPurchaseService.makePurchaseDataByOrder(tbOrderDetail, di, userId);
             return StringFactory.getStrB02(); // 발주완료 : B02
         }
         else if(isStockCandidateExist && di.equals(DirectOrImport.imports)){ // 수입
@@ -499,7 +520,7 @@ public class JpaOrderService {
 				// di = DirectOrImport.purchase;
 				di = DirectOrImport.move;
             }
-            jpaPurchaseService.makePurchaseDataByOrder(tbOrderDetail, di);
+			jpaPurchaseService.makePurchaseDataByOrder(tbOrderDetail, di, userId);
             return statusCd;
         }
         else{
@@ -583,7 +604,7 @@ public class JpaOrderService {
 	 * 출고 관련 값 update, 출고 관련 data 생성 함수 (lsshpm,d,s) ShipIndicateSaveData 객체로
 	 * lsshpm,s,d 생성
 	 */
-	private String makeMoveDataByDeposit(Ititmc ititmc, TbOrderDetail tbOrderDetail, String shipStatus) {
+	private String makeMoveDataByDeposit(Ititmc ititmc, TbOrderDetail tbOrderDetail, String shipStatus, String userId) {
 		String shipId = this.getShipId();
 
 		Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
@@ -603,7 +624,13 @@ public class JpaOrderService {
 
 		// lsshps 저장
 		Lsshps lsshps = new Lsshps(lsshpm);
+
+		lsshps.setUpdId(userId);
+
+
 		jpaLsshpsRepository.save(lsshps);
+
+		lsshpm.setUpdId(userId);
 		jpaLsshpmRepository.save(lsshpm);
 		// lsshpd 저장
 		String shipSeq = StringUtils.leftPad(Integer.toString(1), 4, '0'); // 0001 하드코딩
@@ -612,6 +639,9 @@ public class JpaOrderService {
 		lsshpd.setVendorDealCd(StringFactory.getGbOne()); // 01 : 주문, 02 : 상품, 03 : 입고예정
 		lsshpd.setShipIndicateQty(tbOrderDetail.getQty());
 		lsshpd.setShipGb("03"); // 주문이동지시
+
+		lsshpd.setUpdId(userId);
+
 		jpaLsshpdRepository.save(lsshpd);
 		return shipId;
 	}
@@ -620,7 +650,7 @@ public class JpaOrderService {
      * 출고 관련 값 update, 출고 관련 data 생성 함수 (lsshpm,d,s) ShipIndicateSaveData 객체로
      * lsshpm,s,d 생성
      */
-    private String makeShipDataByDeposit(Ititmc ititmc, TbOrderDetail tbOrderDetail, String shipStatus) {
+	private String makeShipDataByDeposit(Ititmc ititmc, TbOrderDetail tbOrderDetail, String shipStatus, String userId) {
         String shipId = this.getShipId();
 
         Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
@@ -639,7 +669,13 @@ public class JpaOrderService {
 
         // lsshps 저장
         Lsshps lsshps = new Lsshps(lsshpm);
+
+		lsshps.setUpdId(userId);
+
         jpaLsshpsRepository.save(lsshps);
+
+		lsshpm.setUpdId(userId);
+
         jpaLsshpmRepository.save(lsshpm);
         // lsshpd 저장
         String shipSeq = StringUtils.leftPad(Integer.toString(1), 4, '0'); // 0001 하드코딩
@@ -648,6 +684,9 @@ public class JpaOrderService {
         lsshpd.setVendorDealCd(StringFactory.getGbOne()); // 01 : 주문, 02 : 상품, 03 : 입고예정
         lsshpd.setShipIndicateQty(tbOrderDetail.getQty());
         lsshpd.setShipGb("01"); // 주문출고지시
+
+		lsshpd.setUpdId(userId);
+
         jpaLsshpdRepository.save(lsshpd);
         return shipId;
     }
@@ -656,7 +695,8 @@ public class JpaOrderService {
 	 * 출고 관련 값 update, 출고 관련 data 생성 함수 (lsshpm,d,s) ShipIndicateSaveData 객체로
 	 * lsshpm,s,d 생성
 	 */
-	private String makeDomesticShipDataByDeposit(Ititmc ititmc, TbOrderDetail tbOrderDetail, String shipStatus) {
+	private String makeDomesticShipDataByDeposit(Ititmc ititmc, TbOrderDetail tbOrderDetail, String shipStatus,
+			String userId) {
 		String shipId = this.getShipId();
 
 		Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
@@ -676,7 +716,12 @@ public class JpaOrderService {
 
 		// lsshps 저장
 		Lsshps lsshps = new Lsshps(lsshpm);
+
+		lsshps.setUpdId(userId);
+
 		jpaLsshpsRepository.save(lsshps);
+
+		lsshpm.setUpdId(userId);
 		jpaLsshpmRepository.save(lsshpm);
 		// lsshpd 저장
 		String shipSeq = StringUtils.leftPad(Integer.toString(1), 4, '0'); // 0001 하드코딩
@@ -685,6 +730,9 @@ public class JpaOrderService {
 		lsshpd.setVendorDealCd(StringFactory.getGbOne()); // 01 : 주문, 02 : 상품, 03 : 입고예정
 		lsshpd.setShipIndicateQty(tbOrderDetail.getQty());
 		lsshpd.setShipGb("01"); // 주문출고지시
+
+		lsshpd.setUpdId(userId);
+
 		jpaLsshpdRepository.save(lsshpd);
 		return shipId;
 	}
@@ -703,7 +751,7 @@ public class JpaOrderService {
      * @param orderSeq
      * @param statusCd
      */
-	public void updateOrderStatusCd(String orderId, String orderSeq, String statusCd) {
+	public void updateOrderStatusCd(String orderId, String orderSeq, String statusCd, String userId) {
 
 		TbOrderDetail tod = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
         LocalDateTime date = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());
@@ -713,6 +761,7 @@ public class JpaOrderService {
             return;
         }
 		tod.setStatusCd(statusCd);
+		tod.setUpdId(userId);
 
         LocalDateTime newEffEndDate = LocalDateTime.now();
 
@@ -725,7 +774,7 @@ public class JpaOrderService {
 				Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
         // 임시 코드
         toh.setRegId("1");
-        toh.setUpdId("1");
+		toh.setUpdId(userId);
 
 		tohs.add(toh);
 
@@ -753,6 +802,7 @@ public class JpaOrderService {
 
 		if (req.getId() == "") {
 			OrderStock os = new OrderStock(req);
+
 			jpaOrderStockRepository.save(os);
 		} else {
 			OrderStock o = jpaOrderStockRepository.findById(Long.parseLong(req.getId())).orElse(null);
@@ -863,7 +913,7 @@ public class JpaOrderService {
 
 	@Transactional
 	public boolean saveGoodsIfoption(String orderId, String orderSeq, String assortId, String channelGoodsNo,
-			String channelOptionSno) {
+			String channelOptionSno, String userId) {
 
 		IfGoodsOption igo = null;
 		Tmitem ti = null;
@@ -937,11 +987,23 @@ public class JpaOrderService {
 		if (r2.size() == 1) {
 
 			if (r.size() == 0 && r1 == null) {
+
+				igo.setUpdId(userId);
+
 				jpaIfGoodsOptionRepository.save(igo);
+
+				ti.setUpdId(userId);
+
 				jpaTmitemRepository.save(ti);
+
+				tod.setUpdId(userId);
+
 				jpaTbOrderDetailRepository.save(tod);
 				ret = true;
 			} else if (r.size() == 1 && r1 != null) {
+
+				tod.setUpdId(userId);
+
 				jpaTbOrderDetailRepository.save(tod);
 				ret = true;
 			}
@@ -954,7 +1016,7 @@ public class JpaOrderService {
 	}
 
 	@Transactional
-	public boolean cancelGodoOrder(HashMap<String, Object> p) {
+	public boolean cancelGodoOrder(HashMap<String, Object> p, String userId) {
 
 //		m.put("orderId", o.getOrderId());
 //		m.put("orderSeq", o.getOrderSeq());
@@ -999,7 +1061,7 @@ public class JpaOrderService {
 
 			if (od.getStatusCd().equals("B01") || od.getStatusCd().equals("B02") || od.getStatusCd().equals("A01")) {
 				if (od.getStatusCd().equals("B02")) {
-					boolean r = jpaPurchaseService.cancelOrderPurchase(p);
+					boolean r = jpaPurchaseService.cancelOrderPurchase(p, userId);
 
 					System.out.println(r);
 
@@ -1007,7 +1069,7 @@ public class JpaOrderService {
 
 				if (ifCancelGb.equals("01")) {
 					// 주문취소
-					updateOrderStatusCd(p.get("orderId").toString(), p.get("orderSeq").toString(), "X01");
+					updateOrderStatusCd(p.get("orderId").toString(), p.get("orderSeq").toString(), "X01", userId);
 				} else if (ifCancelGb.equals("02")) {
 					// 상품수량변경
 				//	Long qty = 
@@ -1045,7 +1107,11 @@ public class JpaOrderService {
 				om.setTotalCouponGoodsMileage(iom.getTotalCouponGoodsMileage());
 				om.setTotalCouponOrderMileage(iom.getTotalCouponOrderMileage());
 
+				od.setUpdId(userId);
+
 				jpaTbOrderDetailRepository.save(od);
+
+				om.setUpdId(userId);
 				jpaTbOrderMasterRepository.save(om);
 
 			} else if (ifCancelGb.equals("03")) {
@@ -1085,7 +1151,12 @@ public class JpaOrderService {
 				om.setTotalCouponGoodsMileage(iom.getTotalCouponGoodsMileage());
 				om.setTotalCouponOrderMileage(iom.getTotalCouponOrderMileage());
 
+				od.setUpdId(userId);
+
 				jpaTbOrderDetailRepository.save(od);
+
+				om.setUpdId(userId);
+
 				jpaTbOrderMasterRepository.save(om);
 
 				updateOrderStatusCd(p.get("orderId").toString(), p.get("orderSeq").toString(), "X01");
@@ -1094,11 +1165,16 @@ public class JpaOrderService {
 
 				System.out.println("z05");
 				ioc.setIfStatus("02");
+
+				ioc.setUpdId(userId);
+
 				jpaIfOrderCancelRepository.save(ioc);
 			} else {
 
 				System.out.println("z06");
 				ioc.setIfStatus("99");
+
+				ioc.setUpdId(userId);
 				jpaIfOrderCancelRepository.save(ioc);
 			}
 			

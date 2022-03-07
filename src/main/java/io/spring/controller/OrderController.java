@@ -178,7 +178,10 @@ public class OrderController {
 	@RequestMapping(path = "/orderstatus", method = RequestMethod.GET)
 	public ResponseEntity changeOrderStatus(@RequestParam String orderId, @RequestParam String orderSeq) {
 		log.debug("changeOrderStatus 실행.");
-		jpaOrderService.changeOrderStatus(orderId, orderSeq);
+
+		String userId = "batch did";
+
+		jpaOrderService.changeOrderStatus(orderId, orderSeq, userId);
 
 
 		TbOrderDetail t = jpaOrderService.getOrderDetail(orderId, orderSeq);
@@ -437,6 +440,7 @@ public class OrderController {
 	public ResponseEntity cancelOrder(
 			@RequestBody CancelOrderRequestData param) {
 
+
 //CancelOrderRequestData
 
 		System.out.println("cancelOrder");
@@ -460,7 +464,7 @@ public class OrderController {
 			m.put("userId", userId);
 
 			if (o.getChannelGb().equals("01")) {
-				boolean r = jpaOrderService.cancelGodoOrder(m);
+				boolean r = jpaOrderService.cancelGodoOrder(m, userId);
 				System.out.println(r);
 				if (r == false) {
 					chk = "error";

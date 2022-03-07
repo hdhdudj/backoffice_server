@@ -226,6 +226,8 @@ public class DepositController {
 			throws Exception {
 		log.debug("입고처리 호출");
 
+		String userId = reqData.getUserId();
+
 		String depositNo = "";
 
 		String storageId = reqData.getStorageId();
@@ -246,7 +248,7 @@ public class DepositController {
 		log.debug("aaaa");
 
 		List<String> messageList = new ArrayList<>();
-		depositNo = jpaDepositService.insertEtcDeposit(reqData);
+		depositNo = jpaDepositService.insertEtcDeposit(reqData, userId);
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
 				depositNo);

@@ -223,12 +223,14 @@ public class ShipController {
 	public ResponseEntity insertEtcShip(@RequestBody InsertShipEtcRequestData reqData) throws Exception {
 		log.debug("출고처리 호출");
 
+		String userId = reqData.getUserId();
+
 		System.out.println(reqData);
 
 		String depositNo = "";
 
 		List<String> messageList = new ArrayList<>();
-		depositNo = jpaShipService.insertEtcShip(reqData);
+		depositNo = jpaShipService.insertEtcShip(reqData, userId);
 		// depositNo = jpaDepositService.insertEtcDeposit(reqData);
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),

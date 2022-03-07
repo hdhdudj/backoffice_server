@@ -27,7 +27,6 @@ import io.spring.model.move.response.GoodsModalListResponseData;
 import io.spring.model.move.response.MoveCompletedLIstReponseData;
 import io.spring.model.move.response.MoveIndicateDetailResponseData;
 import io.spring.model.move.response.MoveIndicateListResponseData;
-import io.spring.model.move.response.MoveListResponseData;
 import io.spring.model.move.response.MovedDetailResponseData;
 import io.spring.model.move.response.OrderMoveListResponseData;
 import io.spring.service.move.JpaMoveService;
@@ -213,7 +212,10 @@ public class MoveController {
      */
     @PostMapping(path = "/move")
     public ResponseEntity changeShipStatus(@RequestBody MoveListSaveData moveListSaveData){
-		List<String> shipIdList = jpaMoveService.changeShipStatus2(moveListSaveData);
+
+		String userId = moveListSaveData.getUserId();
+
+		List<String> shipIdList = jpaMoveService.changeShipStatus2(moveListSaveData, userId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipIdList);
         return ResponseEntity.ok(res);
     }

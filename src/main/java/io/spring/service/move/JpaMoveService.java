@@ -313,12 +313,12 @@ public class JpaMoveService {
 	 * OrderMoveSaveData객체로 lsshpm,s,d 생성 lsdpsm,d,s,b, lsdpsp, ititmt(발주데이터) 생성
 	 * tbOrderDetail를 변경
 	 */
-	private List<String> saveOrderMoveSaveDataByDeposit(Lsdpsd lsdpsd) {
+	private List<String> saveOrderMoveSaveDataByDeposit(Lsdpsd lsdpsd, String userId) {
 		// Lsdpsd lsdpsd = this.getLsdpsdByDepositNoAndDepositSeq(move);
 		TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(lsdpsd.getOrderId(),
 				lsdpsd.getOrderSeq());
 		List<String> shipIdList = this.makeOrderShipData(lsdpsd, tbOrderDetail, lsdpsd.getDepositQty(),
-				StringFactory.getGbOne());
+				StringFactory.getGbOne(), userId);
 //		if (shipIdList.size() > 0) {
 		// lsdpsdList.add(lsdpsd);
 		// }
@@ -349,7 +349,8 @@ public class JpaMoveService {
     /**
      * 주문이동 저장, 출고 관련 data 생성 함수 (lsshpm,d,s)
      */
-    private List<String> makeOrderShipData(Lsdpsd lsdpsd, TbOrderDetail tbOrderDetail, long qty, String shipStatus) {
+	private List<String> makeOrderShipData(Lsdpsd lsdpsd, TbOrderDetail tbOrderDetail, long qty, String shipStatus,
+			String userId) {
 
 
         List<String> shipIdList = new ArrayList<>();
@@ -418,7 +419,13 @@ public class JpaMoveService {
             lsshpm.setShipStatus(shipStatus); // 01 : 이동지시, 04 : 출고
             // lsshps 저장
             Lsshps lsshps = new Lsshps(lsshpm);
+
+			lsshps.setUpdId(userId);
+
             jpaLsshpsRepository.save(lsshps);
+
+			lsshpm.setUpdId(userId);
+
             jpaLsshpmRepository.save(lsshpm);
             // lsshpd 저장
             String shipSeq = StringFactory.getFourStartCd(); // 0001 하드코딩 //StringUtils.leftPad(Integer.toString(i + 1), 4,'0');
@@ -426,6 +433,9 @@ public class JpaMoveService {
 
 			lsshpd.setRackNo(lsdpsd.getRackNo());
 			lsshpd.setShipIndicateQty(qty);
+
+			lsshpd.setUpdId(userId);
+
             jpaLsshpdRepository.save(lsshpd);
             shipIdList.add(shipId);
 			// } //수량1개씩처리하던 for문 주석처리
@@ -572,7 +582,7 @@ public class JpaMoveService {
      * 상품이동지시 저장 함수
      */
     @Transactional
-    public List<String> saveGoodsMove(GoodsMoveSaveData goodsMoveSaveData) {
+	public List<String> saveGoodsMove(GoodsMoveSaveData goodsMoveSaveData, String userId) {
 
 		// 상품이동지시 수정해야함,
 
@@ -676,7 +686,13 @@ public class JpaMoveService {
 //            jpaLsshpdRepository.save(lsshpd);
             // 1-3. Lsshps 생성
             Lsshps lsshps = new Lsshps(lsshpm, regId);
+
+			lsshpm.setUpdId(userId);
+
             jpaLsshpmRepository.save(lsshpm);
+
+			lsshps.setUpdId(userId);
+
             jpaLsshpsRepository.save(lsshps);
 
             shipIdList.add(shipId);
@@ -721,9 +737,11 @@ public class JpaMoveService {
     /**
      * 출고 data 생성 함수
      */
-    private long saveGoodsMoveSaveData(String shipId, GoodsMoveSaveData goodsMoveSaveData, GoodsMoveSaveData.Goods goods, List<Integer> indexStore, List<GoodsMoveSaveData.Goods> newGoodsList) {
+	private long saveGoodsMoveSaveData(String shipId, GoodsMoveSaveData goodsMoveSaveData,
+			GoodsMoveSaveData.Goods goods, List<Integer> indexStore, List<GoodsMoveSaveData.Goods> newGoodsList,
+			String userId) {
         GoodsMoveSaveData.Goods rowGoods = this.getItitmcByCondition(goods, newGoodsList);
-        long lsshpdNum = this.makeGoodsShipData(shipId, rowGoods, goodsMoveSaveData, indexStore);
+		long lsshpdNum = this.makeGoodsShipData(shipId, rowGoods, goodsMoveSaveData, indexStore, userId);
 //        ititmcList.add(ititmc);
 //        this.updateQty(goods);
         return lsshpdNum;
@@ -833,7 +851,8 @@ public class JpaMoveService {
     /**
      * goods 정보를 받아 출고 data (lsshpd) 생성하는 함수
      */
-    private long makeGoodsShipData(String shipId, GoodsMoveSaveData.Goods goods, GoodsMoveSaveData goodsMoveSaveData, List<Integer> indexStore) {
+	private long makeGoodsShipData(String shipId, GoodsMoveSaveData.Goods goods, GoodsMoveSaveData goodsMoveSaveData,
+			List<Integer> indexStore, String userId) {
         if(goods ==  null){
             log.debug("this row don't save.");
             return 0l;
@@ -844,6 +863,9 @@ public class JpaMoveService {
             String shipSeq = StringUtils.leftPad(Integer.toString(index),4,'0');
             // 1-2. Lsshpd 생성
             Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, null, goods, goodsMoveSaveData.getUserId());
+
+			lsshpd.setUpdId(userId);
+
             jpaLsshpdRepository.save(lsshpd);
             index++;
             indexStore.remove(0);
@@ -853,7 +875,7 @@ public class JpaMoveService {
     }
 
 	@Transactional
-	public List<String> changeShipStatus2(MoveListSaveData moveListSaveData) {
+	public List<String> changeShipStatus2(MoveListSaveData moveListSaveData, String userId) {
 
 		List<String> newShipIdList = new ArrayList<>();
 		List<String> shipIdList = new ArrayList<>();
@@ -897,6 +919,8 @@ public class JpaMoveService {
 
 				lsshpd.setShipQty(lsshpd.getShipIndicateQty());
 
+				lsshpd.setUpdId(userId);
+
 				jpaLsshpdRepository.save(lsshpd);
 
 				if (lsshpm.getShipOrderGb().equals("01")) {
@@ -917,6 +941,9 @@ public class JpaMoveService {
 			lsshpm.setShipStatus(StringFactory.getGbFour()); // 04 하드코딩
 			lsshpm.setApplyDay(LocalDateTime.now()); // 출고일자 now date
 			newShipIdList.add(lsshpm.getShipId());
+
+			lsshpm.setUpdId(userId);
+
 			jpaLsshpmRepository.save(lsshpm);
 			this.updateLsshps(lsshpm);
 
@@ -1404,7 +1431,7 @@ public class JpaMoveService {
      * 이동리스트 화면 - 엑셀에 값 입력 후 엑셀 업로드로 특정 컬럼들 값 저장
      */
     @Transactional
-    public void saveExcelList(MoveListExcelRequestData moveListExcelRequestData) {
+	public void saveExcelList(MoveListExcelRequestData moveListExcelRequestData, String userId) {
         List<MoveListExcelRequestData.Move> moveList = moveListExcelRequestData.getMoves();
         List<String> shipIdList = new ArrayList<>();
         for(MoveListExcelRequestData.Move move : moveList){
@@ -1427,6 +1454,7 @@ public class JpaMoveService {
             lsshpm.setEstiArrvDt(Utilities.nullOrEmptyFilter(move.getEstiArrvDt()));
             lsshpm.setContainerKd(Utilities.nullOrEmptyFilter(move.getContainerKd()));
             lsshpm.setContainerQty(Utilities.nullOrEmptyFilter(move.getContainerQty()));
+			lsshpm.setUpdId(userId);
             jpaLsshpmRepository.saveAndFlush(lsshpm);
         }
     }
@@ -1516,7 +1544,7 @@ public class JpaMoveService {
     /**
      * lsshpd 수량 수정, lsshpm shipStatus 01->04 수정, lsshps 꺾어주는 함수
      */
-    public String updateLssSeries(int index, Lsshpd lsshpd){
+	public String updateLssSeries(int index, Lsshpd lsshpd, String userId) {
 //         3-1. lsshpd 수량 수정
 //        lsshpd.setShipQty(1l);
 //        jpaLsshpdRepository.save(lsshpd);
@@ -1524,9 +1552,11 @@ public class JpaMoveService {
         Lsshpm lsshpm = lsshpd.getLsshpm();
         if(index == 0){
             lsshpm.setShipStatus(StringFactory.getGbFour()); // 01 : 출고지시or이동지시, 04 : 출고. 04 하드코딩
+			lsshpm.setUpdId(userId);
             jpaLsshpmRepository.save(lsshpm);
         }
         // 2-3. lsshps 꺾어주기
+
         this.updateLsshps(lsshpm);
         return lsshpd.getShipSeq();
     }
@@ -1535,11 +1565,16 @@ public class JpaMoveService {
     /**
      * Lsshps를 꺾어주는 함수
      */
-    private void updateLsshps(Lsshpm lsshpm) {
+	private void updateLsshps(Lsshpm lsshpm, String userId) {
         Lsshps newLsshps = new Lsshps(lsshpm);
         Lsshps lsshps = jpaLsshpsRepository.findByShipIdAndEffEndDt(lsshpm.getShipId(), Utilities.strToLocalDateTime2(StringFactory.getDoomDay()));
         lsshps.setEffEndDt(LocalDateTime.now());
+
+		lsshps.setUpdId(userId);
+
         jpaLsshpsRepository.save(lsshps);
+
+		newLsshps.setUpdId(userId);
         jpaLsshpsRepository.save(newLsshps);
     }
 
@@ -1594,7 +1629,7 @@ public class JpaMoveService {
 		}
 	}
 
-	private void updateOrderStatusCd(String orderId, String orderSeq, String statusCd) {
+	private void updateOrderStatusCd(String orderId, String orderSeq, String statusCd, String userId) {
 
 		TbOrderDetail tod = tbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
 		if (tod == null) {
@@ -1612,12 +1647,18 @@ public class JpaMoveService {
 		for (int i = 0; i < tohs.size(); i++) {
 			tohs.get(i).setEffEndDt(newEffEndDate);
 			tohs.get(i).setLastYn("002");
+
+			tohs.get(i).setUpdId(userId);
 		}
 
 		TbOrderHistory toh = new TbOrderHistory(orderId, orderSeq, statusCd, "001", newEffEndDate,
 				Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
 
+		toh.setUpdId(userId);
+
 		tohs.add(toh);
+
+		tod.setUpdId(userId);
 
 		tbOrderDetailRepository.save(tod);
 

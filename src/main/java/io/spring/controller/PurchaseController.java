@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.request.CommonRequestData;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import io.spring.model.purchase.request.PurchaseUpdateRequestData;
 import io.spring.model.purchase.response.PurchaseItemResponseData;
@@ -343,12 +344,17 @@ public class PurchaseController {
         return ResponseEntity.ok(res);
     }
 
+	// 20220307 rjb80 cancelPurchase requestbody 추가
+
 	@PostMapping(path = "/orders/{orderId}/{orderSeq}/cancel") // 취소처리
 	public ResponseEntity cancelPurchase(@PathVariable("orderId") String orderId,
 			@PathVariable("orderSeq") String orderSeq
-	// ,@RequestBody PurchaseCancelRequestData purchaseCancelRequestData
+			, @RequestBody CommonRequestData req
 	) {
+
 		log.debug("cancelPurchase");
+
+		String userId = req.getUserId();
 
 		HashMap<String, Object> p = new HashMap<String, Object>();
 
@@ -358,7 +364,7 @@ public class PurchaseController {
 		p.put("cancelGb", "00");
 		p.put("cancelMsg", "etc");
 
-		jpaPurchaseService.cancelOrderPurchase(p);
+		jpaPurchaseService.cancelOrderPurchase(p, userId);
 
 		// String purchaseNo2 = jpaPurchaseService.createPurchaseSquence(purchaseNo,
 		// purchaseInsertRequestData);
