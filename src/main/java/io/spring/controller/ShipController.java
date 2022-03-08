@@ -131,6 +131,8 @@ public class ShipController {
     @PostMapping(path = "/indicate")
 	public ResponseEntity saveShipIndicate(@RequestBody @Valid ShipIndicateSaveListData shipIndicateSaveDataList) {
 
+		System.out.println("saveShipIndicate");
+
 		String userId = shipIndicateSaveDataList.getUserId();
 
 		List<String> shipIdList = jpaShipService.saveShipIndicate(shipIndicateSaveDataList, userId);
