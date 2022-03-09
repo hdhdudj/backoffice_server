@@ -100,14 +100,15 @@ public class DepositController {
 	 */
     @PostMapping(path="")
 	public ResponseEntity createDepositListJpa(
-			@RequestBody DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) throws Exception {
+			@RequestBody @Valid DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) throws Exception {
         log.debug("입고처리 호출");
 
 		System.out.println(depositListWithPurchaseInfoData);
 
+		String userId = depositListWithPurchaseInfoData.getUserId();
 
         List<String> messageList = new ArrayList<>();
-        boolean flag = jpaDepositService.sequenceCreateDeposit(depositListWithPurchaseInfoData, messageList);
+		boolean flag = jpaDepositService.sequenceCreateDeposit(depositListWithPurchaseInfoData, messageList, userId);
         ApiResponseMessage res = null;
         if(flag){
             res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), messageList.get(0));
@@ -122,7 +123,8 @@ public class DepositController {
      * 입고처리 : 화면에서 입고수량 수정 후 저장을 눌렀을 때 타는 api (update)
      */
     @PostMapping(path="/{depositNo}/update") // update
-    public ResponseEntity updateDepositJpa(@PathVariable String depositNo, @RequestBody DepositInsertRequestData depositInsertRequestData){
+	public ResponseEntity updateDepositJpa(@PathVariable String depositNo,
+			@RequestBody @Valid DepositInsertRequestData depositInsertRequestData) {
         depositInsertRequestData.setDepositNo(depositNo); // deposit no 채번
         jpaDepositService.sequenceUpdateDeposit(depositInsertRequestData);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), depositNo);
@@ -153,9 +155,13 @@ public class DepositController {
      *  입고 - 입고내역 : 저장 (메모 쓰고 저장하기)
      */
     @PostMapping(path="/items/update/{depositNo}")
-    public ResponseEntity updateDepositDetail(@PathVariable String depositNo, @RequestBody DepositSelectDetailRequestData depositSelectDetailRequestData){
+	public ResponseEntity updateDepositDetail(@PathVariable String depositNo,
+			@RequestBody @Valid DepositSelectDetailRequestData depositSelectDetailRequestData) {
         depositSelectDetailRequestData.setDepositNo(depositNo);
-        depositSelectDetailRequestData = jpaDepositService.updateDetail(depositSelectDetailRequestData);
+
+		String userId = depositSelectDetailRequestData.getUserId();
+
+		depositSelectDetailRequestData = jpaDepositService.updateDetail(depositSelectDetailRequestData, userId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositSelectDetailRequestData);
         return ResponseEntity.ok(res);
     }
@@ -226,6 +232,8 @@ public class DepositController {
 			throws Exception {
 		log.debug("입고처리 호출");
 
+		String userId = reqData.getUserId();
+
 		String depositNo = "";
 
 		String storageId = reqData.getStorageId();
@@ -246,7 +254,7 @@ public class DepositController {
 		log.debug("aaaa");
 
 		List<String> messageList = new ArrayList<>();
-		depositNo = jpaDepositService.insertEtcDeposit(reqData);
+		depositNo = jpaDepositService.insertEtcDeposit(reqData, userId);
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
 				depositNo);

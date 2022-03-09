@@ -47,7 +47,7 @@ public class KakaoBizMessageService {
     @Value("${senderKey.alimtalk}")
     private String senderKey;
 
-    public void sendKakaoBizMessage(String statusCd, TbOrderDetail tod){
+	public void sendKakaoBizMessage(String statusCd, TbOrderDetail tod, String userId) {
         String reqUrl = nhnCloudUrl + appKey + message;
         TbOrderMaster tom = tod.getTbOrderMaster();
         TbMember tm = tom.getTbMember();
@@ -74,6 +74,9 @@ public class KakaoBizMessageService {
 
             if(res == 200){
                 SendMessageLog sl = new SendMessageLog(tod, tm, MessageType.alimtalk);
+
+				sl.setUpdId(userId);
+
                 jpaSendMessageLogRepository.save(sl);
             }
             else {

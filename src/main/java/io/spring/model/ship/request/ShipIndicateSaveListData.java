@@ -2,14 +2,13 @@ package io.spring.model.ship.request;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+
 import io.spring.infrastructure.custom.CustomLocalDateDeSerializer;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.entity.Itasrt;
@@ -36,17 +35,34 @@ public class ShipIndicateSaveListData {
         this.vendorId = vendorId;
         this.orderId = orderId;
     }
+
     @JsonDeserialize(using = CustomLocalDateDeSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+//	@NotNull(message = "startDt는 필수 값입니다.")
+//	@Pattern(regexp = "^([0-9]{4})-([0-1][0-9])-([0-3][0-9])$", message = "startDt는 형식을 확인하시기바랍니다.")
     private LocalDate startDt;
+//	private String startDt;	
     @JsonDeserialize(using = CustomLocalDateDeSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate endDt;
+
+
     private String assortId;
+
+
     private String storageId;
+
+
     private String assortNm;
+
+
     private String vendorId;
+
     private String orderId;
+	@NotNull(message = "userId는 필수 값입니다.")
+	private String userId;
+
+
     private List<Ship> ships;
     @Getter
     @Setter
@@ -56,7 +72,13 @@ public class ShipIndicateSaveListData {
             TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
             Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
             TbMember tbMember = tbOrderMaster.getTbMember();
-            this.orderDt = tbOrderDetail.getTbOrderMaster().getOrderDate();
+            
+			LocalDateTime locTm = (LocalDateTime) tbOrderDetail.getTbOrderMaster().getOrderDate();
+			String addLocTm = locTm.getSecond() == 0? ":00" : "";
+			this.orderDt = tbOrderDetail.getTbOrderMaster().getOrderDate().toString().replace('T', ' ') + addLocTm;
+            
+            
+			// this.orderDt = tbOrderDetail.getTbOrderMaster().getOrderDate();
             this.orderId = tbOrderDetail.getOrderId();
             this.orderSeq = tbOrderDetail.getOrderSeq();
             this.orderKey = Utilities.addDashInMiddle(this.orderId, this.orderSeq);
@@ -70,9 +92,13 @@ public class ShipIndicateSaveListData {
 //            this.qty = 0l;
             // optionNm1, optionNm2는 외부에서 set
         }
-        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-        private LocalDateTime orderDt;
+
+		// @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss",
+		// timezone = "Asia/Seoul")
+		// private LocalDateTime orderDt;
+
+		private String orderDt;
+
         private String orderId;
         private String orderSeq;
         private String orderKey;
@@ -91,8 +117,16 @@ public class ShipIndicateSaveListData {
 		private String shipId;
 		private String shipSeq;
 		private String storageId;
-        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-		private LocalDateTime receiptDt;
+
+		// @JsonDeserialize(using = CustomLocalDateDeSerializer.class)
+		// @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss",
+		// timezone = "Asia/Seoul")
+		// @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone
+		// = "Asia/Seoul")
+		// @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss",
+		// timezone = "Asia/Seoul")
+		// private LocalDateTime receiptDt;
+
+		private String receiptDt;
     }
 }

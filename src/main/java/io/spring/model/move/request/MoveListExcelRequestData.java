@@ -1,9 +1,15 @@
 package io.spring.model.move.request;
 
+import java.time.LocalDate;
+import java.util.List;
+
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
@@ -14,9 +20,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * 엑셀 업로드시 받는 request DTO
@@ -34,6 +37,9 @@ public class MoveListExcelRequestData {
         private String shipId;
         private String assortId;
         private String assortNm;
+		@NotNull(message = "userId는 필수 값입니다.")
+		private String userId;
+
         private List<MoveListExcelRequestData.Move> moves;
         @Getter
         @Setter

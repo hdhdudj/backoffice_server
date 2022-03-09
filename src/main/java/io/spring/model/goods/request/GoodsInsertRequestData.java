@@ -1,18 +1,18 @@
 package io.spring.model.goods.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+
 import io.spring.infrastructure.custom.CustomLocalDateTimeDeSerializer;
 import io.spring.model.goods.entity.Itvari;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @ToString
 @Getter
@@ -25,6 +25,9 @@ public class GoodsInsertRequestData {
 	private String assortId;
 	private String regId;
 	private String updId;
+
+	@NotNull(message = "userId는 필수 값입니다.")
+	private String userId;
 
 	// 상품기본설정 화면
 	private String assortNm; // 상품명

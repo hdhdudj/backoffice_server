@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -127,8 +129,13 @@ public class ShipController {
     * 출고지시 화면 : 출고지시 저장용. 출고지시 할 출고내역들을 선택 후 저장 버튼을 누르면 호출되는 api (출고번호 기준으로 불러옴)
     */
     @PostMapping(path = "/indicate")
-    public ResponseEntity saveShipIndicate(@RequestBody ShipIndicateSaveListData shipIndicateSaveDataList){
-        List<String> shipIdList = jpaShipService.saveShipIndicate(shipIndicateSaveDataList);
+	public ResponseEntity saveShipIndicate(@RequestBody @Valid ShipIndicateSaveListData shipIndicateSaveDataList) {
+
+		System.out.println("saveShipIndicate");
+
+		String userId = shipIndicateSaveDataList.getUserId();
+
+		List<String> shipIdList = jpaShipService.saveShipIndicate(shipIndicateSaveDataList, userId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIdList);
         return ResponseEntity.ok(res);
     }
@@ -160,7 +167,6 @@ public class ShipController {
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipItemListData);
         return ResponseEntity.ok(res);
     }
-
     /**
      * 출고처리 화면 : 출고지시일자, 출고지시번호, 상품코드, 구매처를 받아서 조회하면 출고지시 목록을 보여줌
      */
@@ -181,8 +187,9 @@ public class ShipController {
      * 출고처리 화면 : 출고 수량을 입력하면 관련된 값을 변경함.
      */
     @PostMapping(path = "")
-    public ResponseEntity shipIndToShip(@RequestBody ShipSaveListData shipSaveListData){
-		List<String> shipIdList = jpaShipService.shipIndToShip2(shipSaveListData);
+	public ResponseEntity shipIndToShip(@RequestBody @Valid ShipSaveListData shipSaveListData) {
+		String userId = shipSaveListData.getUserId();
+		List<String> shipIdList = jpaShipService.shipIndToShip2(shipSaveListData, userId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIdList);
         return ResponseEntity.ok(res);
     }
@@ -221,15 +228,17 @@ public class ShipController {
 	 * @throws Exception
 	 */
 	@PostMapping(path = "/etc")
-	public ResponseEntity insertEtcShip(@RequestBody InsertShipEtcRequestData reqData) throws Exception {
+	public ResponseEntity insertEtcShip(@RequestBody @Valid InsertShipEtcRequestData reqData) throws Exception {
 		log.debug("출고처리 호출");
+
+		String userId = reqData.getUserId();
 
 		System.out.println(reqData);
 
 		String depositNo = "";
 
 		List<String> messageList = new ArrayList<>();
-		depositNo = jpaShipService.insertEtcShip(reqData);
+		depositNo = jpaShipService.insertEtcShip(reqData, userId);
 		// depositNo = jpaDepositService.insertEtcDeposit(reqData);
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
