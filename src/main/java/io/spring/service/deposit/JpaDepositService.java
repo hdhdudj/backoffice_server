@@ -401,7 +401,7 @@ public class JpaDepositService {
 					lsdpsd.getDepositSeq(), Utilities.getStringToDate(StringFactory.getDoomDay()));
 			if (lsdpds == null) {
 				Lsdpds newLsdpds = new Lsdpds(lsdpsd, depositStatus);
-
+				newLsdpds.setRegId(userId);
 				newLsdpds.setUpdId(userId);
 
 				jpaLsdpdsRepository.save(newLsdpds);
@@ -413,6 +413,7 @@ public class JpaDepositService {
 
 				Lsdpds newLsdpds = new Lsdpds(lsdpsd, depositStatus);
 
+				newLsdpds.setRegId(userId);
 				newLsdpds.setUpdId(userId);
 
 				jpaLsdpdsRepository.save(newLsdpds);
@@ -438,6 +439,8 @@ public class JpaDepositService {
             }
             else {
                 Lsdpds newLsdpds = new Lsdpds(lsdpsd);
+
+				newLsdpds.setRegId(userId);
 
 				newLsdpds.setUpdId(userId);
 
@@ -790,6 +793,7 @@ public class JpaDepositService {
             newLsdpsp.setPurchaseTakeQty(0l);
             lsdpsp.setPlanStatus(StringFactory.getGbFour());
 
+			newLsdpsp.setRegId(userId);
 			newLsdpsp.setUpdId(userId);
 
             jpaLsdpspRepository.save(newLsdpsp);

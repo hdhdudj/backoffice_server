@@ -411,6 +411,8 @@ public class JpaMoveService {
             // lsshpm 저장
 			Lsshpm lsshpm = new Lsshpm("03", shipId, itasrt, tbOrderDetail);
 
+			lsshpm.setRegId(userId);
+
 			// ostorageId 가 갈곳 to
 			// storageId 가 나오는곳 from
 
@@ -421,6 +423,7 @@ public class JpaMoveService {
             // lsshps 저장
             Lsshps lsshps = new Lsshps(lsshpm);
 
+			lsshps.setRegId(userId);
 			lsshps.setUpdId(userId);
 
             jpaLsshpsRepository.save(lsshps);
@@ -432,9 +435,11 @@ public class JpaMoveService {
             String shipSeq = StringFactory.getFourStartCd(); // 0001 하드코딩 //StringUtils.leftPad(Integer.toString(i + 1), 4,'0');
 			Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, imc_storage, itasrt);
 
+
+
 			lsshpd.setRackNo(lsdpsd.getRackNo());
 			lsshpd.setShipIndicateQty(qty);
-
+			lsshpd.setRegId(userId);
 			lsshpd.setUpdId(userId);
 
             jpaLsshpdRepository.save(lsshpd);
@@ -661,6 +666,7 @@ public class JpaMoveService {
             // 1-0. Lsshpm 생성
             String shipId = this.getShipId();
 			Lsshpm lsshpm = new Lsshpm("04", shipId, goodsMoveSaveData);
+			lsshpm.setRegId(userId);
             purchaseDt = lsshpm.getReceiptDt();
 
 			lsshpm.setInstructDt(LocalDateTime.now()); // 이동지시일자 셋팅
@@ -678,6 +684,8 @@ public class JpaMoveService {
             // 1-2. Lsshpd 생성
             Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, ititmc, goods, regId);
 
+			lsshpd.setRegId(userId);
+
 			lsshpd.setRackNo(rackNo);
 
             lsshpd.setOStorageId(goodsMoveSaveData.getOStorageId());
@@ -687,10 +695,13 @@ public class JpaMoveService {
 //            jpaLsshpdRepository.save(lsshpd);
             // 1-3. Lsshps 생성
             Lsshps lsshps = new Lsshps(lsshpm, regId);
+			lsshps.setRegId(userId);
+
 
 			lsshpm.setUpdId(userId);
 
             jpaLsshpmRepository.save(lsshpm);
+
 
 			lsshps.setUpdId(userId);
 
@@ -865,6 +876,7 @@ public class JpaMoveService {
             // 1-2. Lsshpd 생성
             Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, null, goods, goodsMoveSaveData.getUserId());
 
+			lsshpd.setRegId(userId);
 			lsshpd.setUpdId(userId);
 
             jpaLsshpdRepository.save(lsshpd);
@@ -1568,6 +1580,8 @@ public class JpaMoveService {
      */
 	private void updateLsshps(Lsshpm lsshpm, String userId) {
         Lsshps newLsshps = new Lsshps(lsshpm);
+		newLsshps.setRegId(userId);
+
         Lsshps lsshps = jpaLsshpsRepository.findByShipIdAndEffEndDt(lsshpm.getShipId(), Utilities.strToLocalDateTime2(StringFactory.getDoomDay()));
         lsshps.setEffEndDt(LocalDateTime.now());
 
@@ -1655,6 +1669,7 @@ public class JpaMoveService {
 		TbOrderHistory toh = new TbOrderHistory(orderId, orderSeq, statusCd, "001", newEffEndDate,
 				Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
 
+		toh.setRegId(userId);
 		toh.setUpdId(userId);
 
 		tohs.add(toh);

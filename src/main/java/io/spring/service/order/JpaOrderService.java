@@ -224,7 +224,7 @@ public class JpaOrderService {
 	private void saveOrderLog(String prevStatus, TbOrderDetail tbOrderDetail, String userId) {
         OrderLog orderLog = new OrderLog(tbOrderDetail);
         orderLog.setPrevStatus(prevStatus);
-
+		orderLog.setRegId(userId);
 		orderLog.setUpdId(userId);
 
         jpaOrderLogRepository.save(orderLog);
@@ -327,10 +327,13 @@ public class JpaOrderService {
         Lspchb lspchb = jpaLspchbRepository.findByPurchaseNoAndPurchaseSeqAndEffEndDt(lspchd.getPurchaseNo(), lspchd.getPurchaseSeq(), Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
         lspchb.setEffEndDt(LocalDateTime.now());
         Lspchb newLspchb = new Lspchb(lspchd, "regId"); // regId 임시 하드코딩
+
+		newLspchb.setRegId(userId);
         newLspchb.setPurchaseStatus(lspchb.getPurchaseStatus());
 
 		lspchd.setUpdId(userId);
 		lspchb.setUpdId(userId);
+
 		newLspchb.setUpdId(userId);
 
         jpaLspchdRepository.save(lspchd);
@@ -345,6 +348,8 @@ public class JpaOrderService {
         Lsdpds lsdpds = jpaLsdpdsRepository.findByDepositNoAndDepositSeqAndEffEndDt(lsdpsd.getDepositNo(), lsdpsd.getDepositSeq(), Utilities.getStringToDate(StringFactory.getDoomDay()));
         lsdpds.setEffEndDt(new Date());
         Lsdpds newLsdpds = new Lsdpds(lsdpsd);
+
+		newLsdpds.setRegId(userId);
 
 		lsdpds.setUpdId(userId);
 		newLsdpds.setUpdId(userId);
@@ -611,6 +616,8 @@ public class JpaOrderService {
 		// lsshpm 저장
 		Lsshpm lsshpm = new Lsshpm("03", shipId, itasrt, tbOrderDetail);
 
+		lsshpm.setRegId(userId);
+
 		lsshpm.setShipStatus(shipStatus); // 01 : 이동지시or출고지시, 02 : 이동지시or출고지시 접수, 04 : 출고
 		lsshpm.setDeliId(tbOrderDetail.getTbOrderMaster().getDeliId());
 
@@ -624,6 +631,8 @@ public class JpaOrderService {
 
 		// lsshps 저장
 		Lsshps lsshps = new Lsshps(lsshpm);
+
+		lsshps.setRegId(userId);
 
 		lsshps.setUpdId(userId);
 
@@ -657,6 +666,8 @@ public class JpaOrderService {
         // lsshpm 저장
         Lsshpm lsshpm = new Lsshpm("01", shipId, itasrt, tbOrderDetail);
 
+		lsshpm.setRegId(userId);
+
         lsshpm.setShipStatus(shipStatus); // 01 : 이동지시or출고지시, 02 : 이동지시or출고지시 접수, 04 : 출고
         lsshpm.setDeliId(tbOrderDetail.getTbOrderMaster().getDeliId());
 
@@ -670,6 +681,8 @@ public class JpaOrderService {
         // lsshps 저장
         Lsshps lsshps = new Lsshps(lsshpm);
 
+		lsshps.setRegId(userId);
+
 		lsshps.setUpdId(userId);
 
         jpaLsshpsRepository.save(lsshps);
@@ -680,6 +693,8 @@ public class JpaOrderService {
         // lsshpd 저장
         String shipSeq = StringUtils.leftPad(Integer.toString(1), 4, '0'); // 0001 하드코딩
         Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc, itasrt);
+
+		lsshpd.setRegId(userId);
 //            lsshpd.setLocalPrice(tbOrderDetail.getLspchd());
         lsshpd.setVendorDealCd(StringFactory.getGbOne()); // 01 : 주문, 02 : 상품, 03 : 입고예정
         lsshpd.setShipIndicateQty(tbOrderDetail.getQty());
@@ -703,6 +718,8 @@ public class JpaOrderService {
 		// lsshpm 저장
 		Lsshpm lsshpm = new Lsshpm("01", shipId, itasrt, tbOrderDetail);
 
+		lsshpm.setRegId(userId);
+
 		lsshpm.setShipStatus(shipStatus); // 01 : 이동지시or출고지시, 02 : 이동지시or출고지시 접수, 04 : 출고
 		lsshpm.setDeliId(tbOrderDetail.getTbOrderMaster().getDeliId());
 
@@ -717,6 +734,8 @@ public class JpaOrderService {
 		// lsshps 저장
 		Lsshps lsshps = new Lsshps(lsshpm);
 
+		lsshps.setRegId(userId);
+
 		lsshps.setUpdId(userId);
 
 		jpaLsshpsRepository.save(lsshps);
@@ -726,6 +745,9 @@ public class JpaOrderService {
 		// lsshpd 저장
 		String shipSeq = StringUtils.leftPad(Integer.toString(1), 4, '0'); // 0001 하드코딩
 		Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc, itasrt);
+
+		lsshpd.setRegId(userId);
+
 //            lsshpd.setLocalPrice(tbOrderDetail.getLspchd());
 		lsshpd.setVendorDealCd(StringFactory.getGbOne()); // 01 : 주문, 02 : 상품, 03 : 입고예정
 		lsshpd.setShipIndicateQty(tbOrderDetail.getQty());
@@ -773,7 +795,7 @@ public class JpaOrderService {
 		TbOrderHistory toh = new TbOrderHistory(orderId, orderSeq, statusCd, "001", newEffEndDate,
 				Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
         // 임시 코드
-        toh.setRegId("1");
+		toh.setRegId(userId);
 		toh.setUpdId(userId);
 
 		tohs.add(toh);
@@ -918,11 +940,11 @@ public class JpaOrderService {
 		IfGoodsOption igo = null;
 		Tmitem ti = null;
 
-		System.out.println(orderId);
-		System.out.println(orderSeq);
-		System.out.println(assortId);
-		System.out.println(channelGoodsNo);
-		System.out.println(channelOptionSno);
+		// system.out.println(orderId);
+		// System.out.println(orderSeq);
+		// System.out.println(assortId);
+		// System.out.println(channelGoodsNo);
+		// System.out.println(channelOptionSno);
 		
 		List<Ititmm> r2 = jpaItitmmRepository.findByAssortId(assortId);
 		
@@ -948,6 +970,8 @@ public class JpaOrderService {
 			igo.setItemId("0001");
 			igo.setRegDt(LocalDateTime.now());
 			igo.setModDt(LocalDateTime.now());
+			igo.setRegId(userId);
+			igo.setUpdId(userId);
 
 		} else {
 			System.out.println("ifGoodsOption 이 이미 있습니다");
@@ -961,9 +985,9 @@ public class JpaOrderService {
 		if (r1 == null) {
 			ti = new Tmitem("01", assortId, "0001", channelGoodsNo, channelOptionSno);
 			ti.setRegDt(LocalDateTime.now());
-			ti.setRegId("1");
+			ti.setRegId(userId);
 			ti.setUpdDt(LocalDateTime.now());
-			ti.setUpdId("1");
+			ti.setUpdId(userId);
 		} else {
 			System.out.println("tmitem 이 이미 있습니다");
 			// throw new RuntimeException("tmitem 이 이미 있습니다");

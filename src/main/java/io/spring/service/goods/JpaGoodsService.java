@@ -335,6 +335,7 @@ public class JpaGoodsService {
             // update 후 새 이력 insert
             Itasrn newItasrn = new Itasrn(itasrn);
 
+			newItasrn.setRegId(userId);
 			newItasrn.setUpdId(userId);
 
             jpaItasrnRepository.save(newItasrn);
@@ -380,6 +381,8 @@ public class JpaGoodsService {
                     seq = StringFactory.getFourSecondCd(); // 0002
                 }
                 itasrd.setSeq(seq);
+				itasrd.setRegId(userId);
+
             }
             else{ // update
 //                itasrd = jpaItasrdRepository.findByAssortIdAndSeq(goodsInsertRequestData.getAssortId(), seq);
@@ -447,6 +450,8 @@ public class JpaGoodsService {
             itvariList.add(itvari);
             seqList.add(seq);
 
+			itvari.setRegId(userId);
+
 			itvari.setUpdId(userId);
 
             jpaItvariRepository.save(itvari);
@@ -491,6 +496,7 @@ public class JpaGoodsService {
                 }
                 itvari.setSeq(seq);
                 seqList.add(seq);
+				itvari.setRegId(userId);
             }
             else { // 존재하는 경우 : itvari 객체가 존재함이 보장됨 -> update
 //                itvari = existItvariList.stream().filter(x->x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getSeq().equals(attribute.getSeq()))
@@ -641,6 +647,8 @@ public class JpaGoodsService {
             Ititmm ititmm = new Ititmm(goodsInsertRequestData);
             String itemId = Utilities.plusOne(this.findMaxSeq(seqList),4);
             ititmm.setItemId(itemId);
+			ititmm.setRegId(userId);
+
             Itvari op1 = itvariList.stream().filter(x -> x.getAssortId().equals(goodsInsertRequestData.getAssortId()) && x.getOptionNm().equals(items.getVariationValue1()))
                     .collect(Utilities.toSingleton());
             if(op1 != null){
@@ -706,6 +714,8 @@ public class JpaGoodsService {
                     itemId = Utilities.plusOne(itemId, 4);
                 }
                 ititmm.setItemId(itemId);
+				ititmm.setRegId(userId);
+
                 itemIdList.add(itemId);
             }
             else { // 존재하는 경우 : itvari 객체가 존재함이 보장됨 -> update
@@ -845,6 +855,7 @@ public class JpaGoodsService {
             ititmm.setVariationGb1(StringFactory.getGbOne()); // 01
             ititmm.setVariationSeq1(StringFactory.getFourStartCd()); // 0001
 
+			ititmm.setRegId(userId);
 			ititmm.setUpdId(userId);
 
             jpaItitmmRepository.save(ititmm);
@@ -876,13 +887,15 @@ public class JpaGoodsService {
 //            Ititmd ititmd = jpaItitmdRepository.findByAssortIdAndItemIdAndEffEndDt(goodsInsertRequestData.getAssortId(), ititmm.getItemId() , effEndDt);
             if(ititmd == null){ // insert
                 ititmd = new Ititmd(ititmm);
+
+				ititmd.setRegId(userId);
             }
             else{ // update
                 LocalDateTime newDate = LocalDateTime.now().minusSeconds(1);
                 ititmd.setEffEndDt(newDate);
                 // update 후 새 이력 insert
                 Ititmd newItitmd = new Ititmd(ititmd);
-
+				newItitmd.setRegId(userId);
 				newItitmd.setUpdId(userId);
 
                 jpaItitmdRepository.save(newItitmd);
@@ -1118,6 +1131,7 @@ public class JpaGoodsService {
 	public Itaimg saveItaimg(String imageGb, FileVo f, String userId) {
     	Itaimg ii =new Itaimg(imageGb,f);
 
+		ii.setRegId(userId);
 		ii.setUpdId(userId);
 
         jpaItaimgRepository.save(ii);
