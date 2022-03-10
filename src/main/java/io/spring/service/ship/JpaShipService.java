@@ -359,10 +359,14 @@ public class JpaShipService {
         Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
         // lsshpm 저장
 		Lsshpm lsshpm = new Lsshpm("01", shipId, itasrt, tbOrderDetail);
+		lsshpm.setRegId(userId);
+
         lsshpm.setShipStatus(shipStatus); // 01 : 이동지시or출고지시, 04 : 출고
         lsshpm.setDeliId(tbOrderDetail.getTbOrderMaster().getDeliId());
         // lsshps 저장
         Lsshps lsshps = new Lsshps(lsshpm);
+
+		lsshps.setRegId(userId);
 
 		lsshps.setUpdId(userId);
 
@@ -373,6 +377,9 @@ public class JpaShipService {
         // lsshpd 저장
         String shipSeq = StringUtils.leftPad(Integer.toString(1), 4,'0');
         Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc, itasrt);
+
+		lsshpd.setRegId(userId);
+
 //            lsshpd.setLocalPrice(tbOrderDetail.getLspchd());
         lsshpd.setVendorDealCd(StringFactory.getGbOne()); // 01 : 주문, 02 : 상품, 03 : 입고예정
         lsshpd.setShipIndicateQty(ship.getAvailableQty());
@@ -395,6 +402,8 @@ public class JpaShipService {
 		// lsshpm 저장
 		Lsshpm lsshpm = new Lsshpm("01", shipId, itasrt, tbOrderDetail);
 
+		lsshpm.setRegId(userId);
+
 		lsshpm.setShipStatus(shipStatus); // 01 : 이동지시or출고지시, 02 : 이동지시or출고지시 접수, 04 : 출고
 		lsshpm.setDeliId(tbOrderDetail.getTbOrderMaster().getDeliId());
 
@@ -410,6 +419,8 @@ public class JpaShipService {
 		// lsshps 저장
 		Lsshps lsshps = new Lsshps(lsshpm);
 
+		lsshps.setRegId(userId);
+
 		lsshps.setUpdId(userId);
 
 		jpaLsshpsRepository.save(lsshps);
@@ -419,6 +430,9 @@ public class JpaShipService {
 		// lsshpd 저장
 		String shipSeq = StringUtils.leftPad(Integer.toString(1), 4, '0');
 		Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc, itasrt);
+
+		lsshpd.setRegId(userId);
+
 //            lsshpd.setLocalPrice(tbOrderDetail.getLspchd());
 
 		lsshpd.setRackNo(lsdpsd.getRackNo());
@@ -895,6 +909,9 @@ public class JpaShipService {
 		Lsshps lsshps = jpaLsshpsRepository.findByShipIdAndEffEndDt(lsshpm.getShipId(),
 				Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
 		Lsshps newLsshps = new Lsshps(lsshpm);
+
+		newLsshps.setRegId(userId);
+
 		lsshps.setEffEndDt(LocalDateTime.now());
 
 		lsshps.setUpdId(userId);
@@ -941,6 +958,7 @@ public class JpaShipService {
 		TbOrderHistory toh = new TbOrderHistory(orderId, orderSeq, statusCd, "001", newEffEndDate,
 				Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
 
+		toh.setRegId(userId);
 		toh.setUpdId(userId);
 		tohs.add(toh);
 
@@ -966,6 +984,8 @@ public class JpaShipService {
 		String depositNo = Utilities.getStringNo('D', no, 9);
 		Lsdpsm lsdpsm = new Lsdpsm(depositNo, p);
 
+		lsdpsm.setRegId(userId);
+
 		lsdpsm.setUpdId(userId);
 
 		jpaLsdpsmRepository.save(lsdpsm);
@@ -978,6 +998,8 @@ public class JpaShipService {
 		if (lsdpss == null) {
 			Lsdpss newLsdpss = new Lsdpss(lsdpsm, depositStatus);
 
+			newLsdpss.setRegId(userId);
+
 			newLsdpss.setUpdId(userId);
 
 			jpaLsdpssRepository.save(newLsdpss);
@@ -988,6 +1010,8 @@ public class JpaShipService {
 			jpaLsdpssRepository.save(lsdpss);
 
 			Lsdpss newLsdpss = new Lsdpss(lsdpsm, depositStatus);
+
+			newLsdpss.setRegId(userId);
 
 			newLsdpss.setUpdId(userId);
 
@@ -1002,6 +1026,8 @@ public class JpaShipService {
 
 			String depositSeq = StringUtils.leftPad(Integer.toString(index), 4, '0');
 			Lsdpsd lsdpsd = new Lsdpsd(lsdpsm, depositSeq, ship);
+
+			lsdpsd.setRegId(userId);
 
 			lsdpsd.setUpdId(userId);
 
@@ -1022,6 +1048,8 @@ public class JpaShipService {
 			if (lsdpds == null) {
 				Lsdpds newLsdpds = new Lsdpds(lsdpsd, depositStatus);
 
+				newLsdpds.setRegId(userId);
+
 				newLsdpds.setUpdId(userId);
 
 				jpaLsdpdsRepository.save(newLsdpds);
@@ -1032,6 +1060,8 @@ public class JpaShipService {
 				jpaLsdpdsRepository.save(lsdpds);
 
 				Lsdpds newLsdpds = new Lsdpds(lsdpsd, depositStatus);
+
+				newLsdpds.setRegId(userId);
 
 				newLsdpds.setUpdId(userId);
 				jpaLsdpdsRepository.save(newLsdpds);

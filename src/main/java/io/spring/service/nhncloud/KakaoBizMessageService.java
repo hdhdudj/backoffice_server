@@ -74,7 +74,7 @@ public class KakaoBizMessageService {
 
             if(res == 200){
                 SendMessageLog sl = new SendMessageLog(tod, tm, MessageType.alimtalk);
-
+				sl.setRegId(userId);
 				sl.setUpdId(userId);
 
                 jpaSendMessageLogRepository.save(sl);

@@ -65,7 +65,7 @@ public class SmsService {
 
             if(res == 200){
                 SendMessageLog sl = new SendMessageLog(tod, tm, MessageType.sms);
-
+				sl.setRegId(userId);
 				sl.setUpdId(userId);
                 jpaSendMessageLogRepository.save(sl);
             }

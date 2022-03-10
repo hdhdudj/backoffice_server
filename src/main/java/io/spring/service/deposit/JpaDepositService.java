@@ -198,6 +198,8 @@ public class JpaDepositService {
         String no = jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLsdpsm());
         String depositNo = Utilities.getStringNo('D', no,9);
         Lsdpsm lsdpsm = new Lsdpsm(depositNo, depositListWithPurchaseInfoData);
+
+		lsdpsm.setRegId(userId);
 		lsdpsm.setUpdId(userId);
         jpaLsdpsmRepository.save(lsdpsm);
         return lsdpsm;
@@ -208,6 +210,7 @@ public class JpaDepositService {
 		String no = jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLsdpsm());
 		String depositNo = Utilities.getStringNo('D', no, 9);
 		Lsdpsm lsdpsm = new Lsdpsm(depositNo, p);
+		lsdpsm.setRegId(userId);
 		lsdpsm.setUpdId(userId);
 		jpaLsdpsmRepository.save(lsdpsm);
 		return lsdpsm;
@@ -215,7 +218,7 @@ public class JpaDepositService {
 
 	private Lsdpsm saveLsdpsm(DepositInsertRequestData depositInsertRequestData, String userId) {
         Lsdpsm lsdpsm = new Lsdpsm(depositInsertRequestData);
-
+		lsdpsm.setRegId(userId);
 		lsdpsm.setUpdId(userId);
 
         jpaLsdpsmRepository.save(lsdpsm);
@@ -278,6 +281,7 @@ public class JpaDepositService {
 
 			lsdpsdList.add(lsdpsd);
 
+			lsdpsd.setRegId(userId);
 			lsdpsd.setUpdId(userId);
 
 			jpaLsdpsdRepository.save(lsdpsd);
@@ -302,6 +306,7 @@ public class JpaDepositService {
 			String rackNo = this.getDefaultRack(lsdpsm.getStoreCd(), deposit.getRackNo()); //
 			lsdpsd.setRackNo(rackNo);
 
+			lsdpsd.setRegId(userId);
 			lsdpsd.setUpdId(userId);
 
 			jpaLsdpsdRepository.save(lsdpsd);
@@ -316,6 +321,7 @@ public class JpaDepositService {
 	private void insertLsdpss(DepositInsertRequestData depositInsertRequestData, String userId) {
         Lsdpss lsdpss = new Lsdpss(depositInsertRequestData);
 
+		lsdpss.setRegId(userId);
 		lsdpss.setUpdId(userId);
 
         jpaLsdpssRepository.save(lsdpss);
@@ -326,10 +332,12 @@ public class JpaDepositService {
         Lsdpss lsdpss = jpaLsdpssRepository.findByDepositNoAndEffEndDt(lsdpsm.getDepositNo(), Utilities.getStringToDate(StringFactory.getDoomDay()));
         if(lsdpss == null){
             lsdpss = new Lsdpss(lsdpsm);
+			lsdpss.setRegId(userId);
         }
         else{
             Lsdpss newLsdpss = new Lsdpss(lsdpsm);
 
+			newLsdpss.setRegId(userId);
 			newLsdpss.setUpdId(userId);
 
             jpaLsdpssRepository.save(newLsdpss);
@@ -347,6 +355,7 @@ public class JpaDepositService {
 		if (lsdpss == null) {
 			Lsdpss newLsdpss = new Lsdpss(lsdpsm, depositStatus);
 
+			newLsdpss.setRegId(userId);
 			newLsdpss.setUpdId(userId);
 
 			jpaLsdpssRepository.save(newLsdpss);
@@ -359,6 +368,7 @@ public class JpaDepositService {
 
 			Lsdpss newLsdpss = new Lsdpss(lsdpsm, depositStatus);
 
+			newLsdpss.setRegId(userId);
 			newLsdpss.setUpdId(userId);
 			jpaLsdpssRepository.save(newLsdpss);
 		}
@@ -391,7 +401,7 @@ public class JpaDepositService {
 					lsdpsd.getDepositSeq(), Utilities.getStringToDate(StringFactory.getDoomDay()));
 			if (lsdpds == null) {
 				Lsdpds newLsdpds = new Lsdpds(lsdpsd, depositStatus);
-
+				newLsdpds.setRegId(userId);
 				newLsdpds.setUpdId(userId);
 
 				jpaLsdpdsRepository.save(newLsdpds);
@@ -403,6 +413,7 @@ public class JpaDepositService {
 
 				Lsdpds newLsdpds = new Lsdpds(lsdpsd, depositStatus);
 
+				newLsdpds.setRegId(userId);
 				newLsdpds.setUpdId(userId);
 
 				jpaLsdpdsRepository.save(newLsdpds);
@@ -428,6 +439,8 @@ public class JpaDepositService {
             }
             else {
                 Lsdpds newLsdpds = new Lsdpds(lsdpsd);
+
+				newLsdpds.setRegId(userId);
 
 				newLsdpds.setUpdId(userId);
 
@@ -780,6 +793,7 @@ public class JpaDepositService {
             newLsdpsp.setPurchaseTakeQty(0l);
             lsdpsp.setPlanStatus(StringFactory.getGbFour());
 
+			newLsdpsp.setRegId(userId);
 			newLsdpsp.setUpdId(userId);
 
             jpaLsdpspRepository.save(newLsdpsp);

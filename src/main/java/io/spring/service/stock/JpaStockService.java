@@ -98,6 +98,9 @@ public class JpaStockService {
 			// Float localPrice, Long qty)
 
 			ititmc = new Ititmc(storageId, depositDt, assortId, itemId, itemGrade, price, qty);
+
+			ititmc.setRegId(userId);
+
 			ititmc.setVendorId(vendorId);
 			Itasrt itasrt = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());
 			ititmc.setOwnerId(itasrt.getOwnerId());
@@ -122,6 +125,9 @@ public class JpaStockService {
 				// Float localPrice, Long qty)
 
 				imc_rack = new Ititmc(rackNo, depositDt, assortId, itemId, itemGrade, price, qty);
+
+				imc_rack.setRegId(userId);
+
 				imc_rack.setVendorId(vendorId);
 				Itasrt itasrt = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());
 				imc_rack.setOwnerId(itasrt.getOwnerId());
