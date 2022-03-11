@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -27,7 +29,6 @@ import io.spring.model.move.response.GoodsModalListResponseData;
 import io.spring.model.move.response.MoveCompletedLIstReponseData;
 import io.spring.model.move.response.MoveIndicateDetailResponseData;
 import io.spring.model.move.response.MoveIndicateListResponseData;
-import io.spring.model.move.response.MoveListResponseData;
 import io.spring.model.move.response.MovedDetailResponseData;
 import io.spring.model.move.response.OrderMoveListResponseData;
 import io.spring.service.move.JpaMoveService;
@@ -97,8 +98,11 @@ public class MoveController {
      * 주문이동지시 저장
      */
     @PostMapping(path="/indicate/order")
-    public ResponseEntity saveOrderMove(@RequestBody OrderMoveSaveData orderMoveSaveData){
-        List<String> shipIdList = jpaMoveService.saveOrderMove(orderMoveSaveData);
+	public ResponseEntity saveOrderMove(@RequestBody @Valid OrderMoveSaveData orderMoveSaveData) {
+
+		String userId = orderMoveSaveData.getUserId();
+
+		List<String> shipIdList = jpaMoveService.saveOrderMove(orderMoveSaveData, userId);
 //        depositInsertRequestData.setDepositNo(depositNo); // deposit no 채번
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipIdList);
         return ResponseEntity.ok(res);
@@ -149,9 +153,12 @@ public class MoveController {
      * 상품이동지시 저장
      */
     @PostMapping(path="/indicate/goods")
-    public ResponseEntity saveGoodsMove(@RequestBody GoodsMoveSaveData goodsMoveSaveData){
+	public ResponseEntity saveGoodsMove(@RequestBody @Valid GoodsMoveSaveData goodsMoveSaveData) {
         System.out.println("========== : " + goodsMoveSaveData.getOStorageId());
-        List<String> shipIdList = jpaMoveService.saveGoodsMove(goodsMoveSaveData);
+
+		String userId = goodsMoveSaveData.getUserId();
+
+		List<String> shipIdList = jpaMoveService.saveGoodsMove(goodsMoveSaveData, userId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipIdList);
         return ResponseEntity.ok(res);
     }
@@ -212,8 +219,11 @@ public class MoveController {
      * 이동처리 저장
      */
     @PostMapping(path = "/move")
-    public ResponseEntity changeShipStatus(@RequestBody MoveListSaveData moveListSaveData){
-		List<String> shipIdList = jpaMoveService.changeShipStatus2(moveListSaveData);
+	public ResponseEntity changeShipStatus(@RequestBody @Valid MoveListSaveData moveListSaveData) {
+
+		String userId = moveListSaveData.getUserId();
+
+		List<String> shipIdList = jpaMoveService.changeShipStatus2(moveListSaveData, userId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipIdList);
         return ResponseEntity.ok(res);
     }
@@ -240,9 +250,18 @@ public class MoveController {
     /**
      * 이동리스트 화면에서 엑셀 업로드한 값 저장
      */
+	// 20220307 rjb80 requestbody 추가
     @PostMapping(path = "/excel")
-    public ResponseEntity saveExcelList(@RequestBody MoveListExcelRequestData moveListExcelRequestData){
-        jpaMoveService.saveExcelList(moveListExcelRequestData);
+	public ResponseEntity saveExcelList(@RequestBody @Valid MoveListExcelRequestData moveListExcelRequestData) {
+
+
+		String userId = moveListExcelRequestData.getUserId();
+
+		jpaMoveService.saveExcelList(moveListExcelRequestData, userId);
+
+		// 조회조건이 이상함.위에 저장리스트에서 저장된건의 ship_id를 가지고 조회해도 될거같음.
+
+
         MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.getMovedList(moveListExcelRequestData.getStartDt(), moveListExcelRequestData.getEndDt(), moveListExcelRequestData.getShipId(), moveListExcelRequestData.getAssortId(), moveListExcelRequestData.getAssortNm(), moveListExcelRequestData.getStorageId(), null, null, null);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveCompletedLIstReponseData);
         return ResponseEntity.ok(res);

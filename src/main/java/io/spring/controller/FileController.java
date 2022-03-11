@@ -136,8 +136,11 @@ public class FileController {
 
 	}
 
+	// 20220307 rjb80 requestbody 추가
 	@PostMapping("/uploadFile")
-    public ResponseEntity uploadFile(@RequestParam("imageGb") String imageGb,@RequestParam("file") MultipartFile file) {
+	public ResponseEntity uploadFile(@RequestParam("imageGb") String imageGb, @RequestParam("userId") String userId,
+			@RequestParam("file") MultipartFile file) {
+//	public ResponseEntity uploadFile(@RequestBody UploadFileRequestData req, @RequestParam("file") MultipartFile file) {
        // String fileName = service.storeFile(file);
        // 
         //String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -155,10 +158,12 @@ public class FileController {
 		//파일타입
 		//파일사이즈
 		
+		// String imageGb = req.getImageGb();
+//		String userId = req.getUserId();
 		
 		FileVo f = fileService.storeFile(imageGb,file);
 		
-		Itaimg ii = jpaGoodsService.saveItaimg(imageGb, f);
+		Itaimg ii = jpaGoodsService.saveItaimg(imageGb, f, userId);
 		
 		FileUploadFileResponseData r = new FileUploadFileResponseData(ii);
 		

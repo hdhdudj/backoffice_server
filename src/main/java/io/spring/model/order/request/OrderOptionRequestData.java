@@ -1,5 +1,7 @@
 package io.spring.model.order.request;
 
+import javax.validation.constraints.NotNull;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +19,8 @@ public class OrderOptionRequestData {
 	private String itemId;
 	private String channelGoodsNo;
 	private String channelOptionSno;
+	@NotNull(message = "userId는 필수 값입니다.")
+	private String userId;
 
 }
 

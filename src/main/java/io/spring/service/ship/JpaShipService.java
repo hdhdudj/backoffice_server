@@ -154,7 +154,7 @@ public class JpaShipService {
      * 출고지시 저장 : 수량 입력 후 저장하는 함수
      */
 	@Transactional
-    public List<String> saveShipIndicate(ShipIndicateSaveListData shipIndicateSaveListData) {
+	public List<String> saveShipIndicate(ShipIndicateSaveListData shipIndicateSaveListData, String userId) {
         if(shipIndicateSaveListData.getShips().size() == 0){
             log.debug("input data is empty.");
             return null;
@@ -166,6 +166,8 @@ public class JpaShipService {
 
 		// List<ShipIndicateSaveListData.Ship> l = shipIndicateSaveListData.getShips();
 
+		// String userId = shipIndicateSaveListData.getUserId();
+
 		for (ShipIndicateSaveListData.Ship ship : shipIndicateSaveListData.getShips()) {
 
 			HashMap<String, Object> m = new HashMap<String, Object>();
@@ -175,7 +177,7 @@ public class JpaShipService {
 			orderIdList.add(ship.getOrderId());
 			orderList.add(m);
 
-			List<String> shipIdList1 = this.saveShipIndicateSaveData(ship);
+			List<String> shipIdList1 = this.saveShipIndicateSaveData(ship, userId);
 			if (shipIdList1.size() > 0) {
 				shipIdList1.stream().forEach(x -> shipIdList.add(x));
 			}
@@ -191,7 +193,7 @@ public class JpaShipService {
 			orderList.add(m);
 		}
 
-		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.D01.toString());
+		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.D01.toString(), userId);
 
         return shipIdList;
     }
@@ -199,7 +201,7 @@ public class JpaShipService {
 	/**
 	 * 출고지시 저장 : 수량 입력 후 저장하는 함수
 	 */
-	public List<String> saveShipIndicateByDeposit(Lsdpsd lsdpsd) {
+	public List<String> saveShipIndicateByDeposit(Lsdpsd lsdpsd, String userId) {
 
 		System.out.println("----------------------saveShipIndicateByDeposit----------------------");
 
@@ -260,7 +262,7 @@ public class JpaShipService {
 			p.put("rackNo", lsdpsd.getRackNo());
 			p.put("qty", lsdpsd.getDepositQty());
 
-			int r = jpaStockService.minusIndicateStockByOrder(p);
+			int r = jpaStockService.minusIndicateStockByOrder(p, userId);
 
 
 
@@ -295,7 +297,7 @@ public class JpaShipService {
 			// 2. 출고 data 생성
 			// todo 출고지시데이타에 rack이 들어가야함.
 			String shipId = this.makeShipDataByDeposit(imc_storage, lsdpsd, tbOrderDetail,
-					StringFactory.getGbOne()); // 01 :
+					StringFactory.getGbOne(), userId); // 01 :
 																													// :
 			if (shipId != null) {
 				shipIdList.add(shipId);
@@ -350,24 +352,39 @@ public class JpaShipService {
      * 출고 관련 값 update, 출고 관련 data 생성 함수 (lsshpm,d,s)
      * ShipIndicateSaveData 객체로 lsshpm,s,d 생성
      */
-    private String makeShipData(Ititmc ititmc, ShipIndicateSaveListData.Ship ship, TbOrderDetail tbOrderDetail, String shipStatus) {
+	private String makeShipData(Ititmc ititmc, ShipIndicateSaveListData.Ship ship, TbOrderDetail tbOrderDetail,
+			String shipStatus, String userId) {
         String shipId = this.getShipId();
 
         Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
         // lsshpm 저장
 		Lsshpm lsshpm = new Lsshpm("01", shipId, itasrt, tbOrderDetail);
+		lsshpm.setRegId(userId);
+
         lsshpm.setShipStatus(shipStatus); // 01 : 이동지시or출고지시, 04 : 출고
         lsshpm.setDeliId(tbOrderDetail.getTbOrderMaster().getDeliId());
         // lsshps 저장
         Lsshps lsshps = new Lsshps(lsshpm);
+
+		lsshps.setRegId(userId);
+
+		lsshps.setUpdId(userId);
+
         jpaLsshpsRepository.save(lsshps);
+
+		lsshpm.setUpdId(userId);
         jpaLsshpmRepository.save(lsshpm);
         // lsshpd 저장
         String shipSeq = StringUtils.leftPad(Integer.toString(1), 4,'0');
         Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc, itasrt);
+
+		lsshpd.setRegId(userId);
+
 //            lsshpd.setLocalPrice(tbOrderDetail.getLspchd());
         lsshpd.setVendorDealCd(StringFactory.getGbOne()); // 01 : 주문, 02 : 상품, 03 : 입고예정
         lsshpd.setShipIndicateQty(ship.getAvailableQty());
+
+		lsshpd.setUpdId(userId);
         jpaLsshpdRepository.save(lsshpd);
         return shipId;
     }
@@ -377,12 +394,15 @@ public class JpaShipService {
 	 * 출고 관련 값 update, 출고 관련 data 생성 함수 (lsshpm,d,s) ShipIndicateSaveData 객체로
 	 * lsshpm,s,d 생성
 	 */
-	private String makeShipDataByDeposit(Ititmc ititmc, Lsdpsd lsdpsd, TbOrderDetail tbOrderDetail, String shipStatus) {
+	private String makeShipDataByDeposit(Ititmc ititmc, Lsdpsd lsdpsd, TbOrderDetail tbOrderDetail, String shipStatus,
+			String userId) {
 		String shipId = this.getShipId();
 
 		Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
 		// lsshpm 저장
 		Lsshpm lsshpm = new Lsshpm("01", shipId, itasrt, tbOrderDetail);
+
+		lsshpm.setRegId(userId);
 
 		lsshpm.setShipStatus(shipStatus); // 01 : 이동지시or출고지시, 02 : 이동지시or출고지시 접수, 04 : 출고
 		lsshpm.setDeliId(tbOrderDetail.getTbOrderMaster().getDeliId());
@@ -398,17 +418,29 @@ public class JpaShipService {
 
 		// lsshps 저장
 		Lsshps lsshps = new Lsshps(lsshpm);
+
+		lsshps.setRegId(userId);
+
+		lsshps.setUpdId(userId);
+
 		jpaLsshpsRepository.save(lsshps);
+
+		lsshpm.setUpdId(userId);
 		jpaLsshpmRepository.save(lsshpm);
 		// lsshpd 저장
 		String shipSeq = StringUtils.leftPad(Integer.toString(1), 4, '0');
 		Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc, itasrt);
+
+		lsshpd.setRegId(userId);
+
 //            lsshpd.setLocalPrice(tbOrderDetail.getLspchd());
 
 		lsshpd.setRackNo(lsdpsd.getRackNo());
 		lsshpd.setVendorDealCd(StringFactory.getGbOne()); // 01 : 주문, 02 : 상품, 03 : 입고예정
 		lsshpd.setShipIndicateQty(lsdpsd.getDepositQty());
 		lsshpd.setShipGb(StringFactory.getGbOne()); // 주문출고지시
+
+		lsshpd.setUpdId(userId);
 		jpaLsshpdRepository.save(lsshpd);
 		return shipId;
 	}
@@ -416,7 +448,7 @@ public class JpaShipService {
 	/**
 	 * ShipIndicateSaveData 객체로 lsshpm,s,d 생성 tbOrderDetail를 변경
 	 */
-	private List<String> saveShipIndicateSaveData(ShipIndicateSaveListData.Ship ship) {
+	private List<String> saveShipIndicateSaveData(ShipIndicateSaveListData.Ship ship, String userId) {
 
 		List<String> ret = new ArrayList<String>();
 
@@ -427,7 +459,9 @@ public class JpaShipService {
 		lsshpm.setInstructDt(LocalDateTime.now());
 		lsshpm.setShipStatus(StringFactory.getGbTwo()); // 01 : 이동지시or출고지시, 02 : 이동지시or출고지시 접수, 04 : 출고
 
-		this.updateLsshps(lsshpm);
+		lsshpm.setUpdId(userId);
+
+		this.updateLsshps(lsshpm, userId);
 
 		ret.add(ship.getShipId());
 
@@ -668,12 +702,14 @@ public class JpaShipService {
      * 출고처리2 - 변한 값을 저장하는 함수
      */
     @Transactional
-    public List<String> shipIndToShip2(ShipSaveListData shipSaveListData) {
+	public List<String> shipIndToShip2(ShipSaveListData shipSaveListData, String userId) {
 
 		List<String> newShipIdList = new ArrayList<>();
 		
         List<String> shipIdList = new ArrayList<>();
         List<Lsshpd> lsshpdList = new ArrayList<>();
+
+
     	
         List<ShipSaveListData.Ship> shipList = shipSaveListData.getShips();
         
@@ -708,11 +744,16 @@ public class JpaShipService {
 				p.put("storageId", lsshpm.getStorageId());
 				p.put("rackNo", lsshpd.getRackNo());
 				p.put("shipQty",lsshpd.getShipIndicateQty());
+				p.put("userId", userId);
 
-				int r = jpaStockService.minusShipStockByOrder(p);
+				int r = jpaStockService.minusShipStockByOrder(p, userId);
 				
 
 				lsshpd.setShipQty(lsshpd.getShipIndicateQty());
+
+				lsshpd.setUpdId(userId);
+
+
 				jpaLsshpdRepository.save(lsshpd);
 				
 				if (lsshpm.getShipOrderGb().equals("01")) {
@@ -731,14 +772,17 @@ public class JpaShipService {
 
 			lsshpm.setShipStatus(StringFactory.getGbFour()); // 04 하드코딩
 			lsshpm.setApplyDay(LocalDateTime.now()); // 출고일자 now date
+
+			lsshpm.setUpdId(userId);
+
 			newShipIdList.add(lsshpm.getShipId());
 			jpaLsshpmRepository.save(lsshpm);
-			this.updateLsshps(lsshpm);		
+			this.updateLsshps(lsshpm, userId);
 			
 			
 		}
 		
-		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.D02.toString());
+		this.changeStatusCdOfTbOrderDetail(orderList, TrdstOrderStatus.D02.toString(), userId);
 		
 		
 		  return newShipIdList;
@@ -861,30 +905,37 @@ public class JpaShipService {
     
     //여기까지 통채로 주석 2022-02-07
 
-	private void updateLsshps(Lsshpm lsshpm) {
+	private void updateLsshps(Lsshpm lsshpm, String userId) {
 		Lsshps lsshps = jpaLsshpsRepository.findByShipIdAndEffEndDt(lsshpm.getShipId(),
 				Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
 		Lsshps newLsshps = new Lsshps(lsshpm);
+
+		newLsshps.setRegId(userId);
+
 		lsshps.setEffEndDt(LocalDateTime.now());
+
+		lsshps.setUpdId(userId);
 		jpaLsshpsRepository.save(lsshps);
+
+		newLsshps.setUpdId(userId);
 		jpaLsshpsRepository.save(newLsshps);
 	}
 
 	/**
 	 * 이동지시 또는 이동처리 후 주문상태변경
 	 */
-	private void changeStatusCdOfTbOrderDetail(List<HashMap<String, Object>> list, String statusCd) {
+	private void changeStatusCdOfTbOrderDetail(List<HashMap<String, Object>> list, String statusCd, String userId) {
 		for (HashMap<String, Object> o : list) {
 //            TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(lspchd.getOrderId(),lspchd.getOrderSeq());
 //            if(tbOrderDetail != null){ // 01 : 주문이동, 02 : 상품이동
 //                tbOrderDetail.setStatusCd(StringFactory.getStrB02());
-			this.updateOrderStatusCd(o.get("order_id").toString(), o.get("order_seq").toString(), statusCd);
+			this.updateOrderStatusCd(o.get("order_id").toString(), o.get("order_seq").toString(), statusCd, userId);
 //                jpaTbOrderDetailRepository.save(tbOrderDetail);
 //            }
 		}
 	}
 
-	private void updateOrderStatusCd(String orderId, String orderSeq, String statusCd) {
+	private void updateOrderStatusCd(String orderId, String orderSeq, String statusCd, String userId) {
 		TbOrderDetail tod = tbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
 		if (tod == null) {
 			log.debug("해당 주문이 존재하지 않습니다. - JpaPurchaseService.updateOrderStatusCd");
@@ -901,12 +952,17 @@ public class JpaShipService {
 		for (int i = 0; i < tohs.size(); i++) {
 			tohs.get(i).setEffEndDt(newEffEndDate);
 			tohs.get(i).setLastYn("002");
+			tohs.get(i).setUpdId(userId);
 		}
 
 		TbOrderHistory toh = new TbOrderHistory(orderId, orderSeq, statusCd, "001", newEffEndDate,
 				Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
 
+		toh.setRegId(userId);
+		toh.setUpdId(userId);
 		tohs.add(toh);
+
+		tod.setUpdId(userId);
 
 		tbOrderDetailRepository.save(tod);
 
@@ -921,12 +977,16 @@ public class JpaShipService {
 	}
 
 	@Transactional
-	public String insertEtcShip(InsertShipEtcRequestData p) throws Exception {
+	public String insertEtcShip(InsertShipEtcRequestData p, String userId) throws Exception {
 
 		// depositNo 채번
 		String no = jpaSequenceDataRepository.nextVal(StringFactory.getStrSeqLsdpsm());
 		String depositNo = Utilities.getStringNo('D', no, 9);
 		Lsdpsm lsdpsm = new Lsdpsm(depositNo, p);
+
+		lsdpsm.setRegId(userId);
+
+		lsdpsm.setUpdId(userId);
 
 		jpaLsdpsmRepository.save(lsdpsm);
 
@@ -937,13 +997,24 @@ public class JpaShipService {
 
 		if (lsdpss == null) {
 			Lsdpss newLsdpss = new Lsdpss(lsdpsm, depositStatus);
+
+			newLsdpss.setRegId(userId);
+
+			newLsdpss.setUpdId(userId);
+
 			jpaLsdpssRepository.save(newLsdpss);
 
 		} else {
 
+			lsdpss.setUpdId(userId);
 			jpaLsdpssRepository.save(lsdpss);
 
 			Lsdpss newLsdpss = new Lsdpss(lsdpsm, depositStatus);
+
+			newLsdpss.setRegId(userId);
+
+			newLsdpss.setUpdId(userId);
+
 			jpaLsdpssRepository.save(newLsdpss);
 		}
 
@@ -955,6 +1026,11 @@ public class JpaShipService {
 
 			String depositSeq = StringUtils.leftPad(Integer.toString(index), 4, '0');
 			Lsdpsd lsdpsd = new Lsdpsd(lsdpsm, depositSeq, ship);
+
+			lsdpsd.setRegId(userId);
+
+			lsdpsd.setUpdId(userId);
+
 			jpaLsdpsdRepository.save(lsdpsd);
 
 			lsdpsdList.add(lsdpsd);
@@ -971,11 +1047,23 @@ public class JpaShipService {
 					lsdpsd.getDepositSeq(), Utilities.getStringToDate(StringFactory.getDoomDay()));
 			if (lsdpds == null) {
 				Lsdpds newLsdpds = new Lsdpds(lsdpsd, depositStatus);
+
+				newLsdpds.setRegId(userId);
+
+				newLsdpds.setUpdId(userId);
+
 				jpaLsdpdsRepository.save(newLsdpds);
 			} else {
+
+				lsdpds.setUpdId(userId);
+
 				jpaLsdpdsRepository.save(lsdpds);
 
 				Lsdpds newLsdpds = new Lsdpds(lsdpsd, depositStatus);
+
+				newLsdpds.setRegId(userId);
+
+				newLsdpds.setUpdId(userId);
 				jpaLsdpdsRepository.save(newLsdpds);
 			}
 
@@ -1003,7 +1091,7 @@ public class JpaShipService {
 
 			m.put("rackNo", o.getRackNo());
 
-			jpaStockService.minusEtcShipStockByGoods(m);
+			jpaStockService.minusEtcShipStockByGoods(m, userId);
 
 		}
 

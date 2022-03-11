@@ -94,7 +94,12 @@ public class ShipIndicateSaveListResponseData {
 			this.shipId = (String) map.get("shipId");
 			this.shipSeq = (String) map.get("shipSeq");
 			this.storageId = (String) map.get("storageId");
-			this.receiptDt = map.get("receiptDt").toString();
+
+			LocalDateTime locRd = (LocalDateTime) map.get("receiptDt");
+			String addLocRd = locRd.getSecond() == 0 ? ":00" : "";
+
+			this.receiptDt = ((LocalDateTime) map.get("receiptDt")).toString().replace('T', ' ') + addLocRd;
+			// map.get("receiptDt").toString();
 
 			this.optionNm1 = (String) map.get("optionNm1");
 			this.optionNm2 = (String) map.get("optionNm2");

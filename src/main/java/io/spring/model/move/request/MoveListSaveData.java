@@ -1,8 +1,15 @@
 package io.spring.model.move.request;
 
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
+
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
@@ -10,10 +17,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
 
 /**
  * 이동처리 조회 DTO
@@ -42,6 +45,8 @@ public class MoveListSaveData {
     private String assortNm;
     private String storageId;
     private String deliMethod;
+	@NotNull(message = "userId는 필수 값입니다.")
+	private String userId;
     private List<Move> moves;
 
     @Getter

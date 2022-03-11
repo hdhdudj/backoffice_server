@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -178,7 +180,10 @@ public class OrderController {
 	@RequestMapping(path = "/orderstatus", method = RequestMethod.GET)
 	public ResponseEntity changeOrderStatus(@RequestParam String orderId, @RequestParam String orderSeq) {
 		log.debug("changeOrderStatus 실행.");
-		jpaOrderService.changeOrderStatus(orderId, orderSeq);
+
+		String userId = "batch did";
+
+		jpaOrderService.changeOrderStatus(orderId, orderSeq, userId);
 
 
 		TbOrderDetail t = jpaOrderService.getOrderDetail(orderId, orderSeq);
@@ -405,22 +410,26 @@ public class OrderController {
 
 	@GetMapping(path = "/test/sms")
 	public ResponseEntity smsSendTest(@RequestParam String body, @RequestParam String tbOrderNo){
-		jpaOrderService.testSms(body, tbOrderNo);
+		jpaOrderService.testSms(body, tbOrderNo, "test");
 		return null;
 	}
 
+	// 20220307 rjb80 requestbody 추가
+	// 20220307 rjb80 현재사용안하는 api임.
 	@PostMapping(path = "/ifoption")
 	public ResponseEntity saveOrderOption(
 			@RequestBody OrderOptionRequestData req) {
 
 		System.out.println(req);
 
+		String userId = req.getUserId();
+
 		Boolean ret = jpaOrderService.saveGoodsIfoption(req.getOrderId(), req.getOrderSeq(), req.getAssortId(),
 				req.getChannelGoodsNo(),
-				req.getChannelOptionSno());
+				req.getChannelOptionSno(), userId);
 
 		if (ret) {
-			jpaOrderService.noOptionChangeOrderStatus(req.getOrderId(), req.getOrderSeq());
+			jpaOrderService.noOptionChangeOrderStatus(req.getOrderId(), req.getOrderSeq(), userId);
 		}
 
 		ApiResponseMessage res = null;
@@ -435,7 +444,8 @@ public class OrderController {
 
 	@PostMapping(path = "/items/cancel")
 	public ResponseEntity cancelOrder(
-			@RequestBody CancelOrderRequestData param) {
+			@RequestBody @Valid CancelOrderRequestData param) {
+
 
 //CancelOrderRequestData
 
@@ -460,7 +470,7 @@ public class OrderController {
 			m.put("userId", userId);
 
 			if (o.getChannelGb().equals("01")) {
-				boolean r = jpaOrderService.cancelGodoOrder(m);
+				boolean r = jpaOrderService.cancelGodoOrder(m, userId);
 				System.out.println(r);
 				if (r == false) {
 					chk = "error";

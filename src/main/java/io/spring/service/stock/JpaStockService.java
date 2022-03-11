@@ -63,13 +63,19 @@ public class JpaStockService {
 
 	private final EntityManager em;
 
-	public int plusDepositStock(HashMap<String, Object> p) {
+	public int plusDepositStock(HashMap<String, Object> p, String userId) {
 		
 		String storageId = p.get("storageId").toString();
 		LocalDateTime depositDt = (LocalDateTime) p.get("effStaDt");
 		String assortId = p.get("assortId").toString();
 		String itemId = p.get("itemId").toString();
 		String itemGrade = p.get("itemGrade").toString();
+
+		// String userId = p.get("userId") == null ? "plusDepositStock did" :
+		// p.get("userId").toString();
+		// String userId = p.get("userId") == null ? "minusShipStockByOrder did" :
+		// p.get("userId").toString();
+
 		long qty = (long)p.get("depositQty");
 		float price = (float)p.get("price");
 
@@ -96,6 +102,9 @@ public class JpaStockService {
 			// Float localPrice, Long qty)
 
 			ititmc = new Ititmc(storageId, depositDt, assortId, itemId, itemGrade, price, qty);
+
+			ititmc.setRegId(userId);
+
 			ititmc.setVendorId(vendorId);
 			Itasrt itasrt = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());
 			ititmc.setOwnerId(itasrt.getOwnerId());
@@ -104,6 +113,8 @@ public class JpaStockService {
 			ititmc.setQty(ititmc.getQty() + qty);
 
 		}
+
+		ititmc.setUpdId(userId);
 
 		jpaItitmcRepository.save(ititmc);
 
@@ -118,6 +129,9 @@ public class JpaStockService {
 				// Float localPrice, Long qty)
 
 				imc_rack = new Ititmc(rackNo, depositDt, assortId, itemId, itemGrade, price, qty);
+
+				imc_rack.setRegId(userId);
+
 				imc_rack.setVendorId(vendorId);
 				Itasrt itasrt = jpaItasrtRepository.findByAssortId(ititmc.getAssortId());
 				imc_rack.setOwnerId(itasrt.getOwnerId());
@@ -126,6 +140,9 @@ public class JpaStockService {
 				imc_rack.setQty(imc_rack.getQty() + qty);
 
 			}
+
+			imc_rack.setUpdId(userId);
+
 			jpaItitmcRepository.save(imc_rack);
 		}
 
@@ -145,7 +162,7 @@ public class JpaStockService {
 
 	}
 
-	public int minusIndicateStockByOrder(HashMap<String, Object> p) {
+	public int minusIndicateStockByOrder(HashMap<String, Object> p, String userId) {
 
 		System.out.println("----------------------minusIndicateStockByOrder----------------------");
 
@@ -161,6 +178,8 @@ public class JpaStockService {
 		// 창고의 재고를 조회함
 		
 		long shipQty = (Long) p.get("qty");
+		// String userId = p.get("userId") == null ? "minusIndicateStockByOrder did" :
+		// p.get("userId").toString();
 		
 		Ititmc imc_storage = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(
 				p.get("assortId").toString(), p.get("itemId").toString(), p.get("storageId").toString(),
@@ -202,6 +221,9 @@ public class JpaStockService {
 			}
 			if (shipQty <= canShipQty) { // 이 차례에서 출고 완료 가능
 				imc_storage.setShipIndicateQty(shipIndQty + shipQty);
+
+				imc_storage.setUpdId(userId);
+
 				jpaItitmcRepository.save(imc_storage);
 
 			} else {
@@ -234,6 +256,9 @@ public class JpaStockService {
 			}
 			if (shipQty <= canShipQty) { // 이 차례에서 출고 완료 가능
 				imc_rack.setShipIndicateQty(shipIndQty + shipQty);
+
+				imc_rack.setUpdId(userId);
+
 				jpaItitmcRepository.save(imc_rack);
 
 			}
@@ -260,10 +285,13 @@ public class JpaStockService {
 	}
 
 	// 출고처리하는로직을 만들어야함.
-	public int minusShipStockByOrder(HashMap<String, Object> p) {
+	public int minusShipStockByOrder(HashMap<String, Object> p, String userId) {
 		System.out.println("----------------------minusShipStockByOrder----------------------");
 
 		long shipQty = (Long) p.get("shipQty");
+
+		// String userId = p.get("userId") == null ? "minusShipStockByOrder did" :
+		// p.get("userId").toString();
 
 		Ititmc imc_storage = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(
 				p.get("assortId").toString(), p.get("itemId").toString(), p.get("storageId").toString(),
@@ -311,6 +339,7 @@ public class JpaStockService {
 
 			imc_storage.setShipIndicateQty(shipIndQty - shipQty);
 			imc_storage.setQty(qty - shipQty);
+			imc_storage.setUpdId(userId);
 
 			jpaItitmcRepository.save(imc_storage);
 
@@ -338,6 +367,8 @@ public class JpaStockService {
 			imc_rack.setShipIndicateQty(shipIndQty - shipQty);
 			imc_rack.setQty(qty - shipQty);
 
+			imc_rack.setUpdId(userId);
+
 			jpaItitmcRepository.save(imc_rack);
 
 		}
@@ -347,10 +378,13 @@ public class JpaStockService {
 	}
 	
 	// 출고처리하는로직을 만들어야함.
-	public int minusEtcShipStockByGoods(HashMap<String, Object> p) {
+	public int minusEtcShipStockByGoods(HashMap<String, Object> p, String userId) {
 		System.out.println("----------------------minusEtcShipStockByGoods----------------------");
 
 		long shipQty = (Long) p.get("shipQty");
+
+		// String userId = p.get("userId") == null ? "minusEtcShipStockByGoods did" :
+		// p.get("userId").toString();
 
 		Ititmc imc_storage = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(
 				p.get("assortId").toString(), p.get("itemId").toString(), p.get("storageId").toString(),
@@ -395,6 +429,8 @@ public class JpaStockService {
 			// imc_storage.setShipIndicateQty(shipIndQty - shipQty);
 			imc_storage.setQty(qty - shipQty);
 
+			imc_storage.setUpdId(userId);
+
 			jpaItitmcRepository.save(imc_storage);
 
 		}
@@ -418,6 +454,8 @@ public class JpaStockService {
 
 			imc_rack.setQty(qty - shipQty);
 
+			imc_rack.setUpdId(userId);
+
 			jpaItitmcRepository.save(imc_rack);
 
 		}
@@ -426,7 +464,7 @@ public class JpaStockService {
 
 	}	
 
-	public Ititmc checkStockWhenDirect(String storageId, String assortId, String itemId, Long orderQty) {
+	public Ititmc checkStockWhenDirect(String storageId, String assortId, String itemId, Long orderQty, String userId) {
 
 		System.out.println("checkStockWhenDirect");
 
@@ -452,6 +490,7 @@ public class JpaStockService {
 			if (qty >= orderQty + indicateQty) {
 
 				o.setShipIndicateQty(orderQty + indicateQty);
+				o.setUpdId(userId);
 
 				jpaItitmcRepository.save(o);
 
@@ -488,6 +527,8 @@ public class JpaStockService {
 		if (qty >= orderQty + indicateQty) {
 
 			ititmc_store.setShipIndicateQty(orderQty + indicateQty);
+
+			ititmc_store.setUpdId(userId);
 			jpaItitmcRepository.save(ititmc_store);
 		} else {
 			log.debug("20203 store 출고지시수량이 주문수량보다 적음");
@@ -498,7 +539,7 @@ public class JpaStockService {
 		return ititmc_store;
 	}
 
-	public Ititmc checkStockWhenImport(String storageId, String assortId, String itemId, Long orderQty) {
+	public Ititmc checkStockWhenImport(String storageId, String assortId, String itemId, Long orderQty, String userId) {
 
 		System.out.println("checkStockWhenImport");
 		System.out.println("storageId =>" + storageId);
@@ -527,6 +568,7 @@ public class JpaStockService {
 
 				o.setShipIndicateQty(orderQty + indicateQty);
 
+				o.setUpdId(userId);
 				jpaItitmcRepository.save(o);
 
 				ititmc = o;
@@ -562,6 +604,7 @@ public class JpaStockService {
 		if (qty >= orderQty + indicateQty) {
 
 			ititmc_store.setShipIndicateQty(orderQty + indicateQty);
+			ititmc_store.setUpdId(userId);
 			jpaItitmcRepository.save(ititmc_store);
 		} else {
 			log.debug("20303 store 출고지시수량이 주문수량보다 적음");
