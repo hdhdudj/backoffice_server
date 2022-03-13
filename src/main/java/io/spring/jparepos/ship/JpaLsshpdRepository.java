@@ -164,7 +164,6 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
                                     @Param("endEstiArrvDt") LocalDate endEstiArrvDt,
                                     @Param("isEstiArrvDtNotExist") boolean isEstiArrvDtNotExist
     );
-
     List<Lsshpd> findByShipId(String shipId);
 
     @Query("select lsshpd from Lsshpd lsshpd " +
