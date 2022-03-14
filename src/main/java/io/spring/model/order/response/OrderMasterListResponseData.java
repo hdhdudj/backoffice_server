@@ -62,6 +62,9 @@ public class OrderMasterListResponseData {
 		this.payStatus = (String) m.get("payStatus");
 		
 		this.channelOrderNo = (String) m.get("channelOrderNo");
+		// 22-03-14 추가
+		this.salePrice = (BigDecimal) m.get("salePrice");
+		this.dcSumPrice = (BigDecimal) m.get("dcSumPrice");
 
 	}
 
@@ -108,6 +111,10 @@ public class OrderMasterListResponseData {
 	private String deliHp;
 	private String deliTel;
 	private String deliAddr;
+	// 22-03-14 추가
+	private BigDecimal dcSumPrice;
+	private BigDecimal salePrice;
+
 //		private String purchaseCompleteDt;
 	// private String makeCompleteDt;
 	// private String shipmentDt;
