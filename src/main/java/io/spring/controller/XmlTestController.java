@@ -2,6 +2,7 @@ package io.spring.controller;
 
 import io.spring.jparepos.goods.JpaXmlTestRepository;
 import io.spring.model.goods.entity.XmlTest;
+import io.spring.model.stock.request.GoodsStockXml;
 import io.spring.service.stock.JpaStockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +28,10 @@ public class XmlTestController {
         return xml;
     }
 
+    @CrossOrigin(origins = "https://openhub.godo.co.kr/godomall5/goods/Goods_Stock.php")
     @GetMapping("/godo/goods/stock")
     @ResponseBody
-    public String godoGoodsStock(@RequestParam("goodsNo") String goodsNo, @RequestParam("optionFl") String optionFl, @RequestParam("totalStock") Long totalStock){
+    public GoodsStockXml godoGoodsStock(@RequestParam("goodsNo") String goodsNo, @RequestParam("optionFl") String optionFl, @RequestParam("totalStock") Long totalStock){
         return jpaStockService.godoGoodsStock(goodsNo, optionFl, totalStock);
     }
 }

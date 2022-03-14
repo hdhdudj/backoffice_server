@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.*;
 public class GoodsStockXml {
     public GoodsStockXml(String goodsNo, String optionFl, Long totalStock){
         this.goodsData = new GoodsData[1];
-        this.goodsData[0] = new GoodsData(goodsNo, optionFl, totalStock, new StockOptionData());
+        this.goodsData[0] = new GoodsData(goodsNo, optionFl, totalStock, new StockOptionData("a"));
     }
     @XmlElement(name = "goods_data")
     private GoodsData[] goodsData;
@@ -30,11 +30,12 @@ public class GoodsStockXml {
             this.goodsNo = goodsNo;
             this.optionFl = optionFl;
             this.totalStock = totalStock;
-            this.stockOptionData = new StockOptionData[1];
-            this.stockOptionData[0] = new StockOptionData("a");
+            this.stockOptionData = null;
+//            this.stockOptionData = new StockOptionData[1];
+//            this.stockOptionData[0] = new StockOptionData("a");
         }
         @XmlAttribute(name="idx")
-        int idx;
+        int idx=1;
         private String goodsNo;
         private String optionFl;
         private Long totalStock;

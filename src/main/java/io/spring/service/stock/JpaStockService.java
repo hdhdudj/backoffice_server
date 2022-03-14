@@ -686,16 +686,15 @@ public class JpaStockService {
 	/**
 	 * 고도몰 goods_stock api로 재고숫자변경하는 함수
 	 */
-	public String godoGoodsStock(String goodsNo, String optionFl, Long totalStock){
+	public GoodsStockXml godoGoodsStock(String goodsNo, String optionFl, Long totalStock){
 		GoodsStockXml goodsStockXml = new GoodsStockXml(goodsNo, optionFl, totalStock);
-
-		return this.makeGoodsStockXml(goodsStockXml,null);
+		return goodsStockXml;
+//		return this.makeGoodsStockXml(goodsStockXml,null);
 	}
 
 	private String makeGoodsStockXml(GoodsStockXml goodsStockXml, String assortId){
 		String xmlContent = null;
 		String ret="";
-		System.out.println("sdklfjslkdjfsldkj");
 		try {
 			// Create JAXB Context
 			JAXBContext jaxbContext = JAXBContext.newInstance(GoodsStockXml.class);
