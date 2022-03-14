@@ -17,7 +17,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.spring.dao.user.UserRepository;
 import io.spring.service.JwtService;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public class JwtTokenFilter extends OncePerRequestFilter {
     @Autowired
@@ -31,7 +33,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-		System.out.println("---------------------------- call -------------------------------//--");
 
 		String token1 = getTokenString(request.getHeader(header)).orElse("token 없음");
 
@@ -55,17 +56,17 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 			ip = request.getRemoteAddr();
 		}
 
-		System.out.println(token1);
-		System.out.println(url1);
-		System.out.println(ip);
+		log.debug("---------------------------- call -------------------------------//--");
+		log.debug(token1);
+		log.debug(url1);
+		log.debug(ip);
+
 
         getTokenString(request.getHeader(header)).ifPresent(token -> {
             jwtService.getSubFromToken(token).ifPresent(id -> {
                 if (SecurityContextHolder.getContext().getAuthentication() == null) {
                     userRepository.findById(id).ifPresent(user -> {
 
-						System.out.println("----------------------------id---------------------------------");
-						System.out.println(id);
 
                         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                             user,
