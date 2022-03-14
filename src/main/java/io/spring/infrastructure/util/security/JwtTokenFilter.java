@@ -31,7 +31,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-		System.out.println("---------------------------- call ---------------------------------");
+		System.out.println("---------------------------- call -------------------------------//--");
 
 		String token1 = getTokenString(request.getHeader(header)).orElse("token 없음");
 
