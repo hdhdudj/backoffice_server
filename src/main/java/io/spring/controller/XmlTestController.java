@@ -28,7 +28,7 @@ public class XmlTestController {
         return xml;
     }
 
-    @CrossOrigin(origins = "https://openhub.godo.co.kr/godomall5/goods/Goods_Stock.php")
+
     @GetMapping("/godo/goods/stock")
     @ResponseBody
     public GoodsStockXml godoGoodsStock(@RequestParam("goodsNo") String goodsNo, @RequestParam("optionFl") String optionFl, @RequestParam("totalStock") Long totalStock){
