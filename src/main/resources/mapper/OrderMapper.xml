@@ -163,6 +163,8 @@ from (select aa.channel_gb channel_gb,
 		,tod.deli_price deliPrice
 		,tod.deli_method deliMethod
 		,tod.delivery_info deliveryInfo
+	    ,tod.sale_price  salePrice
+		,tod.dc_sum_price dcSumPrice
 		,tod.scm_no scmNo
 		,tom.total_goods_price totalGoodsPrice
 		,tom.total_delivery_charge  totalDeliveryCharge
