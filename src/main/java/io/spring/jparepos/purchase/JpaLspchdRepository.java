@@ -43,7 +43,7 @@ public interface JpaLspchdRepository extends JpaRepository<Lspchd, LspchdId> {
             + "and (:storeCd is null or trim(:storeCd)='' or lm.storeCd=:storeCd) "
             + "and (:piNo is null or trim(:piNo)='' or lm.piNo=:piNo) "
             + "and (:siteOrderNo is null or trim(:siteOrderNo)='' or lm.siteOrderNo=:siteOrderNo) "
-            + "and lm.purchaseStatus in :statusArr")
+            + "and lm.purchaseStatus not in :statusArr")
     List<Lspchd> findPurchaseList(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end,
                                   @Param("vendorId") String vendorId, @Param("storeCd") String storeCd,
                                   @Param("piNo") String piNo, @Param("siteOrderNo") String siteOrderNo,

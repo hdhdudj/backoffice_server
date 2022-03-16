@@ -639,7 +639,7 @@ public class JpaPurchaseService {
 				endDt, vendorId, storageId);
         LocalDateTime start = startDt.atStartOfDay();
         LocalDateTime end = endDt.atTime(23,59,59);
-        List<String> statusArr = Arrays.asList(StringFactory.getGbOne(), StringFactory.getGbThree()); // 01:발주 03:부분입고 04:완전입고 05:취소  A1:송금완료 A2:거래처선금입금 A3:거래처잔금입금
+        List<String> statusArr = Arrays.asList(StringFactory.getGbFour(), StringFactory.getGbFive()); // 01:발주 03:부분입고 04:완전입고 05:취소  A1:송금완료 A2:거래처선금입금 A3:거래처잔금입금
         List<Lspchd> lspchdList;
         List<Lsshpd> lsshpdList;
         Set<Lspchd> purchaseSet = new HashSet<>();
