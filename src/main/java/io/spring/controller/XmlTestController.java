@@ -31,7 +31,7 @@ public class XmlTestController {
 
     @GetMapping("/godo/goods/stock")
     @ResponseBody
-    public GoodsStockXml godoGoodsStock(@RequestParam("goodsNo") String goodsNo, @RequestParam("optionFl") String optionFl, @RequestParam("totalStock") Long totalStock){
+    public String godoGoodsStock(@RequestParam("goodsNo") String goodsNo, @RequestParam("optionFl") String optionFl, @RequestParam("totalStock") Long totalStock){
         return jpaStockService.godoGoodsStock(goodsNo, optionFl, totalStock);
     }
 }
