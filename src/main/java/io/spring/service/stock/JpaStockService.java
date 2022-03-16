@@ -10,6 +10,8 @@ import javax.persistence.Query;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
+import io.spring.jparepos.goods.JpaXmlTestRepository;
+import io.spring.model.goods.entity.XmlTest;
 import io.spring.model.stock.request.GoodsStockXml;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +53,7 @@ public class JpaStockService {
 	private final JpaItitmcRepository jpaItitmcRepository;
 	private final JpaLsdpsmRepository jpaLsdpsmRepository;
 	private final JpaCmstgmRepository jpaCmstgmRepository;
+	private final JpaXmlTestRepository jpaXmlTestRepository;
 
 
 	private final JpaTbOrderMasterRepository tbOrderMasterRepository;
@@ -686,10 +689,12 @@ public class JpaStockService {
 	/**
 	 * 고도몰 goods_stock api로 재고숫자변경하는 함수
 	 */
-	public GoodsStockXml godoGoodsStock(String goodsNo, String optionFl, Long totalStock){
-		GoodsStockXml goodsStockXml = new GoodsStockXml(goodsNo, optionFl, totalStock);
-		return goodsStockXml;
+	public String godoGoodsStock(String goodsNo, String optionFl, Long totalStock){
+		XmlTest x = jpaXmlTestRepository.findById("0").orElseGet(()->null);
+//		GoodsStockXml goodsStockXml = new GoodsStockXml(goodsNo, optionFl, totalStock);
+//		return goodsStockXml;
 //		return this.makeGoodsStockXml(goodsStockXml,null);
+		return x.getXml();
 	}
 
 	private String makeGoodsStockXml(GoodsStockXml goodsStockXml, String assortId){
