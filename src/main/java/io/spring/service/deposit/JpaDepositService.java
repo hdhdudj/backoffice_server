@@ -893,7 +893,7 @@ public class JpaDepositService {
                         (deposit.getAssortId(), deposit.getItemId(), storageId, StringFactory.getStrEleven(), purchaseDt); // dealtypeCd = '01'인 애들(주문)
         if(ititmt == null){
 //            ititmt = new Ititmt(purchaseDt, storageId, deposit);
-            log.debug("There is no proper ititmt. Check data.");
+            log.debug("There is no proper ititmt. Check data. assortId : " + deposit.getAssortId() + ", itemId : " + deposit.getItemId());
 
 			// throw new Exception();
 			// throw new RuntimeException(e);
