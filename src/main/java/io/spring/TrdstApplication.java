@@ -44,11 +44,15 @@ public class TrdstApplication {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
-						.allowedOrigins("http://localhost:3000", "https://erp.trdst.com", "https://terp.trdst.com",
-								"http://www.trdst.com", "https://www.trdst.com", "http://m.trdst.com",
-								"https://m.trdst.com", "https://trdst.com", "http://trdst.com", "http://erp.trdst.com",
-								"http://terp.trdst.com")
-						.allowCredentials(true).allowedMethods("HEAD", "GET",
+				// .allowedOrigins("http://localhost:3000", "https://erp.trdst.com",
+				// "https://terp.trdst.com",
+//								"http://www.trdst.com", "https://www.trdst.com", "http://m.trdst.com",
+				// "https://m.trdst.com", "https://trdst.com", "http://trdst.com",
+				// "http://erp.trdst.com",
+				// "http://terp.trdst.com")
+//						.allowCredentials(true)
+						.allowedOrigins("*").allowCredentials(false)
+						.allowedMethods("HEAD", "GET",
 						"PUT", "POST", "DELETE", "PATCH");
 			}
 		};
