@@ -43,10 +43,13 @@ public class JpaRefreshTokenService {
 	}
 
 	public RefreshToken verifyExpiration(RefreshToken token) {
-		long minusMs = 1800000;
+		// long minusMs = 1800000;
+		long minusMs = 120000;
 
 		System.out.println("verifyExpiration");
+		System.out.println(Instant.now());
 		System.out.println(token.getExpiryDate().minusMillis(minusMs));
+		System.out.println(token.getExpiryDate().minusMillis(minusMs).compareTo(Instant.now()));
 
 		if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
 			System.out.println("verifyExpiration11");

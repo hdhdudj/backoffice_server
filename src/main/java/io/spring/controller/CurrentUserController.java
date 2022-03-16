@@ -1,9 +1,13 @@
 package io.spring.controller;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 
@@ -44,10 +48,53 @@ public class CurrentUserController {
 
     @GetMapping
     public ResponseEntity currentUser(@AuthenticationPrincipal User currentUser,
-                                      @RequestHeader(value = "Authorization") String authorization) {
+			@RequestHeader(value = "Authorization") String authorization, HttpServletRequest req,
+			HttpServletResponse res) {
+
+		Cookie[] c = req.getCookies();
+
+		if (c.length > 0) {
+			System.out.println("쿠키있음");
+			for (Cookie o : c) {
+				System.out.println(o.getName());
+				System.out.println(o.getValue());
+
+			}
+
+		} else {
+			System.out.println("쿠키없음");
+		}
+
+		/*
+		 * if (cookie != null) { System.out.println("쿠키있음"); System.out.println(cookie);
+		 * } else { System.out.println("쿠키없음"); }
+		 */
+
+		if (currentUser == null) {
+			System.out.println("사용자 없음");
+		} else {
+			System.out.println(currentUser);
+		}
+
         UserData userData = userQueryService.findById(currentUser.getId()).get();
         //
         
+		LocalDate now = LocalDate.now();
+
+		// create a cookie
+		Cookie cookie1 = new Cookie("aaa11", "bbb11-" + now.toString());
+
+		// expires in 7 days
+		cookie1.setMaxAge(1 * 24 * 60 * 60);
+
+		// optional properties
+		cookie1.setSecure(true);
+		cookie1.setHttpOnly(true);
+		cookie1.setPath("/");
+
+		// add cookie to response
+		res.addCookie(cookie1);
+
         return ResponseEntity.ok(userResponse(
 				new UserWithToken(userData, authorization.split(" ")[1], "")
         ));

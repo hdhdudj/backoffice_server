@@ -57,9 +57,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 			ip = request.getRemoteAddr();
 		}
 
-		System.out.println(token1);
-		System.out.println(url1);
-		System.out.println(ip);
 		
 		log.debug("---------------------------- call -------------------------------//--");
 		log.debug(token1);
@@ -68,8 +65,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
 
         getTokenString(request.getHeader(header)).ifPresent(token -> {
+
             jwtService.getSubFromToken(token).ifPresent(id -> {
+
                 if (SecurityContextHolder.getContext().getAuthentication() == null) {
+
                     userRepository.findById(id).ifPresent(user -> {
 
 
