@@ -80,17 +80,25 @@ public class FileController {
 			}
 
 			// System.out.println("godoImage");
+			String changeString = "";
+			try {
+				InputStream input = new URL(url).openStream();
 
-			InputStream input = new URL(url).openStream();
+				byte[] fileContent = IOUtils.toByteArray(input);// FileUtils.readFileToByteArray(new File(filePath));
 
-			byte[] fileContent = IOUtils.toByteArray(input);// FileUtils.readFileToByteArray(new File(filePath));
+				input.close();
 
-			input.close();
+				String encodedString = Base64.getEncoder().encodeToString(fileContent);
+				String fileExtName = url.substring(url.lastIndexOf(".") + 1);
 
-			String encodedString = Base64.getEncoder().encodeToString(fileContent);
-			String fileExtName = url.substring(url.lastIndexOf(".") + 1);
 
-			String changeString = "data:image/" + fileExtName + ";base64, " + encodedString;
+				if (encodedString.length() > 0 && encodedString != null) {
+					changeString = "data:image/" + fileExtName + ";base64, " + encodedString;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				changeString = "";
+			}
 
 
 			ret.add(changeString);
