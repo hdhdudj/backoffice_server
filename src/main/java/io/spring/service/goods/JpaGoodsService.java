@@ -1160,7 +1160,7 @@ public class JpaGoodsService {
     }
 
 	public GetStockListResponseData getStockList(String storageId, String purchaseVendorId, String assortId,
-			String assortNm) {
+			String assortNm, String channelGoodsNo) {
 
 		System.out.println("getGoodsList");
 		List<Ititmc> ititmcList = jpaStockService.getItitmc(storageId, purchaseVendorId, assortId, assortNm);
@@ -1168,20 +1168,34 @@ public class JpaGoodsService {
 		GetStockListResponseData ret = new GetStockListResponseData(storageId, purchaseVendorId, assortId, assortNm);
 		for (Ititmc ititmc : ititmcList) {
 
-			GetStockListResponseData.Goods goods = new GetStockListResponseData.Goods(ititmc);
-//	          Itasrt itasrt = ititmc.getItasrt();
-//            IfBrand ifBrand = itasrt.getIfBrand();//jpaIfBrandRepository.findByChannelGbAndChannelBrandId(StringFactory.getGbOne(), itasrt.getBrandId()); // 채널은 01 하드코딩
+			Tmmapi tmmapi = jpaTmmapiRepository
+					.findByChannelGbAndAssortId(StringFactory.getGbOne(), ititmc.getAssortId()).orElseGet(() -> null);
+			
+			
+			if (channelGoodsNo != null && channelGoodsNo.length() > 1) {
 
-			// 주문관련 이동지시나 출고지시할떄 indicateqty 에 이미 적용이 되어있으므로 밑에 로직 삭제
+				if (tmmapi != null && tmmapi.getChannelGoodsNo().equals(channelGoodsNo)) {
+					GetStockListResponseData.Goods goods = new GetStockListResponseData.Goods(ititmc);
 
-//            List<TbOrderDetail> tbOrderDetailList = jpaTbOrderDetailRepository.findByAssortIdAndItemId(ititmc.getAssortId(),ititmc.getItemId())
-			// .stream().filter(x->x.getStatusCd().equals(StringFactory.getStrC01())).collect(Collectors.toList());
-			// long qtyOfC01 = tbOrderDetailList.size();
+					goods.setOrderQty(0L);
+					goods.setAvailableQty(goods.getAvailableQty());
+					goods.setChannelGoodsNo(tmmapi.getChannelGoodsNo());
+					goodsList.add(goods);
+				}
 
-			goods.setOrderQty(0L);
-			goods.setAvailableQty(goods.getAvailableQty());
+			} else {
+				GetStockListResponseData.Goods goods = new GetStockListResponseData.Goods(ititmc);
 
-			goodsList.add(goods);
+
+				goods.setOrderQty(0L);
+				goods.setAvailableQty(goods.getAvailableQty());
+
+				String channelGoodsNo1 = tmmapi == null ? null : tmmapi.getChannelGoodsNo();
+				goods.setChannelGoodsNo(channelGoodsNo1);
+				goodsList.add(goods);
+			}
+
+
 		}
 
 		ret.setGoods(goodsList);

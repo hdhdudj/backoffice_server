@@ -235,6 +235,7 @@
 			,aaa.buySupplyDiscount
 			,aaa.fullCatePathId fullCatePathId
 			,aaa.imagePath
+			,aaa.channelGoodsNo
 			from (
 			select
 			i.assort_id as assortId
@@ -260,10 +261,12 @@
 			 ,i.md_rrp mdRrp
 			 ,i.buy_supply_discount buySupplyDiscount
 			 ,f_categoryFullPathId(i.disp_category_id) fullCatePathId
+			 ,tm.channel_goods_no channelGoodsNo 
 		from itasrt i
 		LEFT JOIN if_brand ib ON i.brand_id = ib.brand_id
 		LEFT JOIN itcatg ic ON i.disp_category_id = ic.category_id
 		LEFT JOIN itaimg img ON i.assort_id = img.assort_id
+		LEFT JOIN tmmapi tm ON i.assort_id = tm.assort_id
 		,ititmm im
 			where 1=1
 			and i.assort_id = im.assort_id 
@@ -287,7 +290,13 @@
 			 <![CDATA[		
 					and ib.brand_id =#{brandId}
 			 ]]>
-			</if>			
+			</if>		
+			<if test='channelGoodsNo != null and channelGoodsNo.trim() != ""'>
+			 <![CDATA[		
+					and tm.channel_goods_no =#{channelGoodsNo}
+			 ]]>
+			</if>				
+				
 		 <![CDATA[		
 			) aaa
 			where 1=1

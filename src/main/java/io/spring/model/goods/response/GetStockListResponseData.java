@@ -77,6 +77,7 @@ public class GetStockListResponseData {
 		private Float cost;
 		private String rackNo;
 		private String itemGrade;
+		private String channelGoodsNo;
 
 	}
 }
