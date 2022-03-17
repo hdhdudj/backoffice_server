@@ -255,6 +255,7 @@ public class GoodsController {
 
 		GetStockListResponseData r = jpaGoodsService.getStockList(storageId, vendorId, assortId, assortNm,
 				channelGoodsNo);
+		//
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
 		return ResponseEntity.ok(res);
