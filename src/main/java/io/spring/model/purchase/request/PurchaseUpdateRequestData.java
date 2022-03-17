@@ -1,13 +1,15 @@
 package io.spring.model.purchase.request;
 
+import java.util.Date;
+import java.util.List;
+
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
 
 /**
  * 발주 -> 발주내역 화면에서 저장 버튼 눌렀을 때 reqeust DTO (발주내역 udpate 시)
@@ -27,6 +29,7 @@ public class PurchaseUpdateRequestData {
 	private String delivery; // DELIVERY
 	private String payment; // PAYMENT
 	private String carrier; // CARRIER
+	@NotNull(message = "userId는 필수 값입니다.")
 	private String userId; // userId
 	// 21-12-02 추가
 	private String memo;

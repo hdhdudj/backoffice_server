@@ -1,5 +1,9 @@
 package io.spring.model.deposit.request;
 
+import java.util.List;
+
+import javax.validation.constraints.NotNull;
+
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
 import io.spring.model.deposit.entity.Lsdpsd;
@@ -8,8 +12,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 /**
  * 입고 - 입고내역 : 입고 내역 DTO
@@ -29,6 +31,9 @@ public class DepositSelectDetailRequestData {
     private String depositNo;
     private String depositDt;
 	private String vendorId;
+
+	@NotNull(message = "userId는 필수 값입니다.")
+	private String userId;
 
     private List<Item> items;
 

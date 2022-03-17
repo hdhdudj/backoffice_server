@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
@@ -62,7 +61,7 @@ public class ShipIndicateSaveListResponseData {
 			TbOrderMaster tbOrderMaster = tbOrderDetail.getTbOrderMaster();
 			Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
 //			TbMember tbMember = tbOrderMaster.getTbMember();
-			this.orderDt = tbOrderDetail.getTbOrderMaster().getOrderDate();
+			this.orderDt = tbOrderDetail.getTbOrderMaster().getOrderDate().toString();
 			this.assortGb = itasrt.getAssortGb();
 			this.orderId = tbOrderDetail == null ? null : tbOrderDetail.getOrderId();
 			this.orderSeq = tbOrderDetail == null ? null : tbOrderDetail.getOrderSeq();
@@ -81,7 +80,9 @@ public class ShipIndicateSaveListResponseData {
 			this.assortGb = (String) map.get("assortGb");
 			this.orderId = (String) map.get("orderId");
 			this.orderSeq = (String) map.get("orderSeq");
-			this.orderDt = (LocalDateTime) map.get("orderDt");
+			LocalDateTime locTm = (LocalDateTime) map.get("orderDt");
+			String addLocTm = locTm.getSecond() == 0? ":00" : "";
+			this.orderDt = ((LocalDateTime) map.get("orderDt")).toString().replace('T', ' ') + addLocTm;
 			this.orderKey = (String) map.get("orderKey");
 			this.deliMethod = (String) map.get("deliMethod");
 			this.assortId = (String) map.get("assortId");
@@ -93,7 +94,12 @@ public class ShipIndicateSaveListResponseData {
 			this.shipId = (String) map.get("shipId");
 			this.shipSeq = (String) map.get("shipSeq");
 			this.storageId = (String) map.get("storageId");
-			this.receiptDt = map.get("receiptDt").toString();
+
+			LocalDateTime locRd = (LocalDateTime) map.get("receiptDt");
+			String addLocRd = locRd.getSecond() == 0 ? ":00" : "";
+
+			this.receiptDt = ((LocalDateTime) map.get("receiptDt")).toString().replace('T', ' ') + addLocRd;
+			// map.get("receiptDt").toString();
 
 			this.optionNm1 = (String) map.get("optionNm1");
 			this.optionNm2 = (String) map.get("optionNm2");
@@ -102,9 +108,9 @@ public class ShipIndicateSaveListResponseData {
 
 		}
 
-		@JsonSerialize(using = LocalDateTimeSerializer.class)
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-        private LocalDateTime orderDt;
+//		@JsonSerialize(using = LocalDateTimeSerializer.class)
+//        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        private String orderDt;
         private String orderId;
         private String orderSeq;
         private String orderKey;

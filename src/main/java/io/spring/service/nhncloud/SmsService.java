@@ -46,7 +46,7 @@ public class SmsService {
     @Value("${secretKey.sms}")
     private String secretKey;
 
-    public void sendSmsMessage(String body, TbOrderDetail tod){
+	public void sendSmsMessage(String body, TbOrderDetail tod, String userId) {
         String reqUrl = nhnCloudUrl + appKey + sms;
         TbOrderMaster tom = tod.getTbOrderMaster();
         TbMember tm = tom.getTbMember();
@@ -65,6 +65,8 @@ public class SmsService {
 
             if(res == 200){
                 SendMessageLog sl = new SendMessageLog(tod, tm, MessageType.sms);
+				sl.setRegId(userId);
+				sl.setUpdId(userId);
                 jpaSendMessageLogRepository.save(sl);
             }
             else {

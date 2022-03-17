@@ -2,6 +2,8 @@ package io.spring.model.order.request;
 
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +16,7 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class CancelOrderRequestData {
 
-
+	@NotNull(message = "userId는 필수 값입니다.")
 	private String userId;
 	private List<Item> items;
 

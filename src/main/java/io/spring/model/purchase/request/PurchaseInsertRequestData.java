@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -78,7 +80,6 @@ public class PurchaseInsertRequestData {
     private Float localDeliFee;
     private Float newLocalDeliFee;
     private Float localTax;
-    private Float newLocalTax;
     private Float disPrice;
     private Float newDisPrice;
     private String purchaseGb;
@@ -135,6 +136,7 @@ public class PurchaseInsertRequestData {
     private Float stockAmt;
 
     // id 관련
+	@NotNull(message = "userId는 필수 값입니다.")
     private String userId;
 
     @Getter

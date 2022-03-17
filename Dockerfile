@@ -17,7 +17,7 @@ FROM openjdk:8-jdk-alpine
 COPY --from=builder /backoffice_server/build/libs/*.jar app.jar
 
 EXPOSE 8080
-ENTRYPOINT ["java","-Dlog4j2.formatMsgNoLookups=true","-jar","/app.jar","--spring.config.location=/config/application.properties,/config/kakaobizmessage.yml"]
+ENTRYPOINT ["java","-Djava.net.preferIPv4Stack=true","-Dlog4j2.formatMsgNoLookups=true","-jar","/app.jar","--spring.config.location=/config/application.properties,/config/kakaobizmessage.yml"]
 
 #FROM java:jre-alpine
 

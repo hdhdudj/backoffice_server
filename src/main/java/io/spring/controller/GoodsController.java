@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -86,7 +88,7 @@ public class GoodsController {
 	 * 상품 등록 및 수정
 	 */
 	@PostMapping(path = "/save")
-	public ResponseEntity saveGoodsJpa(@RequestBody GoodsInsertRequestData goodsInsertRequestData) {
+	public ResponseEntity saveGoodsJpa(@RequestBody @Valid GoodsInsertRequestData goodsInsertRequestData) {
 		log.debug("save(insert or update) goods by jpa");
 		System.out.println(goodsInsertRequestData.toString());
 

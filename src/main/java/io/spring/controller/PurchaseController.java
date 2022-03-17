@@ -1,10 +1,13 @@
 package io.spring.controller;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.validation.Valid;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.model.common.request.CommonRequestData;
+import io.spring.model.purchase.request.PrintDtRequestData;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import io.spring.model.purchase.request.PurchaseUpdateRequestData;
 import io.spring.model.purchase.response.PurchaseItemResponseData;
@@ -178,7 +183,7 @@ public class PurchaseController {
      * @return
      */
 	@PostMapping(path = "") // create 
-    public ResponseEntity savePurchaseJpa(@RequestBody PurchaseInsertRequestData purchaseInsertRequestData){
+	public ResponseEntity savePurchaseJpa(@RequestBody @Valid PurchaseInsertRequestData purchaseInsertRequestData) {
         log.debug("insert purchase by jpa");
 
 		String purchaseNo = jpaPurchaseService.createPurchaseSquence(null, purchaseInsertRequestData);
@@ -197,11 +202,13 @@ public class PurchaseController {
      * 발주사후 업데이트 : 마스터 부분, 디테일에선 발주가와 제작완료일자만
      */
     @PostMapping(path = "/{purchaseNo}/update") // update
-    public ResponseEntity savePurchaseJpa(@PathVariable("purchaseNo") String purchaseNo, @RequestBody PurchaseInsertRequestData purchaseInsertRequestData){
+	public ResponseEntity savePurchaseJpa(@PathVariable("purchaseNo") String purchaseNo,
+			@RequestBody @Valid PurchaseInsertRequestData purchaseInsertRequestData) {
         log.debug("update purchase by jpa");
 
+		String userId = purchaseInsertRequestData.getUserId();
 //        String purchaseNo2 = jpaPurchaseService.createPurchaseSquence(purchaseNo, purchaseInsertRequestData);
-        String purchaseNo2 = jpaPurchaseService.updatePurchaseSquence(purchaseNo, purchaseInsertRequestData);
+		String purchaseNo2 = jpaPurchaseService.updatePurchaseSquence(purchaseNo, purchaseInsertRequestData, userId);
 
         // jpaOrderService.updateStatusCd("O2106100714498480", "0001", "B02");
 
@@ -215,11 +222,23 @@ public class PurchaseController {
     /**
      * lspchm.printDt 저장을 위한 api
      */
+    
+    //20220307 rjb80 requestbody 추가
     @GetMapping(path = "/update/printdt") // update printDt
-    public ResponseEntity savePrintDt(@RequestParam String purchaseNo, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date printDt){
+	public ResponseEntity savePrintDt(@RequestBody PrintDtRequestData req) throws Exception {
         log.debug("update purchase.printdt by jpa");
 
-        String printDt2 = jpaPurchaseService.savePrintDt(purchaseNo, printDt);
+		String purchaseNo = req.getPurchaseNo();
+		String printDt = req.getPrintDt();
+		String userId = req.getUserId();
+		
+		SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+
+		Date toPrintDt = transFormat.parse(printDt);
+
+
+		String printDt2 = jpaPurchaseService.savePrintDt(purchaseNo, toPrintDt, userId);
 
         // jpaOrderService.updateStatusCd("O2106100714498480", "0001", "B02");
 
@@ -232,7 +251,7 @@ public class PurchaseController {
 
 	@PostMapping(path = "/{purchaseNo}")
 	public ResponseEntity updatePurchaseJpa(@PathVariable("purchaseNo") String purchaseNo,
-			@RequestBody PurchaseUpdateRequestData req) {
+			@RequestBody @Valid PurchaseUpdateRequestData req) {
         log.debug("insert or update purchase by jpa");
 
 //		req.setPurchaseNo(jpaCommonService.getStrNumberId(StringFactory.getCUpperStr(), req.getPurchaseNo(),
@@ -343,22 +362,31 @@ public class PurchaseController {
         return ResponseEntity.ok(res);
     }
 
+	// 20220307 rjb80 cancelPurchase requestbody 추가
+	// 사용안하는 api임
+	// 발주취소테스트용 api
 	@PostMapping(path = "/orders/{orderId}/{orderSeq}/cancel") // 취소처리
 	public ResponseEntity cancelPurchase(@PathVariable("orderId") String orderId,
 			@PathVariable("orderSeq") String orderSeq
-	// ,@RequestBody PurchaseCancelRequestData purchaseCancelRequestData
+			, @RequestBody CommonRequestData req
 	) {
+
 		log.debug("cancelPurchase");
 
-		HashMap<String, Object> p = new HashMap<String, Object>();
+		// 20220307 rjb80 테스트용 코드라서 주석처리 시작
+//		String userId = req.getUserId();
+//
+//		HashMap<String, Object> p = new HashMap<String, Object>();
+//
+//		p.put("orderId", "O00043303");
+//
+//		p.put("orderSeq", "0001");
+//		p.put("cancelGb", "00");
+//		p.put("cancelMsg", "etc");
+//
+//		jpaPurchaseService.cancelOrderPurchase(p, userId);
 
-		p.put("orderId", "O00043303");
-
-		p.put("orderSeq", "0001");
-		p.put("cancelGb", "00");
-		p.put("cancelMsg", "etc");
-
-		jpaPurchaseService.cancelOrderPurchase(p);
+		// 20220307 rjb80 테스트용 코드라서 주석처리 끝
 
 		// String purchaseNo2 = jpaPurchaseService.createPurchaseSquence(purchaseNo,
 		// purchaseInsertRequestData);
@@ -366,7 +394,7 @@ public class PurchaseController {
 		// jpaOrderService.updateStatusCd("O2106100714498480", "0001", "B02");
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
-				"");
+				"테스트api 처리안됨!!!!!");
 		if (res == null) {
 			return null;
 		}
