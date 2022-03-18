@@ -96,6 +96,7 @@ public class DepositEtcItemListResponseData {
 			private String storageId;
 			private String rackNo;
 			private String depositGb;
+			private String channelGoodsNo;
 	}
 
 }
