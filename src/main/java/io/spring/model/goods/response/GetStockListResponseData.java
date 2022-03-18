@@ -1,5 +1,8 @@
 package io.spring.model.goods.response;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 
 import io.spring.infrastructure.util.Utilities;
@@ -56,6 +59,41 @@ public class GetStockListResponseData {
 			this.brandNm = ititmc.getItasrt().getItbrnd() == null ? "" : ititmc.getItasrt().getItbrnd().getBrandNm();
 
 			this.itemGrade = ititmc.getItemGrade();
+
+		}
+
+		public Goods(HashMap<String, Object> o) {
+			this.storageId = o.get("storageId") == null ? null : o.get("storageId").toString();
+			this.rackNo = o.get("rackNo") == null ? null : o.get("rackNo").toString();
+			this.assortId = o.get("assortId") == null ? null : o.get("assortId").toString();
+			this.itemId = o.get("itemId") == null ? null : o.get("itemId").toString();
+			this.assortNm = o.get("assortNm") == null ? null : o.get("assortNm").toString();
+			this.channelId = o.get("channelId") == null ? null : o.get("channelId").toString();
+			this.goodsKey = o.get("goodsKey") == null ? null : o.get("goodsKey").toString();
+			
+			// LocalDateTime esdt = (LocalDateTime) o.get("effStaDt");
+			
+			this.effStaDt = o.get("effStaDt") == null ? null
+					: Utilities.removeTAndTransToStr((LocalDateTime) o.get("effStaDt"));
+//	            this.brandNm = itasrt.getIfBrand().getBrandNm(); 바깥에서 set
+			this.qty = o.get("qty") == null ? null : Long.valueOf((Integer) o.get("qty"));
+
+
+			this.availableQty = o.get("availableQty") == null ? null : (Long) o.get("availableQty");
+
+			this.cost = o.get("cost") == null ? null : ((BigDecimal) o.get("cost")).floatValue();
+
+//			this.cost = (float) o.get("cost");
+//	            this.storeCd = storeCd; // 바깥에서 set
+			this.moveQty = 0l;
+
+			this.optionNm1 = o.get("optionNm1") == null ? null : o.get("optionNm1").toString();
+			this.optionNm2 = o.get("optionNm2") == null ? null : o.get("optionNm2").toString();
+			this.optionNm3 = o.get("optionNm3") == null ? null : o.get("optionNm3").toString();
+
+			this.brandNm = o.get("brandNm") == null ? null : o.get("brandNm").toString();
+			this.itemGrade = o.get("itemGrade") == null ? null : o.get("itemGrade").toString();
+			this.channelGoodsNo = o.get("channelGoodsNo") == null ? null : o.get("channelGoodsNo").toString();
 
 		}
 
