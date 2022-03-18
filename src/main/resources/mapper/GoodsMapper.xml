@@ -252,7 +252,7 @@
 				</if>	
 					 			<if test='assortId != null and assortId.trim() != ""'>
 			 <![CDATA[		
-				and aa.assortId =  #{assortId} 
+				and aa.assort_Id =  #{assortId} 
 			 ]]>
 				</if>	
 			<if test='assortNm != null and assortNm.trim() != ""'>
