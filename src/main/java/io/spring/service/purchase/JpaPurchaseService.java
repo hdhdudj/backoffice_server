@@ -177,6 +177,11 @@ public class JpaPurchaseService {
 		lspchm.setUpdId(userId);
 
         jpaLspchmRepository.save(lspchm);
+        Date effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
+        Lspchs lspchs = jpaLspchsRepository.findByPurchaseNoAndEffEndDt(purchaseNo, Utilities.dateToLocalDateTime(effEndDt));
+        lspchs.setUpdId(purchaseInsertRequestData.getUserId());
+        this.updateLspchs(lspchs, lspchm.getPurchaseNo(), purchaseInsertRequestData.getPurchaseStatus(),
+                userId);
         for(PurchaseInsertRequestData.Items i : purchaseInsertRequestData.getItems()){
             Lspchd l = lspchdList.stream().filter(x->x.getPurchaseSeq().equals(i.getPurchaseSeq())).collect(Collectors.toList()).get(0);
             l.setPurchaseUnitAmt(i.getPurchaseUnitAmt());
