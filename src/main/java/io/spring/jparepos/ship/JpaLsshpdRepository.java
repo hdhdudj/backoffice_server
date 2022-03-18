@@ -141,7 +141,8 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
             "where case :shipStatus when '04' then lm.applyDay else lm.receiptDt end between :start and :end " +
             "and lm.masterShipGb in ('03', '04') " +
             "and lm.shipStatus=:shipStatus " +
-            "and td.statusCd = :statusCd " +
+            "and (td.statusCd = case lm.shipOrderGb when '01' then :statusCd end " +
+            "or td.statusCd is null) " +
             "and (:shipId is null or trim(:shipId)='' or ld.shipId=:shipId) " +
             "and (:assortId is null or trim(:assortId)='' or ld.assortId=:assortId) " +
             "and (:assortNm is null or trim(:assortNm)='' or it.assortNm like concat('%',:assortNm,'%')) " +
