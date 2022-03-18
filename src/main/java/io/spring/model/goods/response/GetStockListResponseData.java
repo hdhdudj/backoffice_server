@@ -76,7 +76,7 @@ public class GetStockListResponseData {
 			this.effStaDt = o.get("effStaDt") == null ? null
 					: Utilities.removeTAndTransToStr((LocalDateTime) o.get("effStaDt"));
 //	            this.brandNm = itasrt.getIfBrand().getBrandNm(); 바깥에서 set
-			this.qty = o.get("qty") == null ? null : Long.valueOf((Integer) o.get("qty"));
+			this.qty = o.get("qty") == null ? null : (Long) o.get("qty");
 
 
 			this.availableQty = o.get("availableQty") == null ? null : (Long) o.get("availableQty");
