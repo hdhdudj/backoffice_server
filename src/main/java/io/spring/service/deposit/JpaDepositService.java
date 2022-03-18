@@ -27,6 +27,7 @@ import io.spring.jparepos.deposit.JpaLsdpssRepository;
 import io.spring.jparepos.goods.JpaItasrtRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
 import io.spring.jparepos.goods.JpaItitmtRepository;
+import io.spring.jparepos.goods.JpaTmmapiRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.purchase.JpaLspchdRepository;
 import io.spring.model.deposit.entity.Lsdpds;
@@ -45,6 +46,7 @@ import io.spring.model.deposit.response.DepositSelectListResponseData;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.Ititmt;
+import io.spring.model.goods.entity.Tmmapi;
 import io.spring.model.goods.idclass.ItitmtId;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.entity.Lspchd;
@@ -76,6 +78,7 @@ public class JpaDepositService {
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
 
+	private final JpaTmmapiRepository jpaTmmapiRepository;
 
     private final JpaPurchaseService jpaPurchaseService;
 	private final JpaMoveService jpaMoveService;
@@ -1112,7 +1115,15 @@ public class JpaDepositService {
 		List<DepositEtcItemResponseData.Item> items = new ArrayList<>();
 
 		for (Lsdpsd o : l) {
+
+			Tmmapi tmmapi = jpaTmmapiRepository.findByChannelGbAndAssortId(StringFactory.getGbOne(), o.getAssortId())
+					.orElseGet(() -> null);
+
 			DepositEtcItemResponseData.Item item = new DepositEtcItemResponseData.Item(o);
+
+			String channelGoodsNo = tmmapi == null ? null : tmmapi.getChannelGoodsNo();
+
+			item.setChannelGoodsNo(channelGoodsNo);
 
 			items.add(item);
 		}
@@ -1138,7 +1149,16 @@ public class JpaDepositService {
 				assortNm, depositNo, depositGb, storageId);
 
 		for (Lsdpsd o : l) {
+
+			Tmmapi tmmapi = jpaTmmapiRepository.findByChannelGbAndAssortId(StringFactory.getGbOne(), o.getAssortId())
+					.orElseGet(() -> null);
+
 			DepositEtcItemListResponseData.Item item = new DepositEtcItemListResponseData.Item(o);
+
+			String channelGoodsNo = tmmapi == null ? null : tmmapi.getChannelGoodsNo();
+
+			item.setChannelGoodsNo(channelGoodsNo);
+
 			items.add(item);
 		}
 

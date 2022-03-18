@@ -186,7 +186,8 @@ public class GoodsController {
 	@GetMapping(path = "/items/detail")
 	public ResponseEntity getGoodsItemWithCategory(@RequestParam(required = false) String assortId,
 			@RequestParam(required = false) String assortNm, @RequestParam(required = false) String vendorId,
-			@RequestParam(required = false) String brandId, @RequestParam(required = false) String category) {
+			@RequestParam(required = false) String brandId, @RequestParam(required = false) String category,
+			@RequestParam(required = false) String channelGoodsNo) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 
 		if (assortId != null) {
@@ -207,6 +208,10 @@ public class GoodsController {
 
 		if (category != null) {
 			param.put("category", category);
+		}
+
+		if (channelGoodsNo != null) {
+			param.put("channelGoodsNo", channelGoodsNo);
 		}
 
 		List<HashMap<String, Object>> responseData = goodsRepository.getGoodsItemListWithCategory(param);
@@ -246,9 +251,11 @@ public class GoodsController {
 	@GetMapping(path = "/stock/storage/{storageId}")
 	public ResponseEntity getStockList(@PathVariable("storageId") String storageId,
 			@RequestParam @Nullable String vendorId, @RequestParam @Nullable String assortId,
-			@RequestParam @Nullable String assortNm) {
+			@RequestParam @Nullable String assortNm, @RequestParam @Nullable String channelGoodsNo) {
 
-		GetStockListResponseData r = jpaGoodsService.getStockList(storageId, vendorId, assortId, assortNm);
+		GetStockListResponseData r = jpaGoodsService.getStockList(storageId, vendorId, assortId, assortNm,
+				channelGoodsNo);
+		//
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
 		return ResponseEntity.ok(res);
