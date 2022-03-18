@@ -33,6 +33,7 @@ import io.spring.model.goods.response.GoodsSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.common.MyBatisCommonService;
 import io.spring.service.goods.JpaGoodsService;
+import io.spring.service.goods.MyBatisGoodsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,6 +47,8 @@ public class GoodsController {
 	private final JpaGoodsService jpaGoodsService;
 	private final JpaCommonService jpaCommonService;
 	private final MyBatisCommonService myBatisCommonService;
+
+	private final MyBatisGoodsService myBatisGoodsService;
 
 
 
@@ -253,9 +256,36 @@ public class GoodsController {
 			@RequestParam @Nullable String vendorId, @RequestParam @Nullable String assortId,
 			@RequestParam @Nullable String assortNm, @RequestParam @Nullable String channelGoodsNo) {
 
-		GetStockListResponseData r = jpaGoodsService.getStockList(storageId, vendorId, assortId, assortNm,
-				channelGoodsNo);
+		HashMap<String, Object> map = new HashMap<>();
+
+		if (storageId != null && !storageId.equals("")) {
+			map.put("storageId", storageId);
+		}
+		if (assortId != null && !assortId.equals("")) {
+			map.put("assortId", assortId);
+		}
+
+		if (vendorId != null && !vendorId.equals("")) {
+			map.put("vendorId", vendorId);
+		}
+
+		if (assortNm != null && !assortNm.equals("")) {
+			map.put("assortNm", assortNm);
+		}
+
+		if (channelGoodsNo != null && !channelGoodsNo.equals("")) {
+			map.put("channelGoodsNo", channelGoodsNo);
+		}
+
+		GetStockListResponseData r = myBatisGoodsService.getItitmc(map);
+
+		// List<HashMap<String, Object>> responseData = goodsRepository.getItitmc(map);
+
+		// GetStockListResponseData r = jpaGoodsService.getStockList(storageId,
+		// vendorId, assortId, assortNm,
+		// channelGoodsNo);
 		//
+
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
 		return ResponseEntity.ok(res);
