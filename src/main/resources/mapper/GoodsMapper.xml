@@ -216,7 +216,7 @@
 			select 
 			bb.up_storage_id storageId
 			,aa.storage_id rackNo
-			,aa.eff_end_dt effStaDt
+			,aa.eff_sta_dt effStaDt
 			,aa.assort_id assortId
 			,aa.item_id itemId
 			,concat(aa.assort_id,'-',aa.item_id) goodsKey
