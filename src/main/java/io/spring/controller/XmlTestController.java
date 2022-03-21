@@ -31,12 +31,13 @@ public class XmlTestController {
 
     @GetMapping("/godo/goods/stock")
     @ResponseBody
-    public String godoGoodsStock(@RequestParam("assortId") String assortId){
-        XmlTest xmlTest = jpaXmlTestRepository.findById(assortId).orElseGet(() -> null);
-        String xml = null;
-        if(xmlTest != null){
-            xml = xmlTest.getXml();
-        }
-        return xml;
+    public GoodsStockXml godoGoodsStock(@RequestParam("goodsNo") String goodsNo,@RequestParam("optionFl") String optionFl,@RequestParam("totalStock") Long totalStock){
+//        XmlTest xmlTest = jpaXmlTestRepository.findById(assortId).orElseGet(() -> null);
+        GoodsStockXml g = new GoodsStockXml(goodsNo, optionFl, totalStock);
+//        String xml = null;
+//        if(xmlTest != null){
+//            xml = xmlTest.getXml();
+//        }
+        return g;
     }
 }
