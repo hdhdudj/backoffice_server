@@ -46,6 +46,7 @@ where b2.assort_id=tod.assort_id
   and  b2.variation_seq3=b1.seq) optionNm3
   ,lm.storage_id storageId
   ,ld.rack_no rackNo
+  ,(select tm.channel_goods_no from tmmapi tm where tm.assort_id = ld.assort_id and tm.channel_gb='01' ) channelGoodsNo
 from lsshpm lm
 ,lsshpd ld
 ,itasrt it

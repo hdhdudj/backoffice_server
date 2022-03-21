@@ -105,6 +105,7 @@ public class ShipIndicateSaveListResponseData {
 			this.optionNm2 = (String) map.get("optionNm2");
 			this.optionNm3 = (String) map.get("optionNm3");
 			this.rackNo = (String) map.get("rackNo");
+			this.channelGoodsNo = map.get("channelGoodsNo") == null ? null : map.get("channelGoodsNo").toString();
 
 		}
 
@@ -130,5 +131,6 @@ public class ShipIndicateSaveListResponseData {
 		private String storageId;
 		private String receiptDt;
 		private String rackNo;
+		private String channelGoodsNo;
     }
 }
