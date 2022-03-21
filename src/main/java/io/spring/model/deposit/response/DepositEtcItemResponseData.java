@@ -87,6 +87,7 @@ public class DepositEtcItemResponseData {
 		private Float extraUnitcost;
 		private String rackNo;
 		private String effStaDt;
+		private String channelGoodsNo;
 
 	}
 

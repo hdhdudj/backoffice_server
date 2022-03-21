@@ -31,4 +31,7 @@ public interface GoodsMapper {
 	List<HashMap<String, Object>> getGoodsItemListWithCategory(HashMap<String, Object> param);
 
 	List<HashMap<String, Object>> getGoodsStockList(HashMap<String, Object> param);
+
+	List<HashMap<String, Object>> getItitmc(HashMap<String, Object> param);
+
 }

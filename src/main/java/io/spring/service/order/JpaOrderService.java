@@ -265,7 +265,6 @@ public class JpaOrderService {
         // 1. 해외재고 있을 가능성이 있음
         if(sumOfDomQty - sumOfDomShipIndQty - tbOrderDetail.getQty() >= 0){
 			// isStockExist = this.loopItitmc(domItitmc, tbOrderDetail); //20211217
-
 			// 국내재고 있는경우 랙에서 지시수량 차감 ,창고에서 지시수량 차감
 			Ititmc im = jpaStockService.checkStockWhenDirect(goodsStorageId, assortId, itemId, tbOrderDetail.getQty(),
 					userId);
@@ -275,7 +274,6 @@ public class JpaOrderService {
 				this.makeShipDataByDeposit(im, tbOrderDetail, StringFactory.getGbOne(), userId); // 01 (출고지시) 하드코딩
 			}
 
-			
 			// 재고처리가 제대로 되었다면 주문상태 업데이트
 			statusCd = im != null ? StringFactory.getStrC04() : statusCd; // 국내입고완료(해외지만 거기서 바로 쏘므로) : C04
 			// this.getLsdpsdListByGoodsInfo(tbOrderDetail).get(0); // 숫자 맞는 상품입고와 그 입고에 연결된
@@ -925,7 +923,6 @@ public class JpaOrderService {
     private enum ItitmtQty{
         TEMPQTY, TEMPINDQTY
     }
-
 
 	public void testSms(String body, String tbOrderNo, String userId) {
         TbOrderDetail td = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(tbOrderNo, "0001");
