@@ -35,7 +35,7 @@ public class GoodsStockXml {
 //            this.stockOptionData[0] = new StockOptionData("a");
         }
         @XmlAttribute(name="idx")
-        int idx=1;
+        int idx;
         private String goodsNo;
         private String optionFl;
         private Long totalStock;

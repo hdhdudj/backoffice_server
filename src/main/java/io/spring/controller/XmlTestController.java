@@ -7,6 +7,7 @@ import io.spring.service.stock.JpaStockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -29,7 +30,7 @@ public class XmlTestController {
     }
 
 
-    @GetMapping("/godo/goods/stock")
+    @GetMapping(value = "/godo/goods/stock", produces = MediaType.APPLICATION_ATOM_XML_VALUE)
     @ResponseBody
     public GoodsStockXml godoGoodsStock(@RequestParam("goodsNo") String goodsNo,@RequestParam("optionFl") String optionFl,@RequestParam("totalStock") Long totalStock){
 //        XmlTest xmlTest = jpaXmlTestRepository.findById(assortId).orElseGet(() -> null);
