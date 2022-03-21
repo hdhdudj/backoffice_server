@@ -266,16 +266,22 @@ public class JpaOrderService {
         if(sumOfDomQty - sumOfDomShipIndQty - tbOrderDetail.getQty() >= 0){
 			// isStockExist = this.loopItitmc(domItitmc, tbOrderDetail); //20211217
 			// 국내재고 있는경우 랙에서 지시수량 차감 ,창고에서 지시수량 차감
-			Ititmc im = jpaStockService.checkStockWhenDirect(goodsStorageId, assortId, itemId, tbOrderDetail.getQty(),
+			HashMap<String, Object> r = jpaStockService.checkStockWhenDirect(goodsStorageId, assortId, itemId,
+					tbOrderDetail.getQty(),
 					userId);
 
+			Ititmc im_store = (Ititmc) r.get("store");
+			Ititmc im_rack = (Ititmc) r.get("rack");
+
 			// 지시수량 차감처리가 되었다면 출고지시데이타 생성
-			if (im != null) {
-				this.makeShipDataByDeposit(im, tbOrderDetail, StringFactory.getGbOne(), userId); // 01 (출고지시) 하드코딩
+			if (im_rack != null) {
+				this.makeShipDataByDeposit(im_store, tbOrderDetail, StringFactory.getGbOne(), userId, im_rack); // 01
+																												// (출고지시)
+																												// 하드코딩
 			}
 
 			// 재고처리가 제대로 되었다면 주문상태 업데이트
-			statusCd = im != null ? StringFactory.getStrC04() : statusCd; // 국내입고완료(해외지만 거기서 바로 쏘므로) : C04
+			statusCd = im_rack != null ? StringFactory.getStrC04() : statusCd; // 국내입고완료(해외지만 거기서 바로 쏘므로) : C04
 			// this.getLsdpsdListByGoodsInfo(tbOrderDetail).get(0); // 숫자 맞는 상품입고와 그 입고에 연결된
 			// 상품발주에 orderId와 orderSeq 적어넣기
 		}
@@ -413,16 +419,20 @@ public class JpaOrderService {
         // 1. 국내재고가 있을 가능성이 있음
         if(sumOfDomQty - sumOfDomShipIndQty - tbOrderDetail.getQty() >= 0){
 
-			Ititmc im = jpaStockService.checkStockWhenImport(domesticStorageId, assortId, itemId,
+		HashMap<String,Object> r= jpaStockService.checkStockWhenImport(domesticStorageId, assortId, itemId,
 					tbOrderDetail.getQty(), userId);
 
+		Ititmc im_store = (Ititmc) r.get("store");
+		Ititmc im_rack = (Ititmc) r.get("rack");
+		
 			// 지시수량 차감처리가 되었다면 출고지시데이타 생성
-			if (im != null) {
-				this.makeDomesticShipDataByDeposit(im, tbOrderDetail, StringFactory.getGbOne(), userId); // 01 (출고지시)
+			if (im_rack != null) {
+				this.makeDomesticShipDataByDeposit(im_store, tbOrderDetail, StringFactory.getGbOne(), userId, im_rack); // 01
+																														// (출고지시)
 																											// 하드코딩
 			}
 
-			statusCd = im != null ? StringFactory.getStrC04() : statusCd;
+			statusCd = im_rack != null ? StringFactory.getStrC04() : statusCd;
 
 			// boolean isDomStockExist = this.loopItitmcByDomestic(domItitmc,
 			// tbOrderDetail);
@@ -437,15 +447,20 @@ public class JpaOrderService {
 
         if(statusCd == null && sumOfOvrsQty - sumOfOvrsShipIndQty - tbOrderDetail.getQty() >= 0){
 
-			Ititmc im = jpaStockService.checkStockWhenImport(overseaStorageId, assortId, itemId,
+			HashMap<String, Object> r = jpaStockService.checkStockWhenImport(overseaStorageId, assortId, itemId,
 					tbOrderDetail.getQty(), userId);
 
+			Ititmc im_store = (Ititmc) r.get("store");
+			Ititmc im_rack = (Ititmc) r.get("rack");
+
 			// 지시수량 차감처리가 되었다면 출고지시데이타 생성
-			if (im != null) {
-				this.makeMoveDataByDeposit(im, tbOrderDetail, StringFactory.getGbOne(), userId); // 01 (출고지시) 하드코딩
+			if (im_rack != null) {
+				this.makeMoveDataByDeposit(im_store, tbOrderDetail, StringFactory.getGbOne(), userId, im_rack); // 01
+																												// (출고지시)
+																												// 하드코딩
 			}
 
-			statusCd = im != null ? StringFactory.getStrC01() : statusCd;
+			statusCd = im_rack != null ? StringFactory.getStrC01() : statusCd;
 
 			// this.loopItitmcByMove(ovrsItitmc, tbOrderDetail);
 			// statusCd = StringFactory.getStrC01(); // 해외입고완료 : C01
@@ -607,7 +622,8 @@ public class JpaOrderService {
 	 * 출고 관련 값 update, 출고 관련 data 생성 함수 (lsshpm,d,s) ShipIndicateSaveData 객체로
 	 * lsshpm,s,d 생성
 	 */
-	private String makeMoveDataByDeposit(Ititmc ititmc, TbOrderDetail tbOrderDetail, String shipStatus, String userId) {
+	private String makeMoveDataByDeposit(Ititmc ititmc_store, TbOrderDetail tbOrderDetail, String shipStatus,
+			String userId, Ititmc ititmc_rack) {
 		String shipId = this.getShipId();
 
 		Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
@@ -641,11 +657,13 @@ public class JpaOrderService {
 		jpaLsshpmRepository.save(lsshpm);
 		// lsshpd 저장
 		String shipSeq = StringUtils.leftPad(Integer.toString(1), 4, '0'); // 0001 하드코딩
-		Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc, itasrt);
+		Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc_store, itasrt);
 //            lsshpd.setLocalPrice(tbOrderDetail.getLspchd());
 		lsshpd.setVendorDealCd(StringFactory.getGbOne()); // 01 : 주문, 02 : 상품, 03 : 입고예정
 		lsshpd.setShipIndicateQty(tbOrderDetail.getQty());
 		lsshpd.setShipGb("03"); // 주문이동지시
+
+		lsshpd.setRackNo(ititmc_rack.getStorageId());
 
 		lsshpd.setUpdId(userId);
 
@@ -657,7 +675,8 @@ public class JpaOrderService {
      * 출고 관련 값 update, 출고 관련 data 생성 함수 (lsshpm,d,s) ShipIndicateSaveData 객체로
      * lsshpm,s,d 생성
      */
-	private String makeShipDataByDeposit(Ititmc ititmc, TbOrderDetail tbOrderDetail, String shipStatus, String userId) {
+	private String makeShipDataByDeposit(Ititmc ititmc_store, TbOrderDetail tbOrderDetail, String shipStatus,
+			String userId, Ititmc ititmc_rack) {
         String shipId = this.getShipId();
 
         Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
@@ -690,13 +709,15 @@ public class JpaOrderService {
         jpaLsshpmRepository.save(lsshpm);
         // lsshpd 저장
         String shipSeq = StringUtils.leftPad(Integer.toString(1), 4, '0'); // 0001 하드코딩
-        Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc, itasrt);
+		Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc_store, itasrt);
 
 		lsshpd.setRegId(userId);
 //            lsshpd.setLocalPrice(tbOrderDetail.getLspchd());
         lsshpd.setVendorDealCd(StringFactory.getGbOne()); // 01 : 주문, 02 : 상품, 03 : 입고예정
         lsshpd.setShipIndicateQty(tbOrderDetail.getQty());
         lsshpd.setShipGb("01"); // 주문출고지시
+
+		lsshpd.setRackNo(ititmc_rack.getStorageId());
 
 		lsshpd.setUpdId(userId);
 
@@ -708,8 +729,8 @@ public class JpaOrderService {
 	 * 출고 관련 값 update, 출고 관련 data 생성 함수 (lsshpm,d,s) ShipIndicateSaveData 객체로
 	 * lsshpm,s,d 생성
 	 */
-	private String makeDomesticShipDataByDeposit(Ititmc ititmc, TbOrderDetail tbOrderDetail, String shipStatus,
-			String userId) {
+	private String makeDomesticShipDataByDeposit(Ititmc ititmc_store, TbOrderDetail tbOrderDetail, String shipStatus,
+			String userId, Ititmc ititmc_rack) {
 		String shipId = this.getShipId();
 
 		Itasrt itasrt = tbOrderDetail.getItitmm().getItasrt();
@@ -742,10 +763,11 @@ public class JpaOrderService {
 		jpaLsshpmRepository.save(lsshpm);
 		// lsshpd 저장
 		String shipSeq = StringUtils.leftPad(Integer.toString(1), 4, '0'); // 0001 하드코딩
-		Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc, itasrt);
+		Lsshpd lsshpd = new Lsshpd(shipId, shipSeq, tbOrderDetail, ititmc_store, itasrt);
 
 		lsshpd.setRegId(userId);
 
+		lsshpd.setRackNo(ititmc_rack.getStorageId());
 //            lsshpd.setLocalPrice(tbOrderDetail.getLspchd());
 		lsshpd.setVendorDealCd(StringFactory.getGbOne()); // 01 : 주문, 02 : 상품, 03 : 입고예정
 		lsshpd.setShipIndicateQty(tbOrderDetail.getQty());

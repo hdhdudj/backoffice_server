@@ -10,9 +10,6 @@ import javax.persistence.Query;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
-import io.spring.jparepos.goods.JpaXmlTestRepository;
-import io.spring.model.goods.entity.XmlTest;
-import io.spring.model.stock.request.GoodsStockXml;
 import org.springframework.stereotype.Service;
 
 import io.spring.jparepos.common.JpaCmstgmRepository;
@@ -21,6 +18,7 @@ import io.spring.jparepos.deposit.JpaLsdpsmRepository;
 import io.spring.jparepos.deposit.JpaLsdpspRepository;
 import io.spring.jparepos.goods.JpaItasrtRepository;
 import io.spring.jparepos.goods.JpaItitmcRepository;
+import io.spring.jparepos.goods.JpaXmlTestRepository;
 import io.spring.jparepos.order.JpaTbOrderDetailRepository;
 import io.spring.jparepos.order.JpaTbOrderHistoryRepository;
 import io.spring.jparepos.order.JpaTbOrderMasterRepository;
@@ -31,7 +29,9 @@ import io.spring.jparepos.ship.JpaLsshpsRepository;
 import io.spring.model.common.entity.Cmstgm;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
+import io.spring.model.goods.entity.XmlTest;
 import io.spring.model.goods.idclass.ItitmcId;
+import io.spring.model.stock.request.GoodsStockXml;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.common.MyBatisCommonService;
 import lombok.RequiredArgsConstructor;
@@ -467,7 +467,8 @@ public class JpaStockService {
 
 	}	
 
-	public Ititmc checkStockWhenDirect(String storageId, String assortId, String itemId, Long orderQty, String userId) {
+	public HashMap<String, Object> checkStockWhenDirect(String storageId, String assortId, String itemId, Long orderQty,
+			String userId) {
 
 		System.out.println("checkStockWhenDirect");
 
@@ -538,11 +539,15 @@ public class JpaStockService {
 			throw new IllegalArgumentException("no stockQty check..");
 		}
 
+		HashMap<String, Object> r = new HashMap<String, Object>();
+		r.put("store", ititmc_store);
+		r.put("rack", ititmc);
 
-		return ititmc_store;
+		return r;
 	}
 
-	public Ititmc checkStockWhenImport(String storageId, String assortId, String itemId, Long orderQty, String userId) {
+	public HashMap<String, Object> checkStockWhenImport(String storageId, String assortId, String itemId, Long orderQty,
+			String userId) {
 
 		System.out.println("checkStockWhenImport");
 		System.out.println("storageId =>" + storageId);
@@ -591,8 +596,8 @@ public class JpaStockService {
 			// return null;
 		}
 
-		Ititmc ititmc_store = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffEndDt(assortId,
-				itemId, storageId, "11", ititmc.getEffEndDt());
+		Ititmc ititmc_store = jpaItitmcRepository.findByAssortIdAndItemIdAndStorageIdAndItemGradeAndEffStaDt(assortId,
+				itemId, storageId, "11", ititmc.getEffStaDt());
 
 		if (ititmc_store == null) {
 			log.debug("20302 store 출고지시수량이 주문수량보다 적음");
@@ -614,7 +619,11 @@ public class JpaStockService {
 			throw new IllegalArgumentException("no stockQty check..");
 		}
 
-		return ititmc_store;
+		HashMap<String, Object> r = new HashMap<String, Object>();
+		r.put("store", ititmc_store);
+		r.put("rack", ititmc);
+
+		return r;
 	}
 
 	public String getUpStorageId(String rackNo) {
