@@ -127,7 +127,7 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
                                   @Param("blNo") String blNo, @Param("statusArr") List<String> statusArr);
 
     /**
-     * 이동지시리스트
+     * 이동지시리스트 (이동처리 화면에서 조건 조회했을 때 결과 리스트)
      */
 	@Query("select ld from Lsshpd ld " +
             "join fetch ld.lsshpm lm " +
@@ -230,7 +230,7 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
     List<Lsshpd> findByShipIdWithItitmc(@Param("shipId") String shipId);
 
     /**
-     * 이동지시리스트 조회
+     * 이동지시리스트 조회 (이동지시리스트 화면에서 조회했을 때 리스트)
      */
     @Query("select distinct ld from Lsshpd ld " +
             "join fetch ld.lsshpm lm " +

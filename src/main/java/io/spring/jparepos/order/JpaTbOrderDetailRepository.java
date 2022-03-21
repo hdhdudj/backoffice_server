@@ -55,25 +55,25 @@ public interface JpaTbOrderDetailRepository extends JpaRepository<TbOrderDetail,
                                              @Param("statusCd") String statusCd
                                              );
 
-												@Query("select td from TbOrderDetail td "
-														+ "join fetch td.tbOrderMaster to "
-														+ "join fetch td.ititmm itm " + "join fetch itm.itasrt it "
-														+ "left join fetch it.itbrnd ib "
-														+ "left join fetch itm.itvari1 itv1 "
-														+ "left join fetch itm.itvari2 itv2 "
-														+ "left join fetch itm.itvari3 itv3 "
-														+ "left join fetch it.cmvdmr cm "
-														+ "left join fetch to.tbMemberAddress tma "
-														+ "where td.statusCd=:statusCd "
-														+ "and to.payDt > '2021-12-01 00:00:01'"
-														+ "and datediff(current_timestamp,to.payDt) > :waitCnt "
-														+ "and (:assortGb is null or trim(:assortGb)='' or it.assortGb=:assortGb) "
+	@Query("select td from TbOrderDetail td "
+			+ "join fetch td.tbOrderMaster to "
+			+ "join fetch td.ititmm itm " + "join fetch itm.itasrt it "
+			+ "left join fetch it.itbrnd ib "
+			+ "left join fetch itm.itvari1 itv1 "
+			+ "left join fetch itm.itvari2 itv2 "
+			+ "left join fetch itm.itvari3 itv3 "
+			+ "left join fetch it.cmvdmr cm "
+			+ "left join fetch to.tbMemberAddress tma "
+			+ "where td.statusCd=:statusCd "
+			+ "and to.payDt > '2021-12-01 00:00:01'"
+			+ "and datediff(current_timestamp,to.payDt) > :waitCnt "
+			+ "and (:assortGb is null or trim(:assortGb)='' or it.assortGb=:assortGb) "
 
-												)
-												List<TbOrderDetail> findOrderStatusWatingDay(
-														@Param("statusCd") String statusCd,
-														@Param("waitCnt") int waitCnt,
-														@Param("assortGb") String assortGb);
+	)
+	List<TbOrderDetail> findOrderStatusWatingDay(
+			@Param("statusCd") String statusCd,
+			@Param("waitCnt") int waitCnt,
+			@Param("assortGb") String assortGb);
 
     @Query("select tod from TbOrderDetail tod " +
             "where (tod.orderId = :orderId and tod.orderSeq = :orderSeq) or (tod.orderId = :orderId and tod.parentOrderSeq = :orderSeq)")

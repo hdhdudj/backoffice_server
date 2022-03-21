@@ -58,6 +58,7 @@ public interface JpaLspchdRepository extends JpaRepository<Lspchd, LspchdId> {
 
 
     /**
+     * 발주리스트
      * lspchd 조건 검색 쿼리로 lspchd의 리스트를 가져오는 함수
      */
     @Query("select distinct(ld) from Lspchd ld " +
