@@ -31,7 +31,7 @@ import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.goods.entity.XmlTest;
 import io.spring.model.goods.idclass.ItitmcId;
-import io.spring.model.stock.request.GoodsStockXml;
+import io.spring.model.stock.reponse.GoodsStockXml;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.common.MyBatisCommonService;
 import lombok.RequiredArgsConstructor;
