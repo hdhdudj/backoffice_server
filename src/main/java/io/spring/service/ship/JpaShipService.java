@@ -565,7 +565,7 @@ public class JpaShipService {
 			// lsshpd.getTbOrderDetail().getItitmm().getItasrt().getItvariList());
 			// //2022-02-09 사용안함
             // 출고지시 qty 설정 == 1l
-			ship.setChannelGoodsNo(igm != null? igm.getGoodsNo() : null);
+			ship.setChannelGoodsNo(igm != null? igm.getGoodsNo() : "");
             ship.setQty(lsshpd.getShipIndicateQty());
             shipList.add(ship);
         }
