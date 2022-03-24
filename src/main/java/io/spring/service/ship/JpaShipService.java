@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
+import io.spring.jparepos.goods.JpaIfGoodsMasterRepository;
+import io.spring.model.goods.entity.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
@@ -37,10 +39,6 @@ import io.spring.model.deposit.entity.Lsdpds;
 import io.spring.model.deposit.entity.Lsdpsd;
 import io.spring.model.deposit.entity.Lsdpsm;
 import io.spring.model.deposit.entity.Lsdpss;
-import io.spring.model.goods.entity.Itasrt;
-import io.spring.model.goods.entity.Ititmc;
-import io.spring.model.goods.entity.Ititmm;
-import io.spring.model.goods.entity.Itvari;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderHistory;
 import io.spring.model.order.entity.TbOrderMaster;
@@ -72,6 +70,7 @@ public class JpaShipService {
 	private final JpaStockService jpaStockService;
 
     private final JpaLspchdRepository jpaLspchdRepository;
+	private final JpaIfGoodsMasterRepository jpaIfGoodsMasterRepository;
     private final JpaSequenceDataRepository jpaSequenceDataRepository;
     private final JpaTbOrderDetailRepository jpaTbOrderDetailRepository;
     private final JpaLsshpmRepository jpaLsshpmRepository;
@@ -541,14 +540,32 @@ public class JpaShipService {
         List<Lsshpd> lsshpdList = jpaLsshpdRepository.findShipIndicateList(start, end, assortId, shipId, assortNm, vendorId, shipStatus, orderId, orderSeq);//query.getResultList();
         lsshpdList = lsshpdList.stream().filter(x->x.getTbOrderDetail().getStatusCd().equals(statusCd)).collect(Collectors.toList());
         List<ShipIndicateListData.Ship> shipList = new ArrayList<>();
+		Set<String> assortIdSet = new HashSet<>(); // 고도몰 상품번호 가져오기 위함
+		for(Lsshpd lsshpd : lsshpdList){
+			assortIdSet.add(lsshpd.getItasrt().getAssortId());
+		}
+		if(assortIdSet.size() == 0){
+			assortIdSet.add("");
+		}
+		List<IfGoodsMaster> ifGoodsMasterList = jpaIfGoodsMasterRepository.findByAssortIdSet(assortIdSet);
         for(Lsshpd lsshpd : lsshpdList){
             Lsshpm lsshpm = lsshpd.getLsshpm();
-            ShipIndicateListData.Ship ship = new ShipIndicateListData.Ship(lsshpd.getTbOrderDetail(), lsshpm, lsshpd);
+			Itasrt itasrt = lsshpd.getItasrt();
+			TbOrderDetail tod = lsshpd.getTbOrderDetail();
+			TbOrderMaster tom = tod.getTbOrderMaster();
+			List<IfGoodsMaster> igmList = ifGoodsMasterList.stream().filter(x->x.getAssortId().equals(itasrt.getAssortId())).collect(Collectors.toList());
+			IfGoodsMaster igm = null;
+			if(igmList != null && igmList.size() > 0){
+				igm = igmList.get(0);
+			}
+
+            ShipIndicateListData.Ship ship = new ShipIndicateListData.Ship(tod, tom, lsshpm, lsshpd);
             // option set
 			// Utilities.setOptionNames(ship,
 			// lsshpd.getTbOrderDetail().getItitmm().getItasrt().getItvariList());
 			// //2022-02-09 사용안함
             // 출고지시 qty 설정 == 1l
+			ship.setChannelGoodsNo(igm != null? igm.getGoodsNo() : null);
             ship.setQty(lsshpd.getShipIndicateQty());
             shipList.add(ship);
         }

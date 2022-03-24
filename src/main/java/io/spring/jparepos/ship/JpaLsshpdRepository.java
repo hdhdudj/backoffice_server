@@ -39,15 +39,17 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
      */
     @Query("select lsd from Lsshpd lsd " +
             "join fetch lsd.lsshpm lsm " +
-            "join fetch lsd.tbOrderDetail td " +
-			"join fetch td.ititmm itm " +
+            "join fetch lsd.tbOrderDetail tod " +
+            "join fetch tod.tbOrderMaster tom " +
+            "join fetch tom.tbMemberAddress tma " +
+			"join fetch tod.ititmm itm " +
 			"join fetch lsd.itasrt it "
 			+
 			"left join fetch itm.itvari1 itv1 " + "left join fetch itm.itvari2 itv2 "
 			+ "left join fetch itm.itvari3 itv3 "
 			+ 
             "where lsm.instructDt between :start and :end " +
-            "and (:assortId is null or trim(:assortId)='' or td.assortId=:assortId) " +
+            "and (:assortId is null or trim(:assortId)='' or tod.assortId=:assortId) " +
             "and (:shipId is null or trim(:shipId)='' or lsd.shipId=:shipId) " +
             "and (:assortNm is null or trim(:assortNm)='' or it.assortNm like concat('%', :assortNm, '%')) " +
             "and (:vendorId is null or trim(:vendorId)='' or it.vendorId=:vendorId)" +

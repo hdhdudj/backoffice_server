@@ -1,6 +1,7 @@
 package io.spring.model.ship.response;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -10,9 +11,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
 import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import lombok.AccessLevel;
@@ -57,7 +60,7 @@ public class ShipIndicateListData {
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Ship implements SetOptionInterface {
-        public Ship(TbOrderDetail tbOrderDetail, Lsshpm lsshpm, Lsshpd lsshpd){
+        public Ship(TbOrderDetail tbOrderDetail, TbOrderMaster tbOrderMaster, Lsshpm lsshpm, Lsshpd lsshpd){
 //            TbMember tbMember = tbOrderDetail.getTbOrderMaster().getTbMember();
             this.shipIndDt = java.sql.Timestamp.valueOf(lsshpm.getReceiptDt());
             this.shipId = lsshpd.getShipId();
@@ -82,7 +85,8 @@ public class ShipIndicateListData {
 					: lsshpd.getItitmm().getItvari2().getOptionNm();
 			this.optionNm3 = lsshpd.getItitmm().getItvari3() == null ? ""
 					: lsshpd.getItitmm().getItvari3().getOptionNm();
-
+            this.orderDt = tbOrderMaster.getOrderDate();
+            this.channelOrderNo = tbOrderMaster.getChannelOrderNo();
             // 옵션은 외부 set
             // qty는 외부 set
         }
@@ -111,5 +115,10 @@ public class ShipIndicateListData {
         private String optionNm3;
         private Long qty;
 		private String rackNo;
+        // 2022-03-24 추가
+        private String channelOrderNo;
+        private String channelGoodsNo;
+        @JsonSerialize(using = LocalDateTimeSerializer.class)
+        private LocalDateTime orderDt;
     }
 }
