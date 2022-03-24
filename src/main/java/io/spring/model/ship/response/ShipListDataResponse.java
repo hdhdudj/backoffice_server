@@ -1,11 +1,13 @@
 package io.spring.model.ship.response;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmm;
@@ -64,7 +66,6 @@ public class ShipListDataResponse {
 			this.shipDt = Utilities.removeTAndTransToStr(lsshpm.getApplyDay());
 			this.shipIndDt = Utilities.removeTAndTransToStr(lsshpm.getReceiptDt());
 
-
             this.shipId = lsshpd.getShipId();
 			this.shipSeq = lsshpd.getShipSeq();
 			this.shipKey = Utilities.addDashInMiddle(shipId, shipSeq);
@@ -94,7 +95,8 @@ public class ShipListDataResponse {
 
 			this.deliMethod = lsshpm.getDelMethod();
 			this.assortGb = itasrt.getAssortGb();
-
+            this.channelOrderNo = tom.getChannelOrderNo();
+            this.orderDt = tom.getOrderDate();
         }
         private String shipId;
         private String orderId;
@@ -129,8 +131,11 @@ public class ShipListDataResponse {
 		private String deliMethod;
 		private String assortGb;
 
-		// 2022-02-08
-		// private
+		// 2022-03-24
+		private String channelOrderNo;
+        private String channelGoodsNo;
+        @JsonSerialize(using = LocalDateTimeSerializer.class)
+        private LocalDateTime orderDt;
 
     }
 }

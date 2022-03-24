@@ -565,7 +565,7 @@ public class JpaShipService {
 			// lsshpd.getTbOrderDetail().getItitmm().getItasrt().getItvariList());
 			// //2022-02-09 사용안함
             // 출고지시 qty 설정 == 1l
-			ship.setChannelGoodsNo(igm != null? igm.getGoodsNo() : "");
+			ship.setChannelGoodsNo(igm != null? igm.getGoodsNo() != null? igm.getGoodsNo() : "" : "");
             ship.setQty(lsshpd.getShipIndicateQty());
             shipList.add(ship);
         }
@@ -589,8 +589,25 @@ public class JpaShipService {
 		LocalDateTime end = endDt.atTime(23,59,59);
 		List<Lsshpd> lsshpdList = jpaLsshpdRepository.findShipList(start, end, shipId2, shipSeq, assortId, assortNm, vendorId, statusCd, storageId);
 		List<ShipListDataResponse.Ship> shipList = new ArrayList<>();
+
+		Set<String> assortIdSet = new HashSet<>(); // 고도몰 상품번호 가져오기 위함
+		for(Lsshpd lsshpd : lsshpdList){
+			assortIdSet.add(lsshpd.getItasrt().getAssortId());
+		}
+		if(assortIdSet.size() == 0){
+			assortIdSet.add("");
+		}
+		List<IfGoodsMaster> ifGoodsMasterList = jpaIfGoodsMasterRepository.findByAssortIdSet(assortIdSet);
+
 		for(Lsshpd l : lsshpdList){
 			ShipListDataResponse.Ship ship = new ShipListDataResponse.Ship(l);
+			Itasrt itasrt = l.getItasrt();
+			List<IfGoodsMaster> igmList = ifGoodsMasterList.stream().filter(x->x.getAssortId().equals(itasrt.getAssortId())).collect(Collectors.toList());
+			IfGoodsMaster igm = null;
+			if(igmList != null && igmList.size() > 0){
+				igm = igmList.get(0);
+			}
+			ship.setChannelGoodsNo(igm != null? igm.getGoodsNo() != null? igm.getGoodsNo() : "" : "");
 			ship = shipListDataResponseMapper.nullToEmpty(ship);
 			shipList.add(ship);
 		}
