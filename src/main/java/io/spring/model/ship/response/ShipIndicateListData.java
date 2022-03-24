@@ -14,6 +14,8 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
+import io.spring.model.order.entity.TbMember;
+import io.spring.model.order.entity.TbMemberAddress;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.ship.entity.Lsshpd;
@@ -60,8 +62,9 @@ public class ShipIndicateListData {
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Ship implements SetOptionInterface {
+
         public Ship(TbOrderDetail tbOrderDetail, TbOrderMaster tbOrderMaster, Lsshpm lsshpm, Lsshpd lsshpd){
-//            TbMember tbMember = tbOrderDetail.getTbOrderMaster().getTbMember();
+            TbMemberAddress tma = tbOrderMaster.getTbMemberAddress();
             this.shipIndDt = java.sql.Timestamp.valueOf(lsshpm.getReceiptDt());
             this.shipId = lsshpd.getShipId();
             this.shipSeq = lsshpd.getShipSeq();
@@ -87,6 +90,10 @@ public class ShipIndicateListData {
 					: lsshpd.getItitmm().getItvari3().getOptionNm();
             this.orderDt = tbOrderMaster.getOrderDate();
             this.channelOrderNo = tbOrderMaster.getChannelOrderNo();
+            this.receiverHp = tma.getDeliHp();
+            this.receiverZonecode = tma.getDeliZonecode();
+            this.receiverAddr1 = tma.getDeliAddr1();
+            this.receiverAddr2 = tma.getDeliAddr2();
             // 옵션은 외부 set
             // qty는 외부 set
         }
@@ -120,5 +127,9 @@ public class ShipIndicateListData {
         private String channelGoodsNo;
         @JsonSerialize(using = LocalDateTimeSerializer.class)
         private LocalDateTime orderDt;
+        private String receiverHp;
+        private String receiverZonecode;
+        private String receiverAddr1;
+        private String receiverAddr2;
     }
 }
