@@ -4,7 +4,7 @@
 
 
 
-    
+    <!-- 출고지시 화면에서 조건 검색하면 나오는 리스트 -->
     <select id="getOrderShipList" parameterType="java.util.HashMap"  resultType="HashMap">
     	 <![CDATA[	
 select ld.ship_id shipId 
@@ -17,6 +17,8 @@ select ld.ship_id shipId
 ,tom.order_name custNm
 ,tod.order_id orderId 
 ,tod.order_seq orderSeq
+,tom.channel_order_no channelOrderNo
+,igm.goods_no channelGoodsNo
 ,concat(tod.order_id  ,'-',tod.order_seq) orderKey
 ,tod.deli_method  deliMethod
 ,tod.qty qty 
@@ -50,7 +52,8 @@ from lsshpm lm
 ,lsshpd ld
 ,itasrt it
 ,tb_order_detail tod
-,tb_order_master tom  
+,tb_order_master tom
+,if_goods_master igm
 where 1=1
 and lm.receipt_dt between #{startDt} and  #{endDt}
 and lm.ship_status='01'
@@ -60,6 +63,7 @@ and ld.order_id = tod.order_id
 and ld.order_seq = tod.order_seq
 and tod.status_cd ='C04'
 and tod.order_id = tom.order_id
+and it.assort_id = igm.assort_id
 -- and it.add_goods_yn='02'
     	 ]]>
     	 <if test='storageId != null and storageId.trim() != ""'>

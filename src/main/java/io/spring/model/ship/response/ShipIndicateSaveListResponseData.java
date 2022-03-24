@@ -105,6 +105,8 @@ public class ShipIndicateSaveListResponseData {
 			this.optionNm2 = (String) map.get("optionNm2");
 			this.optionNm3 = (String) map.get("optionNm3");
 			this.rackNo = (String) map.get("rackNo");
+			this.channelGoodsNo = (String) map.get("channelGoodsNo");
+			this.channelOrderNo = (String) map.get("channelOrderNo");
 
 		}
 
@@ -130,5 +132,8 @@ public class ShipIndicateSaveListResponseData {
 		private String storageId;
 		private String receiptDt;
 		private String rackNo;
+		// 2022-03-24 추가
+		private String channelOrderNo;
+		private String channelGoodsNo;
     }
 }
