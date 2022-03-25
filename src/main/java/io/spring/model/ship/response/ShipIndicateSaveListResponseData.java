@@ -69,7 +69,7 @@ public class ShipIndicateSaveListResponseData {
 			this.deliMethod = tbOrderDetail == null ? null : tbOrderDetail.getDeliMethod();
 			this.assortId = tbOrderDetail == null ? null : tbOrderDetail.getAssortId();
 			this.itemId = tbOrderDetail == null ? null : tbOrderDetail.getItemId();
-			this.custNm = tbOrderMaster.getTbMemberAddress().getDeliNm();//tbMember == null ? null : tbMember.getCustNm();
+			this.orderNm = tbOrderMaster.getTbMemberAddress().getDeliNm();//tbMember == null ? null : tbMember.getCustNm();
 			this.assortNm = itasrt.getAssortNm();
 //        this.availableQty =
 			this.qty = 0l;
@@ -87,7 +87,8 @@ public class ShipIndicateSaveListResponseData {
 			this.deliMethod = (String) map.get("deliMethod");
 			this.assortId = (String) map.get("assortId");
 			this.itemId = (String) map.get("itemId");
-			this.custNm = (String) map.get("custNm");
+			this.orderNm = (String) map.get("orderNm");
+			this.receiverNm = (String) map.get("receiverNm");
 			this.assortNm = (String) map.get("assortNm");
 			this.availableQty = Long.valueOf((int) map.get("qty"));
 			this.qty = 0l;
@@ -120,7 +121,7 @@ public class ShipIndicateSaveListResponseData {
         private String deliMethod;
         private String assortId;
         private String itemId;
-        private String custNm;
+        private String orderNm;
         private String assortNm;
         private String optionNm1;
         private String optionNm2;
@@ -135,5 +136,7 @@ public class ShipIndicateSaveListResponseData {
 		// 2022-03-24 추가
 		private String channelOrderNo;
 		private String channelGoodsNo;
+		// 2022-03-25 추가
+		private String receiverNm;
     }
 }
