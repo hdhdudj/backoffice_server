@@ -18,7 +18,7 @@ select ld.ship_id shipId
 ,tod.order_id orderId
 ,tod.order_seq orderSeq
 ,tom.channel_order_no channelOrderNo
-,igm.goods_no channelGoodsNo
+,it.goods_no channelGoodsNo
 ,concat(tod.order_id  ,'-',tod.order_seq) orderKey
 ,tod.deli_method  deliMethod
 ,tod.qty qty 
@@ -54,7 +54,6 @@ from lsshpm lm
 ,itasrt it
 ,tb_order_detail tod
 ,tb_order_master tom
-,if_goods_master igm
 ,tb_member_address tma
 where 1=1
 and lm.receipt_dt between #{startDt} and #{endDt}
@@ -65,7 +64,6 @@ and ld.order_id = tod.order_id
 and ld.order_seq = tod.order_seq
 and tod.status_cd ='C04'
 and tod.order_id = tom.order_id
-and it.assort_id = igm.assort_id
 and tma.deli_id = tom.deli_id
 -- and it.add_goods_yn='02'
     	 ]]>
