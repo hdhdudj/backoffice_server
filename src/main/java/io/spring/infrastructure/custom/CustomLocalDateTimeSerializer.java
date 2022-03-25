@@ -16,8 +16,6 @@ import java.time.temporal.ChronoField;
  * ResponseBody LocalDateTime 요소에 T가 붙지 않은 형식으로 날짜를 serialize 해주는 custom serilizer
  */
 public class CustomLocalDateTimeSerializer extends JsonSerializer<LocalDateTime> {
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
     @Override
     public void serialize(LocalDateTime dateTime, JsonGenerator generator, SerializerProvider provider) throws IOException {
         if(provider.isEnabled(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS))
