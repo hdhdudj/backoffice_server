@@ -73,7 +73,7 @@ public class ShipListDataResponse {
             this.orderId = tod.getOrderId();
             this.orderSeq = tod.getOrderSeq();
             this.orderKey = Utilities.addDashInMiddle(orderId, orderSeq);
-            this.custNm = tom.getOrderName();
+            this.orderNm = tom.getOrderName();
             this.receiverNm = tma.getDeliNm();
             this.receiverTel = tma.getDeliTel();
             this.receiverHp = tma.getDeliHp();
@@ -102,7 +102,7 @@ public class ShipListDataResponse {
         private String orderId;
         private String orderSeq;
         private String orderKey;
-        private String custNm;
+        private String orderNm;
         private String receiverNm;
         private String receiverTel;
         private String receiverHp;

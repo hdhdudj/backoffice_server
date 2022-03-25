@@ -14,7 +14,6 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
-import io.spring.model.order.entity.TbMember;
 import io.spring.model.order.entity.TbMemberAddress;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.order.entity.TbOrderMaster;
@@ -73,13 +72,14 @@ public class ShipIndicateListData {
             this.deliMethod = tbOrderDetail.getDeliMethod();
             this.assortId = tbOrderDetail.getAssortId();
             this.itemId = tbOrderDetail.getItemId();
-            this.custNm = tbOrderDetail.getTbOrderMaster().getTbMemberAddress().getDeliNm();//tbMember==null? null : tbMember.getCustNm();
+            this.receiverNm = tbOrderMaster.getTbMemberAddress().getDeliNm();//tbMember==null? null : tbMember.getCustNm();
             this.assortNm = tbOrderDetail.getGoodsNm();
             this.blNo = lsshpm.getBlNo(); // 트래킹 번호
             this.shipDt = Utilities.removeTAndTransToStr(lsshpm.getApplyDay());
             this.orderId = lsshpd.getOrderId();
             this.orderSeq = lsshpd.getOrderSeq();
             this.orderKey = Utilities.addDashInMiddle(orderId, orderSeq);
+            this.orderNm = tbOrderMaster.getOrderName();
 			this.rackNo = lsshpd.getRackNo();
 
 			this.optionNm1 = lsshpd.getItitmm().getItvari1() == null ? ""
@@ -115,7 +115,7 @@ public class ShipIndicateListData {
         private String deliMethod;
         private String assortId;
         private String itemId;
-        private String custNm;
+        private String receiverNm;
         private String assortNm;
         private String optionNm1;
         private String optionNm2;
@@ -131,5 +131,7 @@ public class ShipIndicateListData {
         private String receiverZonecode;
         private String receiverAddr1;
         private String receiverAddr2;
+        // 2022-03-25 추가
+        private String orderNm;
     }
 }
