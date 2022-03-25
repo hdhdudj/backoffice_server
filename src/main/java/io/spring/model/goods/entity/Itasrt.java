@@ -75,8 +75,6 @@ public class Itasrt extends CommonProps implements Serializable {
 		this.buyRrpIncrement = goodsInsertRequestData.getBuyRrpIncrement() == null || goodsInsertRequestData.getBuyRrpIncrement().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getBuyRrpIncrement());
 		this.buyExchangeRate = goodsInsertRequestData.getBuyExchangeRate() == null || goodsInsertRequestData.getBuyExchangeRate().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getBuyExchangeRate());
 		this.mdDiscountRate = goodsInsertRequestData.getMdDiscountRate() == null || goodsInsertRequestData.getMdDiscountRate().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getMdDiscountRate());
-//		this.sizeType = goodsInsertRequestData.getSizeType();
-		//	this.localDeliFee = goodsInsertRequestData.getLocalDeliFee();
 		this.assortColor = goodsInsertRequestData.getAssortColor();
 		this.sellStaDt = goodsInsertRequestData.getSellStaDt();//.toLocalDateTime();
 		this.sellEndDt = goodsInsertRequestData.getSellEndDt();//.toLocalDateTime();
@@ -238,9 +236,8 @@ public class Itasrt extends CommonProps implements Serializable {
 	private String addOptionNm;
 	private String mainImageUrl;
 	private Long stockCnt;
-
-	@Transient
-	private PersistentAttributeInterceptor interceptor;
+	// 22-03-25 추가
+	private String channelGoodsNo;
 
 	//// 다른 테이블과 엮으면 나오는 프로퍼티들
 	@JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
@@ -266,31 +263,9 @@ public class Itasrt extends CommonProps implements Serializable {
 	@JsonIgnore
 	private List<Itasrd> itasrdList;
 
-
-//	@JoinColumn(name="brandId", referencedColumnName = "channelBrandId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@JsonIgnore
-//	@NotFound(action = NotFoundAction.IGNORE)
-//	private IfBrand ifBrand; // ifBrand 연관관계
-
 	@JoinColumn(name="dispCategoryId", referencedColumnName = "categoryId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@ManyToOne(fetch = FetchType.LAZY)
-	// @LazyToOne(value = LazyToOneOption.NO_PROXY)
 	private Itcatg itcatg; // itcatg 연관관계
-//	public Itcatg getItcatg() {
-//		if (interceptor!=null) {
-//			return (Itcatg)interceptor.readObject(this, "itcatg", itcatg);
-//		}
-//		return itcatg;
-//	}
-//
-//	public void setItcatg(Itcatg itcatg) {
-//		if (interceptor!=null) {
-//			this.itcatg = (Itcatg) interceptor.writeObject(this,"itcatg", this.itcatg, itcatg);
-//			return ;
-//		}
-//		this.itcatg = itcatg;
-//	}
 
 	@JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@BatchSize(size = 100)
@@ -303,51 +278,4 @@ public class Itasrt extends CommonProps implements Serializable {
 	// @LazyToOne(value = LazyToOneOption.NO_PROXY)
 	private Cmvdmr cmvdmr; // cmvdmr 연관관계
 
-//	public Cmvdmr getCmvdmr() {
-//		if (interceptor!=null) {
-//			return (Cmvdmr)interceptor.readObject(this, "cmvdmr", cmvdmr);
-//		}
-//		return cmvdmr;
-//	}
-//
-//	public void setCmvdmr(Cmvdmr cmvdmr) {
-//		if (interceptor!=null) {
-//			this.cmvdmr = (Cmvdmr) interceptor.writeObject(this,"cmvdmr", this.cmvdmr, cmvdmr);
-//			return ;
-//		}
-//		this.cmvdmr = cmvdmr;
-//	}
-
-//	@JoinColumn(name = "brandId", referencedColumnName = "brandId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@LazyToOne(value = LazyToOneOption.NO_PROXY)
-//	private IfBrand ifBrand;
-//	public IfBrand getIfBrand() {
-//		if (interceptor!=null) {
-//			return (IfBrand)interceptor.readObject(this, "ifBrand", ifBrand);
-//		}
-//		return ifBrand;
-//	}
-//
-//
-//	public void setIfBrand(IfBrand ifBrand) {
-//		if (interceptor!=null) {
-//			this.ifBrand = (IfBrand) interceptor.writeObject(this,"ifBrand", this.ifBrand, ifBrand);
-//			return ;
-//		}
-//		this.ifBrand = ifBrand;
-//	}
-
-
-
-	// @Override
-	// public PersistentAttributeInterceptor $$_hibernate_getInterceptor() {
-//		return interceptor;
-	// }
-
-	// @Override
-	// public void $$_hibernate_setInterceptor(PersistentAttributeInterceptor
-	// interceptor) {
-//		this.interceptor = interceptor;
-	// }
 }
