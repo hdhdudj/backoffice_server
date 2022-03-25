@@ -36,7 +36,7 @@ public interface JpaTbOrderDetailRepository extends JpaRepository<TbOrderDetail,
     List<TbOrderDetail> findByAssortIdAndItemIdAndQtyAndStatusCd(String assortId, String itemId, Long purchasePlanQty, String strC03);
 
     /**
-     * 출고지시리스트 가져오는 쿼리
+     * 출고지시리스트 가져오는 쿼리 (출고지시리스트, 출고처리 화면에서 이용)
      */
     @Query("select td from TbOrderDetail td " +
             "join fetch td.tbOrderMaster to " +

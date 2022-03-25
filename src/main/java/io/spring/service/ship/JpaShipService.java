@@ -475,50 +475,9 @@ public class JpaShipService {
 
     }
 
-	/**
-	 * 출고 : 출고지시 화면에서 list를 불러오는 함수
-	 */
-	public ShipCandidateListData getShipCandidateList(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
-											   @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
-											   String storageId, String assortId, String assortNm,
-											   String vendorId, String statusCd, String orderKey, String shipStatus) {
-
-//		사용안함
-//
-//		String orderId = "";
-//		String orderSeq = "";
-//		if(orderId != null && !orderId.trim().equals("")){
-//			String[] order = orderKey.split("-");
-//			orderId = order[0];
-//			orderSeq = order.length > 1? order[1]:orderSeq;
-//		}
-//		LocalDateTime start = startDt.atStartOfDay();
-//		LocalDateTime end = endDt.atTime(23,59,59);
-//		ShipCandidateListData shipCandidateListData = new ShipCandidateListData(startDt, endDt,
-//				assortId, assortNm, vendorId, orderId);
-//
-//		List<Lsdpsd> lsdpsdList = jpaLsdpsdRepository.findShipCandidateList(start, end, assortId, assortNm, vendorId, orderId, orderSeq, storageId);//query.getResultList();
-//		lsdpsdList = lsdpsdList.stream().filter(x->x.getLspchd() != null).filter(y->y.getLspchd().getTbOrderDetail() != null).filter(z->z.getLspchd().getTbOrderDetail().getStatusCd().equals(statusCd)).collect(Collectors.toList());
-//		List<ShipCandidateListData.Ship> shipList = new ArrayList<>();
-//		for(Lsdpsd lsdpsd : lsdpsdList){
-//			Ititmm ititmm = lsdpsd.getItitmm();
-//			ShipCandidateListData.Ship ship = new ShipCandidateListData.Ship(lsdpsd);
-//			Itvari itvari1 = ititmm.getItvari1();
-//			Itvari itvari2 = ititmm.getItvari2();
-//			Itvari itvari3 = ititmm.getItvari3();
-//			List<Itvari> itvariList = new ArrayList<>();
-//			itvariList.add(itvari1);
-//			itvariList.add(itvari2);
-//			itvariList.add(itvari3);
-//			Utilities.setOptionNames(ship, itvariList);
-//			shipList.add(ship);
-//		}
-//		shipCandidateListData.setShips(shipList);
-		return null;
-	}
 
     /**
-     * 출고 : 출고처리 화면에서 list를 불러오는 함수
+     * 출고 : 출고지시리스트, 출고처리 화면에서 list를 불러오는 함수
      */
     public ShipIndicateListData getShipIndList(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
 											   @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
@@ -540,24 +499,11 @@ public class JpaShipService {
         List<Lsshpd> lsshpdList = jpaLsshpdRepository.findShipIndicateList(start, end, assortId, shipId, assortNm, vendorId, shipStatus, orderId, orderSeq);//query.getResultList();
         lsshpdList = lsshpdList.stream().filter(x->x.getTbOrderDetail().getStatusCd().equals(statusCd)).collect(Collectors.toList());
         List<ShipIndicateListData.Ship> shipList = new ArrayList<>();
-		Set<String> assortIdSet = new HashSet<>(); // 고도몰 상품번호 가져오기 위함
-		for(Lsshpd lsshpd : lsshpdList){
-			assortIdSet.add(lsshpd.getItasrt().getAssortId());
-		}
-		if(assortIdSet.size() == 0){
-			assortIdSet.add("");
-		}
-		List<IfGoodsMaster> ifGoodsMasterList = jpaIfGoodsMasterRepository.findByAssortIdSet(assortIdSet);
         for(Lsshpd lsshpd : lsshpdList){
             Lsshpm lsshpm = lsshpd.getLsshpm();
 			Itasrt itasrt = lsshpd.getItasrt();
 			TbOrderDetail tod = lsshpd.getTbOrderDetail();
 			TbOrderMaster tom = tod.getTbOrderMaster();
-			List<IfGoodsMaster> igmList = ifGoodsMasterList.stream().filter(x->x.getAssortId().equals(itasrt.getAssortId())).collect(Collectors.toList());
-			IfGoodsMaster igm = null;
-			if(igmList != null && igmList.size() > 0){
-				igm = igmList.get(0);
-			}
 
             ShipIndicateListData.Ship ship = new ShipIndicateListData.Ship(tod, tom, lsshpm, lsshpd);
             // option set
@@ -565,7 +511,7 @@ public class JpaShipService {
 			// lsshpd.getTbOrderDetail().getItitmm().getItasrt().getItvariList());
 			// //2022-02-09 사용안함
             // 출고지시 qty 설정 == 1l
-			ship.setChannelGoodsNo(igm != null? igm.getGoodsNo() != null? igm.getGoodsNo() : "" : "");
+			ship.setChannelGoodsNo(itasrt.getChannelGoodsNo() ==  null? "":itasrt.getChannelGoodsNo());
             ship.setQty(lsshpd.getShipIndicateQty());
             shipList.add(ship);
         }
@@ -590,24 +536,10 @@ public class JpaShipService {
 		List<Lsshpd> lsshpdList = jpaLsshpdRepository.findShipList(start, end, shipId2, shipSeq, assortId, assortNm, vendorId, statusCd, storageId);
 		List<ShipListDataResponse.Ship> shipList = new ArrayList<>();
 
-		Set<String> assortIdSet = new HashSet<>(); // 고도몰 상품번호 가져오기 위함
-		for(Lsshpd lsshpd : lsshpdList){
-			assortIdSet.add(lsshpd.getItasrt().getAssortId());
-		}
-		if(assortIdSet.size() == 0){
-			assortIdSet.add("");
-		}
-		List<IfGoodsMaster> ifGoodsMasterList = jpaIfGoodsMasterRepository.findByAssortIdSet(assortIdSet);
-
 		for(Lsshpd l : lsshpdList){
 			ShipListDataResponse.Ship ship = new ShipListDataResponse.Ship(l);
 			Itasrt itasrt = l.getItasrt();
-			List<IfGoodsMaster> igmList = ifGoodsMasterList.stream().filter(x->x.getAssortId().equals(itasrt.getAssortId())).collect(Collectors.toList());
-			IfGoodsMaster igm = null;
-			if(igmList != null && igmList.size() > 0){
-				igm = igmList.get(0);
-			}
-			ship.setChannelGoodsNo(igm != null? igm.getGoodsNo() != null? igm.getGoodsNo() : "" : "");
+			ship.setChannelGoodsNo(itasrt.getChannelGoodsNo() ==  null? "":itasrt.getChannelGoodsNo());
 			ship = shipListDataResponseMapper.nullToEmpty(ship);
 			shipList.add(ship);
 		}
