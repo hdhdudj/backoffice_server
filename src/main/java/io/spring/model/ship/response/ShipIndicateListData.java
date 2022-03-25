@@ -12,6 +12,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import io.spring.infrastructure.custom.CustomLocalDateTimeSerializer;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
 import io.spring.model.order.entity.TbMemberAddress;
@@ -125,7 +126,7 @@ public class ShipIndicateListData {
         // 2022-03-24 추가
         private String channelOrderNo;
         private String channelGoodsNo;
-        @JsonSerialize(using = LocalDateTimeSerializer.class)
+        @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
         private LocalDateTime orderDt;
         private String receiverHp;
         private String receiverZonecode;

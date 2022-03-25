@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import io.spring.infrastructure.custom.CustomLocalDateTimeSerializer;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
 import io.spring.model.deposit.entity.Lsdpsd;
@@ -72,7 +73,7 @@ public class ShipCandidateListData {
             // 옵션은 밖에서
         }
 
-        @JsonSerialize(using = LocalDateTimeSerializer.class)
+        @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
         private LocalDateTime orderDt;
         private String orderId;

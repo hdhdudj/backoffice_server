@@ -7,7 +7,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import io.spring.infrastructure.custom.CustomLocalDateTimeSerializer;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmm;
@@ -134,7 +134,7 @@ public class ShipListDataResponse {
 		// 2022-03-24
 		private String channelOrderNo;
         private String channelGoodsNo;
-        @JsonSerialize(using = LocalDateTimeSerializer.class)
+        @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
         private LocalDateTime orderDt;
 
     }
