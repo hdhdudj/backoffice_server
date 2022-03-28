@@ -111,13 +111,10 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
 
     List<Lsshpd> findByShipId(String shipId);
 
-<<<<<<< HEAD
     @Query("select lsd from Lsshpd lsd join fetch lsd.lsshpm lsm where lsm.shipOrderGb=?1 and lsd.assortId=?2 and lsd.itemId=?3")
     Lsshpd getLssSeriesByShipOrderGbAndAssortIdAndItemId(String gbTwo, String assortId, String itemId);
-=======
     @Query("select lsshpd from Lsshpd lsshpd " +
             "join fetch lsshpd.lsshpm lm " +
             "where lsshpd.shipId in :shipIdList")
     List<Lsshpd> findShipDetailListByShipIdList(@Param("shipIdList") List<String> shipIdList);
->>>>>>> 93652524f47aaaa7da32d73f898d1ef7c7b1c562
 }
