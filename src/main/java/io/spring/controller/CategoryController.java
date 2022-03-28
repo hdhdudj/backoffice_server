@@ -1,7 +1,9 @@
 package io.spring.controller;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -69,5 +71,10 @@ public class CategoryController {
 		return ResponseEntity.ok(res);
 	}
 
-
+    @GetMapping(path = "/category/trees")
+    public ResponseEntity getCateTrees(){
+        Map<String, Object> map = jpaCategoryService.getCateTrees();
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), map);
+        return ResponseEntity.ok(res);
+    }
 }

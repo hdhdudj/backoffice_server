@@ -1,11 +1,9 @@
 package io.spring.service.category;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
+import io.spring.infrastructure.util.StringFactory;
 import org.springframework.stereotype.Service;
 
 import io.spring.jparepos.category.JpaItcatgRepository;
@@ -184,6 +182,16 @@ public class JpaCategoryService {
 
 	}
 
+	/**
+	 * 현 카테고리 모든 데이터를 트리로 가져오기
+	 */
+	public Map<String, Object> getCateTrees() {
+		Map<String, Object> treeMap = new HashMap<>();
+		List<Itcatg> cateList = jpaItcatgRepository.findAllCate();
+		Map<Integer , List<String>> depthMap = new HashMap<>();
+		List<String> putCateIdList = new ArrayList<>();
 
+		return treeMap;
+	}
 }
 
