@@ -2,14 +2,12 @@ package io.spring.controller;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.validation.Valid;
 
+import io.spring.model.goods.request.GoodsInsertRequestData2;
+import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -343,6 +341,25 @@ public class GoodsController {
 		}
 		jpaGoodsService.changeVendor(assortId, channelGoodsNo, vendorId);
 		ApiResponseMessage res = new ApiResponseMessage("ok", "success", null);
+		return ResponseEntity.ok(res);
+	}
+
+	/**
+	 * goods partial insert test
+	 */
+	@GetMapping(path = "/test/insert/partial")
+	public HttpEntity goodsPartialInsert(@RequestBody GoodsInsertRequestData2 goodsInsertRequestData2){
+		goodsInsertRequestData2.setAssortId(Optional.of(jpaCommonService.getNumberId(goodsInsertRequestData2.getAssortId().get(), StringFactory.getStrSeqItasrt(), StringFactory.getIntNine()))); // assort id 梨꾨쾲
+
+		String assortId = jpaGoodsService.sequenceInsertOrUpdateGoods2(goodsInsertRequestData2);
+//		GoodsSelectDetailResponseData responseData = jpaGoodsService.getGoodsDetailPage(goodsInsertRequestData.getAssortId());
+		Map<String, String> responseMap = new HashMap<>();
+		responseMap.put(StringFactory.getStrAssortId(), assortId);
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), responseMap);
+
+//		if(responseData == null){
+//			return null;
+//		}
 		return ResponseEntity.ok(res);
 	}
 }

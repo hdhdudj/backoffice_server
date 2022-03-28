@@ -598,18 +598,17 @@ public class JpaPurchaseService {
                 imgList = new ArrayList<>();
             }
             PurchaseSelectDetailResponseData.Items item = new PurchaseSelectDetailResponseData.Items(lspchd, ititmm, itasrt, imgList.size() == 0? null : imgList.get(0));
-
 			// 2022-02-09 옵션명처리하는부분을 new PurchaseSelectDetailResponseData.Items 에서 처리하는걸로 수정
 
 //            List<Itvari> itvariList = new ArrayList<>(); 2022-02-09
-			// itvariList.add(ititmm.getItvari1()); 2022-02-09
-			// if(ititmm.getVariationSeq2() != null){ 2022-02-09
-			// itvariList.add(ititmm.getItvari2()); 2022-02-09
+            // itvariList.add(ititmm.getItvari1()); 2022-02-09
+            // if(ititmm.getVariationSeq2() != null){ 2022-02-09
+            // itvariList.add(ititmm.getItvari2()); 2022-02-09
 //            } 2022-02-09
-			// if(ititmm.getVariationSeq3() != null){ 2022-02-09
-			// itvariList.add(ititmm.getItvari3()); 2022-02-09
-			// } 2022-02-09
-			// Utilities.setOptionNames(item, itvariList); // optionNm set 2022-02-09
+            // if(ititmm.getVariationSeq3() != null){ 2022-02-09
+            // itvariList.add(ititmm.getItvari3()); 2022-02-09
+            // } 2022-02-09
+            // Utilities.setOptionNames(item, itvariList); // optionNm set 2022-02-09
             if ((lspchd.getLspchm().getDealtypeCd().equals(StringFactory.getGbOne()) || lspchd.getLspchm().getDealtypeCd().equals(StringFactory.getGbThree()))
                     && ((lspchd.getOrderId() != null && !lspchd.getOrderId().trim().equals(""))
                     && lspchd.getOrderSeq() != null && !lspchd.getOrderSeq().trim().equals(""))) { // 주문발주인 경우

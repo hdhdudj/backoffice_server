@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
+import io.spring.model.goods.request.GoodsInsertRequestData2;
 import io.spring.model.goods.response.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -1210,4 +1211,124 @@ public class JpaGoodsService {
 		ret.setGoods(goodsList);
 		return ret;
 	}
+
+    /**
+     * partial insert goods Test
+     */
+    public String sequenceInsertOrUpdateGoods2(GoodsInsertRequestData2 goodsInsertRequestData2) {
+        String userId = goodsInsertRequestData2.getUserId().get();
+
+        // itasrt에 goods 정보 저장
+        Itasrt itasrt = this.saveItasrt2(goodsInsertRequestData2);
+        // tmmapi에 저장
+        this.saveTmmapi(itasrt);
+        // itasrn에 goods 이력 저장
+        Itasrn itasrn = this.saveItasrn2(goodsInsertRequestData2, userId);
+        // itasrd에 문구 저장
+        List<Itasrd> itasrd = this.saveItasrd2(goodsInsertRequestData2, userId);
+        // itvari에 assort_id별 옵션요소 저장(색상, 사이즈)
+        List<Itvari> existItvariList = jpaItvariRepository.findByAssortId(goodsInsertRequestData2.getAssortId().get());
+        List<Itvari> itvariList = this.saveItvariList2(goodsInsertRequestData2, existItvariList, userId);
+        // ititmm에 assort_id별 item 저장
+        List<Ititmm> existItitmmList = jpaItitmmRepository.findByAssortId(goodsInsertRequestData2.getAssortId().get());
+        List<Ititmm> ititmmList = this.saveItemList2(goodsInsertRequestData2, existItitmmList, itvariList, userId);
+        // tmitem에 저장
+        this.saveTmitem(ititmmList);
+        // ititmd에 item 이력 저장
+        List<Ititmd> ititmdList = this.saveItemHistoryList2(goodsInsertRequestData2, ititmmList, userId);
+
+        // itaimg에 assortId 업데이트 시켜주기
+        this.updateItaimgAssortId2(goodsInsertRequestData2, itasrt.getAssortId(), userId);
+//        List<GoodsInsertResponseData.Attributes> attributesList = this.makeGoodsResponseAttributes(itvariList);
+//        List<GoodsInsertResponseData.Items> itemsList = this.makeGoodsResponseItems(ititmmList, itvariList);
+//        return this.makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
+        return itasrt.getAssortId();
+    }
+
+    private void updateItaimgAssortId2(GoodsInsertRequestData2 goodsInsertRequestData2, String assortId, String userId) {
+    }
+
+    private List<Ititmd> saveItemHistoryList2(GoodsInsertRequestData2 goodsInsertRequestData2, List<Ititmm> ititmmList, String userId) {
+        return null;
+    }
+
+    private List<Ititmm> saveItemList2(GoodsInsertRequestData2 goodsInsertRequestData2, List<Ititmm> existItitmmList, List<Itvari> itvariList, String userId) {
+        return null;
+    }
+
+    private List<Itvari> saveItvariList2(GoodsInsertRequestData2 goodsInsertRequestData2, List<Itvari> existItvariList, String userId) {
+        return null;
+    }
+
+    private List<Itasrd> saveItasrd2(GoodsInsertRequestData2 goodsInsertRequestData2, String userId) {
+        return null;
+    }
+
+    private Itasrn saveItasrn2(GoodsInsertRequestData2 goodsInsertRequestData2, String userId) {
+        return null;
+    }
+
+    private Itasrt saveItasrt2(GoodsInsertRequestData2 goodsInsertRequestData) {
+        Itasrt itasrt = jpaItasrtRepository.findById(goodsInsertRequestData.getAssortId().get()).orElseGet(() -> new Itasrt(goodsInsertRequestData));
+//        itasrt.setUpdDt(new Date());
+
+        itasrt.setAssortNm(goodsInsertRequestData.getAssortNm() != null? goodsInsertRequestData.getAssortNm().get() : itasrt.getAssortNm());
+//        itasrt.setAssortColor(goodsInsertRequestData.getAssortColor() == null || goodsInsertRequestData.getAssortColor().trim().equals("")? null : goodsInsertRequestData.getAssortColor());
+
+//        itasrt.setDispCategoryId(goodsInsertRequestData.getDispCategoryId() == null || goodsInsertRequestData.getDispCategoryId().trim().equals("")? null : goodsInsertRequestData.getDispCategoryId());
+//        itasrt.setCategoryId(this.getGodoCateCd(goodsInsertRequestData.getDispCategoryId()));
+//
+//        itasrt.setBrandId(goodsInsertRequestData.getBrandId() == null || goodsInsertRequestData.getBrandId().trim().equals("")? null : goodsInsertRequestData.getBrandId());
+//
+//        itasrt.setOrigin(goodsInsertRequestData.getOrigin());
+//
+//        itasrt.setManufactureNm(goodsInsertRequestData.getManufactureNm() == null || goodsInsertRequestData.getManufactureNm().trim().equals("")? null : goodsInsertRequestData.getManufactureNm());
+//        itasrt.setAssortModel(goodsInsertRequestData.getAssortModel() == null || goodsInsertRequestData.getAssortModel().trim().equals("")? null : goodsInsertRequestData.getAssortModel());
+//        itasrt.setVendorId(goodsInsertRequestData.getVendorId() == null || goodsInsertRequestData.getVendorId().trim().equals("")? null : goodsInsertRequestData.getVendorId());
+//
+//        itasrt.setOptionGbName(goodsInsertRequestData.getOptionGbName());
+//        itasrt.setTaxGb(goodsInsertRequestData.getTaxGb());
+//        itasrt.setAssortState(goodsInsertRequestData.getAssortState());
+//        itasrt.setShortageYn(goodsInsertRequestData.getShortageYn());
+//
+//        itasrt.setLocalPrice(goodsInsertRequestData.getLocalPrice() == null || goodsInsertRequestData.getLocalPrice().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getLocalPrice()));
+//        itasrt.setLocalSale(goodsInsertRequestData.getLocalSale() == null || goodsInsertRequestData.getLocalSale().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getLocalSale()));
+//        itasrt.setDeliPrice(goodsInsertRequestData.getDeliPrice() == null || goodsInsertRequestData.getDeliPrice().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getDeliPrice()));
+//
+//        itasrt.setMargin(goodsInsertRequestData.getMargin() == null || goodsInsertRequestData.getMargin().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getMargin()));
+//
+//        itasrt.setMdRrp(goodsInsertRequestData.getMdRrp() == null || goodsInsertRequestData.getMdRrp().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getMdRrp()));
+//        itasrt.setMdYear(goodsInsertRequestData.getMdYear());
+//        itasrt.setMdVatrate(goodsInsertRequestData.getMdVatrate() == null || goodsInsertRequestData.getMdVatrate().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getMdVatrate()));
+//        itasrt.setMdDiscountRate(goodsInsertRequestData.getMdDiscountRate() == null || goodsInsertRequestData.getMdDiscountRate().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getMdDiscountRate()));
+//        itasrt.setMdGoodsVatrate(goodsInsertRequestData.getMdGoodsVatrate() == null || goodsInsertRequestData.getMdGoodsVatrate().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getMdGoodsVatrate()));
+//        itasrt.setBuyWhere(goodsInsertRequestData.getBuyWhere());
+//        itasrt.setBuySupplyDiscount(goodsInsertRequestData.getBuySupplyDiscount() == null || goodsInsertRequestData.getBuySupplyDiscount().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getBuySupplyDiscount()));
+//        itasrt.setBuyExchangeRate(goodsInsertRequestData.getBuyExchangeRate() == null || goodsInsertRequestData.getBuyExchangeRate().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getBuyExchangeRate()));
+//        itasrt.setBuyRrpIncrement(goodsInsertRequestData.getBuyRrpIncrement() == null || goodsInsertRequestData.getBuyRrpIncrement().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getBuyRrpIncrement()));
+//
+//        itasrt.setSellStaDt(goodsInsertRequestData.getSellStaDt());
+//        itasrt.setSellEndDt(goodsInsertRequestData.getSellEndDt());
+//
+//        itasrt.setAsWidth(goodsInsertRequestData.getAsWidth() == null || goodsInsertRequestData.getAsWidth().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getAsWidth()));
+//        itasrt.setAsLength(goodsInsertRequestData.getAsLength() == null || goodsInsertRequestData.getAsLength().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getAsLength()));
+//        itasrt.setAsHeight(goodsInsertRequestData.getAsHeight() == null || goodsInsertRequestData.getAsHeight().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getAsHeight()));
+//        itasrt.setWeight(goodsInsertRequestData.getWeight() == null || goodsInsertRequestData.getWeight().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getWeight()));
+//
+//        itasrt.setAssortGb(goodsInsertRequestData.getAssortGb());
+//
+//        itasrt.setMdTax(goodsInsertRequestData.getMdTax());
+//
+//        itasrt.setMdMargin(goodsInsertRequestData.getMdMargin() == null || goodsInsertRequestData.getMdMargin().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getMdMargin()));
+//
+//        itasrt.setMdGoodsVatrate(goodsInsertRequestData.getMdGoodsVatrate() == null || goodsInsertRequestData.getMdGoodsVatrate().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getMdGoodsVatrate()));
+//
+//        itasrt.setBuyTax(goodsInsertRequestData.getBuyTax());
+//        // 옵션과 옵션에 따른 아이템들의 존재 여부. 미존재시 단품 옵션 1개, 단품 옵션 내역을 가진 아이템 1개가 생성돼야 함.
+//        itasrt.setOptionUseYn(goodsInsertRequestData.getOptionUseYn());
+
+//        jpaItasrtRepository.save(itasrt);
+        em.persist(itasrt);
+        return itasrt;
+    }
 }
