@@ -1,13 +1,19 @@
 package io.spring.service.nhncloud;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.spring.enums.MessageType;
-import io.spring.enums.TrdstOrderStatus;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.jparepos.kakaobizmessage.JpaSendMessageLogRepository;
 import io.spring.model.nhncloud.entity.SendMessageLog;
-import io.spring.model.nhncloud.template.alimtalk.KakaoTemplate;
-import io.spring.model.nhncloud.template.alimtalk.ReplaceMessageCommon;
 import io.spring.model.nhncloud.template.sms.Recipient;
 import io.spring.model.nhncloud.template.sms.SmsTemplate;
 import io.spring.model.order.entity.TbMember;
@@ -16,20 +22,12 @@ import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.service.HttpApiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.EnumUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@PropertySource("classpath:kakaobizmessage.yml")
+//@PropertySource("classpath:kakaobizmessage.yml")
+//@PropertySource("file:${app.home}/kakaobizmessage.yml")
 public class SmsService {
     private final ObjectMapper objectMapper;
     private final HttpApiService httpApiService;
@@ -48,7 +46,7 @@ public class SmsService {
     @Value("${secretKey.sms}")
     private String secretKey;
 
-    public void sendSmsMessage(String body, TbOrderDetail tod){
+	public void sendSmsMessage(String body, TbOrderDetail tod, String userId) {
         String reqUrl = nhnCloudUrl + appKey + sms;
         TbOrderMaster tom = tod.getTbOrderMaster();
         TbMember tm = tom.getTbMember();
@@ -67,6 +65,8 @@ public class SmsService {
 
             if(res == 200){
                 SendMessageLog sl = new SendMessageLog(tod, tm, MessageType.sms);
+				sl.setRegId(userId);
+				sl.setUpdId(userId);
                 jpaSendMessageLogRepository.save(sl);
             }
             else {

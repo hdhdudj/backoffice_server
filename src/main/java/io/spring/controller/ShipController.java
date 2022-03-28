@@ -2,11 +2,12 @@ package io.spring.controller;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import io.spring.enums.TrdstOrderStatus;
-import io.spring.model.ship.response.ShipListDataResponse;
+import javax.validation.Valid;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -18,13 +19,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.spring.enums.TrdstOrderStatus;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.model.ship.request.InsertShipEtcRequestData;
 import io.spring.model.ship.request.ShipIndicateSaveListData;
 import io.spring.model.ship.request.ShipSaveListData;
+import io.spring.model.ship.response.ShipEtcItemListResponseData;
+import io.spring.model.ship.response.ShipEtcItemResponseData;
 import io.spring.model.ship.response.ShipIndicateListData;
 import io.spring.model.ship.response.ShipIndicateSaveListResponseData;
 import io.spring.model.ship.response.ShipItemListData;
+import io.spring.model.ship.response.ShipListDataResponse;
 import io.spring.service.ship.JpaShipService;
 import io.spring.service.ship.MyBatisShipService;
 import lombok.RequiredArgsConstructor;
@@ -76,12 +82,20 @@ public class ShipController {
 			map.put("channelId", channelId);
 		}
 
+        String orderSeq = "";
+
 		if (orderId != null && !orderId.equals("")) {
+            String[] orderArr = orderId.split("-");
+            if(orderArr.length > 1){
+                orderId = orderArr[0];
+                orderSeq = orderArr[1];
+            }
 			map.put("orderId", orderId);
+			map.put("orderSeq", orderSeq);
 		}
 
 		List<ShipIndicateSaveListResponseData.Ship> l = myBatisShipService.getOrderShipList(map);
-		
+
 		ShipIndicateSaveListResponseData shipIndicateSaveListResponseData = new ShipIndicateSaveListResponseData(
 				startDt, endDt, assortId, assortNm, channelId, orderId);
 		shipIndicateSaveListResponseData.setShips(l);
@@ -91,12 +105,37 @@ public class ShipController {
         return ResponseEntity.ok(res);
     }
 
-    /**
-     * 출고지시 화면 : 저장용. 출고지시 할 출고내역들을 선택 후 저장 버튼을 누르면 호출되는 api (출고번호 기준으로 불러옴)
-     */
+//    /**
+//     * 출고지시 화면 : 출고지시 저장 화면에서 저장하기 위한 리스트를 조건 검색으로 불러오는 api (주문번호 기준으로 불러옴)
+//     */
+//    @GetMapping(path = "/deposit/items")
+//    public ResponseEntity getShipCandidateList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+//                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+////                                      @RequestParam @Nullable String shipId,
+//                                              @RequestParam @Nullable String assortId,
+//                                              @RequestParam @Nullable String assortNm,
+//                                              @RequestParam @Nullable String storageId,
+//                                              @RequestParam @Nullable String vendorId){
+////        Date start = java.sql.Timestamp.valueOf(startDt.atStartOfDay());
+////        Date end = java.sql.Timestamp.valueOf(endDt.atTime(23,59,59));
+//        ShipCandidateListData shipCandidateListData = jpaShipService.getShipCandidateList(startDt, endDt, storageId, assortId,
+//                assortNm, vendorId, StringFactory.getStrC04(), "", StringFactory.getGbTwo());
+//        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipCandidateListData);
+//        return ResponseEntity.ok(res);
+//    }
+
+
+   /**
+    * 출고지시 화면 : 출고지시 저장용. 출고지시 할 출고내역들을 선택 후 저장 버튼을 누르면 호출되는 api (출고번호 기준으로 불러옴)
+    */
     @PostMapping(path = "/indicate")
-    public ResponseEntity saveShipIndicate(@RequestBody ShipIndicateSaveListData shipIndicateSaveDataList){
-        List<String> shipIdList = jpaShipService.saveShipIndicate(shipIndicateSaveDataList);
+	public ResponseEntity saveShipIndicate(@RequestBody @Valid ShipIndicateSaveListData shipIndicateSaveDataList) {
+
+		System.out.println("saveShipIndicate");
+
+		String userId = shipIndicateSaveDataList.getUserId();
+
+		List<String> shipIdList = jpaShipService.saveShipIndicate(shipIndicateSaveDataList, userId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIdList);
         return ResponseEntity.ok(res);
     }
@@ -106,15 +145,15 @@ public class ShipController {
      */
     @GetMapping(path = "/indicate/items")
     public ResponseEntity getShipIndicateList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
-                                      @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
-                                      @RequestParam @Nullable String shipId,
-                                       @RequestParam @Nullable String assortId,
-                                       @RequestParam @Nullable String assortNm,
-                                       @RequestParam @Nullable String channelId){
+                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+                                              @RequestParam @Nullable String shipId,
+                                              @RequestParam @Nullable String assortId,
+                                              @RequestParam @Nullable String assortNm,
+                                              @RequestParam @Nullable String vendorId){
 //        Date start = java.sql.Timestamp.valueOf(startDt.atStartOfDay());
 //        Date end = java.sql.Timestamp.valueOf(endDt.atTime(23,59,59));
-		ShipIndicateListData shipIndicateListData = jpaShipService.getShipIndList(startDt, endDt, shipId, assortId,
-				assortNm, channelId, StringFactory.getStrD01(), "", StringFactory.getGbTwo());
+        ShipIndicateListData shipIndicateListData = jpaShipService.getShipIndList(startDt, endDt, shipId, assortId,
+                assortNm, vendorId, StringFactory.getStrD01(), "", StringFactory.getGbTwo());
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
         return ResponseEntity.ok(res);
     }
@@ -128,7 +167,6 @@ public class ShipController {
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipItemListData);
         return ResponseEntity.ok(res);
     }
-
     /**
      * 출고처리 화면 : 출고지시일자, 출고지시번호, 상품코드, 구매처를 받아서 조회하면 출고지시 목록을 보여줌
      */
@@ -138,9 +176,9 @@ public class ShipController {
                                              @RequestParam @Nullable String shipId,
                                              @RequestParam @Nullable String assortId,
                                              @RequestParam @Nullable String assortNm,
-			@RequestParam @Nullable String channelId, @RequestParam @Nullable String orderId) {
+			@RequestParam @Nullable String vendorId, @RequestParam @Nullable String orderId) {
 		ShipIndicateListData shipIndicateListData = jpaShipService.getShipIndList(startDt, endDt, shipId, assortId,
-				assortNm, channelId, StringFactory.getStrD01(), orderId, StringFactory.getGbTwo());
+				assortNm, vendorId, StringFactory.getStrD01(), orderId, StringFactory.getGbTwo());
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIndicateListData);
         return ResponseEntity.ok(res);
     }
@@ -149,8 +187,9 @@ public class ShipController {
      * 출고처리 화면 : 출고 수량을 입력하면 관련된 값을 변경함.
      */
     @PostMapping(path = "")
-    public ResponseEntity shipIndToShip(@RequestBody ShipSaveListData shipSaveListData){
-        List<String> shipIdList = jpaShipService.shipIndToShip(shipSaveListData);
+	public ResponseEntity shipIndToShip(@RequestBody @Valid ShipSaveListData shipSaveListData) {
+		String userId = shipSaveListData.getUserId();
+		List<String> shipIdList = jpaShipService.shipIndToShip2(shipSaveListData, userId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipIdList);
         return ResponseEntity.ok(res);
     }
@@ -165,9 +204,10 @@ public class ShipController {
                                              @RequestParam @Nullable String shipId,
                                              @RequestParam @Nullable String assortId,
                                              @RequestParam @Nullable String assortNm,
+                                             @RequestParam @Nullable String storageId,
                                              @RequestParam @Nullable String vendorId){
 		ShipListDataResponse shipListDataResponse = jpaShipService.getShipList(startDt, endDt, shipId, assortId,
-				assortNm, vendorId, TrdstOrderStatus.D02.toString(), StringFactory.getGbFour());
+				assortNm, vendorId, TrdstOrderStatus.D02.toString(), StringFactory.getGbFour(), storageId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipListDataResponse);
         return ResponseEntity.ok(res);
     }
@@ -181,4 +221,64 @@ public class ShipController {
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),shipItemListData);
         return ResponseEntity.ok(res);
     }
+
+	/**
+	 * 입고처리 : 화면에서 입고수량 입력 후 저장을 눌렀을 때 타는 api (create)
+	 * 
+	 * @throws Exception
+	 */
+	@PostMapping(path = "/etc")
+	public ResponseEntity insertEtcShip(@RequestBody @Valid InsertShipEtcRequestData reqData) throws Exception {
+		log.debug("출고처리 호출");
+
+		String userId = reqData.getUserId();
+
+		System.out.println(reqData);
+
+		String depositNo = "";
+
+		List<String> messageList = new ArrayList<>();
+		depositNo = jpaShipService.insertEtcShip(reqData, userId);
+		// depositNo = jpaDepositService.insertEtcDeposit(reqData);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
+				depositNo);
+
+		return ResponseEntity.ok(res);
+	}
+
+
+	@GetMapping(path = "/etc/items/{etcId}")
+	public ResponseEntity getShipEtcItem(@PathVariable String etcId) {
+
+		ShipEtcItemResponseData r = jpaShipService.getShipEtcItem(etcId, "21");
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
+				r);
+		return ResponseEntity.ok(res);
+	}
+
+	@GetMapping(path = "/etc/items")
+	public ResponseEntity getShipEtcItems(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+			@RequestParam @Nullable String depositNo, @RequestParam @Nullable String assortId,
+			@RequestParam @Nullable String assortNm, @RequestParam @Nullable String storageId,
+			@RequestParam @Nullable String depositGb) {
+
+		ShipEtcItemListResponseData r = null;
+
+		boolean isValid = true;
+
+		if (depositGb == null || depositGb.equals("") || !depositGb.substring(0, 1).equals("2")) {
+			isValid = false;
+			System.out.println("depositGb =>" + depositGb);
+		}
+
+		if (isValid) {
+			r = jpaShipService.getShipEtcItems(startDt, endDt, depositNo, assortId, assortNm, storageId, depositGb);
+		}
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
+		return ResponseEntity.ok(res);
+	}
+
 }

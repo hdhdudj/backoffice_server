@@ -1,6 +1,17 @@
 package io.spring.model.deposit.entity;
 
+import java.util.Date;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
@@ -9,10 +20,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-
-import javax.persistence.*;
-import java.util.Date;
 
 @Entity
 @Getter
@@ -33,6 +40,15 @@ public class Lsdpss extends CommonProps {
         this.setRegId(lsdpsm.getRegId());
         this.setUpdId(lsdpsm.getUpdId());
     }
+
+	public Lsdpss(Lsdpsm lsdpsm, String depositStatus) {
+		this.depositNo = lsdpsm.getDepositNo();
+		this.effEndDt = Utilities.getStringToDate(StringFactory.getDoomDay());
+		this.depositStatus = depositStatus;
+		this.setRegId(lsdpsm.getRegId());
+		this.setUpdId(lsdpsm.getUpdId());
+	}
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seq;

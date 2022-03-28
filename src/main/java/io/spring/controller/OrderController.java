@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -29,6 +31,7 @@ import io.spring.model.order.request.OrderStockMngInsertRequestData;
 import io.spring.model.order.response.CancelOrderListResponse;
 import io.spring.model.order.response.OrderDetailResponseData;
 import io.spring.model.order.response.OrderMasterListResponseData;
+import io.spring.model.order.response.OrderStatusWatingItemListResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.order.JpaOrderService;
 import io.spring.service.order.MyBatisOrderService;
@@ -177,7 +180,10 @@ public class OrderController {
 	@RequestMapping(path = "/orderstatus", method = RequestMethod.GET)
 	public ResponseEntity changeOrderStatus(@RequestParam String orderId, @RequestParam String orderSeq) {
 		log.debug("changeOrderStatus 실행.");
-		jpaOrderService.changeOrderStatus(orderId, orderSeq);
+
+		String userId = "batch did";
+
+		jpaOrderService.changeOrderStatus(orderId, orderSeq, userId);
 
 
 		TbOrderDetail t = jpaOrderService.getOrderDetail(orderId, orderSeq);
@@ -274,7 +280,8 @@ public class OrderController {
 	@RequestParam @Nullable String custTel,
 	@RequestParam @Nullable String deliNm,
 	@RequestParam @Nullable String deliHp,
-	@RequestParam @Nullable String deliTel
+			@RequestParam @Nullable String deliTel, @RequestParam @Nullable String assortId,
+			@RequestParam @Nullable String assortNm
 									   ) {
 
 		System.out.println("getOrderDetailList");
@@ -318,6 +325,15 @@ public class OrderController {
 		}
 		if (channelOrderNo != null && !channelOrderNo.equals("")) {
 			map.put("channelOrderNo", channelOrderNo);
+		}
+
+
+		if (assortId != null && !assortId.equals("")) {
+			map.put("assortId", assortId);
+		}
+
+		if (assortNm != null && !assortNm.equals("")) {
+			map.put("assortNm", assortNm);
 		}
 
 		List<OrderMasterListResponseData> r = myBatisOrderService.getOrderMasterList(map);
@@ -394,22 +410,26 @@ public class OrderController {
 
 	@GetMapping(path = "/test/sms")
 	public ResponseEntity smsSendTest(@RequestParam String body, @RequestParam String tbOrderNo){
-		jpaOrderService.testSms(body, tbOrderNo);
+		jpaOrderService.testSms(body, tbOrderNo, "test");
 		return null;
 	}
 
+	// 20220307 rjb80 requestbody 추가
+	// 20220307 rjb80 현재사용안하는 api임.
 	@PostMapping(path = "/ifoption")
 	public ResponseEntity saveOrderOption(
 			@RequestBody OrderOptionRequestData req) {
 
 		System.out.println(req);
 
+		String userId = req.getUserId();
+
 		Boolean ret = jpaOrderService.saveGoodsIfoption(req.getOrderId(), req.getOrderSeq(), req.getAssortId(),
 				req.getChannelGoodsNo(),
-				req.getChannelOptionSno());
+				req.getChannelOptionSno(), userId);
 
 		if (ret) {
-			jpaOrderService.noOptionChangeOrderStatus(req.getOrderId(), req.getOrderSeq());
+			jpaOrderService.noOptionChangeOrderStatus(req.getOrderId(), req.getOrderSeq(), userId);
 		}
 
 		ApiResponseMessage res = null;
@@ -424,7 +444,8 @@ public class OrderController {
 
 	@PostMapping(path = "/items/cancel")
 	public ResponseEntity cancelOrder(
-			@RequestBody CancelOrderRequestData param) {
+			@RequestBody @Valid CancelOrderRequestData param) {
+
 
 //CancelOrderRequestData
 
@@ -449,7 +470,7 @@ public class OrderController {
 			m.put("userId", userId);
 
 			if (o.getChannelGb().equals("01")) {
-				boolean r = jpaOrderService.cancelGodoOrder(m);
+				boolean r = jpaOrderService.cancelGodoOrder(m, userId);
 				System.out.println(r);
 				if (r == false) {
 					chk = "error";
@@ -486,7 +507,7 @@ public class OrderController {
 	@GetMapping(path = "/cancel/items")
 	public ResponseEntity getOrderCancelList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
-			@RequestParam @Nullable String ifStatus) {
+			@RequestParam @Nullable String ifStatus, @RequestParam @Nullable String orderName) {
 
 		System.out.println("getOrderDetailList");
 
@@ -506,8 +527,62 @@ public class OrderController {
 		if (ifStatus != null && !ifStatus.equals("")) {
 			map.put("ifStatus", ifStatus);
 		}
+		if (orderName != null && !orderName.trim().equals("")) {
+			map.put("orderName", orderName);
+		}
 
 		CancelOrderListResponse r = myBatisOrderService.getOrderCancelList(map);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
+		return ResponseEntity.ok(res);
+
+	}
+
+	// 미발주
+	// unpurchased
+	@GetMapping(path = "/waitStatus/items")
+	public ResponseEntity getOrderStatusWatingItems(@RequestParam String statusCd, @RequestParam int waitCnt,
+			@RequestParam @Nullable String assortGb) {
+
+		OrderStatusWatingItemListResponseData r = jpaOrderService.getOrderStatusWatingItems(statusCd, waitCnt,
+				assortGb);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
+		if (res == null) {
+			return null;
+		}
+
+		return ResponseEntity.ok(res);
+	}
+
+	/**
+	 * 주문별주문리스트 가져오는 api
+	 */
+	@GetMapping(path = "/goods/special-items")
+	// 주문일자,주문상태,주문번호,( 셀렉트방식으로 채널주문번호(기본값),주문자명,주문자휴대폰번호,주문자전화번호,수령자명,수령자휴대폰번호,수령자
+	// 전화번호,입금자명
+	public ResponseEntity getSpecialOrderMasterList(
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt) {
+
+		System.out.println("getSpecialOrderMasterList");
+
+		HashMap<String, Object> map = new HashMap<>();
+
+		if (startDt != null) {
+
+			LocalDateTime start = startDt.atStartOfDay();
+
+			map.put("startDt", start);
+		}
+		if (endDt != null) {
+
+			LocalDateTime end = endDt.atTime(23, 59, 59);
+			map.put("endDt", end);
+		}
+
+
+		List<OrderMasterListResponseData> r = myBatisOrderService.getSpecialOrderMasterList(map);
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
 		return ResponseEntity.ok(res);

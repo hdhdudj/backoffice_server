@@ -66,6 +66,14 @@ public class DepositSelectListResponseData {
                 this.orderSeq = lsdpsd.getOrderSeq();
                 this.orderkey = Utilities.addDashInMiddle(orderId, orderSeq);
             }
+
+			this.optionNm1 = lsdpsd.getItitmm().getItvari1() == null ? ""
+					: lsdpsd.getItitmm().getItvari1().getOptionNm();
+			this.optionNm2 = lsdpsd.getItitmm().getItvari2() == null ? ""
+					: lsdpsd.getItitmm().getItvari2().getOptionNm();
+			this.optionNm3 = lsdpsd.getItitmm().getItvari3() == null ? ""
+					: lsdpsd.getItitmm().getItvari3().getOptionNm();
+
         }
         private String depositKey;
 //        @JsonDeserialize(using = LocalDateTimeDeserializer.class)

@@ -20,5 +20,10 @@ public interface CommonMapper {
 
 	List<HashMap<String, Object>> getCommonOrderStatus(HashMap<String, Object> param);
 
+	HashMap<String, Object> getCommonDefaultRack(HashMap<String, Object> param);
+
+	HashMap<String, Object> checkRack(HashMap<String, Object> param);
+
+
 
 }

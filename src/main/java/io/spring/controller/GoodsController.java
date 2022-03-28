@@ -6,10 +6,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
-import io.spring.infrastructure.util.Utilities;
-import org.apache.commons.lang3.StringUtils;
+import javax.validation.Valid;
+
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,13 +26,15 @@ import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.request.GoodsInsertRequestData;
-import io.spring.model.goods.response.GoodsInsertResponseData;
+import io.spring.model.goods.response.GetStockListResponseData;
 import io.spring.model.goods.response.GoodsSelectDetailResponseData;
 import io.spring.model.goods.response.GoodsSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.common.MyBatisCommonService;
 import io.spring.service.goods.JpaGoodsService;
+import io.spring.service.goods.MyBatisGoodsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,6 +48,10 @@ public class GoodsController {
 	private final JpaGoodsService jpaGoodsService;
 	private final JpaCommonService jpaCommonService;
 	private final MyBatisCommonService myBatisCommonService;
+
+	private final MyBatisGoodsService myBatisGoodsService;
+
+
 
 	@RequestMapping(path = "/select")
 	public ResponseEntity selectGoodsListAll() {
@@ -84,21 +92,22 @@ public class GoodsController {
 	 * 상품 등록 및 수정
 	 */
 	@PostMapping(path = "/save")
-	public ResponseEntity saveGoodsJpa(@RequestBody GoodsInsertRequestData goodsInsertRequestData) {
+	public ResponseEntity saveGoodsJpa(@RequestBody @Valid GoodsInsertRequestData goodsInsertRequestData) {
 		log.debug("save(insert or update) goods by jpa");
 		System.out.println(goodsInsertRequestData.toString());
 
 		goodsInsertRequestData.setAssortId(jpaCommonService.getNumberId(goodsInsertRequestData.getAssortId(), StringFactory.getStrSeqItasrt(), StringFactory.getIntNine())); // assort id 梨꾨쾲
 
 		System.out.println(goodsInsertRequestData.toString());
-		jpaGoodsService.sequenceInsertOrUpdateGoods(goodsInsertRequestData);
-		GoodsSelectDetailResponseData responseData = jpaGoodsService.getGoodsDetailPage(goodsInsertRequestData.getAssortId());
+		String assortId = jpaGoodsService.sequenceInsertOrUpdateGoods(goodsInsertRequestData);
+//		GoodsSelectDetailResponseData responseData = jpaGoodsService.getGoodsDetailPage(goodsInsertRequestData.getAssortId());
+		Map<String, String> responseMap = new HashMap<>();
+		responseMap.put(StringFactory.getStrAssortId(), assortId);
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), responseMap);
 
-		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), responseData);
-
-		if(responseData == null){
-			return null;
-		}
+//		if(responseData == null){
+//			return null;
+//		}
 		return ResponseEntity.ok(res);
 	}
 
@@ -181,7 +190,8 @@ public class GoodsController {
 	@GetMapping(path = "/items/detail")
 	public ResponseEntity getGoodsItemWithCategory(@RequestParam(required = false) String assortId,
 			@RequestParam(required = false) String assortNm, @RequestParam(required = false) String vendorId,
-			@RequestParam(required = false) String brandId, @RequestParam(required = false) String category) {
+			@RequestParam(required = false) String brandId, @RequestParam(required = false) String category,
+			@RequestParam(required = false) String channelGoodsNo) {
 		HashMap<String, Object> param = new HashMap<String, Object>();
 
 		if (assortId != null) {
@@ -202,6 +212,10 @@ public class GoodsController {
 
 		if (category != null) {
 			param.put("category", category);
+		}
+
+		if (channelGoodsNo != null) {
+			param.put("channelGoodsNo", channelGoodsNo);
 		}
 
 		List<HashMap<String, Object>> responseData = goodsRepository.getGoodsItemListWithCategory(param);
@@ -233,6 +247,48 @@ public class GoodsController {
 		if (responseData == null) {
 			return null;
 		}
+		return ResponseEntity.ok(res);
+
+	}
+
+	// @PathVariable("assortId") String assortId
+	@GetMapping(path = "/stock/storage/{storageId}")
+	public ResponseEntity getStockList(@PathVariable("storageId") String storageId,
+			@RequestParam @Nullable String vendorId, @RequestParam @Nullable String assortId,
+			@RequestParam @Nullable String assortNm, @RequestParam @Nullable String channelGoodsNo) {
+
+		HashMap<String, Object> map = new HashMap<>();
+
+		if (storageId != null && !storageId.equals("")) {
+			map.put("storageId", storageId);
+		}
+		if (assortId != null && !assortId.equals("")) {
+			map.put("assortId", assortId);
+		}
+
+		if (vendorId != null && !vendorId.equals("")) {
+			map.put("vendorId", vendorId);
+		}
+
+		if (assortNm != null && !assortNm.equals("")) {
+			map.put("assortNm", assortNm);
+		}
+
+		if (channelGoodsNo != null && !channelGoodsNo.equals("")) {
+			map.put("channelGoodsNo", channelGoodsNo);
+		}
+
+		GetStockListResponseData r = myBatisGoodsService.getItitmc(map);
+
+		// List<HashMap<String, Object>> responseData = goodsRepository.getItitmc(map);
+
+		// GetStockListResponseData r = jpaGoodsService.getStockList(storageId,
+		// vendorId, assortId, assortNm,
+		// channelGoodsNo);
+		//
+
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
 		return ResponseEntity.ok(res);
 
 	}
@@ -269,6 +325,24 @@ public class GoodsController {
 		jpaGoodsService.batchSizeTest();
 		ApiResponseMessage res = new ApiResponseMessage("ok", "success", null);
 
+		return ResponseEntity.ok(res);
+	}
+
+	/**
+	 *  goodsNo(혹은 assortId)를 받아서 그 itasrt의 vendorId를 바꿔주는 api
+	 */
+	@GetMapping(path = "/change/vendor")
+	public HttpEntity changeVendor(@RequestParam("assortId") @Nullable String assortId,
+								   @RequestParam("channelGoodsNo") @Nullable String channelGoodsNo,
+								   @RequestParam("vendorId") String vendorId){
+		if((assortId == null && channelGoodsNo == null) || ("".equals(assortId) && "".equals(channelGoodsNo))){
+			return ResponseEntity.badRequest().body("assortId와 channelGoodsNo 중 한 개의 값이 존재해야 합니다.");
+		}
+		if(vendorId.trim().equals("")){
+			return ResponseEntity.badRequest().body("vendorId가 존재해야 합니다.");
+		}
+		jpaGoodsService.changeVendor(assortId, channelGoodsNo, vendorId);
+		ApiResponseMessage res = new ApiResponseMessage("ok", "success", null);
 		return ResponseEntity.ok(res);
 	}
 }

@@ -5,7 +5,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
-import io.spring.model.move.request.MoveListExcelRequestData;
+import javax.validation.Valid;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -19,14 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.model.goods.entity.Ititmc;
 import io.spring.model.move.request.GoodsMoveSaveData;
+import io.spring.model.move.request.MoveListExcelRequestData;
 import io.spring.model.move.request.MoveListSaveData;
 import io.spring.model.move.request.OrderMoveSaveData;
 import io.spring.model.move.response.GoodsModalListResponseData;
 import io.spring.model.move.response.MoveCompletedLIstReponseData;
 import io.spring.model.move.response.MoveIndicateDetailResponseData;
 import io.spring.model.move.response.MoveIndicateListResponseData;
-import io.spring.model.move.response.MoveListResponseData;
 import io.spring.model.move.response.MovedDetailResponseData;
 import io.spring.model.move.response.OrderMoveListResponseData;
 import io.spring.service.move.JpaMoveService;
@@ -96,8 +98,11 @@ public class MoveController {
      * 주문이동지시 저장
      */
     @PostMapping(path="/indicate/order")
-    public ResponseEntity saveOrderMove(@RequestBody OrderMoveSaveData orderMoveSaveData){
-        List<String> shipIdList = jpaMoveService.saveOrderMove(orderMoveSaveData);
+	public ResponseEntity saveOrderMove(@RequestBody @Valid OrderMoveSaveData orderMoveSaveData) {
+
+		String userId = orderMoveSaveData.getUserId();
+
+		List<String> shipIdList = jpaMoveService.saveOrderMove(orderMoveSaveData, userId);
 //        depositInsertRequestData.setDepositNo(depositNo); // deposit no 채번
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipIdList);
         return ResponseEntity.ok(res);
@@ -148,9 +153,12 @@ public class MoveController {
      * 상품이동지시 저장
      */
     @PostMapping(path="/indicate/goods")
-    public ResponseEntity saveGoodsMove(@RequestBody GoodsMoveSaveData goodsMoveSaveData){
+	public ResponseEntity saveGoodsMove(@RequestBody @Valid GoodsMoveSaveData goodsMoveSaveData) {
         System.out.println("========== : " + goodsMoveSaveData.getOStorageId());
-        List<String> shipIdList = jpaMoveService.saveGoodsMove(goodsMoveSaveData);
+
+		String userId = goodsMoveSaveData.getUserId();
+
+		List<String> shipIdList = jpaMoveService.saveGoodsMove(goodsMoveSaveData, userId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipIdList);
         return ResponseEntity.ok(res);
     }
@@ -173,10 +181,7 @@ public class MoveController {
                                               @RequestParam @Nullable String assortId,
                                               @RequestParam @Nullable String assortNm
                                               ){
-
-
-
-        MoveIndicateListResponseData moveIndicateListResponseData = jpaMoveService.getMoveIndicateList(startDt,endDt,storageId,oStorageId,assortId,assortNm);
+        MoveIndicateListResponseData moveIndicateListResponseData = jpaMoveService.getMoveIndicateList(startDt,endDt,null,storageId,oStorageId,assortId,assortNm, null);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),moveIndicateListResponseData);
         return ResponseEntity.ok(res);
     }
@@ -204,8 +209,9 @@ public class MoveController {
                                       @RequestParam @Nullable String assortNm,
                                       @RequestParam @Nullable String storageId,
                                       @RequestParam @Nullable String deliMethod) {
-        MoveListResponseData moveListResponseData = jpaMoveService.getMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, deliMethod);
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveListResponseData);
+//        MoveListResponseData moveListResponseData = jpaMoveService.getMoveList(startDt, endDt, shipId, assortId, assortNm, storageId, deliMethod, null, null, null);
+        MoveIndicateListResponseData moveIndicateListResponseData = jpaMoveService.getMoveIndicateList(startDt, endDt, shipId, storageId, null, assortId, assortNm, deliMethod);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveIndicateListResponseData);
         return ResponseEntity.ok(res);
     }
     
@@ -213,8 +219,11 @@ public class MoveController {
      * 이동처리 저장
      */
     @PostMapping(path = "/move")
-    public ResponseEntity changeShipStatus(@RequestBody MoveListSaveData moveListSaveData){
-        List<String> shipIdList = jpaMoveService.changeShipStatus(moveListSaveData);
+	public ResponseEntity changeShipStatus(@RequestBody @Valid MoveListSaveData moveListSaveData) {
+
+		String userId = moveListSaveData.getUserId();
+
+		List<String> shipIdList = jpaMoveService.changeShipStatus2(moveListSaveData, userId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), shipIdList);
         return ResponseEntity.ok(res);
     }
@@ -224,13 +233,16 @@ public class MoveController {
      * @return 이동완료리스트 DTO 반환
      */
     @GetMapping(path = "/items")
-    public ResponseEntity getMovedList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
-                                           @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+    public ResponseEntity getMovedList(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable LocalDate startDt,
+                                           @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") @Nullable LocalDate endDt,
                                            @RequestParam @Nullable String shipId,
                                            @RequestParam @Nullable String assortId,
                                            @RequestParam @Nullable String assortNm,
+                                           @RequestParam @Nullable String blNo,
+                                           @RequestParam @Nullable LocalDate staEstiArrvDt,
+                                           @RequestParam @Nullable LocalDate endEstiArrvDt,
                                            @RequestParam @Nullable String storageId){
-        MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.getMovedList(startDt, endDt, shipId, assortId, assortNm, storageId);
+        MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.getMovedList(startDt, endDt, shipId, assortId, assortNm, storageId, blNo, staEstiArrvDt, endEstiArrvDt);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveCompletedLIstReponseData);
         return ResponseEntity.ok(res);
     }
@@ -238,10 +250,19 @@ public class MoveController {
     /**
      * 이동리스트 화면에서 엑셀 업로드한 값 저장
      */
+	// 20220307 rjb80 requestbody 추가
     @PostMapping(path = "/excel")
-    public ResponseEntity saveExcelList(@RequestBody MoveListExcelRequestData moveListExcelRequestData){
-        jpaMoveService.saveExcelList(moveListExcelRequestData);
-        MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.getMovedList(moveListExcelRequestData.getStartDt(), moveListExcelRequestData.getEndDt(), moveListExcelRequestData.getShipId(), moveListExcelRequestData.getAssortId(), moveListExcelRequestData.getAssortNm(), moveListExcelRequestData.getStorageId());
+	public ResponseEntity saveExcelList(@RequestBody @Valid MoveListExcelRequestData moveListExcelRequestData) {
+
+
+		String userId = moveListExcelRequestData.getUserId();
+
+		jpaMoveService.saveExcelList(moveListExcelRequestData, userId);
+
+		// 조회조건이 이상함.위에 저장리스트에서 저장된건의 ship_id를 가지고 조회해도 될거같음.
+
+
+        MoveCompletedLIstReponseData moveCompletedLIstReponseData = jpaMoveService.getMovedList(moveListExcelRequestData.getStartDt(), moveListExcelRequestData.getEndDt(), moveListExcelRequestData.getShipId(), moveListExcelRequestData.getAssortId(), moveListExcelRequestData.getAssortNm(), moveListExcelRequestData.getStorageId(), null, null, null);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), moveCompletedLIstReponseData);
         return ResponseEntity.ok(res);
     }
@@ -256,4 +277,25 @@ public class MoveController {
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), movedDetailResponseData);
         return ResponseEntity.ok(res);
     }
+
+	@GetMapping(path = "/moved/ititmc")
+	public ResponseEntity getMovedItitmc() {
+		// jpaMoveService.get
+		/*
+		 * 000002 000092802 0001
+		 */
+
+		List<Ititmc> l = jpaMoveService.getItitmc2("000002", null, null, null);
+
+		for (Ititmc o : l) {
+			System.out.println(o);
+		}
+
+
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
+				"");
+		return ResponseEntity.ok(res);
+	}
+
 }

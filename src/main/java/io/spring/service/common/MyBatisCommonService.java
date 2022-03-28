@@ -52,6 +52,19 @@ public class MyBatisCommonService {
 			return list;
 		}
 
+		public HashMap<String, Object> getCommonDefaultRack(HashMap<String, Object> param) {
+			HashMap<String, Object> o = myBatisCommonDao.getCommonDefaultRack(param);
+
+			return o;
+		}
+
+
+
+		public HashMap<String, Object> checkRack(HashMap<String, Object> param) {
+			HashMap<String, Object> o = myBatisCommonDao.checkRack(param);
+
+			return o;
+		}
 
 		public LinkedList<String> findUpperCategory(String categoryId) {
 			

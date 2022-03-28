@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
@@ -17,6 +18,7 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.entity.Itasrt;
+import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.entity.Lspchd;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
@@ -189,6 +191,12 @@ public class Lsdpsp extends CommonProps implements Serializable {
     @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
     private Itasrt itasrt;
 
+	@JoinColumns({
+			@JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")),
+			@JoinColumn(name = "itemId", referencedColumnName = "itemId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none")) })
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonIgnore
+	private Ititmm ititmm; // ititmc 연관관계
 
 //    // 연관 관계 : lsdpsd
 //    @OneToMany

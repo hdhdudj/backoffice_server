@@ -74,7 +74,7 @@ public class Lsshpm extends CommonProps {
 			this.shipOrderGb = "01"; // 01 주문 02 상품
 
 		} else if (shipGb.equals("04")) {
-			// 주문이동지시
+			// 상품이동지시
 			this.shipGb = StringFactory.getGbTwo(); // 02 하드코딩 (01 : 출고, 02 : 이동)
 			this.masterShipGb = "04"; // 01 출고 03 주문이동지시 04싱픔이동지시
 			this.shipOrderGb = "02"; // 01 주문 02 상품
@@ -125,7 +125,7 @@ public class Lsshpm extends CommonProps {
 			this.shipOrderGb = "01"; // 01 주문 02 상품
 
 		} else if (shipGb.equals("04")) {
-			// 주문이동지시
+			// 상품이동지시
 			this.shipGb = StringFactory.getGbTwo(); // 02 하드코딩 (01 : 출고, 02 : 이동)
 			this.masterShipGb = "04"; // 01 출고 03 주문이동지시 04싱픔이동지시
 			this.shipOrderGb = "02"; // 01 주문 02 상품
@@ -177,11 +177,10 @@ public class Lsshpm extends CommonProps {
     private String blNo;
     // 21-12-29 added column
     private LocalDate shipmentDt; // 선적일자
-    private LocalDate estiArrvDt; // 도착예정일자
+    private LocalDate estiArrvDt; // 도착예정일자(=입항일자)
     private String movementKd; // 운송형태
     private String containerKd; // 컨테이너 종류
     private Long containerQty; // 컨테이너 수량
-
 
 //    // 연관관계 : Lsshpd
 //    @OneToMany(fetch = FetchType.LAZY, targetEntity = Lsshpd.class)

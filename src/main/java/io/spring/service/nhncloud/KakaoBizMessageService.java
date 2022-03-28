@@ -1,6 +1,14 @@
 package io.spring.service.nhncloud;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang3.EnumUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.spring.enums.MessageType;
 import io.spring.enums.TrdstOrderStatus;
 import io.spring.infrastructure.util.StringFactory;
@@ -15,18 +23,11 @@ import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.service.HttpApiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.EnumUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@PropertySource("classpath:kakaobizmessage.yml")
+//@PropertySource("classpath:kakaobizmessage.yml")
 public class KakaoBizMessageService {
     private final TemplateMap templateMap;
     private final ObjectMapper objectMapper;
@@ -46,7 +47,7 @@ public class KakaoBizMessageService {
     @Value("${senderKey.alimtalk}")
     private String senderKey;
 
-    public void sendKakaoBizMessage(String statusCd, TbOrderDetail tod){
+	public void sendKakaoBizMessage(String statusCd, TbOrderDetail tod, String userId) {
         String reqUrl = nhnCloudUrl + appKey + message;
         TbOrderMaster tom = tod.getTbOrderMaster();
         TbMember tm = tom.getTbMember();
@@ -73,6 +74,9 @@ public class KakaoBizMessageService {
 
             if(res == 200){
                 SendMessageLog sl = new SendMessageLog(tod, tm, MessageType.alimtalk);
+				sl.setRegId(userId);
+				sl.setUpdId(userId);
+
                 jpaSendMessageLogRepository.save(sl);
             }
             else {

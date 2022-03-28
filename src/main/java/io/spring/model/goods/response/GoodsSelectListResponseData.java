@@ -1,13 +1,13 @@
 package io.spring.model.goods.response;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import io.spring.model.goods.entity.Itasrt;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @Setter
@@ -37,7 +37,7 @@ public class GoodsSelectListResponseData {
             this.shortageYn = itasrt.getShortageYn();
             this.brandId = itasrt.getBrandId();
             this.dispCategoryId = itasrt.getDispCategoryId();
-//            this.brandNm = itasrt.getIfBrand().getBrandNm(); 바깥에서 set
+			this.brandNm = itasrt.getItbrnd() == null ? "" : itasrt.getItbrnd().getBrandNm();
             this.categoryNm = itasrt.getCategoryId() == null || itasrt.getCategoryId().trim().equals("")? "" : itasrt.getItcatg().getCategoryNm();
         }
         private String assortNm;

@@ -4,10 +4,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.spring.model.deposit.request.DepositSelectDetailRequestData;
+import javax.validation.Valid;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,8 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.infrastructure.util.exception.ReqCheckException;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.model.deposit.request.DepositInsertRequestData;
+import io.spring.model.deposit.request.DepositSelectDetailRequestData;
+import io.spring.model.deposit.request.InsertDepositEtcRequestData;
+import io.spring.model.deposit.response.DepositEtcItemListResponseData;
+import io.spring.model.deposit.response.DepositEtcItemResponseData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.deposit.response.DepositSelectDetailResponseData;
 import io.spring.model.deposit.response.DepositSelectListResponseData;
@@ -29,6 +36,7 @@ import io.spring.model.purchase.response.PurchaseSelectListResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.deposit.JpaDepositService;
 import io.spring.service.purchase.JpaPurchaseService;
+import io.spring.service.stock.JpaStockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,6 +50,7 @@ public class DepositController {
     private final JpaPurchaseService jpaPurchaseService;
     private final JpaCommonService jpaCommonService;
 
+	private final JpaStockService jpaStockService;
 
 //    @PostMapping(path="") // create
 //    public ResponseEntity createDepositJpa(@RequestBody DepositInsertRequestData depositInsertRequestData){
@@ -62,6 +71,9 @@ public class DepositController {
 			@RequestParam @Nullable String vendorId, @RequestParam @Nullable String storageId, @RequestParam @Nullable String piNo,
                                                      @RequestParam @Nullable String blNo
             , @Nullable @RequestParam String siteOrderNo) {
+
+		System.out.println("getChoosePurchaseModalList");
+
 		PurchaseListInDepositModalData purchaseListInDepositModalData = jpaPurchaseService
 				.getPurchaseMasterListWithDetails(startDt, endDt, vendorId, storageId, piNo, siteOrderNo, blNo);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(),purchaseListInDepositModalData);
@@ -88,10 +100,15 @@ public class DepositController {
 	 */
     @PostMapping(path="")
 	public ResponseEntity createDepositListJpa(
-			@RequestBody DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) throws Exception {
+			@RequestBody @Valid DepositListWithPurchaseInfoData depositListWithPurchaseInfoData) throws Exception {
         log.debug("입고처리 호출");
+
+		System.out.println(depositListWithPurchaseInfoData);
+
+		String userId = depositListWithPurchaseInfoData.getUserId();
+
         List<String> messageList = new ArrayList<>();
-        boolean flag = jpaDepositService.sequenceCreateDeposit(depositListWithPurchaseInfoData, messageList);
+		boolean flag = jpaDepositService.sequenceCreateDeposit(depositListWithPurchaseInfoData, messageList, userId);
         ApiResponseMessage res = null;
         if(flag){
             res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), messageList.get(0));
@@ -106,12 +123,14 @@ public class DepositController {
      * 입고처리 : 화면에서 입고수량 수정 후 저장을 눌렀을 때 타는 api (update)
      */
     @PostMapping(path="/{depositNo}/update") // update
-    public ResponseEntity updateDepositJpa(@PathVariable String depositNo, @RequestBody DepositInsertRequestData depositInsertRequestData){
+	public ResponseEntity updateDepositJpa(@PathVariable String depositNo,
+			@RequestBody @Valid DepositInsertRequestData depositInsertRequestData) {
         depositInsertRequestData.setDepositNo(depositNo); // deposit no 채번
         jpaDepositService.sequenceUpdateDeposit(depositInsertRequestData);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(),StringFactory.getStrSuccess(), depositNo);
         return ResponseEntity.ok(res);
     }
+
 
 //    @PostMapping(path="") // create
 //    public ResponseEntity saveDepositJpa(@RequestBody DepositInsertRequestData depositInsertRequestData){
@@ -136,9 +155,13 @@ public class DepositController {
      *  입고 - 입고내역 : 저장 (메모 쓰고 저장하기)
      */
     @PostMapping(path="/items/update/{depositNo}")
-    public ResponseEntity updateDepositDetail(@PathVariable String depositNo, @RequestBody DepositSelectDetailRequestData depositSelectDetailRequestData){
+	public ResponseEntity updateDepositDetail(@PathVariable String depositNo,
+			@RequestBody @Valid DepositSelectDetailRequestData depositSelectDetailRequestData) {
         depositSelectDetailRequestData.setDepositNo(depositNo);
-        depositSelectDetailRequestData = jpaDepositService.updateDetail(depositSelectDetailRequestData);
+
+		String userId = depositSelectDetailRequestData.getUserId();
+
+		depositSelectDetailRequestData = jpaDepositService.updateDetail(depositSelectDetailRequestData, userId);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), depositSelectDetailRequestData);
         return ResponseEntity.ok(res);
     }
@@ -197,4 +220,80 @@ public class DepositController {
         depositNo = Utilities.getStringNo('D',depositNo,9);
         return depositNo;
     }
+
+	/**
+	 * 입고처리 : 화면에서 입고수량 입력 후 저장을 눌렀을 때 타는 api (create)
+	 * 
+	 * @throws Exception
+	 */
+	@PostMapping(path = "/etc")
+	public ResponseEntity insertEtcDeposit(@RequestBody @Valid InsertDepositEtcRequestData reqData,
+			BindingResult bindingResult)
+			throws Exception {
+		log.debug("입고처리 호출");
+
+		String userId = reqData.getUserId();
+
+		String depositNo = "";
+
+		String storageId = reqData.getStorageId();
+		
+		for (InsertDepositEtcRequestData.Item o : reqData.getItems()) {
+			boolean isCheckRack = jpaStockService.checkRack(storageId, o.getRackNo());
+
+			
+			
+			String errMsg = "not found rackNo => " + o.getRackNo();
+			
+			if (!isCheckRack) {
+				throw new ReqCheckException(errMsg); // runtime error 여서 롤백처리가능
+			}
+
+		}
+
+		log.debug("aaaa");
+
+		List<String> messageList = new ArrayList<>();
+		depositNo = jpaDepositService.insertEtcDeposit(reqData, userId);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
+				depositNo);
+
+		return ResponseEntity.ok(res);
+	}
+
+	@GetMapping(path = "/etc/items/{etcId}")
+	public ResponseEntity getDepositEtcItem(@PathVariable String etcId) {
+
+		DepositEtcItemResponseData r = jpaDepositService.getDepositEtcItem(etcId, "11");
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
+		return ResponseEntity.ok(res);
+	}
+
+	@GetMapping(path = "/etc/items")
+	public ResponseEntity getDepositEtcItems(
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
+			@RequestParam @Nullable String depositNo, @RequestParam @Nullable String assortId,
+			@RequestParam @Nullable String assortNm, @RequestParam @Nullable String storageId,
+			@RequestParam String depositGb) {
+
+		DepositEtcItemListResponseData r = null;
+
+		boolean isValid = true;
+
+		if (depositGb == null || depositGb.equals("") || !depositGb.substring(0, 1).equals("1")) {
+			isValid = false;
+			System.out.println("depositGb =>" + depositGb);
+		}
+
+		if (isValid) {
+			r = jpaDepositService.getDepositEtcItems(startDt, endDt, depositNo, assortId, assortNm, storageId,
+					depositGb);
+		}
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
+		return ResponseEntity.ok(res);
+	}
+
 }

@@ -38,6 +38,7 @@ public class DepositListWithPurchaseInfoData {
     private String depositDt;
     private String storageId;
     private String regId;
+	private String userId;
     private List<Deposit> deposits;
 
     @Getter
@@ -71,5 +72,6 @@ public class DepositListWithPurchaseInfoData {
         private Float purchaseCost;
         // 21-12-08 추가됨
         private String defectYn;
+		private String rackNo;
     }
 }

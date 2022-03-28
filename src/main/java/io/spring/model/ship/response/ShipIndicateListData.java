@@ -1,6 +1,7 @@
 package io.spring.model.ship.response;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -10,10 +11,13 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import io.spring.infrastructure.custom.CustomLocalDateTimeSerializer;
 import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.SetOptionInterface;
-import io.spring.model.order.entity.TbMember;
+import io.spring.model.order.entity.TbMemberAddress;
 import io.spring.model.order.entity.TbOrderDetail;
+import io.spring.model.order.entity.TbOrderMaster;
 import io.spring.model.ship.entity.Lsshpd;
 import io.spring.model.ship.entity.Lsshpm;
 import lombok.AccessLevel;
@@ -22,7 +26,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * 출고 - 출고지시리스트 : 출고지시일자, 출고지시번호, 상품코드or상품명, 구매처 조건에 맞는 출고지시 리스트 DTO
  * 출고 - 출고처리 : 출고처리 화면에서 조건 검색으로 리스트 가져올 때도 이용됨.
 */
 @Getter
@@ -59,8 +62,9 @@ public class ShipIndicateListData {
     @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Ship implements SetOptionInterface {
-        public Ship(TbOrderDetail tbOrderDetail, Lsshpm lsshpm, Lsshpd lsshpd){
-//            TbMember tbMember = tbOrderDetail.getTbOrderMaster().getTbMember();
+
+        public Ship(TbOrderDetail tbOrderDetail, TbOrderMaster tbOrderMaster, Lsshpm lsshpm, Lsshpd lsshpd){
+            TbMemberAddress tma = tbOrderMaster.getTbMemberAddress();
             this.shipIndDt = java.sql.Timestamp.valueOf(lsshpm.getReceiptDt());
             this.shipId = lsshpd.getShipId();
             this.shipSeq = lsshpd.getShipSeq();
@@ -69,13 +73,28 @@ public class ShipIndicateListData {
             this.deliMethod = tbOrderDetail.getDeliMethod();
             this.assortId = tbOrderDetail.getAssortId();
             this.itemId = tbOrderDetail.getItemId();
-            this.custNm = tbOrderDetail.getTbOrderMaster().getTbMemberAddress().getDeliNm();//tbMember==null? null : tbMember.getCustNm();
+            this.receiverNm = tbOrderMaster.getTbMemberAddress().getDeliNm();//tbMember==null? null : tbMember.getCustNm();
             this.assortNm = tbOrderDetail.getGoodsNm();
             this.blNo = lsshpm.getBlNo(); // 트래킹 번호
             this.shipDt = Utilities.removeTAndTransToStr(lsshpm.getApplyDay());
             this.orderId = lsshpd.getOrderId();
             this.orderSeq = lsshpd.getOrderSeq();
             this.orderKey = Utilities.addDashInMiddle(orderId, orderSeq);
+            this.orderNm = tbOrderMaster.getOrderName();
+			this.rackNo = lsshpd.getRackNo();
+
+			this.optionNm1 = lsshpd.getItitmm().getItvari1() == null ? ""
+					: lsshpd.getItitmm().getItvari1().getOptionNm();
+			this.optionNm2 = lsshpd.getItitmm().getItvari2() == null ? ""
+					: lsshpd.getItitmm().getItvari2().getOptionNm();
+			this.optionNm3 = lsshpd.getItitmm().getItvari3() == null ? ""
+					: lsshpd.getItitmm().getItvari3().getOptionNm();
+            this.orderDt = tbOrderMaster.getOrderDate();
+            this.channelOrderNo = tbOrderMaster.getChannelOrderNo();
+            this.receiverHp = tma.getDeliHp();
+            this.receiverZonecode = tma.getDeliZonecode();
+            this.receiverAddr1 = tma.getDeliAddr1();
+            this.receiverAddr2 = tma.getDeliAddr2();
             // 옵션은 외부 set
             // qty는 외부 set
         }
@@ -97,11 +116,23 @@ public class ShipIndicateListData {
         private String deliMethod;
         private String assortId;
         private String itemId;
-        private String custNm;
+        private String receiverNm;
         private String assortNm;
         private String optionNm1;
         private String optionNm2;
         private String optionNm3;
         private Long qty;
+		private String rackNo;
+        // 2022-03-24 추가
+        private String channelOrderNo;
+        private String channelGoodsNo;
+        @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+        private LocalDateTime orderDt;
+        private String receiverHp;
+        private String receiverZonecode;
+        private String receiverAddr1;
+        private String receiverAddr2;
+        // 2022-03-25 추가
+        private String orderNm;
     }
 }

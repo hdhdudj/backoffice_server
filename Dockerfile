@@ -1,24 +1,26 @@
-FROM gradle:jdk-alpine
+FROM gradle:jdk-alpine AS builder 
 
-WORKDIR /home/gradle/project
-
-EXPOSE 8080
+WORKDIR /backoffice_server
 
 USER root
 
 RUN apk update
 
-ENV GRADLE_USER_HOME /home/gradle/project
+ENV GRADLE_USER_HOME /backoffice_server
 
-COPY . /home/gradle/project
+COPY . /backoffice_server
 
 RUN gradle build
 
+FROM openjdk:8-jdk-alpine
+#ARG JAR_FILE=/backoffice_server/*.jar
+COPY --from=builder /backoffice_server/build/libs/*.jar app.jar
 
-FROM java:jre-alpine
+EXPOSE 8080
+ENTRYPOINT ["java","-Djava.net.preferIPv4Stack=true","-Dlog4j2.formatMsgNoLookups=true","-jar","/app.jar","--spring.config.location=/config/application.properties,/config/kakaobizmessage.yml"]
 
-WORKDIR /home/gradle/project
+#FROM java:jre-alpine
 
-COPY --from=0 /home/gradle/project/build/libs/project-0.0.1-SNAPSHOT.jar .
-
-ENTRYPOINT java -jar project-0.0.1-SNAPSHOT.jar
+#WORKDIR /backoffice_server
+#ARG JAR_FILE=target/*.jar
+#COPY ${JAR_FILE} app.ja

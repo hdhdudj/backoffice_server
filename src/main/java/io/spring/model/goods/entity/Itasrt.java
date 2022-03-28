@@ -1,26 +1,33 @@
 package io.spring.model.goods.entity;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.engine.spi.PersistentAttributeInterceptor;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.spring.infrastructure.util.StringFactory;
-import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.vendor.entity.Cmvdmr;
-import lombok.*;
-import org.hibernate.annotations.*;
-import org.hibernate.engine.spi.PersistentAttributeInterceptable;
-import org.hibernate.engine.spi.PersistentAttributeInterceptor;
-
-import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  *  ITASRT table의 Entity
@@ -32,8 +39,11 @@ import java.util.Set;
 @Table(name = "itasrt")
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Itasrt extends CommonProps implements PersistentAttributeInterceptable, Serializable {
+//public class Itasrt extends CommonProps implements PersistentAttributeInterceptable, Serializable {
+public class Itasrt extends CommonProps implements Serializable {
+	public Itasrt(){
+
+	}
 
 	public Itasrt(GoodsInsertRequestData goodsInsertRequestData){
 		this.assortId = goodsInsertRequestData.getAssortId();
@@ -67,8 +77,6 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 		this.buyRrpIncrement = goodsInsertRequestData.getBuyRrpIncrement() == null || goodsInsertRequestData.getBuyRrpIncrement().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getBuyRrpIncrement());
 		this.buyExchangeRate = goodsInsertRequestData.getBuyExchangeRate() == null || goodsInsertRequestData.getBuyExchangeRate().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getBuyExchangeRate());
 		this.mdDiscountRate = goodsInsertRequestData.getMdDiscountRate() == null || goodsInsertRequestData.getMdDiscountRate().trim().equals("")? null : Float.parseFloat(goodsInsertRequestData.getMdDiscountRate());
-//		this.sizeType = goodsInsertRequestData.getSizeType();
-		//	this.localDeliFee = goodsInsertRequestData.getLocalDeliFee();
 		this.assortColor = goodsInsertRequestData.getAssortColor();
 		this.sellStaDt = goodsInsertRequestData.getSellStaDt();//.toLocalDateTime();
 		this.sellEndDt = goodsInsertRequestData.getSellEndDt();//.toLocalDateTime();
@@ -125,9 +133,9 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 	private String deliSure;
 	private String reserveYn;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date resStaDt;
+	private LocalDateTime resStaDt;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date resEndDt;
+	private LocalDateTime resEndDt;
 	private String claimSureYn;
 	private String defaultYn;
 	private String recommYn;
@@ -174,9 +182,9 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 	private Float cashbagPoint;
 	private String plGbn;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date plFromDt;
+	private LocalDateTime plFromDt;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date plToDt;
+	private LocalDateTime plToDt;
 	private String storageId;
 	private String optionGb;
 	private String shopSaleGb;
@@ -186,18 +194,18 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 	private String marginCd;
 	private String directPathGb;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date resShipStaDt;
+	private LocalDateTime resShipStaDt;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date resShipEndDt;
+	private LocalDateTime resShipEndDt;
 	private String imgType;
 	private String onlinedispYn;
 	private String payType;
 	private String freeGiftYn;
 	private String currencyUnit;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date disStartDt;
+	private LocalDateTime disStartDt;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
-	private Date disEndDt;
+	private LocalDateTime disEndDt;
 	private String workGb;
 	private Float cardFee;
 	private String assortGrade;
@@ -228,14 +236,22 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 	private String listImageData;
 	private String addGoodsYn;
 	private String addOptionNm;
-	private String addImageUrl;
+	private String mainImageUrl;
 	private Long stockCnt;
+	// 22-03-25 추가
+	private String channelGoodsNo;
 
 	//// 다른 테이블과 엮으면 나오는 프로퍼티들
 	@JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY) // itvari 연관관계
 	private List<Itvari> itvariList;
+
+	//// 다른 테이블과 엮으면 나오는 프로퍼티들
+	@JoinColumn(name = "brandId", referencedColumnName = "brandId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+	@JsonIgnore
+	@ManyToOne(fetch = FetchType.LAZY) // Itbrnd 연관관계
+	private Itbrnd itbrnd;
 
 	@JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@JsonIgnore
@@ -249,31 +265,9 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 	@JsonIgnore
 	private List<Itasrd> itasrdList;
 
-
-//	@JoinColumn(name="brandId", referencedColumnName = "channelBrandId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@JsonIgnore
-//	@NotFound(action = NotFoundAction.IGNORE)
-//	private IfBrand ifBrand; // ifBrand 연관관계
-
 	@JoinColumn(name="dispCategoryId", referencedColumnName = "categoryId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@ManyToOne(fetch = FetchType.LAZY)
-	@LazyToOne(value = LazyToOneOption.NO_PROXY)
 	private Itcatg itcatg; // itcatg 연관관계
-	public Itcatg getItcatg() {
-		if (interceptor!=null) {
-			return (Itcatg)interceptor.readObject(this, "itcatg", itcatg);
-		}
-		return itcatg;
-	}
-
-	public void setItcatg(Itcatg itcatg) {
-		if (interceptor!=null) {
-			this.itcatg = (Itcatg) interceptor.writeObject(this,"itcatg", this.itcatg, itcatg);
-			return ;
-		}
-		this.itcatg = itcatg;
-	}
 
 	@JoinColumn(name="assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@BatchSize(size = 100)
@@ -283,52 +277,7 @@ public class Itasrt extends CommonProps implements PersistentAttributeIntercepta
 
 	@JoinColumn(name = "vendorId", referencedColumnName = "id", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	@ManyToOne(fetch = FetchType.LAZY)
-	@LazyToOne(value = LazyToOneOption.NO_PROXY)
+	// @LazyToOne(value = LazyToOneOption.NO_PROXY)
 	private Cmvdmr cmvdmr; // cmvdmr 연관관계
-	public Cmvdmr getCmvdmr() {
-		if (interceptor!=null) {
-			return (Cmvdmr)interceptor.readObject(this, "cmvdmr", cmvdmr);
-		}
-		return cmvdmr;
-	}
 
-	public void setCmvdmr(Cmvdmr cmvdmr) {
-		if (interceptor!=null) {
-			this.cmvdmr = (Cmvdmr) interceptor.writeObject(this,"cmvdmr", this.cmvdmr, cmvdmr);
-			return ;
-		}
-		this.cmvdmr = cmvdmr;
-	}
-
-	@JoinColumn(name = "brandId", referencedColumnName = "brandId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
-	@ManyToOne(fetch = FetchType.LAZY)
-	@LazyToOne(value = LazyToOneOption.NO_PROXY)
-	private IfBrand ifBrand;
-	public IfBrand getIfBrand() {
-		if (interceptor!=null) {
-			return (IfBrand)interceptor.readObject(this, "ifBrand", ifBrand);
-		}
-		return ifBrand;
-	}
-
-	public void setIfBrand(IfBrand ifBrand) {
-		if (interceptor!=null) {
-			this.ifBrand = (IfBrand) interceptor.writeObject(this,"ifBrand", this.ifBrand, ifBrand);
-			return ;
-		}
-		this.ifBrand = ifBrand;
-	}
-
-	@Transient
-	private PersistentAttributeInterceptor interceptor;
-
-	@Override
-	public PersistentAttributeInterceptor $$_hibernate_getInterceptor() {
-		return interceptor;
-	}
-
-	@Override
-	public void $$_hibernate_setInterceptor(PersistentAttributeInterceptor interceptor) {
-		this.interceptor = interceptor;
-	}
 }

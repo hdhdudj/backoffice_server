@@ -15,7 +15,7 @@ public interface ShipListDataResponseMapper {
         @Mapping(target = "orderId", expression = "java(p.getOrderId() == null? \"\" : p.getOrderId())")
         @Mapping(target = "orderSeq", expression = "java(p.getOrderSeq() == null? \"\" : p.getOrderSeq())")
         @Mapping(target = "orderKey", expression = "java(p.getOrderKey() == null? \"\" : p.getOrderKey())")
-        @Mapping(target = "custNm", expression = "java(p.getCustNm() == null? \"\" : p.getCustNm())")
+        @Mapping(target = "orderNm", expression = "java(p.getOrderNm() == null? \"\" : p.getOrderNm())")
         @Mapping(target = "receiverNm", expression = "java(p.getReceiverNm() == null? \"\" : p.getReceiverNm())")
         @Mapping(target = "receiverTel", expression = "java(p.getReceiverTel() == null? \"\" : p.getReceiverTel())")
         @Mapping(target = "receiverHp", expression = "java(p.getReceiverHp() == null? \"\" : p.getReceiverHp())")

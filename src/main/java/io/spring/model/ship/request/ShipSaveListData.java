@@ -1,13 +1,16 @@
 package io.spring.model.ship.request;
 
+import java.util.Date;
+import java.util.List;
+
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * 출고 - 출고처리 : 출고처리 수량변경 후 저장하기 위해 받을 때 쓰는 request DTO (출고처리 저장할 때 이용)
@@ -24,6 +27,8 @@ public class ShipSaveListData {
     private String assortId;
     private String assortNm;
     private String vendorId;
+	@NotNull(message = "userId는 필수 값입니다.")
+	private String userId;
     private List<Ship> ships;
 
     @Getter

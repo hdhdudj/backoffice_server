@@ -63,4 +63,9 @@ public class MyBatisGoodsDaoImpl implements MyBatisGoodsDao {
 		return goodsMapper.getGoodsStockList(param);
 	};
 
+	@Override
+	public List<HashMap<String, Object>> getItitmc(HashMap<String, Object> param) {
+		return goodsMapper.getItitmc(param);
+	};
+
 }

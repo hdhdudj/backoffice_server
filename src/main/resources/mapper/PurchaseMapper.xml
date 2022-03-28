@@ -87,11 +87,11 @@
     
     
 
-    <select id="getOrderListByPurchaseVendor" parameterType="java.util.HashMap"  resultType="HashMap">
+    <select id="getOrderListByPurchaseVendor" resultType="HashMap">
     	
     	<![CDATA[
 	
-				select
+		select
 					bbb.vendor_id purchaseVendorId,
 					bbb.vd_nm purchaseVendorName,
 					sum(bbb.qty) purchaseVendorQty
@@ -138,8 +138,17 @@
 								end order_vendor_id
 							from
 								tb_order_detail tod
+								,tb_order_master tom 
 							where
-								status_cd = 'B01' ) aaa ,
+								tod.status_cd = 'B01'
+								and tod.order_id =tom.order_id
+								and not exists (
+								select 1
+								from if_order_cancel ioc 
+								where ioc.channel_order_no = tod.channel_order_no
+								and ioc.channel_order_seq = tod.channel_order_seq
+								)
+								) aaa ,
 							itasrt bbb
 						where
 							1 = 1
@@ -159,8 +168,6 @@
 				group by
 					bbb.vendor_id ,
 					bbb.vd_nm
-
-	
 			]]>
 		
 		 		
@@ -268,7 +275,10 @@
 			   bbb1.assort_id                                                    assortId,
 			   bbb1.assort_nm                                                    assortNm,
 			   bbb1.item_id                                                      itemId,
-			   concat(bbb1.option_nm1, ifnull(CONCAT('-', bbb1.option_nm2), '')) optionNm,
+			   /*concat(bbb1.option_nm1, ifnull(CONCAT('-', bbb1.option_nm2), '')) optionNm,*/
+			   bbb1.option_nm1 optionNm1,
+			   bbb1.option_nm2 optionNm2,
+			   bbb1.option_nm3 optionNm3,
 			   bbb1.option_info                                                  optionInfo,
 			   bbb1.qty                                                          purchaseQty,
 			   bbb1.md_rrp                                                        rrp,
@@ -280,7 +290,7 @@
 			   bbb1.purchase_price                                               purchasePrice,
 			   bbb1.order_name                                              custNm,
 			   bbb1.origin                                               origin,
-			   concat('https://trdst.hgodo.com/', itaimg.image_path, itaimg.image_name) imagePath
+			   bbb1.list_image_data                               imagePath
 		from (select case
 						 when aaa.order_vendor_id <> '000000' then ifnull(aaa.order_vendor_id, '000000')
 						 else ifnull(bbb.vendor_id, '000000') end                                               vendor_id,
@@ -293,6 +303,7 @@
 		             bbb.origin,
 					 bbb.buy_supply_discount,
 		             bbb.cust_category,
+		             bbb.main_image_url,
 					 tom.order_date,
 					 tom.channel_order_no,
 					 aaa.*,
@@ -311,7 +322,13 @@
 					  where iv.assort_id = ccc.assort_id
 						and iv.seq = ccc.variation_seq2
 						and iv.variation_gb = '02'
-						and del_yn = '02')                                                                      option_nm2
+						and del_yn = '02')                                                                      option_nm2,
+(select iv.option_nm
+					  from itvari iv
+					  where iv.assort_id = ccc.assort_id
+						and iv.seq = ccc.variation_seq3
+						and iv.variation_gb = '03'
+						and del_yn = '02')                                                                      option_nm3						
 			  from (select tod.order_id,
 						   tod.order_seq,
 						   tod.parent_order_seq,
@@ -328,8 +345,18 @@
 																				  and vvv.order_seq = tod.parent_order_seq
 																				  and vvv.assort_id = eee.assort_id)
 							   else '000000' end order_vendor_id
+			  		,tod.list_image_data
 					from tb_order_detail tod
-					where status_cd in ('B01')) aaa,
+					,tb_order_master tom
+					where tod.status_cd in ('B01')
+					and tod.order_id =tom.order_id
+						and not exists (
+								select 1
+								from if_order_cancel ioc 
+								where ioc.channel_order_no = tod.channel_order_no
+								and ioc.channel_order_seq = tod.channel_order_seq
+								)
+					) aaa,
 				   itasrt bbb,
 				   ititmm ccc,
 				   tb_order_master tom,

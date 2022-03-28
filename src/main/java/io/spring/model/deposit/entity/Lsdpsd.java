@@ -17,19 +17,18 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.model.common.entity.CommonProps;
 import io.spring.model.deposit.idclass.LsdpsdId;
 import io.spring.model.deposit.request.DepositInsertRequestData;
+import io.spring.model.deposit.request.InsertDepositEtcRequestData;
 import io.spring.model.deposit.response.DepositListWithPurchaseInfoData;
 import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.goods.entity.Ititmm;
 import io.spring.model.purchase.entity.Lspchd;
+import io.spring.model.ship.request.InsertShipEtcRequestData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -94,6 +93,50 @@ public class Lsdpsd extends CommonProps implements Serializable {
         this.orderId = lsdpsp.getOrderId();
         this.orderSeq = lsdpsp.getOrderSeq();
     }
+
+	public Lsdpsd(Lsdpsm lsdpsm, String depositSeq, InsertDepositEtcRequestData.Item o) {
+
+		this.depositNo = lsdpsm.getDepositNo();
+		this.depositSeq = depositSeq;
+		this.assortId = o.getAssortId();
+		this.itemId = o.getItemId();
+		this.itemGrade = o.getItemGrade(); // 11 하드코딩
+		this.extraClsCd = StringFactory.getGbOne(); // 01 하드코딩
+		this.depositQty = o.getDepositQty();
+		this.extraUnitcost = o.getExtraUnitcost();
+		this.deliPrice = extraUnitcost * depositQty; // 단가 * 개수
+		this.extraCost = extraUnitcost * depositQty; // 단가 * 개수
+		this.extraQty = o.getDepositQty();
+		this.finishYymm = LocalDateTime.parse(StringFactory.getDoomDay(),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // 9999-12-31 하드코딩
+		this.depositType = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01' 입고
+		this.siteGb = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
+		this.rackNo = o.getRackNo();
+		this.excAppDt = lsdpsm.getDepositDt();
+	}
+
+	public Lsdpsd(Lsdpsm lsdpsm, String depositSeq, InsertShipEtcRequestData.Item o) {
+
+		this.depositNo = lsdpsm.getDepositNo();
+		this.depositSeq = depositSeq;
+		this.assortId = o.getAssortId();
+		this.itemId = o.getItemId();
+		this.itemGrade = o.getItemGrade(); // 11 하드코딩
+		this.extraClsCd = StringFactory.getGbOne(); // 01 하드코딩
+		this.depositQty = o.getShipQty();
+		this.extraUnitcost = o.getExtraUnitcost();
+		this.deliPrice = extraUnitcost * depositQty; // 단가 * 개수
+		this.extraCost = extraUnitcost * depositQty; // 단가 * 개수
+		this.extraQty = o.getShipQty();
+		this.finishYymm = LocalDateTime.parse(StringFactory.getDoomDay(),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // 9999-12-31 하드코딩
+		this.depositType = StringFactory.getGbTwo(); // 출고 02
+		this.siteGb = StringFactory.getGbOne(); // 초기값 일단 하드코딩 '01'
+		this.rackNo = o.getRackNo();
+		this.excAppDt = LocalDateTime.parse(o.getEffStaDt(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // 재고
+																													// 일자
+	}
+
     @Id
     private String depositNo;
     @Id
@@ -129,6 +172,8 @@ public class Lsdpsd extends CommonProps implements Serializable {
     private String defectYn;
     private String memo;
 
+	private String rackNo;
+
     // 연관 관계 lsdpsm
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "depositNo", referencedColumnName="depositNo", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
@@ -151,11 +196,16 @@ public class Lsdpsd extends CommonProps implements Serializable {
     })
     private List<Lsdpds> lsdpds;
 
-    // 연관 관계 itasrt
-//    @NotFound(action = NotFoundAction.IGNORE)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
-    private Itasrt itasrt;
+	// 연관 관계 itasrt
+	@ManyToOne
+	@JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+	private Itasrt itasrt;
+
+//    // 연관 관계 itasrt
+////    @NotFound(action = NotFoundAction.IGNORE)
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "assortId", referencedColumnName="assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+//    private Itasrt itasrt;
 
     // 연관 관계 ititmm
     @ManyToOne(fetch = FetchType.LAZY)

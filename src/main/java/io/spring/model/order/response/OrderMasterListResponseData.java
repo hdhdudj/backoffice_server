@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
+import io.spring.enums.DeliveryMethod;
 import io.spring.infrastructure.util.Utilities;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,7 +19,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderMasterListResponseData {
-
+	private DeliveryMethod d;
 
 	public OrderMasterListResponseData(HashMap<String, Object> m) {
 		this.channelGb = (String) m.get("channelGb"); // 채널번호
@@ -41,9 +42,10 @@ public class OrderMasterListResponseData {
 		this.optionNm2 = m.get("optionNm2") == null ? null : (String) m.get("optionNm2"); // 옵션2
 		this.orderStatus = m.get("orderStatus") == null ? null : (String) m.get("orderStatus"); // 주문상태
 		this.qty = m.get("qty") == null ? null : Long.parseLong(Integer.toString((Integer)m.get("qty"))); // 수량
-		this.goodsPrice = m.get("goodsPrice") == null ? null : ((BigDecimal) m.get("goodsPrice")).doubleValue(); // 금액, 총상품가
-		this.deliPrice = m.get("deliPrice") == null ? null : ((BigDecimal) m.get("deliPrice")).doubleValue(); // 배송비
-		this.deliMethod = Utilities.convertDeliveryMethodFieldNameToEnum(m.get("deliMethod") == null ? null : (String) m.get("deliMethod")); // 배송방법
+		this.goodsPrice = m.get("goodsPrice") == null ? null : ((BigDecimal) m.get("goodsPrice")); // 금액,
+																													// 총상품가
+		this.deliPrice = m.get("deliPrice") == null ? null : ((BigDecimal) m.get("deliPrice")); // 배송비
+		this.deliMethod = Utilities.convertFieldNameToEnum(DeliveryMethod.values() ,m.get("deliMethod") == null ? null : (String) m.get("deliMethod")); // 배송방법
 		this.deliveryInfo = m.get("deliveryInfo") == null ? null : (String) m.get("deliveryInfo"); // 배송구분
 		this.scmNo = m.get("scmNo") == null ? null : Integer.toString((Integer)m.get("scmNo")); // 공급사 번호
 		this.deliNm = m.get("deliNm") == null ? null : (String) m.get("deliNm"); // 수령자
@@ -51,15 +53,18 @@ public class OrderMasterListResponseData {
 		this.deliTel = m.get("deliTel") == null ? null : (String) m.get("deliTel"); // 수령자 전화번호
 		this.deliAddr = m.get("deliAddr") == null ? null : (String) m.get("deliAddr"); // 수령자 주소
 		this.goodsNm = (String) m.get("goodsNm"); // 주문상품명
-		this.totalGoodsPrice = ((BigDecimal) m.get("totalGoodsPrice")).doubleValue();
-		this.totalDeliveryCharge = ((BigDecimal) m.get("totalDeliveryCharge")).doubleValue(); // 총배송비
-		this.totalPrice = ((BigDecimal) m.get("totalPrice")).doubleValue();
-		this.orderAmt = ((BigDecimal) m.get("orderAmt")).doubleValue(); // 결제금액
+		this.totalGoodsPrice = ((BigDecimal) m.get("totalGoodsPrice"));
+		this.totalDeliveryCharge = ((BigDecimal) m.get("totalDeliveryCharge")); // 총배송비
+		this.totalPrice = ((BigDecimal) m.get("totalPrice"));
+		this.orderAmt = ((BigDecimal) m.get("orderAmt")); // 결제금액
 
 		this.payGb = (String) m.get("payGb"); // 결제방법
 		this.payStatus = (String) m.get("payStatus");
 		
 		this.channelOrderNo = (String) m.get("channelOrderNo");
+		// 22-03-14 추가
+		this.salePrice = (BigDecimal) m.get("salePrice");
+		this.dcSumPrice = (BigDecimal) m.get("dcSumPrice");
 
 	}
 
@@ -78,10 +83,10 @@ public class OrderMasterListResponseData {
 	private String custHp;
 	private String custTel;
 	private String goodsNm;
-	private double totalGoodsPrice;
-	private double totalDeliveryCharge;
-	private double totalPrice;
-	private double orderAmt;
+	private BigDecimal totalGoodsPrice;
+	private BigDecimal totalDeliveryCharge;
+	private BigDecimal totalPrice;
+	private BigDecimal orderAmt;
 	private String payGb;
 	private String payStatus;
 
@@ -96,8 +101,8 @@ public class OrderMasterListResponseData {
 	private String optionNm2;
 	private String orderStatus;
 	private Long qty;
-	private Double goodsPrice;
-	private Double deliPrice;
+	private BigDecimal goodsPrice;
+	private BigDecimal deliPrice;
 	private String deliMethod;
 	private String deliveryInfo;
 	private String scmNo;
@@ -106,4 +111,14 @@ public class OrderMasterListResponseData {
 	private String deliHp;
 	private String deliTel;
 	private String deliAddr;
+	// 22-03-14 추가
+	private BigDecimal dcSumPrice;
+	private BigDecimal salePrice;
+
+//		private String purchaseCompleteDt;
+	// private String makeCompleteDt;
+	// private String shipmentDt;
+	// private String estiArrvDt;
+	// private String cancelDt;
+
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Base64;
+import java.util.LinkedList;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -25,7 +26,9 @@ import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.exception.ResourceNotFoundException;
 import io.spring.model.file.FileVo;
 import io.spring.model.file.request.GodoImageRequestData;
+import io.spring.model.file.request.GodoImagesRequestData;
 import io.spring.model.file.response.FileUploadFileResponseData;
+import io.spring.model.file.response.GodoImagesResponseData;
 import io.spring.model.goods.entity.Itaimg;
 import io.spring.service.file.FileService;
 import io.spring.service.goods.JpaGoodsService;
@@ -53,6 +56,61 @@ public class FileController {
 
 
 		return IOUtils.toByteArray(input);
+
+	}
+
+	@PostMapping(path = "/godoImages")
+	public @ResponseBody GodoImagesResponseData getGodoImages(@RequestBody GodoImagesRequestData data)
+			throws IOException {
+
+		System.out.println("getGodoImages");
+
+		String[] urls = data.getUrls();
+
+		LinkedList<String> ret = new LinkedList<>();
+
+
+
+		for (String url : urls) {
+
+			System.out.println(url);
+
+			if (url.equals("") || url == null) {
+
+			}
+
+			// System.out.println("godoImage");
+			String changeString = "";
+			try {
+				InputStream input = new URL(url).openStream();
+
+				byte[] fileContent = IOUtils.toByteArray(input);// FileUtils.readFileToByteArray(new File(filePath));
+
+				input.close();
+
+				String encodedString = Base64.getEncoder().encodeToString(fileContent);
+				String fileExtName = url.substring(url.lastIndexOf(".") + 1);
+
+
+				if (encodedString.length() > 0 && encodedString != null) {
+					changeString = "data:image/" + fileExtName + ";base64, " + encodedString;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				changeString = "";
+			}
+
+
+			ret.add(changeString);
+
+		}
+
+
+
+		GodoImagesResponseData r = new GodoImagesResponseData();
+		r.setImages(ret);
+
+		return r;
 
 	}
 
@@ -136,8 +194,11 @@ public class FileController {
 
 	}
 
+	// 20220307 rjb80 requestbody 추가
 	@PostMapping("/uploadFile")
-    public ResponseEntity uploadFile(@RequestParam("imageGb") String imageGb,@RequestParam("file") MultipartFile file) {
+	public ResponseEntity uploadFile(@RequestParam("imageGb") String imageGb, @RequestParam("userId") String userId,
+			@RequestParam("file") MultipartFile file) {
+//	public ResponseEntity uploadFile(@RequestBody UploadFileRequestData req, @RequestParam("file") MultipartFile file) {
        // String fileName = service.storeFile(file);
        // 
         //String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -155,10 +216,12 @@ public class FileController {
 		//파일타입
 		//파일사이즈
 		
+		// String imageGb = req.getImageGb();
+//		String userId = req.getUserId();
 		
 		FileVo f = fileService.storeFile(imageGb,file);
 		
-		Itaimg ii = jpaGoodsService.saveItaimg(imageGb, f);
+		Itaimg ii = jpaGoodsService.saveItaimg(imageGb, f, userId);
 		
 		FileUploadFileResponseData r = new FileUploadFileResponseData(ii);
 		

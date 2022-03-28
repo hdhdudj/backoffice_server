@@ -55,6 +55,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.OPTIONS).permitAll().antMatchers(HttpMethod.GET, "/articles/feed")
 				.authenticated().antMatchers(HttpMethod.POST, "/users", "/users/login", "/users/refreshtoken", "/test").permitAll()
 				.antMatchers(HttpMethod.GET, "/tests").permitAll().antMatchers(HttpMethod.GET, "/orderList").permitAll()
+				// .antMatchers(HttpMethod.GET, "/user").authenticated()
+				.antMatchers(HttpMethod.GET, "/user").permitAll()
 				.antMatchers(HttpMethod.POST, "/testa").permitAll()
 				.antMatchers(HttpMethod.GET, "/order/orders").permitAll()
 				//
@@ -76,6 +78,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.GET, "/file/**").permitAll()
 				.antMatchers(HttpMethod.POST, "/file/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/xml/**").permitAll()
+				.antMatchers(HttpMethod.POST, "/xml/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/napi/**").permitAll()
 
 			

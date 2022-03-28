@@ -6,6 +6,7 @@ import javax.persistence.IdClass;
 import javax.persistence.Table;
 
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.model.common.entity.CommonProps;
 import io.spring.model.order.idclass.IfOrderDetailId;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,7 +19,7 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "if_order_detail")
 @IdClass(value = IfOrderDetailId.class)
-public class IfOrderDetail {
+public class IfOrderDetail extends CommonProps {
     @Id
     private String ifNo;
     @Id

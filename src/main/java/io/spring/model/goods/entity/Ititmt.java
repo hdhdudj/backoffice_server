@@ -39,11 +39,11 @@ public class Ititmt extends CommonProps {
 		this.tempIndicateQty = 0L;
 		this.tempQty = 0L;
     }
-    public Ititmt(Date purchaseDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit) {
+    public Ititmt(LocalDateTime purchaseDt, String storageId, DepositListWithPurchaseInfoData.Deposit deposit) {
         this.storageId = storageId;
         this.assortId = deposit.getAssortId();
         this.itemId = deposit.getItemId();
-		this.effEndDt = LocalDateTime.now();//LocalDateTime.parse(StringFactory.getDoomDay(),DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // 9999-12-31 하드코딩
+		this.effEndDt = purchaseDt;//LocalDateTime.now();//LocalDateTime.parse(StringFactory.getDoomDay(),DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // 9999-12-31 하드코딩
         this.effStaDt = this.effEndDt;
         this.stockGb = StringFactory.getGbOne(); // 01 하드코딩
         this.tempIndicateQty = deposit.getDepositQty();
@@ -55,7 +55,7 @@ public class Ititmt extends CommonProps {
         this.assortId = lspchd.getAssortId();
         this.itemId = lspchd.getItemId();
         this.itemGrade = StringFactory.getStrEleven(); // 11 하드코딩
-        this.effEndDt = LocalDateTime.now();//LocalDateTime.parse(StringFactory.getDoomDay(),DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // 9999-12-31 하드코딩
+        this.effEndDt = lspchm.getPurchaseDt();//LocalDateTime.now();//LocalDateTime.parse(StringFactory.getDoomDay(),DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // 9999-12-31 하드코딩
         this.effStaDt = this.effEndDt;
         this.stockGb = StringFactory.getGbOne(); // 01 하드코딩
         this.tempIndicateQty = 0l;
