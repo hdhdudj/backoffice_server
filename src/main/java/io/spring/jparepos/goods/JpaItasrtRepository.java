@@ -30,4 +30,9 @@ public interface JpaItasrtRepository extends JpaRepository<Itasrt, String>{
                                 @Param("oldDay") LocalDateTime oldDay,
                                 @Param("doomsDay") LocalDateTime doomsDay
                                 );
+
+    @Query("select i from Itasrt i " +
+            "where (:channelGoodsNo is null or trim(:channelGoodsNo)='' or i.channelGoodsNo = :channelGoodsNo) " +
+            "and (:assortId is null or trim(:assortId)='' or i.assortId = :assortId)")
+    Itasrt findByChannelGoodsNoOrAssortId(@Param("channelGoodsNo") String channelGoodsNo, @Param("assortId") String assortId);
 }

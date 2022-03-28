@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
+import io.spring.model.goods.response.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,10 +45,6 @@ import io.spring.model.goods.entity.Itvari;
 import io.spring.model.goods.entity.Tmitem;
 import io.spring.model.goods.entity.Tmmapi;
 import io.spring.model.goods.request.GoodsInsertRequestData;
-import io.spring.model.goods.response.GetStockListResponseData;
-import io.spring.model.goods.response.GoodsInsertResponseData;
-import io.spring.model.goods.response.GoodsSelectDetailResponseData;
-import io.spring.model.goods.response.GoodsSelectListResponseData;
 import io.spring.model.vendor.entity.Cmvdmr;
 import io.spring.service.file.FileService;
 import io.spring.service.stock.JpaStockService;
@@ -1120,6 +1117,18 @@ public class JpaGoodsService {
         }
         goodsSelectListResponseData.setGoodsList(goodsList);
         return goodsSelectListResponseData;
+    }
+
+    @Transactional
+    public void changeVendor(String assortId, String channelGoodsNo, String vendorId){
+        Itasrt itasrt = jpaItasrtRepository.findByChannelGoodsNoOrAssortId(channelGoodsNo, assortId);
+        Itasrn itasrn = jpaItasrnRepository.findByAssortIdAndEffEndDt(itasrt.getAssortId(), Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
+        itasrt.setVendorId(vendorId);
+        itasrn.setEffEndDt(LocalDateTime.now());
+        Itasrn newItasrn = new Itasrn(itasrn);
+        jpaItasrnRepository.save(itasrn);
+        jpaItasrnRepository.save(newItasrn);
+        jpaItasrtRepository.save(itasrt);
     }
 
 //    private GoodsInsertResponseData makeGoodsSelectListResponseData(List<Itasrt> goodsList) {

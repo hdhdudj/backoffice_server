@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -324,6 +325,24 @@ public class GoodsController {
 		jpaGoodsService.batchSizeTest();
 		ApiResponseMessage res = new ApiResponseMessage("ok", "success", null);
 
+		return ResponseEntity.ok(res);
+	}
+
+	/**
+	 *  goodsNo(혹은 assortId)를 받아서 그 itasrt의 vendorId를 바꿔주는 api
+	 */
+	@GetMapping(path = "/change/vendor")
+	public HttpEntity changeVendor(@RequestParam("assortId") @Nullable String assortId,
+								   @RequestParam("channelGoodsNo") @Nullable String channelGoodsNo,
+								   @RequestParam("vendorId") String vendorId){
+		if((assortId == null && channelGoodsNo == null) || ("".equals(assortId) && "".equals(channelGoodsNo))){
+			return ResponseEntity.badRequest().body("assortId와 channelGoodsNo 중 한 개의 값이 존재해야 합니다.");
+		}
+		if(vendorId.trim().equals("")){
+			return ResponseEntity.badRequest().body("vendorId가 존재해야 합니다.");
+		}
+		jpaGoodsService.changeVendor(assortId, channelGoodsNo, vendorId);
+		ApiResponseMessage res = new ApiResponseMessage("ok", "success", null);
 		return ResponseEntity.ok(res);
 	}
 }
