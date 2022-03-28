@@ -74,7 +74,6 @@ public class ShipCandidateListData {
         }
 
         @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
         private LocalDateTime orderDt;
         private String orderId;
         private String orderSeq;
