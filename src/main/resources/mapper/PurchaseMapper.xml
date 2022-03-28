@@ -290,7 +290,7 @@
 			   bbb1.purchase_price                                               purchasePrice,
 			   bbb1.order_name                                              custNm,
 			   bbb1.origin                                               origin,
-			   bbb1.main_image_url                                               imagePath
+			   bbb1.list_image_data                               imagePath
 		from (select case
 						 when aaa.order_vendor_id <> '000000' then ifnull(aaa.order_vendor_id, '000000')
 						 else ifnull(bbb.vendor_id, '000000') end                                               vendor_id,
@@ -345,6 +345,7 @@
 																				  and vvv.order_seq = tod.parent_order_seq
 																				  and vvv.assort_id = eee.assort_id)
 							   else '000000' end order_vendor_id
+			  		,tod.list_image_data
 					from tb_order_detail tod
 					,tb_order_master tom
 					where tod.status_cd in ('B01')

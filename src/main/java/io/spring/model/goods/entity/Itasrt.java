@@ -39,9 +39,11 @@ import lombok.Setter;
 @Table(name = "itasrt")
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 //public class Itasrt extends CommonProps implements PersistentAttributeInterceptable, Serializable {
 public class Itasrt extends CommonProps implements Serializable {
+	public Itasrt(){
+
+	}
 
 	public Itasrt(GoodsInsertRequestData goodsInsertRequestData){
 		this.assortId = goodsInsertRequestData.getAssortId();
