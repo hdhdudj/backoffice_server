@@ -1,11 +1,11 @@
 package io.spring.service.category;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
+import io.spring.infrastructure.util.StringFactory;
+import io.spring.jparepos.category.JpaItcateRepository;
+import io.spring.model.category.entity.Itcate;
 import org.springframework.stereotype.Service;
 
 import io.spring.jparepos.category.JpaItcatgRepository;
@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JpaCategoryService {
     private final JpaItcatgRepository jpaItcatgRepository;
+    private final JpaItcateRepository jpaItcateRepository;
 
     public List<CategorySelectOneResponseData> getCategoryDataByUpCategoryId(String upCategoryId) {
         List<Itcatg> itcatgList = jpaItcatgRepository.findByUpCategoryId(upCategoryId);
@@ -184,6 +185,13 @@ public class JpaCategoryService {
 
 	}
 
+	/**
+	 * 현 카테고리 모든 데이터 리스트
+	 */
+	public List<Itcate> getCateLists() {
+		List<Itcate> itcateList = jpaItcateRepository.selectAllItcate();
 
+		return itcateList;
+	}
 }
 

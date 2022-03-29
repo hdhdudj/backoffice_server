@@ -124,6 +124,8 @@ public class JpaGoodsService {
         return itasrt.getAssortId();
     }
 
+    
+
     /**
      * Pecan
      * tmitem : insert, update 공용 함수
@@ -607,6 +609,7 @@ public class JpaGoodsService {
      */
 	private List<Ititmm> saveItemList(GoodsInsertRequestData goodsInsertRequestData, List<Ititmm> existItitmmList,
 			List<Itvari> itvariList, String userId) {
+
         List<Ititmm> ititmmList;
 
         if(existItitmmList == null || existItitmmList.size() == 0){
@@ -673,6 +676,8 @@ public class JpaGoodsService {
 			ititmm.setUpdId(userId);
 
             jpaItitmmRepository.save(ititmm);
+
+
         }
         return ititmmList;
     }

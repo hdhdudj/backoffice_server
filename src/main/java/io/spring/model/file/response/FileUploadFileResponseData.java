@@ -28,7 +28,7 @@ public class FileUploadFileResponseData {
 			this.uid = ii.getImageSeq();
 			this.fileName = ii.getImageName();
 			this.filePath = ii.getImagePath();
-			this.url = prefixUrl + ii.getImagePath() +ii.getImageName(); 
+			this.url = ii.getImageUrl();// prefixUrl + ii.getImagePath() +ii.getImageName();
 			this.status="done";
 		}
 	

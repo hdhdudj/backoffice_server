@@ -1,8 +1,11 @@
 package io.spring.controller;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import io.spring.model.category.entity.Itcate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -69,5 +72,13 @@ public class CategoryController {
 		return ResponseEntity.ok(res);
 	}
 
-
+    /**
+     * 전체 카테고리 리스트
+     */
+    @GetMapping(path = "/list")
+    public ResponseEntity getCateTrees(){
+        List<Itcate> itcateList = jpaCategoryService.getCateLists();
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), itcateList);
+        return ResponseEntity.ok(res);
+    }
 }

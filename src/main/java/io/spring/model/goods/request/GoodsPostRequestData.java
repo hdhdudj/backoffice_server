@@ -18,8 +18,8 @@ import lombok.ToString;
 @ToString
 @Getter
 @Setter
-public class GoodsInsertRequestData {
-//	public GoodsInsertRequestData(){}
+public class GoodsPostRequestData {
+//	public GoodsRequestData(){}
 	private String code;
 	private String message;
 	// itasrt, itvari, itasrd 공통
@@ -87,12 +87,12 @@ public class GoodsInsertRequestData {
 	private String goodsDescription;
 	private String shortDescription;
 
-
 	// itasrd
 	private List<Description> description; // html (메모 상세) - long memo, text (메모 간략) - short memo
+
 	@Getter
 	@Setter
-	public static class Description{
+	public static class Description {
 		private String seq;
 		private String ordDetCd;
 		private String textHtmlGb;
@@ -112,11 +112,10 @@ public class GoodsInsertRequestData {
 	@JsonProperty("attributes")
 	private List<Attributes> attributes;
 
-
 	// ititmm
 	@Getter
 	@Setter
-	public static class Items{
+	public static class Items {
 //		private String assortId;
 		private String itemId;
 //		@Expose // object 중 해당 값이 null일 경우, json으로 만들 필드를 자동 생략
@@ -141,14 +140,15 @@ public class GoodsInsertRequestData {
 		private Long stockCnt;
 		private String saleYn;
 
-
 	}
 
 	@Getter
 	@Setter
 	public static class Attributes {
-		public Attributes(){}
-		public Attributes(Itvari itvari){
+		public Attributes() {
+		}
+
+		public Attributes(Itvari itvari) {
 			this.seq = itvari.getSeq();
 			this.value = itvari.getOptionNm();
 			this.variationGb = itvari.getVariationGb();
@@ -169,9 +169,10 @@ public class GoodsInsertRequestData {
 	private List<UploadMainImage> uploadMainImage;
 	private List<UploadAddImage> uploadAddImage;
 	private List<Long> deleteImage;
+
 	@Getter
 	@Setter
-	public static class UploadMainImage{
+	public static class UploadMainImage {
 		private Long uid;
 		private String name;
 		private String url;
@@ -179,9 +180,10 @@ public class GoodsInsertRequestData {
 		private String status;
 		private Long sno;
 	}
+
 	@Getter
 	@Setter
-	public static class UploadAddImage{
+	public static class UploadAddImage {
 		private Long uid;
 		private String name;
 		private String url;
