@@ -89,6 +89,8 @@ public class FileService {
 		  String ext = fileName.substring(fileName.lastIndexOf(".") + 1);
 		  String newFileName =uuid + "." + ext;
 		  
+			String newThumbFileName = uuid + "_thumb." + ext;
+
 		  f.setFileName(newFileName);
 		  f.setOriginalFileName(fileName);
 		  f.setFileSize(file.getSize());
@@ -101,6 +103,7 @@ public class FileService {
 		  f.setFileType(mimeType);
 
 		  
+
 		  Date today = new Date();
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
 		  String currentDate = format.format(today);
@@ -123,12 +126,17 @@ public class FileService {
         
         String ServerPath = ftpPath + "/" + year + "/" + month + "/" + day + "/";
         String fileUrl =FTP_PREPIX_URL + ftpPath + "/" + year + "/" + month + "/" + day + "/";
-        		
+
+		// todo: 썸네일 제작이 필요함.
+
        // + "/";
         
+
+		// outputImage.getGraphics().drawImage(resultingImage, 0, 0, null);
+		// return outputImage;
+
         String ret = ftpConnect(ServerPath,newFileName,newfile);
-        
-        
+
         if(ret.equals("success")) {
         	f.setFilePath(ServerPath );
         	

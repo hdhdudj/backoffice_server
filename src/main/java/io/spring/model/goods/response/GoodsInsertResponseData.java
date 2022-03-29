@@ -1,13 +1,19 @@
 package io.spring.model.goods.response;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import io.spring.infrastructure.custom.CustomLocalDateTimeDeSerializer;
-import io.spring.model.goods.entity.Ititmm;
-import io.spring.model.goods.request.GoodsInsertRequestData;
-import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import io.spring.infrastructure.custom.CustomLocalDateTimeDeSerializer;
+import io.spring.model.goods.entity.Ititmm;
+import io.spring.model.goods.entity.TbGoodsOption;
+import io.spring.model.goods.request.GoodsInsertRequestData;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -97,6 +103,17 @@ public class GoodsInsertResponseData {
             this.addPrice = ititmm.getAddPrice() == null? "" : Float.toString(ititmm.getAddPrice());
             this.shortYn = ititmm.getShortYn();
         }
+
+		public Items(TbGoodsOption tgo) {
+			this.variationSeq1 = tgo.getVariationSeq1();
+			this.variationSeq2 = tgo.getVariationSeq2();
+			this.variationSeq3 = tgo.getVariationSeq3();
+			this.itemId = tgo.getItemId();
+			// value는 바깥에서 set
+			this.addPrice = tgo.getAddPrice() == null ? "" : Float.toString(tgo.getAddPrice());
+			this.shortYn = tgo.getShortYn();
+		}
+
         private String itemId;
         private String variationValue1;
         private String variationValue2;

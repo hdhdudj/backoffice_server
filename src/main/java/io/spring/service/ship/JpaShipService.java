@@ -93,7 +93,8 @@ public class JpaShipService {
     /**
      * 출고지시 화면에서 조건검색하면 리스트를 반환해주는 함수
      */
-    public ShipIndicateSaveListResponseData getOrderSaveList(LocalDate startDt, LocalDate endDt, String assortId, String assortNm, String purchaseVendorId) {
+	public ShipIndicateSaveListResponseData getOrderSaveList(LocalDate startDt, LocalDate endDt, String assortId,
+			String assortNm, String purchaseVendorId, String channelGoodsNo) {
         List<ShipIndicateSaveListResponseData.Ship> shipList = new ArrayList<>();
         List<TbOrderDetail> tbOrderDetailList = this.getOrdersByCondition(startDt, endDt, assortId, assortNm, purchaseVendorId);
 //        tbOrderDetailList = tbOrderDetailList.stream().filter(x->
@@ -118,7 +119,7 @@ public class JpaShipService {
 //            }
         }
 		ShipIndicateSaveListResponseData shipIndicateSaveListResponseData = new ShipIndicateSaveListResponseData(
-				startDt, endDt, assortId, assortNm, purchaseVendorId, "");
+				startDt, endDt, assortId, assortNm, purchaseVendorId, "", channelGoodsNo);
         shipIndicateSaveListResponseData.setShips(shipList);
         return shipIndicateSaveListResponseData;
     }
@@ -482,7 +483,7 @@ public class JpaShipService {
     public ShipIndicateListData getShipIndList(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDt,
 											   @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDt,
 											   String shipId, String assortId, String assortNm,
-											   String vendorId, String statusCd, String orderKey, String shipStatus) {
+			String vendorId, String statusCd, String orderKey, String shipStatus) {
 
 		String orderId = "";
 		String orderSeq = "";
@@ -496,7 +497,8 @@ public class JpaShipService {
 		ShipIndicateListData shipIndicateListData = new ShipIndicateListData(start.toLocalDate(), end.toLocalDate(),
 				shipId, assortId, assortNm, vendorId, orderId);
 
-        List<Lsshpd> lsshpdList = jpaLsshpdRepository.findShipIndicateList(start, end, assortId, shipId, assortNm, vendorId, shipStatus, orderId, orderSeq);//query.getResultList();
+		List<Lsshpd> lsshpdList = jpaLsshpdRepository.findShipIndicateList(start, end, assortId, shipId, assortNm,
+				vendorId, shipStatus, orderId, orderSeq);// query.getResultList();
         lsshpdList = lsshpdList.stream().filter(x->x.getTbOrderDetail().getStatusCd().equals(statusCd)).collect(Collectors.toList());
         List<ShipIndicateListData.Ship> shipList = new ArrayList<>();
         for(Lsshpd lsshpd : lsshpdList){

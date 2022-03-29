@@ -29,14 +29,27 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShipIndicateSaveListResponseData {
 	public ShipIndicateSaveListResponseData(LocalDate startDt, LocalDate endDt, String assortId, String assortNm,
-			String vendorId, String orderId) {
+			String vendorId, String orderId, String channelGoodsNo) {
         this.startDt = startDt;
         this.endDt = endDt;
         this.assortId = assortId;
         this.assortNm = assortNm;
         this.vendorId = vendorId;
 		this.orderId = orderId;
+		this.channelGoodsNo = channelGoodsNo;
     }
+
+	public ShipIndicateSaveListResponseData(LocalDate startDt, LocalDate endDt, String assortId, String assortNm,
+			String vendorId, String orderId) {
+		this.startDt = startDt;
+		this.endDt = endDt;
+		this.assortId = assortId;
+		this.assortNm = assortNm;
+		this.vendorId = vendorId;
+		this.orderId = orderId;
+
+	}
+
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
@@ -49,6 +62,7 @@ public class ShipIndicateSaveListResponseData {
     private String assortNm;
     private String vendorId;
 	private String orderId;
+	private String channelGoodsNo;
     private List<Ship> ships;
 
     @Getter
@@ -106,6 +120,7 @@ public class ShipIndicateSaveListResponseData {
 			this.optionNm2 = (String) map.get("optionNm2");
 			this.optionNm3 = (String) map.get("optionNm3");
 			this.rackNo = (String) map.get("rackNo");
+
 			this.channelGoodsNo = (String) map.get("channelGoodsNo");
 			this.channelOrderNo = (String) map.get("channelOrderNo");
 
@@ -133,6 +148,7 @@ public class ShipIndicateSaveListResponseData {
 		private String storageId;
 		private String receiptDt;
 		private String rackNo;
+
 		// 2022-03-24 추가
 		private String channelOrderNo;
 		private String channelGoodsNo;
