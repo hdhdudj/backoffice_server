@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import io.spring.model.category.entity.Itcate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,8 +77,8 @@ public class CategoryController {
      */
     @GetMapping(path = "/list")
     public ResponseEntity getCateTrees(){
-        Map<String, Object> map = jpaCategoryService.getCateTrees();
-        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), map);
+        List<Itcate> itcateList = jpaCategoryService.getCateLists();
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), itcateList);
         return ResponseEntity.ok(res);
     }
 }

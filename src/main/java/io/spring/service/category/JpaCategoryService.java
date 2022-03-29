@@ -4,6 +4,8 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import io.spring.infrastructure.util.StringFactory;
+import io.spring.jparepos.category.JpaItcateRepository;
+import io.spring.model.category.entity.Itcate;
 import org.springframework.stereotype.Service;
 
 import io.spring.jparepos.category.JpaItcatgRepository;
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JpaCategoryService {
     private final JpaItcatgRepository jpaItcatgRepository;
+    private final JpaItcateRepository jpaItcateRepository;
 
     public List<CategorySelectOneResponseData> getCategoryDataByUpCategoryId(String upCategoryId) {
         List<Itcatg> itcatgList = jpaItcatgRepository.findByUpCategoryId(upCategoryId);
@@ -183,15 +186,12 @@ public class JpaCategoryService {
 	}
 
 	/**
-	 * 현 카테고리 모든 데이터를 트리로 가져오기
+	 * 현 카테고리 모든 데이터 리스트
 	 */
-	public Map<String, Object> getCateTrees() {
-		Map<String, Object> treeMap = new HashMap<>();
-		List<Itcatg> cateList = jpaItcatgRepository.findAllCate();
-		Map<Integer , List<String>> depthMap = new HashMap<>();
-		List<String> putCateIdList = new ArrayList<>();
+	public List<Itcate> getCateLists() {
+		List<Itcate> itcateList = jpaItcateRepository.selectAllItcate();
 
-		return treeMap;
+		return itcateList;
 	}
 }
 
