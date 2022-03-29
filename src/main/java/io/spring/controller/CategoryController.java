@@ -71,7 +71,10 @@ public class CategoryController {
 		return ResponseEntity.ok(res);
 	}
 
-    @GetMapping(path = "/category/trees")
+    /**
+     * 전체 카테고리 리스트
+     */
+    @GetMapping(path = "/list")
     public ResponseEntity getCateTrees(){
         Map<String, Object> map = jpaCategoryService.getCateTrees();
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), map);
