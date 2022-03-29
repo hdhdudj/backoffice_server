@@ -217,10 +217,10 @@ public class GoodsResponseData {
 
 		public UploadMainImage(TbGoodsImage o) {
 
-			this.uid = o.getItaimg() == null ? null : o.getItaimg().getImageSeq().toString();
-			this.name = o.getItaimg() == null ? null : o.getItaimg().getImageName();
-			this.imageGb = o.getItaimg() == null ? null : o.getItaimg().getImageGb(); // itaimg.getImageGb();
-			this.status = o.getItaimg() == null ? null : o.getItaimg().getImageStatus(); // itaimg.getImageStatus();
+			this.uid = o.getItaimg() == null ? "" : o.getItaimg().getImageSeq().toString();
+			this.name = o.getItaimg() == null ? "" : o.getItaimg().getImageName();
+			this.imageGb = o.getItaimg() == null ? "" : o.getItaimg().getImageGb(); // itaimg.getImageGb();
+			this.status = o.getItaimg() == null ? "" : o.getItaimg().getImageStatus(); // itaimg.getImageStatus();
 			this.url = o.getImageUrl();
 			this.sno = o.getSno();
 
@@ -250,10 +250,10 @@ public class GoodsResponseData {
 
 		public UploadAddImage(TbGoodsImage o) {
 
-			this.uid = o.getItaimg() == null ? null : o.getItaimg().getImageSeq().toString();
-			this.name = o.getItaimg() == null ? null : o.getItaimg().getImageName();
-			this.imageGb = o.getItaimg() == null ? null : o.getItaimg().getImageGb(); // itaimg.getImageGb();
-			this.status = o.getItaimg() == null ? null : o.getItaimg().getImageStatus(); // itaimg.getImageStatus();
+			this.uid = o.getItaimg() == null ? "" : o.getItaimg().getImageSeq().toString();
+			this.name = o.getItaimg() == null ? "" : o.getItaimg().getImageName();
+			this.imageGb = o.getItaimg() == null ? "" : o.getItaimg().getImageGb(); // itaimg.getImageGb();
+			this.status = o.getItaimg() == null ? "" : o.getItaimg().getImageStatus(); // itaimg.getImageStatus();
 			this.url = o.getImageUrl();
 			this.sno = o.getSno();
 
