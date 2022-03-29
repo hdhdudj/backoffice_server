@@ -165,7 +165,7 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 	}
 
-	@GetMapping(path = "/v2/{assortId}")
+	@GetMapping(path = "/v2/items/{assortId}")
 	public ResponseEntity getGoodsDetailJpa2(@PathVariable("assortId") String assortId) {
 		log.debug("get goods detail page2");
 		log.debug(assortId);
