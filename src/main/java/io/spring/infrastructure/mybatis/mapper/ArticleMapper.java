@@ -1,7 +1,7 @@
 package io.spring.infrastructure.mybatis.mapper;
 
-import io.spring.core.article.Article;
-import io.spring.core.article.Tag;
+import io.spring.dao.article.Article;
+import io.spring.dao.article.Tag;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

@@ -45,12 +45,12 @@
         where F.user_id = #{userId} and F.follow_id = #{targetId}
     </select>
 
-    <resultMap id="follow" type="io.spring.core.user.FollowRelation">
+    <resultMap id="follow" type="io.spring.dao.user.FollowRelation">
         <result column="followUserId" property="userId"/>
         <result column="followTargetId" property="targetId"/>
     </resultMap>
 
-    <resultMap id="user" type="io.spring.core.user.User" >
+    <resultMap id="user" type="io.spring.dao.user.User" >
         <id column="id" property="id"/>
         <result column="username" property="username"/>
         <result column="email" property="email"/>

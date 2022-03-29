@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.spring.infrastructure.mybatis.mapper.ShipMapper">
+
+
+
+    <!-- 출고지시 화면에서 조건 검색하면 나오는 리스트 -->
+<select id="getOrderShipList" parameterType="java.util.HashMap"  resultType="HashMap">
+	 <![CDATA[
+select ld.ship_id shipId 
+,ld.ship_seq shipSeq
+,concat(ld.ship_id ,'-',ld.ship_seq) shipKey
+,ld.assort_id assortId
+,ld.item_id  itemId
+,lm.receipt_dt receiptDt 
+,tom.order_date orderDt
+,tom.order_name orderNm
+,tod.order_id orderId
+,tod.order_seq orderSeq
+,tom.channel_order_no channelOrderNo
+,it.channel_goods_no channelGoodsNo
+,concat(tod.order_id  ,'-',tod.order_seq) orderKey
+,tod.deli_method  deliMethod
+,tod.qty qty 
+,tod.storage_id orderStorageId
+,it.assort_nm  assortNm
+,it.assort_gb assortGb
+,tma.deli_nm receiverNm
+, (select b1.option_nm
+from ititmm b2, itvari b1
+where b2.assort_id=tod.assort_id
+  And b2.item_id= tod.item_id
+  And  b2.assort_id = b1.assort_id
+  and b2.variation_gb1 = b1.variation_gb
+  and  b2.variation_seq1=b1.seq) optionNm1
+ , (select b1.option_nm
+from ititmm b2, itvari b1
+where b2.assort_id=tod.assort_id
+  And b2.item_id= tod.item_id
+  And  b2.assort_id = b1.assort_id
+  and b2.variation_gb2 = b1.variation_gb
+  and  b2.variation_seq2=b1.seq) optionNm2
+      , (select b1.option_nm
+from ititmm b2, itvari b1
+where b2.assort_id=tod.assort_id
+  And b2.item_id= tod.item_id
+  And  b2.assort_id = b1.assort_id
+  and b2.variation_gb3 = b1.variation_gb
+  and  b2.variation_seq3=b1.seq) optionNm3
+  ,lm.storage_id storageId
+  ,ld.rack_no rackNo
+<<<<<<< HEAD
+from lsshpm lm
+,lsshpd ld
+,itasrt it
+,tb_order_detail tod
+,tb_order_master tom
+,tb_member_address tma
+=======
+  ,tm.channel_goods_no channelGoodsNo
+ from lsshpm lm
+ join lsshpd ld on   ld.ship_id = lm.ship_id
+ join itasrt it on   it.assort_id = ld.assort_id
+ join tb_order_detail tod on  tod.order_id = ld.order_id and tod.order_seq = ld.order_seq
+ join tb_order_master tom  on   tom.order_id = tod.order_id
+ left join tmmapi tm on tm.assort_id = ld.assort_id and tm.channel_gb='01' 
+>>>>>>> dev_ship
+where 1=1
+and lm.receipt_dt between #{startDt} and #{endDt}
+and lm.ship_status='01'
+and tod.status_cd ='C04'
+<<<<<<< HEAD
+and tod.order_id = tom.order_id
+and tma.deli_id = tom.deli_id
+=======
+>>>>>>> dev_ship
+-- and it.add_goods_yn='02'
+    	 ]]>
+    	 <if test='storageId != null and storageId.trim() != ""'>
+			 <![CDATA[
+			 and lm.storage_id =#{storageId}	
+			 ]]>
+			</if>
+<if test='assortId != null and storageId.trim() != ""'>
+			 <![CDATA[
+			 and it.assort_id =#{assortId}	
+			 ]]>
+			</if>
+			
+	<if test='assortNm != null and assortNm.trim() != ""'>
+			 <![CDATA[		
+		and it.assort_nm like CONCAT( '%',  #{assortNm}, '%') 
+			 ]]>
+			</if>		
+			
+<if test='orderId != null and orderId.trim() != ""'>
+			 <![CDATA[		
+		and (tod.order_id =#{orderId} or tom.channel_order_no = #{orderId})
+			 ]]>
+			</if>
+		<if test='orderSeq != null and orderSeq.trim() != ""'>
+			<![CDATA[
+		and tod.order_seq =#{orderSeq}
+			 ]]>
+		</if>
+		
+		<if test='channelGoodsNo != null and channelGoodsNo.trim() != ""'>
+			<![CDATA[
+		and tm.channel_goods_no =#{channelGoodsNo}
+			 ]]>
+		</if>		
+	</select>
+</mapper>

@@ -2,15 +2,81 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.spring.infrastructure.mybatis.mapper.OrderMapper">
 
-    <select id="selectOrderListByCondition" resultType="HashMap">
-    	
-    	<![CDATA[
+	<select id="selectOrderListByCondition" resultType="HashMap">
+
+		<![CDATA[
+select dd.*, dd.cust_nm cust_nm, dd.cust_tel cust_tel
+from (select aa.channel_gb channel_gb,
+             aa.order_date,
+             aa.order_id,
+             aa.order_name cust_nm,
+             aa.order_tel cust_tel,
+             aa.cust_id cust_id,
+             bb.status_cd,
+             bb.assort_id,
+             bb.goods_nm,
+             bb.option_info,
+             bb.qty,
+             bb.sale_price,
+             bb.deli_price,
+             bb.dc_sum_price,
+             aa.order_status,
+             (bb.sale_price + bb.deli_price - bb.dc_sum_price) total_price
+      from tb_order_master aa,
+           tb_order_detail bb,
+           tb_order_member_address cc
+      where 1 = 1
+        and aa.order_id = bb.order_id
+        and aa.deli_id = aa.deli_id
+        and aa.order_date between #{orderFromDt} and #{orderEndDt}
+        and aa.channel_gb like CONCAT(#{channelGb}, '%')
+    ]]>
+		<if test='channelOrderNo != null'>
+			<![CDATA[
+			and aa.channel_order_no = #{channelOrderNo}
+			]]>
+		</if>
+		<if test='statusCd != null'>
+			<![CDATA[
+			and  bb.status_cd = #{statusCd}
+			]]>
+		</if>
+		<if test='goodsId != null'>
+			<![CDATA[
+				and  bb.assort_id = #{assortId}
+			]]>
+		</if>
+		<![CDATA[
+		) dd
+         left join tb_member cc
+                   on cc.cust_id = dd.cust_id;
+		]]>
+		<if test='custNm != null'>
+			<![CDATA[
+				and cc.cust_nm like CONCAT(#{custNm},'%' )
+			]]>
+		</if>
+		<if test='custTel != null'>
+			<![CDATA[
+				and  cc.cust_tel = #{custTel}
+			]]>
+		</if>
+		<if test='custHp != null'>
+			<![CDATA[
+				and cc.cust_hp = #{custHp}
+			]]>
+		</if>
+	</select>
+
+	<select id="selectOrderListByConditionOriginal" resultType="HashMap">
+
+		<![CDATA[
 		select aa.channel_gb
 		,aa.order_date
 		,aa.order_id
 		,bb.status_cd
-		,cc.cust_nm
-		,cc.cust_tel
+		,dd.deli_name
+		,dd.deli_tel
 		,bb.assort_id
 		,bb.goods_nm
 		,bb.option_info
@@ -22,20 +88,22 @@
 		from tb_order_master aa
 		,tb_order_detail bb
 		,tb_member cc
+		,tb_member_address dd
 		where 1=1
 		and aa.order_id = bb.order_id
 		and aa.cust_id = cc.cust_id
+		and aa.deli_id = dd.deli_id
 		and aa.order_date between  STR_TO_DATE(#{orderFromDt}, '%Y-%m-%d %H:%i:%s')
 		and STR_TO_DATE(#{orderEndDt}, '%Y-%m-%d %H:%i:%s')
-		and aa.channel_gb like CONCAT(#{channelGb},'%' )   
+		and aa.channel_gb like CONCAT(#{channelGb},'%' )
     	]]>
 		<if test='channelOrderNo != null'>
-			 <![CDATA[
+			<![CDATA[
 			and aa.channel_order_no = #{channelOrderNo}
 			]]>
 		</if>
 		<if test='statusCd != null'>
-			 <![CDATA[
+			<![CDATA[
 			and  bb.status_cd = #{statusCd}
 			]]>
 		</if>
@@ -43,27 +111,581 @@
 			<![CDATA[
 				and  bb.assort_id = #{assortId}
 			]]>
-		</if>	
+		</if>
 		<if test='custNm != null'>
 			<![CDATA[
-				and cc.cust_nm like CONCAT(#{custNm},'%' )  
+				and dd.deli_name like CONCAT(#{custNm},'%' )
 			]]>
-		</if>	
+		</if>
 		<if test='custTel != null'>
 			<![CDATA[
-				and  cc.cust_tel = #{custTel}  
+				and dd.deli_tel = #{custTel}
 			]]>
-		</if>	
+		</if>
 		<if test='custHp != null'>
 			<![CDATA[
-				and cc.cust_hp = #{custHp}  
+				and aa.order_hp = #{custHp}
+			]]>
+		</if>
+
+	</select>
+
+	<!-- 주문별 주문리스트 -->
+	<select id="getOrderMasterList" parameterType="java.util.HashMap"  resultType="HashMap">
+	<![CDATA[
+		select tom.channel_gb channelGb
+		,tom.order_date orderDate
+		,tom.order_id orderId
+		,tod.order_seq orderSeq
+		,case
+		when SUBSTR(order_status FROM 1 FOR 1) in ('s','d','g','p') then
+			'결제완료'
+		when SUBSTR(order_status FROM 1 FOR 1) ='o' then
+		'결제전'	
+		else
+		'결제실패 및 취소'
+		end payStatus
+		,tom.channel_order_no channelOrderNo 
+		,tod.channel_order_seq channelOrderSeq
+		 ,tom.cust_id custId
+		 ,tom.order_name custNm
+		 ,tom.order_hp custHp
+		 ,tom.order_tel custTel
+		 ,tod.goods_nm goodsNm
+		 ,ita.assort_id assortId
+		 ,itm.item_id itemId
+		 ,tod.status_cd orderStatus
+		,(select iv.option_nm from itvari iv where iv.assort_id = itm.assort_id and iv.seq = itm.variation_seq1 and iv.variation_gb='01' and del_yn='02' ) optionNm1
+		,(select iv.option_nm from itvari iv where iv.assort_id = itm.assort_id and iv.seq = itm.variation_seq2 and iv.variation_gb='02' and del_yn='02' ) optionNm2
+		,(select iv.option_nm from itvari iv where iv.assort_id = itm.assort_id and iv.seq = itm.variation_seq3 and iv.variation_gb='03' and del_yn='03' ) optionNm3
+		,tod.qty qty
+		,tod.goods_price goodsPrice
+		,tod.deli_price deliPrice
+		,tod.deli_method deliMethod
+		,tod.delivery_info deliveryInfo
+	    ,tod.sale_price  salePrice
+		,tod.dc_sum_price dcSumPrice
+		,tod.scm_no scmNo
+		,tom.total_goods_price totalGoodsPrice
+		,tom.total_delivery_charge  totalDeliveryCharge
+		,tom.total_goods_price +  tom.total_delivery_charge totalPrice
+		,tom.order_amt orderAmt
+		,tom.pay_gb payGb
+		,tom.pay_dt payDt
+-- 		,tma.deli_nm deliNm
+		,tma.deli_nm deliNm
+		,tma.deli_hp deliHp
+		,tma.deli_tel deliTel
+		,tma.deli_addr1 deliAddr
+		from tb_order_detail tod
+		inner join tb_order_master as tom
+		    on tom.order_id = tod.order_id
+		LEFT OUTER JOIN itasrt as ita
+		    on tod.assort_id = ita.assort_id
+		LEFT OUTER JOIN ititmm as itm
+		    on tod.assort_id = itm.assort_id and tod.item_id = itm.item_id
+		 LEFT OUTER JOIN tb_member AS tm    -- A_TABLE 기준
+		              ON tom.cust_id = tm.cust_id
+		 LEFT OUTER JOIN tb_member_address AS tma    -- A_TABLE 기준
+			  ON tom.deli_id = tma.deli_id
+		where  1=1
+		and tom.order_date between #{startDt} and  #{endDt}
+	]]>
+	<if test='orderId != null'>
+			<![CDATA[
+				and tom.order_id =#{orderId}
+			]]>
+		</if>
+		<if test='orderStatus != null'>
+			<![CDATA[
+				and tod.status_cd =#{orderStatus}
+			]]>
+		</if>
+	<if test='custNm != null'>
+			<![CDATA[
+				and tom.order_name like CONCAT(#{custNm},'%' )
+			]]>
+		</if>
+		<if test='custHp != null'>
+		<![CDATA[
+				and tom.order_hp = #{custHp}
+			]]>
+		</if>
+		<if test='custTel != null'>
+			<![CDATA[
+				and tom.order_tel = #{custTel}
+			]]>
+		</if>
+		<if test='deliNm != null'>
+			<![CDATA[
+				and tma.deli_nm = #{deliNm}
+			]]>
+		</if>
+		<if test='deliHp != null'>
+			<![CDATA[
+				and tma.deli_hp = #{deliHp}
+			]]>
+		</if>
+		<if test='deliTel != null'>
+			<![CDATA[
+				and tma.deli_tel = #{deliTel}
+			]]>
+		</if>
+		<if test='channelOrderNo != null'>
+			<![CDATA[
+				and tom.channel_order_no =#{channelOrderNo}
+			]]>
+		</if>
+		<if test='assortId != null'>
+			<![CDATA[
+				and tod.assort_id =#{assortId}
 			]]>
 		</if>	
-		 		
-    </select>
+		<if test='assortNm != null'>
+			<![CDATA[
+				and ita.assort_nm like concat('%',#{assortNm},'%')
+			]]>
+		</if>						
+	
+	</select>
 
+	<!-- 상품별 주문리스트 -->
+	<select id="getOrderMasterList2" parameterType="java.util.HashMap"  resultType="HashMap">
+		<![CDATA[
+		select tom.channel_gb channelGb
+		,tom.order_date orderDate
+		,tom.order_id orderId
+		,tod.order_seq orderSeq
+		,case
+		when SUBSTR(order_status FROM 1 FOR 1) in ('s','d','g','p') then
+			'결제완료'
+		when SUBSTR(order_status FROM 1 FOR 1) ='o' then
+		'결제전'
+		else
+		'결제실패 및 취소'
+		end payStatus
+		,tom.channel_order_no channelOrderNo
+		,tod.channel_order_seq channelOrderSeq
+		 ,tm.cust_id custId
+		 ,tom.order_name custNm
+		 ,tom.order_tel custHp
+		 ,tom.order_tel custTel
+		 ,tod.goods_nm goodsNm
+		 ,ita.assort_id assortId
+		 ,itm.item_id itemId
+		 ,tod.status_cd orderStatus
+		,(select iv.option_nm from itvari iv where iv.assort_id = itm.assort_id and iv.seq = itm.variation_seq1 and iv.variation_gb='01' and del_yn='02' ) optionNm1
+		,(select iv.option_nm from itvari iv where iv.assort_id = itm.assort_id and iv.seq = itm.variation_seq2 and iv.variation_gb='02' and del_yn='02' ) optionNm2
+		,(select iv.option_nm from itvari iv where iv.assort_id = itm.assort_id and iv.seq = itm.variation_seq2 and iv.variation_gb='03' and del_yn='03' ) optionNm3
+		,tod.qty qty
+		,tod.goods_price goodsPrice
+		,tod.deli_price deliPrice
+		,tod.deli_method deliMethod
+		,tod.delivery_info deliveryInfo
+		,tod.scm_no scmNo
+		,tom.total_goods_price totalGoodsPrice
+		,tom.total_delivery_charge  totalDeliveryCharge
+		,tom.total_goods_price +  tom.total_delivery_charge totalPrice
+		,tom.order_amt orderAmt
+		,tom.pay_gb payGb
+		,tom.pay_dt payDt
+		,tma.deli_nm deliNm
+		,tma.deli_hp deliHp
+		,tma.deli_tel deliTel
+		,tma.deli_addr1 deliAddr
+		from tb_order_detail tod
+		inner join tb_order_master as tom
+		    on tom.order_id = tod.order_id
+		LEFT OUTER JOIN itasrt as ita
+		    on tod.assort_id = ita.assort_id
+		LEFT OUTER JOIN ititmm as itm
+		    on tod.assort_id = itm.assort_id and tod.item_id = itm.item_id
+		 LEFT OUTER JOIN tb_member AS tm    -- A_TABLE 기준
+		              ON tom.cust_id = tm.cust_id
+		 LEFT OUTER JOIN tb_member_address AS tma    -- A_TABLE 기준
+			  ON tom.deli_id = tma.deli_id
+		where  1=1
+		and tom.order_date between #{startDt} and  #{endDt}
+	]]>
+		<if test='orderId != null'>
+			<![CDATA[
+				and tom.order_id =#{orderId}
+			]]>
+		</if>
+		<if test='orderStatus != null'>
+			<![CDATA[
+				and tod.status_cd =#{orderStatus}
+			]]>
+		</if>
+		<if test='custNm != null'>
+			<![CDATA[
+				and tom.order_name like CONCAT(#{custNm},'%' )
+			]]>
+		</if>
+		<if test='custHp != null'>
+			<![CDATA[
+				and tom.order_tel = #{custHp}
+			]]>
+		</if>
+		<if test='custTel != null'>
+			<![CDATA[
+				and tom.order_tel = #{custTel}
+			]]>
+		</if>
+		<if test='deliNm != null'>
+			<![CDATA[
+				and tma.deli_nm = #{deliNm}
+			]]>
+		</if>
+		<if test='deliHp != null'>
+			<![CDATA[
+				and tma.deli_hp = #{deliHp}
+			]]>
+		</if>
+		<if test='deliTel != null'>
+			<![CDATA[
+				and tma.deli_tel = #{deliTel}
+			]]>
+		</if>
+		<if test='channelOrderNo != null'>
+			<![CDATA[
+				and tom.channel_order_no =#{channelOrderNo}
+			]]>
+		</if>
 
+	</select>
+	
+	
+	
+	<select id="getOrderMaster" parameterType="java.util.HashMap"  resultType="HashMap">
+	<![CDATA[
+			
+		select 
+		tom.channel_gb channelGb
+		,tom.order_id orderId
+		,tom.order_date orderDate
+		,tom.channel_order_no channelOrderNo
+		,tom.cust_id custId
+		,tom.cust_pcode custPcode
+		,tom.order_name  custNm
+		,tom.order_tel  custTel
+		,tom.order_tel custHp
+		,tm.cust_zipcode  custZipcode
+		,tom.order_addr1  custAddr1
+		,tom.order_addr2 custAddr2
+-- 		,tma.deli_nm  deliNm
+		,tma.deli_tel  deliTel
+		,tma.deli_hp  deliHp
+		,tma.deli_zipcode  deliZipcode
+		,tma.deli_addr1  deliAddr1
+		,tma.deli_addr2 deliAddr2
+		,tom.pay_gb  payGb
+		,tom.order_amt  orderAmt
+		,tom.total_goods_price   totalGoodsPrice
+		,tom.total_delivery_charge   totalDeliveryCharge
+		,0.0 totalDiscountPrice
+		,0.0 totalUseMileage
+		from tb_order_master tom
+		,tb_member tm 
+		,tb_member_address tma
+		where tom.order_id =#{orderId}
+		and tom.cust_id  = tm.cust_id 
+		and tom.deli_id  = tma.deli_id
+		
+		
+			
+	
+		]]>
+	
+	
+	</select>
+	
+<select id="getOrderDetail" parameterType="java.util.HashMap"  resultType="HashMap">
+	<![CDATA[
+			
+		
+ select 
+ tod.order_id orderId
+ ,tod.order_seq  orderSeq
+ ,concat(tod.order_id,'-',tod.order_seq) orderKey
+ ,tod.channel_order_no   channelOrderNo
+ ,tod.channel_order_seq  channelOrderSeq
+ ,tod.status_cd  statusCd
+ ,tod.assort_id  assortId
+ ,tod.item_id itemId
+ ,tod.goods_nm  goodsNm
+ ,tod.option_info optionInfo
+  ,  (select b1.option_nm
+                from ititmm b2, itvari b1
+                where b2.assort_id=tod.assort_id
+                  And b2.item_id= tod.item_id
+                  And  b2.assort_id = b1.assort_id
+                  and b2.variation_gb1 = b1.variation_gb
+                  and  b2.variation_seq1=b1.seq) optionNm1
+           ,    (select b1.option_nm
+                from ititmm b2, itvari b1
+                where b2.assort_id=tod.assort_id
+                  And b2.item_id= tod.item_id
+                  And  b2.assort_id = b1.assort_id
+                  and b2.variation_gb2 = b1.variation_gb
+                  and  b2.variation_seq2=b1.seq) optionNm2
+	 ,    (select b1.option_nm
+		   from ititmm b2, itvari b1
+		   where b2.assort_id=tod.assort_id
+			 And b2.item_id= tod.item_id
+			 And  b2.assort_id = b1.assort_id
+			 and b2.variation_gb3 = b1.variation_gb
+			 and  b2.variation_seq3=b1.seq) optionNm3
+ ,tod.qty qty 
+ ,tod.sale_price  salePrice
+ ,tod.delivery_info  deliveryInfo
+ ,case 
+ when tod.scm_no = 64 then '공급사' 
+ when tod.scm_no = 63 then '공급사'
+ else '본사'
+ end scmType
+ ,tod.deli_price deliPrice
+ ,tod.deli_method  deliMethod
+ ,tod.list_image_data  listImageData
+ from tb_order_detail tod 
+ ,tb_order_master tom
+ where  tod.order_id  = #{orderId}
+ and tod.order_id = tom.order_id
 
+		
+			
+	
+		]]>
+	
+	
+	</select>
 
+	<!-- 상품별 주문리스트 -->
+	<select id="getOrderDetailList" parameterType="java.util.HashMap"  resultType="HashMap">
+	<![CDATA[
+	
+select aa.channel_gb channelGb
+		,aa.order_date orderDate
+		,bb.order_id orderId
+		,bb.order_seq orderSeq
+		,concat(bb.order_id,'-',bb.order_seq) orderKey
+		,bb.status_cd statusCd
+		,aa.order_name custNm
+		,bb.assort_id assortId
+		,bb.item_id  itemId
+		,bb.goods_nm goodsNm
+ ,  (select b1.option_nm
+                from ititmm b2, itvari b1
+                where b2.assort_id=bb.assort_id
+                  And b2.item_id= bb.item_id
+                  And  b2.assort_id = b1.assort_id
+                  and b2.variation_gb1 = b1.variation_gb
+                  and  b2.variation_seq1=b1.seq) optionNm1
+           ,    (select b1.option_nm
+                from ititmm b2, itvari b1
+                where b2.assort_id=bb.assort_id
+                  And b2.item_id= bb.item_id
+                  And  b2.assort_id = b1.assort_id
+                  and b2.variation_gb2 = b1.variation_gb
+                  and  b2.variation_seq2=b1.seq) optionNm2
+                ,    (select b1.option_nm
+                from ititmm b2, itvari b1
+                where b2.assort_id=bb.assort_id
+                  And b2.item_id= bb.item_id
+                  And  b2.assort_id = b1.assort_id
+                  and b2.variation_gb3 = b1.variation_gb
+                  and  b2.variation_seq3=b1.seq) optionNm3
+                  	,bb.option_info optionInfo
+		,bb.qty qty
+		,bb.sale_price salePrice
+		,bb.deli_price deliPrice
+		,bb.dc_sum_price dcSumPrice
+		,(bb.sale_price + bb.deli_price - bb.dc_sum_price) totalPrice
+		,bb.list_image_data listImageData
+		,bb.channel_order_no  channelOrderNo
+		,bb.channel_order_seq  channelOrderSeq
+		from tb_order_master aa
+		,tb_order_detail bb
+		where 1=1
+		and aa.order_id = bb.order_id
+		and aa.order_date between #{startDt} and  #{endDt}
+		
 
+		]]>
+	<if test='statusCd != null'>
+			<![CDATA[
+				and bb.status_cd =#{statusCd}
+			]]>
+		</if>		
+	<if test='orderId != null'>
+			<![CDATA[
+				and aa.order_id =#{orderId}
+			]]>
+		</if>
+	<if test='channelOrderNo != null'>
+			<![CDATA[
+				and bb.channel_order_no =#{channelOrderNo}
+			]]>
+		</if>	
+	</select>	
+
+		<select id="getOrderCancelList" parameterType="java.util.HashMap"  resultType="HashMap">
+	<![CDATA[
+		select aa.seq seq
+		,aa.if_dt ifDt
+		,'01' channelGb 
+		,bb.order_id orderId
+		,bb.order_seq orderSeq
+		,bb.status_cd statusCd
+		,bb.channel_order_no channelOrderNo
+		,bb.channel_order_seq channelOrderSeq
+		,bb.assort_id assortId
+		,bb.item_id itemId
+		,bb.goods_nm goodsNm
+		,cc.order_name orderName
+	,  (select b1.option_nm
+                from ititmm b2, itvari b1
+                where b2.assort_id=bb.assort_id
+                  And b2.item_id= bb.item_id
+                  And  b2.assort_id = b1.assort_id
+                  and b2.variation_gb1 = b1.variation_gb
+                  and  b2.variation_seq1=b1.seq) optionNm1
+           ,    (select b1.option_nm
+                from ititmm b2, itvari b1
+                where b2.assort_id=bb.assort_id
+                  And b2.item_id= bb.item_id
+                  And  b2.assort_id = b1.assort_id
+                  and b2.variation_gb2 = b1.variation_gb
+                  and  b2.variation_seq2=b1.seq) optionNm2
+                ,    (select b1.option_nm
+                from ititmm b2, itvari b1
+                where b2.assort_id=bb.assort_id
+                  And b2.item_id= bb.item_id
+                  And  b2.assort_id = b1.assort_id
+                  and b2.variation_gb3 = b1.variation_gb
+                  and  b2.variation_seq3=b1.seq) optionNm3
+                  ,aa.if_status ifStatus
+                  ,aa.if_msg ifMsg
+		from if_order_cancel  aa
+		,tb_order_detail bb, tb_order_master cc
+		where 1=1
+		and aa.if_dt between #{startDt} and  #{endDt}
+		and aa.if_status =#{ifStatus}
+		and aa.channel_order_no = bb.channel_order_no 
+			and aa.channel_order_seq = bb.channel_order_seq
+		  and bb.order_id = cc.order_id
+				]]>
+			<if test='orderName != null and orderName.trim() != ""'>
+				<![CDATA[
+				and cc.order_name =#{orderName}
+			]]>
+			</if>
+		</select>
+	
+	
+	
+	
+	
+	
+	<select id="getOrderStatusDate" parameterType="java.util.HashMap"  resultType="HashMap">
+				<![CDATA[
+			select  
+			aaa.status_b02 purchaseCompleteDt
+			,bbb.make_complete_dt makeCompleteDt 
+			,bbb.shipment_dt shipmentDt
+			,bbb.esti_arrv_dt estiArrvDt
+			,aaa.status_X01 cancelDt
+			from (
+			select 
+			min(case  
+			when status_cd ='B02' then eff_start_dt end) status_B02
+			,min(case  
+			when status_cd ='X01' then eff_start_dt end) status_X01
+			from tb_order_history toh
+			where toh.order_id  = #{orderId}
+			and toh.order_seq =#{orderSeq}
+			) aaa,
+			(select 
+			max(lm.shipment_dt)  shipment_dt
+			,max(lm.esti_arrv_dt) esti_arrv_dt
+			,max(case 
+			when lm.shipment_dt is not null then date_add(lm.shipment_dt,interval -30 day )
+			end) make_complete_dt 
+			from  lsshpd ld
+			,lsshpm lm
+			where 1=1  
+			and ld.order_id  = #{orderId}
+			and ld.order_seq =#{orderSeq}
+			and ld.ship_id =lm.ship_id 
+			and lm.ship_gb='02'
+			and lm.ship_status <> 'X1'
+			) bbb
+				]]>
+		
+		</select>
+	
+	<!-- 특별관리 주문리스트 -->
+	<select id="getSpecialOrderMasterList" parameterType="java.util.HashMap"  resultType="HashMap">
+	<![CDATA[
+		select tom.channel_gb channelGb
+		,tom.order_date orderDate
+		,tom.order_id orderId
+		,tod.order_seq orderSeq
+		,case
+		when SUBSTR(order_status FROM 1 FOR 1) in ('s','d','g','p') then
+			'결제완료'
+		when SUBSTR(order_status FROM 1 FOR 1) ='o' then
+		'결제전'	
+		else
+		'결제실패 및 취소'
+		end payStatus
+		,tom.channel_order_no channelOrderNo 
+		,tod.channel_order_seq channelOrderSeq
+		 ,tom.cust_id custId
+		 ,tom.order_name custNm
+		 ,tom.order_hp custHp
+		 ,tom.order_tel custTel
+		 ,tod.goods_nm goodsNm
+		 ,ita.assort_id assortId
+		 ,itm.item_id itemId
+		 ,tod.status_cd orderStatus
+		,(select iv.option_nm from itvari iv where iv.assort_id = itm.assort_id and iv.seq = itm.variation_seq1 and iv.variation_gb='01' and del_yn='02' ) optionNm1
+		,(select iv.option_nm from itvari iv where iv.assort_id = itm.assort_id and iv.seq = itm.variation_seq2 and iv.variation_gb='02' and del_yn='02' ) optionNm2
+		,(select iv.option_nm from itvari iv where iv.assort_id = itm.assort_id and iv.seq = itm.variation_seq3 and iv.variation_gb='03' and del_yn='03' ) optionNm3
+		,tod.qty qty
+		,tod.goods_price goodsPrice
+		,tod.deli_price deliPrice
+		,tod.deli_method deliMethod
+		,tod.delivery_info deliveryInfo
+		,tod.scm_no scmNo
+		,tom.total_goods_price totalGoodsPrice
+		,tom.total_delivery_charge  totalDeliveryCharge
+		,tom.total_goods_price +  tom.total_delivery_charge totalPrice
+		,tom.order_amt orderAmt
+		,tom.pay_gb payGb
+		,tom.pay_dt payDt
+-- 		,tma.deli_nm deliNm
+		,tma.deli_nm deliNm
+		,tma.deli_hp deliHp
+		,tma.deli_tel deliTel
+		,tma.deli_addr1 deliAddr
+		from tb_order_detail tod
+		inner join tb_order_master as tom
+		    on tom.order_id = tod.order_id
+		JOIN itasrt as ita
+		    on tod.assort_id = ita.assort_id
+		LEFT OUTER JOIN ititmm as itm
+		    on tod.assort_id = itm.assort_id and tod.item_id = itm.item_id
+		 LEFT OUTER JOIN tb_member AS tm    -- A_TABLE 기준
+		              ON tom.cust_id = tm.cust_id
+		 LEFT OUTER JOIN tb_member_address AS tma    -- A_TABLE 기준
+			  ON tom.deli_id = tma.deli_id
+		where  1=1
+		and tom.order_date between #{startDt} and  #{endDt}
+		and ita.assort_nm like '%Saarinen%198%'
+	]]>
+	
+	
+	</select>	
+	
 </mapper>

@@ -32,7 +32,7 @@
 
 
 
-    <resultMap id="test" type="io.spring.core.user.Test" >
+    <resultMap id="test" type="io.spring.dao.user.Test" >
         <id column="id" property="id"/>
         <result column="test1" property="test1"/>
         <result column="test2" property="test2"/>

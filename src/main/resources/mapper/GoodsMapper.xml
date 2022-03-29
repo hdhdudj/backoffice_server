@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.spring.infrastructure.mybatis.mapper.GoodsMapper">
+
+
+   <select id="selectGoodsListAll" resultType="HashMap">
+    	<![CDATA[
+		select * from itasrt 		
+    	]]>
+    </select>
+
+	<select id="selectMaxSeqItasrt" resultType="string">
+    	<![CDATA[
+		select max(seq)+1 seq from itasrt where assort_id = #{assortId}
+		]]>
+    </select>
+
+	<select id="selectMaxSeqItvari" resultType="string">
+    	<![CDATA[
+		select max(seq)+1 seq from itvari where assort_id = #{assortId}
+		]]>
+    </select>
+
+	<select id="selectMaxSeqItasrd" resultType="string">
+    	<![CDATA[
+		select max(seq)+1 seq from itasrd where assort_id = #{assortId}
+		]]>
+    </select>
+
+	<select id="selectMaxItemIdItitmm" resultType="string">
+    	<![CDATA[
+		select max(item_id)+1 item_id from ititmm where assort_id = #{assortId}
+		]]>
+    </select>
+
+	<select id="selectOneSeqOptionNm" resultType="HashMap">
+    	<![CDATA[
+		select seq, option_gb from itvari where assort_id = #{assortId} and option_nm = #{optionNm}
+		]]>
+    </select>
+
+	<insert id="insertGoods">
+		<![CDATA[ 
+		insert into  itasrt
+		(assort_id
+		
+		,reg_dt
+		,reg_id
+		,upd_id
+		,upd_dt
+		
+		,assort_nm 
+		,assort_color
+		,disp_category_id
+		,brand_id
+		,origin
+		,manufacture_nm
+		,assort_model
+		,tax_gb
+		,assort_state
+		,shortage_yn
+		,sell_sta_dt 
+		,sell_end_dt
+		,local_price
+		,local_sale
+		,deli_price
+		,margin
+		,vendor_id 
+		
+		,mdRrp
+		,mdYear
+		,mdTax
+		,mdVatrate
+		,mdDiscountRate
+		,mdGoodsVatrate
+		
+		
+		,buyWhere
+		,buySupplyDiscount
+		,buyRrpIncrement
+		,buyTax
+		,mdMargin
+		,buyExchangeRate
+		)
+		
+		values(
+		#{assortId}
+				
+		,#{regDt}
+		,#{regId}
+		,#{updId}
+		,#{updDt}
+		
+		,#{assortNm}
+		,#{assortColor}
+		,#{dispCategory}
+		,#{brandId}
+		,#{origin}
+		,#{manufactureNm}
+		,#{assortModel}
+		,#{taxGb}
+		,#{assortState}
+		,#{shortageYn}
+		,#{sellSta}
+		,#{sellEnd}
+		,#{localPrice}
+		,#{localSale}
+		,#{deliPrice}
+		,#{margin}
+		,#{vendorId}
+		
+		,#{mdRrp}
+		,#{mdYear}
+		,#{mdTax}
+		,#{mdVatrate}
+		,#{mdDiscountRate}
+		,#{mdGoodsVatrate}
+		
+		,#{buyWhere}
+		,#{buySupplyDiscount}
+		,#{buyRrpIncrement}
+		,#{buyTax}
+		,#{mdMargin}
+		,#{buyExchangeRate}
+		)
+		]]>
+	</insert>
+
+	
+	<select id="getGoodsList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+			select
+			i.assort_id as assortId
+			 ,i.assort_nm as assortNm
+			 ,i.shortage_yn as shortageYn
+			 ,i.brand_id as brandId
+			 ,ib.brand_nm as brandNm
+			 ,i.disp_category_id as dispCategoryId
+ 			 ,ic.category_nm as categoryNm
+			 ,f_categoryFullPath(i.disp_category_id) fullCategoryNm
+		from itasrt i
+		LEFT JOIN itbrnd ib ON i.brand_id = ib.brand_id
+		LEFT JOIN itcatg ic ON i.disp_category_id = ic.category_id
+		where 	1=1
+		  and i.reg_Dt between #{regDtBegin} and  #{regDtEnd}
+		<if test='assortId != null and assortId.trim() != ""'>
+			<![CDATA[
+			and i.assort_id = #{assortId}
+			]]>
+		</if>
+		<if test='assortNm != null and assortNm.trim() != ""'>
+			<![CDATA[
+			and i.assort_nm like concat('%',#{assortNm},'%')
+			]]>
+		</if>
+		<if test='shortageYn != null and shortageYn.trim() != ""'>
+			<![CDATA[
+			and i.shortage_yn = #{shortageYn}
+			]]>
+		</if>
+	</select>	
+
+
+
+
+	
+	<select id="getGoodsItemList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	  <![CDATA[	
+			select
+			i.assort_id as assortId
+			 ,i.assort_nm as assortNm
+			 ,i.shortage_yn as shortageYn
+			 ,im.item_id as itemId
+			 ,im.short_yn as itemShortageYn
+			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq1 and iv.variation_gb='01' and del_yn='02' ) optionNm1
+			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq2 and iv.variation_gb='02' and del_yn='02' ) optionNm2			 
+			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq3 and iv.variation_gb='03' and del_yn='02' ) optionNm3
+			 ,i.brand_id as brandId
+			 ,ib.brand_nm as brandNm
+			 ,i.disp_category_id as dispCategoryId
+ 			 ,ic.category_nm as categoryNm
+			 ,f_categoryFullPath(i.disp_category_id) fullCategoryNm
+			 ,i.md_rrp mdRrp
+			 ,i.buy_supply_discount buySupplyDiscount
+		from itasrt i
+		LEFT JOIN itbrnd ib ON i.brand_id = ib.brand_id
+		LEFT JOIN itcatg ic ON i.disp_category_id = ic.category_id
+		,ititmm im		
+		where 	1=1
+		
+		]]>
+	<if test='assortId != null and assortId.trim() != ""'>
+			 <![CDATA[		
+		and i.assort_id = #{assortId}
+			 ]]>
+			</if>
+	<if test='assortNm != null and assortNm.trim() != ""'>
+			 <![CDATA[		
+		and i.assort_nm like CONCAT( '%',  #{assortNm}, '%') 
+			 ]]>
+			</if>
+		<if test='shortageYn != null and shortageYn.trim() != ""'>
+			<![CDATA[
+		and i.shortage_yn = #{shortageYn}
+			 ]]>
+		</if>
+				 		<![CDATA[
+		  and i.reg_Dt between #{regDtBegin} and  #{regDtEnd}
+		  and i.assort_id = im.assort_id
+		  ]]>
+	</select>	
+	
+	
+		<select id="getItitmc" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	 <![CDATA[
+			
+			select 
+			bb.up_storage_id storageId
+			,aa.storage_id rackNo
+			,aa.eff_sta_dt effStaDt
+			,aa.assort_id assortId
+			,aa.item_id itemId
+			,concat(aa.assort_id,'-',aa.item_id) goodsKey
+			,it.assort_nm assortNm
+			,ib.brand_nm brandNm
+			,iv1.option_nm optionNm1
+			,iv2.option_nm optionNm2
+			,iv3.option_nm optionNm3
+			,it.vendor_id channelId
+			,ifnull(aa.qty,0) qty
+			,0 orderQty
+			,ifnull(aa.qty,0) - ifnull(aa.ship_indicate_qty,0)  availableQty
+			,0 moveQty
+			,aa.stock_amt cost
+			,aa.item_grade itemGrade
+			,tm.channel_goods_no channelGoodsNo
+			from ititmc  aa
+			join cmstgm bb on aa.storage_id  = bb.storage_id 
+			join itasrt it on aa.assort_id  = it.assort_id
+			join ititmm im on aa.assort_id  = im.assort_id and aa.item_id  = im.item_id 
+			left join itbrnd ib on it.brand_id  = ib.brand_id 
+			left join tmmapi tm on it.assort_id  = tm.assort_id  and tm.channel_gb ='01'
+			left join itvari iv1 on im.assort_id  = iv1.assort_id  and im.variation_seq1 = iv1.seq
+			left join itvari iv2 on im.assort_id  = iv2.assort_id  and im.variation_seq2 = iv2.seq
+			left join itvari iv3 on im.assort_id  = iv3.assort_id  and im.variation_seq3 = iv3.seq
+			where 1=1 
+			and aa.qty > 0	 
+			 ]]>
+			<if test='storageId != null and storageId.trim() != ""'>
+			 <![CDATA[		
+				and bb.up_storage_id =  #{storageId} 
+			 ]]>
+				</if>	
+					 			<if test='assortId != null and assortId.trim() != ""'>
+			 <![CDATA[		
+				and aa.assort_Id =  #{assortId} 
+			 ]]>
+				</if>	
+			<if test='assortNm != null and assortNm.trim() != ""'>
+			 <![CDATA[		
+				and it.assort_nm like CONCAT( '%',  #{assortNm}, '%') 
+			 ]]>
+			</if>					
+
+			<if test='vendorId != null and vendorId.trim() != ""'>
+			 <![CDATA[		
+				and it.vendor_id =#{vendorId} 
+			 ]]>
+			</if>		
+			<if test='channelGoodsNo != null and channelGoodsNo.trim() != ""'>
+			 <![CDATA[		
+				and tm.channel_goods_no =#{channelGoodsNo} 
+			 ]]>
+			</if>					
+			
+	
+	
+	</select>
+	
+	<select id="getSumItitmc" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	 <![CDATA[
+			
+			select 
+			bb.up_storage_id storageId
+			,aa.storage_id rackNo
+			,aa.assort_id assortId
+			,aa.item_id itemId
+			,concat(aa.assort_id,'-',aa.item_id) goodsKey
+			,it.assort_nm assortNm
+			,ib.brand_nm brandNm
+			,iv1.option_nm optionNm1
+			,iv2.option_nm optionNm2
+			,iv3.option_nm optionNm3
+			,it.vendor_id channelId
+			,sum(ifnull(aa.qty,0)) qty
+			,0 orderQty
+			,sum(ifnull(aa.qty,0) - ifnull(aa.ship_indicate_qty,0))  availableQty
+			,0 moveQty
+			,max(aa.stock_amt) cost
+			,aa.item_grade itemGrade
+			,tm.channel_goods_no channelGoodsNo
+			from ititmc  aa
+			join cmstgm bb on aa.storage_id  = bb.storage_id 
+			join itasrt it on aa.assort_id  = it.assort_id
+			join ititmm im on aa.assort_id  = im.assort_id and aa.item_id  = im.item_id 
+			left join itbrnd ib on it.brand_id  = ib.brand_id 
+			left join tmmapi tm on it.assort_id  = tm.assort_id  and tm.channel_gb ='01'
+			left join itvari iv1 on im.assort_id  = iv1.assort_id  and im.variation_seq1 = iv1.seq
+			left join itvari iv2 on im.assort_id  = iv2.assort_id  and im.variation_seq2 = iv2.seq
+			left join itvari iv3 on im.assort_id  = iv3.assort_id  and im.variation_seq3 = iv3.seq
+			where 1=1 
+			and aa.qty > 0	 
+			 ]]>
+			<if test='storageId != null and storageId.trim() != ""'>
+			 <![CDATA[		
+				and bb.up_storage_id =  #{storageId} 
+			 ]]>
+				</if>	
+					 			<if test='assortId != null and assortId.trim() != ""'>
+			 <![CDATA[		
+				and aa.assortId =  #{assortId} 
+			 ]]>
+				</if>	
+			<if test='assortNm != null and assortNm.trim() != ""'>
+			 <![CDATA[		
+				and it.assort_nm like CONCAT( '%',  #{assortNm}, '%') 
+			 ]]>
+			</if>					
+
+			<if test='vendorId != null and vendorId.trim() != ""'>
+			 <![CDATA[		
+				and it.vendor_id =#{vendorId} 
+			 ]]>
+			</if>		
+			<if test='channelGoodsNo != null and channelGoodsNo.trim() != ""'>
+			 <![CDATA[		
+				and tm.channel_goods_no =#{channelGoodsNo} 
+			 ]]>
+			</if>					
+			
+				 <![CDATA[		
+		group by 	bb.up_storage_id 
+					,aa.storage_id 
+					,aa.assort_id 
+					,aa.item_id 
+					,it.assort_nm 
+					,ib.brand_nm 
+					,iv1.option_nm 
+					,iv2.option_nm 
+					,iv3.option_nm 
+					,it.vendor_id 
+					,aa.item_grade
+					,tm.channel_goods_no
+	 ]]>
+	
+	</select>
+		
+	
+	<select id="getGoodsItemListWithCategory" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	 <![CDATA[	
+			select aaa.assortId assortId
+			,aaa.assortNm assortNm
+			,aaa.shortageYn shortageYn
+			,aaa.itemId
+			,concat(aaa.assortId,'-',aaa.itemId) goodsKey
+			,aaa.itemShortageYn
+			,aaa.optionNm1
+			,aaa.optionNm2
+			,aaa.optionNm3
+			,aaa.modelNo
+			,aaa.origin
+			,aaa.custCategory
+			,aaa.material
+			,aaa.purchasePrice
+			,aaa.brandId
+			,aaa.brandNm
+			,aaa.dispCategoryId dispCategoryId
+			,aaa.categoryNm categoryNm
+			,aaa.fullCategoryNm fullCategoryNm
+			,aaa.mdRrp 
+			,aaa.buySupplyDiscount
+			,aaa.fullCatePathId fullCatePathId
+			,aaa.imagePath
+			,aaa.channelGoodsNo
+			from (
+			select
+			i.assort_id as assortId
+			 ,i.assort_nm as assortNm
+			 ,i.shortage_yn as shortageYn
+			 ,im.item_id as itemId
+			 ,im.short_yn as itemShortageYn
+			 ,im.model_no as modelNo
+	    	 ,i.cust_category as custCategory
+			 ,im.material as material
+			 ,im.purchase_price as purchasePrice
+			 ,concat('https://trdst.hgodo.com/', img.image_path, img.image_name) imagePath
+			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq1 and iv.variation_gb='01' and del_yn='02' ) optionNm1
+			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq2 and iv.variation_gb='02' and del_yn='02' ) optionNm2			 
+			 ,(select iv.option_nm from itvari iv where iv.assort_id = im.assort_id and iv.seq = im.variation_seq3 and iv.variation_gb='03' and del_yn='02' ) optionNm3
+			 ,i.brand_id as brandId
+		     ,i.origin as origin
+			 ,i.storage_id as storageId
+			 ,ib.brand_nm as brandNm
+			 ,i.disp_category_id as dispCategoryId
+ 			 ,ic.category_nm as categoryNm
+			 ,f_categoryFullPath(i.disp_category_id) fullCategoryNm
+			 ,i.md_rrp mdRrp
+			 ,i.buy_supply_discount buySupplyDiscount
+			 ,f_categoryFullPathId(i.disp_category_id) fullCatePathId
+			 ,tm.channel_goods_no channelGoodsNo 
+		from itasrt i
+		LEFT JOIN if_brand ib ON i.brand_id = ib.brand_id
+		LEFT JOIN itcatg ic ON i.disp_category_id = ic.category_id
+		LEFT JOIN itaimg img ON i.assort_id = img.assort_id
+		LEFT JOIN tmmapi tm ON i.assort_id = tm.assort_id
+		,ititmm im
+			where 1=1
+			and i.assort_id = im.assort_id 
+			 ]]>
+			<if test='assortId != null and assortId.trim() != ""'>
+			 <![CDATA[		
+					and i.assort_id =#{assortId} 
+			 ]]>
+			</if>		
+			<if test='assortNm != null and assortNm.trim() != ""'>
+			 <![CDATA[		
+				and i.assort_nm like CONCAT( '%',  #{assortNm}, '%') 
+			 ]]>
+			</if>		
+			<if test='vendorId != null and vendorId.trim() != ""'>
+			 <![CDATA[		
+					and i.vendor_id =#{vendorId} 
+			 ]]>
+			</if>		
+			<if test='brandId != null and brandId.trim() != ""'>
+			 <![CDATA[		
+					and ib.brand_id =#{brandId}
+			 ]]>
+			</if>		
+			<if test='channelGoodsNo != null and channelGoodsNo.trim() != ""'>
+			 <![CDATA[		
+					and tm.channel_goods_no =#{channelGoodsNo}
+			 ]]>
+			</if>				
+				
+		 <![CDATA[		
+			) aaa
+			where 1=1
+			 ]]>
+			<if test='category != null and category.trim() != ""'>
+				 <![CDATA[		
+			and aaa.fullCatePathId like CONCAT( #{category}, '%')
+			]]>
+			</if>	
+			 <![CDATA[				 
+	 		COLLATE utf8mb4_unicode_ci
+	 		]]>
+	
+	</select>
+
+	
+	<select id="getGoodsStockList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	 <![CDATA[	
+		select aa.storage_id storageId 
+		,bb.storage_nm storageNm 
+		,aa.assort_id assortId 
+		,cc.assort_nm assortNm
+		,aa.item_id itemId
+		 ,  (select b1.option_nm
+		                from ititmm b2, itvari b1
+		                where b2.assort_id=aa.assort_id
+		                  And b2.item_id= aa.item_id
+		                  And  b2.assort_id = b1.assort_id
+		                  and b2.variation_gb1 = b1.variation_gb
+		                  and  b2.variation_seq1=b1.seq) optionNm1
+		           ,    (select b1.option_nm
+		                from ititmm b2, itvari b1
+		                where b2.assort_id=aa.assort_id
+		                  And b2.item_id= aa.item_id
+		                  And  b2.assort_id = b1.assort_id
+		                  and b2.variation_gb2 = b1.variation_gb
+		                  and  b2.variation_seq2=b1.seq) optionNm2
+		           ,    (select b1.option_nm
+		                from ititmm b2, itvari b1
+		                where b2.assort_id=aa.assort_id
+		                  And b2.item_id= aa.item_id
+		                  And  b2.assort_id = b1.assort_id
+		                  and b2.variation_gb3 = b1.variation_gb
+		                  and  b2.variation_seq3=b1.seq) optionNm3
+		,aa.ship_indicate_qty shipIndicateQty
+		,aa.qty qty
+		from (
+		select storage_id
+		,assort_id ,item_id ,item_grade 
+		,sum(ship_indicate_qty) ship_indicate_qty
+		,sum(qty) qty
+		from ititmc i 
+		group by storage_id,assort_id ,item_id ,item_grade 
+		) aa,cmstgm bb
+		 ,itasrt cc
+		where aa.storage_id = bb.storage_id 
+		 and aa.assort_id = cc.assort_id 
+		]]>
+			<if test='assortId != null and assortId.trim() != ""'>
+			 <![CDATA[		
+					and cc.assort_id =#{assortId} 
+			 ]]>
+			</if>			
+			<if test='storageId != null and storageId.trim() != ""'>
+			 <![CDATA[		
+					and bb.storage_id =#{storageId} 
+			 ]]>
+			</if>						
+	</select>
+</mapper>

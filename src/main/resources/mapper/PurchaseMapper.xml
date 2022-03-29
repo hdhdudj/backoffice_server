@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.spring.infrastructure.mybatis.mapper.PurchaseMapper">
+    <select id="selectPurchaseListByCondition" resultType="HashMap">
+        <![CDATA[
+        select a.purchase_no purchaseNo,
+               b.purchase_seq purchaseSeq,
+               a.vendor_id purchaseVendorId,
+               a.vendor_id vendorId,
+               ifnull((select bb.vd_nm from cmvdmr bb where bb.id = a.vendor_id), '거래처없음') purchaseVendorNm ,
+				a.store_cd storeCd,
+				(select bb.storage_nm from cmstgm bb where bb.storage_id = a.store_cd) storageNm,
+				a.dealtype_cd dealtypeCd, 
+               b.assort_id assortId,
+               b.item_id itemId,
+               c.assort_nm assortNm,
+               b.purchase_qty purchaseQty,
+               b.purchase_unit_amt purchaseUnitAmt,
+               b.site_order_no siteOrderNo,
+               (select b1.option_nm
+                from ititmm b2, itvari b1
+                where b2.assort_id=b.assort_id
+                  And b2.item_id= b.item_id
+                  And  b2.assort_id = b1.assort_id
+                  and b2.variation_gb1 = b1.variation_gb
+                  and  b2.variation_seq1=b1.seq) optionNm1,
+               (select b1.option_nm
+                from ititmm b2, itvari b1
+                where b2.assort_id=b.assort_id
+                  And b2.item_id= b.item_id
+                  And  b2.assort_id = b1.assort_id
+                  and b2.variation_gb2 = b1.variation_gb
+                  and  b2.variation_seq2=b1.seq) optionNm2,
+            	(select b1.option_nm
+                from ititmm b2, itvari b1
+                where b2.assort_id=b.assort_id
+                  And b2.item_id= b.item_id
+                  And  b2.assort_id = b1.assort_id
+                  and b2.variation_gb3 = b1.variation_gb
+                  and  b2.variation_seq3=b1.seq) optionNm3,
+(
+				select ddd.purchase_status
+				from lspchb ddd
+				where ddd.purchase_no = b.purchase_no
+				and  ddd.purchase_seq = b.purchase_seq
+				and ddd.eff_end_dt='9999-12-31 23:59:59'
+				LIMIT 1
+				) purchaseStatus                  
+        from lspchm a,
+             lspchd b,
+             itasrt c
+        where a.purchase_dt between #{startDt} and #{endDt}
+        and a.purchase_no = b.purchase_no
+            and b.assort_id = c.assort_id
+        
+     
+        ]]>
+        <if test='purchaseVendorId != null'>
+			 <![CDATA[		
+          and a.vendor_id = #{purchaseVendorId}
+           ]]>
+			</if>
+        <if test='dealtypeCd != null'>
+			 <![CDATA[		
+          and a.dealtype_cd = #{dealtypeCd}
+           ]]>
+			</if>			
+                <if test='purchaseStatus != null'>
+			 <![CDATA[		
+             and a.purchase_status = #{purchaseStatus}
+           ]]>
+			</if>	
+          
+          
+              <if test='assortId != null'>
+			 <![CDATA[		
+         and b.assort_id = #{assortId}
+           ]]>
+			</if>			
+       
+    		
+       
+          
+    
+    </select>
+    
+    
+    
+
+    <select id="getOrderListByPurchaseVendor" resultType="HashMap">
+    	
+    	<![CDATA[
+	
+		select
+					bbb.vendor_id purchaseVendorId,
+					bbb.vd_nm purchaseVendorName,
+					sum(bbb.qty) purchaseVendorQty
+				from
+					(
+					select
+						aaaa.vendor_id  /*vendor_id*/,
+						aaaa.vd_nm ,
+						sum(aaaa.qty) qty 
+					from
+						(
+						select
+						
+						case
+						when aaa.order_vendor_id <> '000000' then
+							ifnull(aaa.order_vendor_id, '000000')
+						else
+							ifnull(bbb.vendor_id, '000000') 
+						end vendor_id,
+						case
+						when aaa.order_vendor_id <> '000000' then
+							ifnull((select bb.vd_nm from cmvdmr bb where bb.id = aaa.order_vendor_id), '거래처없음')
+						else
+							ifnull((select bb.vd_nm from cmvdmr bb where bb.id = bbb.vendor_id), '거래처없음')
+							 
+						end vd_nm,						
+							aaa.*
+						from
+							(
+							select
+								tod.assort_id ,
+								tod.item_id ,
+								tod.qty ,
+								case 
+								when tod.order_seq <> tod.parent_order_seq then
+									(select eee.vendor_id from tb_order_detail vvv, itasrt eee
+									where vvv.order_id = tod.order_id
+									and vvv.order_seq = tod.parent_order_seq
+									and vvv.assort_id = eee.assort_id
+									)
+									
+								else 
+									'000000'
+								end order_vendor_id
+							from
+								tb_order_detail tod
+								,tb_order_master tom 
+							where
+								tod.status_cd = 'B01'
+								and tod.order_id =tom.order_id
+								and not exists (
+								select 1
+								from if_order_cancel ioc 
+								where ioc.channel_order_no = tod.channel_order_no
+								and ioc.channel_order_seq = tod.channel_order_seq
+								)
+								) aaa ,
+							itasrt bbb
+						where
+							1 = 1
+							and aaa.assort_id = bbb.assort_id
+							 ) aaaa
+					group by
+						aaaa.vendor_id ,
+						aaaa.vd_nm
+				union ALL
+					select
+						cc.id as vendor_id/*vendor_id*/,
+						cc.vd_nm ,
+						0 qty 
+					from
+						cmvdmr cc 
+						where cc.vendor_type='01') bbb
+				group by
+					bbb.vendor_id ,
+					bbb.vd_nm
+			]]>
+		
+		 		
+    </select>
+         <select id="getPurchase" parameterType="java.util.HashMap"  resultType="HashMap">
+    
+		    select aaa.purchase_no purchaseNo 
+		,aaa.purchase_dt  purchaseDt
+		,aaa.purchase_status  purchaseStatus
+		,aaa.purchase_gb  purchaseGb
+		,aaa.vendor_id purchaseVendorId
+		,ifnull((select bb.vd_nm from cmvdmr bb where bb.id = aaa.vendor_id), '거래처없음') purchaseVendorNm
+		,aaa.store_cd storeCd
+		,(select bb.storage_nm from cmstgm bb where bb.storage_id = aaa.store_cd) storageNm 
+		,aaa.terms terms
+		,aaa.delivery delivery  
+		,aaa.payment payment  
+		,aaa.carrier carrier 
+		,aaa.site_order_no siteOrderNo
+		from lspchm aaa
+		where aaa.purchase_no=#{purchaseNo}
+      </select>
+
+        <select id="getPurchaseItems" parameterType="java.util.HashMap"  resultType="HashMap">
+				        
+				select aaa.purchase_no purchaseNo,
+				aaa.purchase_seq purchaseSeq,
+				ddd.purchase_gb purchaseGb,
+				aaa.order_id orderId,
+				aaa.order_seq orderSeq,
+				ccc.assort_id assortId,
+				ccc.item_id itemId,
+				bbb.assort_nm assortNm,
+				(select tod.deli_method from tb_order_detail tod where tod.order_id = aaa.order_id and tod.order_seq = aaa.order_seq) deliMethod ,
+				(
+									select
+										iv.option_nm
+									from
+										itvari iv
+									where
+										iv.assort_id = ccc.assort_id
+										and iv.seq = ccc.variation_seq1
+										and iv.variation_gb = '01'
+				and del_yn = '02' ) optionNm1 ,
+				
+				(
+				select
+					iv.option_nm
+				from
+					itvari iv
+				where
+					iv.assort_id = ccc.assort_id
+					and iv.seq = ccc.variation_seq2
+					and iv.variation_gb = '02'
+				and del_yn = '02' ) optionNm2,
+			   (
+				   select
+					   iv.option_nm
+				   from
+					   itvari iv
+				   where
+					   iv.assort_id = ccc.assort_id
+					 and iv.seq = ccc.variation_seq3
+					 and iv.variation_gb = '03'
+					 and del_yn = '02' ) optionNm3
+				,bbb.md_rrp mdRrp
+				,bbb.buy_supply_discount buySupplyDiscount 
+				,aaa.purchase_qty purchaseQty
+				,aaa.purchase_unit_amt purchaseUnitAmt
+				,(
+				select ddd.purchase_status
+				from lspchb ddd
+				where ddd.purchase_no = aaa.purchase_no
+				and  ddd.purchase_seq = aaa.purchase_seq
+				and ddd.eff_end_dt='9999-12-31 23:59:59'
+				LIMIT 1
+				) purchaseStatus
+					from lspchd aaa,
+						lspchm ddd,
+					itasrt bbb,
+					ititmm ccc
+				
+				where
+					1 = 1
+					and aaa.purchase_no=#{purchaseNo}
+					and aaa.purchase_no = ddd.purchase_no
+				and aaa.assort_id = bbb.assort_id
+				and aaa.assort_id = ccc.assort_id
+				and aaa.item_id = ccc.item_id
+        
+        
+        </select>
+    
+
+    <select id="getOrderListByPurchaseVendorItem" parameterType="java.util.HashMap"  resultType="HashMap">
+    	
+    	<![CDATA[
+		select bbb1.order_id                                                     orderId,
+			   bbb1.order_seq                                                    orderSeq,
+			   bbb1.channel_order_no                                                    channelOrderNo,
+			   concat(bbb1.order_id, '-', bbb1.order_seq)                        orderCd,
+			   concat(bbb1.order_id, '-', bbb1.parent_order_seq)                 parentOrderCd,
+			   bbb1.vendor_id                                                    vendorId,
+			   bbb1.vd_nm                                                        vdNm,
+			   bbb1.assort_id                                                    assortId,
+			   bbb1.assort_nm                                                    assortNm,
+			   bbb1.item_id                                                      itemId,
+			   /*concat(bbb1.option_nm1, ifnull(CONCAT('-', bbb1.option_nm2), '')) optionNm,*/
+			   bbb1.option_nm1 optionNm1,
+			   bbb1.option_nm2 optionNm2,
+			   bbb1.option_nm3 optionNm3,
+			   bbb1.option_info                                                  optionInfo,
+			   bbb1.qty                                                          purchaseQty,
+			   bbb1.md_rrp                                                        rrp,
+			   bbb1.buy_supply_discount                                          discountRate,
+			   bbb1.order_date orderDate,
+			   bbb1.cust_category                                                custCategory,
+			   bbb1.model_no                                                     modelNo,
+			   bbb1.material                                                     material,
+			   bbb1.purchase_price                                               purchasePrice,
+			   bbb1.order_name                                              custNm,
+			   bbb1.origin                                               origin,
+			   bbb1.list_image_data                               imagePath
+		from (select case
+						 when aaa.order_vendor_id <> '000000' then ifnull(aaa.order_vendor_id, '000000')
+						 else ifnull(bbb.vendor_id, '000000') end                                               vendor_id,
+					 case
+						 when aaa.order_vendor_id <> '000000' then ifnull(
+								 (select bb.vd_nm from cmvdmr bb where bb.id = aaa.order_vendor_id), '거래처없음')
+						 else ifnull((select bb.vd_nm from cmvdmr bb where bb.id = bbb.vendor_id), '거래처없음') end vd_nm,
+					 bbb.assort_nm,
+					 bbb.md_rrp,
+		             bbb.origin,
+					 bbb.buy_supply_discount,
+		             bbb.cust_category,
+		             bbb.main_image_url,
+					 tom.order_date,
+					 tom.channel_order_no,
+					 aaa.*,
+		             ccc.model_no,
+		             ccc.material,
+		             ccc.purchase_price,
+					 tom.order_name,
+					 (select iv.option_nm
+					  from itvari iv
+					  where iv.assort_id = ccc.assort_id
+						and iv.seq = ccc.variation_seq1
+						and iv.variation_gb = '01'
+						and del_yn = '02')                                                                      option_nm1,
+					 (select iv.option_nm
+					  from itvari iv
+					  where iv.assort_id = ccc.assort_id
+						and iv.seq = ccc.variation_seq2
+						and iv.variation_gb = '02'
+						and del_yn = '02')                                                                      option_nm2,
+(select iv.option_nm
+					  from itvari iv
+					  where iv.assort_id = ccc.assort_id
+						and iv.seq = ccc.variation_seq3
+						and iv.variation_gb = '03'
+						and del_yn = '02')                                                                      option_nm3						
+			  from (select tod.order_id,
+						   tod.order_seq,
+						   tod.parent_order_seq,
+						   tod.reg_dt,
+						   tod.assort_id,
+						   tod.item_id,
+						   tod.option_info,
+						   tod.qty,
+						   case
+							   when tod.order_seq <> tod.parent_order_seq then (select eee.vendor_id
+																				from tb_order_detail vvv,
+																					 itasrt eee
+																				where vvv.order_id = tod.order_id
+																				  and vvv.order_seq = tod.parent_order_seq
+																				  and vvv.assort_id = eee.assort_id)
+							   else '000000' end order_vendor_id
+			  		,tod.list_image_data
+					from tb_order_detail tod
+					,tb_order_master tom
+					where tod.status_cd in ('B01')
+					and tod.order_id =tom.order_id
+						and not exists (
+								select 1
+								from if_order_cancel ioc 
+								where ioc.channel_order_no = tod.channel_order_no
+								and ioc.channel_order_seq = tod.channel_order_seq
+								)
+					) aaa,
+				   itasrt bbb,
+				   ititmm ccc,
+				   tb_order_master tom,
+				   tb_member tm
+			  where 1 = 1
+				and aaa.assort_id = bbb.assort_id
+				and aaa.assort_id = ccc.assort_id
+				and aaa.item_id = ccc.item_id
+				and tom.order_id = aaa.order_id
+				and tom.cust_id = tm.cust_id) bbb1
+				left outer join itaimg on itaimg.assort_id = bbb1.assort_id
+		where bbb1.vendor_id = #{vendorId}
+		order by bbb1.order_date desc, bbb1.order_seq desc;
+			]]>
+		
+		 		
+    </select>
+    
+    
+</mapper>
+

@@ -11,8 +11,122 @@
 		
     </select>
 
+    <select id="getCategory" parameterType="java.util.Map" resultType="HashMap"  >
+    	
+    	<![CDATA[
+			select category_id categoryId,category_nm categoryNm,up_category_id upCategoryId 
+				from itcatg
+				where category_id=#{categoryId}
+		
+    	]]>
+		
+    </select>
+    
+	<select id="getBrandSearchList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    	<![CDATA[
+			select brand_id codeId,brand_nm codeNm
+				from itbrnd
+				where 1=1
+				and brand_id like CONCAT(#{codeId}, '%') 
+				and brand_nm like CONCAT('%',#{codeNm}, '%') 
+    	]]>
+		
+	</select>
+	
+	
+	        
+	<select id="getPurchaseVendorSearchList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    	<![CDATA[
+			select id codeId,vd_nm codeNm
+				from cmvdmr
+				where 1=1
+				and id like CONCAT(#{codeId}, '%')
+				and vd_nm like CONCAT('%',#{codeNm}, '%') 
+				and vendor_type='01'
+    	]]>
+		
+	</select>    
 
 
+	<select id="getCommonPurchaseVendor" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    	<![CDATA[
+			select id as value,vd_nm as label
+				from cmvdmr
+				where 1=1
+				and vendor_type='01'
+    	]]>
+		
+	</select>    
+	
+	<select id="getCommonStorage" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    	<![CDATA[
+			select storage_id as value,storage_nm as label
+				from cmstgm
+				where 1=1
+					]]>
+				 <if test='storageType != null'>
+			 		<![CDATA[
+			 		and storage_type =#{storageType}	
+			 	]]>
+				</if>
+					 <if test='storageId != null'>
+			 		<![CDATA[
+			 		and storage_id =#{storageId}	
+			 	]]>
+				</if>
+	</select>    
+	
+	
+	<select id="getCommonOrderStatus" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    	<![CDATA[
+			select cd_minor  as value
+			,cd_fname as label
+				from cmcode
+				where 1=1
+					]]>
+				 <if test='cdMajor != null'>
+			 		<![CDATA[
+			 		and cd_major =#{cdMajor}	
+			 	]]>
+				</if>
+					 <if test='cdMinor != null'>
+			 		<![CDATA[
+			 		and cd_minor =#{cdMinor}	
+			 	]]>
+				</if>
+					<![CDATA[
+					order by cd_table,cd_order
+					]]>
+	</select>    
+	
 
+	<select id="getCommonDefaultRack" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    	<![CDATA[
+					select storage_id as storageId,storage_nm as storageNm
+					from cmstgm 
+					where 1=1
+					and  up_storage_id =#{storageId}
+					and default_yn ='01'
+					limit 0,1	    
+			]]>	
+				    	
+				    	
+
+	</select>    
+
+
+	<select id="checkRack" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    	<![CDATA[
+					select storage_id as storageId,storage_nm as storageNm
+					from cmstgm 
+					where 1=1
+					and  up_storage_id =#{storageId}
+					and storage_id =#{rackNo}
+					limit 0,1	    
+			]]>	
+				    	
+				    	
+
+	</select>  
 
 </mapper>

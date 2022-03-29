@@ -54,7 +54,7 @@
         where A.id = #{id}
     </select>
 
-    <select id="findTag" resultType="io.spring.core.article.Tag">
+    <select id="findTag" resultType="io.spring.dao.article.Tag">
         select id, name from tags where name = #{tagName}
     </select>
 
@@ -63,7 +63,7 @@
         where A.slug = #{slug}
     </select>
 
-    <resultMap id="article" type="io.spring.core.article.Article">
+    <resultMap id="article" type="io.spring.dao.article.Article">
         <id column="articleId" property="id"/>
         <result column="articleUserId" property="userId"/>
         <result column="articleTitle" property="title"/>
@@ -75,7 +75,7 @@
         <collection property="tags" ofType="arraylist" resultMap="tag"/>
     </resultMap>
 
-    <resultMap id="tag" type="io.spring.core.article.Tag">
+    <resultMap id="tag" type="io.spring.dao.article.Tag">
         <id column="tagId" property="id"/>
         <result column="tagName" property="name"/>
     </resultMap>
