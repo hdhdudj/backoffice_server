@@ -80,6 +80,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.GET, "/xml/**").permitAll()
 				.antMatchers(HttpMethod.POST, "/xml/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/napi/**").permitAll()
+				.antMatchers(HttpMethod.GET, "/test/**").permitAll()
 
 			
 				//

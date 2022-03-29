@@ -169,7 +169,7 @@ public class JpaGoodsService {
         tmmapi.setSalePrice(itasrt.getLocalSale());
         tmmapi.setShortageYn(itasrt.getShortageYn());
 //        jpaTmmapiRepository.save(tmmapi);
-        em.persist(tmmapi);
+        jpaTmmapiRepository.save(tmmapi);
     }
 
     /**
@@ -1220,25 +1220,25 @@ public class JpaGoodsService {
 
         // itasrt에 goods 정보 저장
         Itasrt itasrt = this.saveItasrt2(goodsInsertRequestData2);
-        // tmmapi에 저장
-        this.saveTmmapi(itasrt);
-        // itasrn에 goods 이력 저장
-        Itasrn itasrn = this.saveItasrn2(goodsInsertRequestData2, userId);
-        // itasrd에 문구 저장
-        List<Itasrd> itasrd = this.saveItasrd2(goodsInsertRequestData2, userId);
-        // itvari에 assort_id별 옵션요소 저장(색상, 사이즈)
-        List<Itvari> existItvariList = jpaItvariRepository.findByAssortId(goodsInsertRequestData2.getAssortId().get());
-        List<Itvari> itvariList = this.saveItvariList2(goodsInsertRequestData2, existItvariList, userId);
-        // ititmm에 assort_id별 item 저장
-        List<Ititmm> existItitmmList = jpaItitmmRepository.findByAssortId(goodsInsertRequestData2.getAssortId().get());
-        List<Ititmm> ititmmList = this.saveItemList2(goodsInsertRequestData2, existItitmmList, itvariList, userId);
-        // tmitem에 저장
-        this.saveTmitem(ititmmList);
+//        // tmmapi에 저장
+//        this.saveTmmapi(itasrt);
+//        // itasrn에 goods 이력 저장
+//        Itasrn itasrn = this.saveItasrn2(goodsInsertRequestData2, userId);
+//        // itasrd에 문구 저장
+//        List<Itasrd> itasrd = this.saveItasrd2(goodsInsertRequestData2, userId);
+//        // itvari에 assort_id별 옵션요소 저장(색상, 사이즈)
+//        List<Itvari> existItvariList = jpaItvariRepository.findByAssortId(goodsInsertRequestData2.getAssortId().get());
+//        List<Itvari> itvariList = this.saveItvariList2(goodsInsertRequestData2, existItvariList, userId);
+//        // ititmm에 assort_id별 item 저장
+//        List<Ititmm> existItitmmList = jpaItitmmRepository.findByAssortId(goodsInsertRequestData2.getAssortId().get());
+//        List<Ititmm> ititmmList = this.saveItemList2(goodsInsertRequestData2, existItitmmList, itvariList, userId);
+//        // tmitem에 저장
+//        this.saveTmitem(ititmmList);
         // ititmd에 item 이력 저장
-        List<Ititmd> ititmdList = this.saveItemHistoryList2(goodsInsertRequestData2, ititmmList, userId);
+//        List<Ititmd> ititmdList = this.saveItemHistoryList2(goodsInsertRequestData2, ititmmList, userId);
 
         // itaimg에 assortId 업데이트 시켜주기
-        this.updateItaimgAssortId2(goodsInsertRequestData2, itasrt.getAssortId(), userId);
+//        this.updateItaimgAssortId2(goodsInsertRequestData2, itasrt.getAssortId(), userId);
 //        List<GoodsInsertResponseData.Attributes> attributesList = this.makeGoodsResponseAttributes(itvariList);
 //        List<GoodsInsertResponseData.Items> itemsList = this.makeGoodsResponseItems(ititmmList, itvariList);
 //        return this.makeGoodsInsertResponseData(goodsInsertRequestData, attributesList, itemsList);
@@ -1272,15 +1272,15 @@ public class JpaGoodsService {
         Itasrt itasrt = jpaItasrtRepository.findById(goodsInsertRequestData.getAssortId().get()).orElseGet(() -> new Itasrt(goodsInsertRequestData));
 //        itasrt.setUpdDt(new Date());
 
-        itasrt.setAssortNm(goodsInsertRequestData.getAssortNm() != null? goodsInsertRequestData.getAssortNm().get() : itasrt.getAssortNm());
-//        itasrt.setAssortColor(goodsInsertRequestData.getAssortColor() == null || goodsInsertRequestData.getAssortColor().trim().equals("")? null : goodsInsertRequestData.getAssortColor());
+        itasrt.setAssortNm(goodsInsertRequestData.getAssortNm() != null? goodsInsertRequestData.getAssortNm().get()  : itasrt.getAssortNm());
+        itasrt.setAssortColor(goodsInsertRequestData.getAssortColor() != null? goodsInsertRequestData.getAssortColor().get() : itasrt.getAssortColor());
+        itasrt.setOrigin(goodsInsertRequestData.getOrigin() != null? goodsInsertRequestData.getOrigin().get() : itasrt.getOrigin());
 
 //        itasrt.setDispCategoryId(goodsInsertRequestData.getDispCategoryId() == null || goodsInsertRequestData.getDispCategoryId().trim().equals("")? null : goodsInsertRequestData.getDispCategoryId());
 //        itasrt.setCategoryId(this.getGodoCateCd(goodsInsertRequestData.getDispCategoryId()));
 //
 //        itasrt.setBrandId(goodsInsertRequestData.getBrandId() == null || goodsInsertRequestData.getBrandId().trim().equals("")? null : goodsInsertRequestData.getBrandId());
 //
-//        itasrt.setOrigin(goodsInsertRequestData.getOrigin());
 //
 //        itasrt.setManufactureNm(goodsInsertRequestData.getManufactureNm() == null || goodsInsertRequestData.getManufactureNm().trim().equals("")? null : goodsInsertRequestData.getManufactureNm());
 //        itasrt.setAssortModel(goodsInsertRequestData.getAssortModel() == null || goodsInsertRequestData.getAssortModel().trim().equals("")? null : goodsInsertRequestData.getAssortModel());
@@ -1328,7 +1328,7 @@ public class JpaGoodsService {
 //        itasrt.setOptionUseYn(goodsInsertRequestData.getOptionUseYn());
 
 //        jpaItasrtRepository.save(itasrt);
-        em.persist(itasrt);
+        jpaItasrtRepository.save(itasrt);
         return itasrt;
     }
 }

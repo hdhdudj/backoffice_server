@@ -349,7 +349,7 @@ public class GoodsController {
 	 */
 	@GetMapping(path = "/test/insert/partial")
 	public HttpEntity goodsPartialInsert(@RequestBody GoodsInsertRequestData2 goodsInsertRequestData2){
-		goodsInsertRequestData2.setAssortId(Optional.of(jpaCommonService.getNumberId(goodsInsertRequestData2.getAssortId().get(), StringFactory.getStrSeqItasrt(), StringFactory.getIntNine()))); // assort id 梨꾨쾲
+		goodsInsertRequestData2.setAssortId(Optional.of(jpaCommonService.getNumberId(goodsInsertRequestData2.getAssortId() == null? null : goodsInsertRequestData2.getAssortId().get(), StringFactory.getStrSeqItasrt(), StringFactory.getIntNine()))); // assort id 梨꾨쾲
 
 		String assortId = jpaGoodsService.sequenceInsertOrUpdateGoods2(goodsInsertRequestData2);
 //		GoodsSelectDetailResponseData responseData = jpaGoodsService.getGoodsDetailPage(goodsInsertRequestData.getAssortId());
