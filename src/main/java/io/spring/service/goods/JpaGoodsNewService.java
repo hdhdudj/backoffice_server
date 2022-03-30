@@ -168,7 +168,7 @@ public class JpaGoodsNewService {
 				
 				if (t1 != null) {
 					t1.setAssortId(assortId);
-					t1.setImageGb(o.getImageGb());
+					t1.setImageGb(o.getImageGb() == null ? "01" : o.getImageGb());
 					t1.setImageSeq(o.getUid());
 					t1.setImageUrl(o.getUrl());
 				}
@@ -223,7 +223,7 @@ public class JpaGoodsNewService {
 
 				if (t1 != null) {
 					t1.setAssortId(assortId);
-					t1.setImageGb(o.getImageGb());
+					t1.setImageGb(o.getImageGb() == null ? "02" : o.getImageGb());
 					t1.setImageSeq(o.getUid());
 					t1.setImageUrl(o.getUrl());
 				}
@@ -353,6 +353,10 @@ public class JpaGoodsNewService {
 //        TbGoods.setUpdDt(new Date());
 
 		tbGoods.setAssortNm(goodsPostRequestData.getAssortNm());
+
+		tbGoods.setAssortDnm(goodsPostRequestData.getAssortDnm());
+		tbGoods.setAssortEnm(goodsPostRequestData.getAssortEnm());
+
 		tbGoods.setAssortColor(
 				goodsPostRequestData.getAssortColor() == null || goodsPostRequestData.getAssortColor().trim().equals("")
 						? null
@@ -1326,6 +1330,10 @@ public class JpaGoodsNewService {
 
 		List<GoodsPostRequestData.AddInfo> itemList = goodsPostRequestData.getAddInfos();
 
+
+			System.out.println(itemList);
+
+
 		// supplier add
 		for (GoodsPostRequestData.AddInfo o : itemList) {
 
@@ -2156,13 +2164,34 @@ public class JpaGoodsNewService {
 		goodsResponseData
 				.setItems(makeItemsList(assortId));
 
+		goodsResponseData.setAddInfos(makeAddInfoList(TbGoods.getAssortId()));
 
 		goodsResponseData.setUploadMainImage(makeUploadMainImageList(TbGoods.getAssortId()));
 		goodsResponseData.setUploadAddImage(makeUploadAddImageList(TbGoods.getAssortId()));
 		goodsResponseData.setDeleteImage(new ArrayList<>());
 
+
 		goodsResponseData = goodsResponseDataMapper.nullToEmpty(goodsResponseData);
 		return goodsResponseData;
+	}
+
+	private List<GoodsResponseData.AddInfo> makeAddInfoList(String assortId) {
+		List<TbGoodsAddInfo> list = jpaTbGoodsAddInfoRepository.findByAssortId(assortId);
+
+		List<GoodsResponseData.AddInfo> r = new ArrayList<>();
+
+		if (list == null) {
+			log.debug("add image list 존재하지 않습니다.");
+			return r;
+		}
+		for (TbGoodsAddInfo o : list) {
+
+			GoodsResponseData.AddInfo add = new GoodsResponseData.AddInfo(o);
+			r.add(add);
+
+		}
+		return r;
+
 	}
 
 	private List<GoodsResponseData.UploadAddImage> makeUploadAddImageList(String assortId) {
@@ -2467,6 +2496,38 @@ public class JpaGoodsNewService {
 
 		ret.setGoods(goodsList);
 		return ret;
+	}
+
+	@Transactional
+	public void deleteGoodsImage(Long sno) {
+
+		TbGoodsImage tgi = jpaTbGoodsImageRepository.findById(sno).orElse(null);
+
+		if (tgi != null) {
+			Long imageSeq = tgi.getImageSeq();
+
+			if (imageSeq != null) {
+				Itaimg r = jpaItaimgRepository.findById(imageSeq).orElse(null);
+
+				if (r != null) {
+					FileVo f = new FileVo();
+					f.setFilePath(r.getImagePath());
+					f.setFileName(r.getImageName());
+
+					String ret = fileService.deleteFile(f);
+
+					if (ret.equals("success")) {
+						jpaItaimgRepository.deleteById(imageSeq);
+					}
+				}
+
+			}
+
+
+		}
+
+		jpaTbGoodsImageRepository.delete(tgi);
+
 	}
 
 	// 2022-03-29 사용안함
