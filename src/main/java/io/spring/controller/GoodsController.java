@@ -35,6 +35,7 @@ import io.spring.model.common.entity.TestObjectRequest;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.goods.request.GoodsPostRequestData;
 import io.spring.model.goods.response.GetStockListResponseData;
+import io.spring.model.goods.response.GoodsListResponseData;
 import io.spring.model.goods.response.GoodsResponseData;
 import io.spring.model.goods.response.GoodsSelectDetailResponseData;
 import io.spring.model.goods.response.GoodsSelectListResponseData;
@@ -177,6 +178,26 @@ public class GoodsController {
 
 		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
 				responseData);
+		if (responseData == null) {
+			return null;
+		}
+		return ResponseEntity.ok(res);
+	}
+
+	@GetMapping(path = "/v2/items")
+	public ResponseEntity getGoodsList2(@RequestParam @Nullable String shortageYn,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate regDtBegin,
+			@DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam LocalDate regDtEnd,
+			@RequestParam @Nullable String assortId, @RequestParam @Nullable String assortNm) {
+		log.debug("get goods list data");
+		GoodsListResponseData goodsListResponseData = jpaGoodsNewService.getGoodsList2(shortageYn,
+				regDtBegin,
+				regDtEnd, assortId, assortNm);
+		List<GoodsListResponseData.Goods> responseData = null;
+		if (goodsListResponseData != null) {
+			responseData = goodsListResponseData.getGoodsList();
+		}
+		ApiResponseMessage res = new ApiResponseMessage("ok", "success", responseData);
 		if (responseData == null) {
 			return null;
 		}

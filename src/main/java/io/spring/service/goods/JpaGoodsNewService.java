@@ -1,5 +1,6 @@
 package io.spring.service.goods;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,6 +52,7 @@ import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.goods.request.GoodsPostRequestData;
 import io.spring.model.goods.response.GetStockListResponseData;
 import io.spring.model.goods.response.GoodsInsertResponseData;
+import io.spring.model.goods.response.GoodsListResponseData;
 import io.spring.model.goods.response.GoodsResponseData;
 import io.spring.model.goods.response.GoodsSelectDetailResponseData;
 import io.spring.model.vendor.entity.Cmvdmr;
@@ -2306,6 +2308,37 @@ public class JpaGoodsNewService {
 		return descriptionList;
 	}
 
+	public GoodsListResponseData getGoodsList2(String shortageYn, LocalDate regDtBegin, LocalDate regDtEnd,
+			String assortId, String assortNm) {
+		boolean isAssortIdExist = assortId != null && !assortId.trim().equals("");
+		boolean isAssortNmExist = assortNm != null && !assortNm.trim().equals("");
+
+		LocalDateTime start = isAssortIdExist || isAssortNmExist ? null : regDtBegin.atStartOfDay();
+		LocalDateTime end = isAssortIdExist || isAssortNmExist ? null : regDtEnd.atTime(23, 59, 59);
+		GoodsListResponseData goodsListResponseData = new GoodsListResponseData(shortageYn,
+				regDtBegin, regDtEnd, assortId, assortNm);
+
+		LocalDateTime oldDay = Utilities.strToLocalDateTime(StringFactory.getOldDayT());
+		LocalDateTime doomsDay = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());
+
+		List<TbGoods> tbGoodsList = jpaTbGoodsRepository.findMasterList(start, end, shortageYn, assortId, assortNm,
+				oldDay, doomsDay);// query.getResultList();
+		List<GoodsListResponseData.Goods> goodsList = new ArrayList<>();
+		if (tbGoodsList.size() == 0) {
+			log.debug("검색 조건을 만족하는 상품이 존재하지 않습니다.");
+			goodsListResponseData.setGoodsList(goodsList);
+			return goodsListResponseData;
+		}
+
+		for (TbGoods o : tbGoodsList) {
+			GoodsListResponseData.Goods goods = new GoodsListResponseData.Goods(o);
+			goodsList.add(goods);
+		}
+
+		goodsListResponseData.setGoodsList(goodsList);
+		return goodsListResponseData;
+	}
+
 	/**
 	 * 21-05-10 Pecan brandId, dispCategoryId, regDt, shortageYn, (이상 TbGoods)
 	 * dispCategoryId(itcatg), brandId(itbrnd) 로 list 목록 가져오는 함수
@@ -2313,6 +2346,7 @@ public class JpaGoodsNewService {
 	 * @param shortageYn, RegDtBegin, regDtEnd
 	 * @return GoodsSelectListResponseData
 	 */
+
 
 	// 2022-0329 리스트 조회 사용안함
 //	public GoodsSelectListResponseData getGoodsList(String shortageYn, LocalDate regDtBegin, LocalDate regDtEnd,
