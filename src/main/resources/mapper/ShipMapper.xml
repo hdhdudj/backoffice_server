@@ -49,32 +49,18 @@ where b2.assort_id=tod.assort_id
   and  b2.variation_seq3=b1.seq) optionNm3
   ,lm.storage_id storageId
   ,ld.rack_no rackNo
-<<<<<<< HEAD
-from lsshpm lm
-,lsshpd ld
-,itasrt it
-,tb_order_detail tod
-,tb_order_master tom
-,tb_member_address tma
-=======
   ,tm.channel_goods_no channelGoodsNo
  from lsshpm lm
  join lsshpd ld on   ld.ship_id = lm.ship_id
  join itasrt it on   it.assort_id = ld.assort_id
  join tb_order_detail tod on  tod.order_id = ld.order_id and tod.order_seq = ld.order_seq
  join tb_order_master tom  on   tom.order_id = tod.order_id
+ join tb_member_address tma on tom.deli_id = tma.deli_id
  left join tmmapi tm on tm.assort_id = ld.assort_id and tm.channel_gb='01' 
->>>>>>> dev_ship
 where 1=1
 and lm.receipt_dt between #{startDt} and #{endDt}
 and lm.ship_status='01'
 and tod.status_cd ='C04'
-<<<<<<< HEAD
-and tod.order_id = tom.order_id
-and tma.deli_id = tom.deli_id
-=======
->>>>>>> dev_ship
--- and it.add_goods_yn='02'
     	 ]]>
     	 <if test='storageId != null and storageId.trim() != ""'>
 			 <![CDATA[
