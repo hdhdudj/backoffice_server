@@ -2,7 +2,10 @@ package io.spring.jparepos.goods;
 
 import io.spring.enums.DeliveryMethod;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.jparepos.category.JpaItcatgRepository;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
