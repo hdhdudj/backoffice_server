@@ -217,7 +217,7 @@ public class FileController {
 	       return ResponseEntity.ok(res);
 	}
     
-	@PostMapping("/v2/deleteFile/{sno}")
+	@PostMapping("/v2/delete-image/{sno}")
 	public ResponseEntity deleteFile2(@PathVariable("sno") String sno) {
 
 		System.out.println("deleteFile2");

@@ -19,6 +19,7 @@ import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.infrastructure.mapstruct.GoodsResponseDataMapper;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.infrastructure.util.exception.ResourceNotFoundException;
 import io.spring.jparepos.category.JpaIfCategoryRepository;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.goods.JpaIfBrandRepository;
@@ -2521,12 +2522,14 @@ public class JpaGoodsNewService {
 					}
 				}
 
-			}
+					}
 
-
+			jpaTbGoodsImageRepository.delete(tgi);
+		} else {
+			throw new ResourceNotFoundException();
 		}
 
-		jpaTbGoodsImageRepository.delete(tgi);
+
 
 	}
 
