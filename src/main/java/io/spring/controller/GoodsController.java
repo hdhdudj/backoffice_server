@@ -34,15 +34,19 @@ import io.spring.infrastructure.util.Utilities;
 import io.spring.model.common.entity.TestObjectRequest;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.goods.request.GoodsPostRequestData;
+import io.spring.model.goods.request.ProductsMasterPostRequestData;
+import io.spring.model.goods.request.ProductsPostRequestData;
 import io.spring.model.goods.response.GetStockListResponseData;
 import io.spring.model.goods.response.GoodsListResponseData;
 import io.spring.model.goods.response.GoodsResponseData;
 import io.spring.model.goods.response.GoodsSelectDetailResponseData;
 import io.spring.model.goods.response.GoodsSelectListResponseData;
+import io.spring.model.goods.response.ProductsResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.common.MyBatisCommonService;
 import io.spring.service.goods.JpaGoodsNewService;
 import io.spring.service.goods.JpaGoodsService;
+import io.spring.service.goods.JpaProductsService;
 import io.spring.service.goods.MyBatisGoodsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +61,8 @@ public class GoodsController {
 	private final JpaGoodsService jpaGoodsService;
 
 	private final JpaGoodsNewService jpaGoodsNewService;
+
+	private final JpaProductsService jpaProductService;
 
 	private final JpaCommonService jpaCommonService;
 	private final MyBatisCommonService myBatisCommonService;
@@ -143,6 +149,45 @@ public class GoodsController {
 //		if(responseData == null){
 //			return null;
 //		}
+		return ResponseEntity.ok(res);
+	}
+
+	@PostMapping(path = "/v3/product")
+	public ResponseEntity saveProduct(@RequestBody @Valid ProductsPostRequestData req) {
+
+
+		Long productId = jpaProductService.save(req);
+		Map<String, Long> responseMap = new HashMap<>();
+		responseMap.put("productId", productId);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
+				responseMap);
+
+		return ResponseEntity.ok(res);
+	}
+
+	@GetMapping(path = "/v3/products/{productId}")
+	public ResponseEntity getProduct(@PathVariable("productId") Long productId) {
+
+		ProductsResponseData r = jpaProductService.getItem(productId);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
+				r);
+
+		return ResponseEntity.ok(res);
+
+	}
+
+	@PostMapping(path = "/v3/master")
+	public ResponseEntity saveMaster(@RequestBody @Valid ProductsMasterPostRequestData req) {
+
+		Long masterId = jpaProductService.saveMaster(req);
+		Map<String, Long> responseMap = new HashMap<>();
+		responseMap.put("masterId", masterId);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
+				responseMap);
+
 		return ResponseEntity.ok(res);
 	}
 

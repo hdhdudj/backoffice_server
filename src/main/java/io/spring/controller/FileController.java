@@ -31,6 +31,7 @@ import io.spring.model.goods.entity.Itaimg;
 import io.spring.service.file.FileService;
 import io.spring.service.goods.JpaGoodsNewService;
 import io.spring.service.goods.JpaGoodsService;
+import io.spring.service.goods.JpaProductsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,6 +45,8 @@ public class FileController {
 	private final FileService fileService ;
 	private final JpaGoodsService jpaGoodsService ;
 	private final JpaGoodsNewService jpaGoodsNewService ;
+
+	private final JpaProductsService jpaProductsService;
 	
 
 
@@ -227,6 +230,15 @@ public class FileController {
 		return ResponseEntity.ok(res);
 	}
 	
+	@PostMapping("/v3/delete-image/{sno}")
+	public ResponseEntity deleteFile3(@PathVariable("sno") String sno) {
+
+		System.out.println("deleteFile2");
+		jpaProductsService.deleteImage(Long.parseLong(sno));
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), null);
+		return ResponseEntity.ok(res);
+	}
 	
 	@PostMapping("/deleteFile/{uid}")
 	 public ResponseEntity deleteFile(@PathVariable("uid") String uid) {

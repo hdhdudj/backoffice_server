@@ -1,5 +1,6 @@
 package io.spring.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.spring.infrastructure.util.ApiResponseMessage;
+import io.spring.model.common.entity.Suppliers;
 import io.spring.model.common.entity.Testenum2;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.common.MyBatisCommonService;
@@ -90,6 +92,27 @@ public class CommonController {
 		}
 
 		return ResponseEntity.ok(res);
+	}
+
+	@GetMapping(path = "/v3/suppliers")
+	public ResponseEntity getSuppliers() {
+
+		List<Suppliers> suppliers = jpaCommonService.getAllSuppliers();
+
+		List<HashMap<String, Object>> r = new ArrayList<>();
+
+		for (Suppliers o : suppliers) {
+			HashMap<String, Object> m = new HashMap<String, Object>();
+			m.put("id", o.getSupplierId());
+			m.put("name", o.getSupplierNm());
+
+			r.add(m);
+		}
+
+		ApiResponseMessage res = new ApiResponseMessage<>("SUCCESS", "", r);
+
+		return ResponseEntity.ok(res);
+
 	}
 
 	@GetMapping(path = "/storages")
