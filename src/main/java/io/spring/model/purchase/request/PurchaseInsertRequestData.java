@@ -156,6 +156,8 @@ public class PurchaseInsertRequestData {
         // 22-01-24 추가
         @JsonDeserialize(using = LocalDateDeserializer.class)
         private LocalDate compleDt;
+        // 22-04-05 추가
+        private String vendorId;
     }
 
 }

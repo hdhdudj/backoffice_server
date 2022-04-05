@@ -80,6 +80,7 @@ public class Lspchd extends CommonProps implements Serializable {
         this.setShipId = lspchd.getSetShipId();
         this.setShipSeq = lspchd.getSetShipSeq();
         this.siteOrderNo = lspchd.getSiteOrderNo();
+        this.vendorId = lspchd.getVendorId();
     }
     public Lspchd(String purchaseNo, String purchaseSeq, PurchaseInsertRequestData.Items item){
         this.purchaseNo = purchaseNo;
@@ -94,6 +95,7 @@ public class Lspchd extends CommonProps implements Serializable {
         this.orderSeq = (item.getOrderSeq());
         this.siteGb = (StringFactory.getGbOne()); // 01 하드코딩
         this.ownerId = (StringUtils.leftPad(StringFactory.getStrOne(), 6, '0')); // 000001 하드코딩
+        this.vendorId = item.getVendorId();
     }
 
     /**
@@ -116,6 +118,7 @@ public class Lspchd extends CommonProps implements Serializable {
         this.orderSeq = tbOrderDetail.getOrderSeq();
 		// this.depositNo = lsdpsd.getDepositNo();
 		// this.depositSeq = lsdpsd.getDepositSeq();
+        this.vendorId = lsdpsd.getItasrt().getVendorId();
     }
 
 	/**
@@ -139,6 +142,7 @@ public class Lspchd extends CommonProps implements Serializable {
 		}
 		// this.depositNo = lsdpsd.getDepositNo();
 		// this.depositSeq = lsdpsd.getDepositSeq();
+        this.vendorId = lsshpd.getItasrt().getVendorId();
 	}
 
     /**
@@ -155,6 +159,7 @@ public class Lspchd extends CommonProps implements Serializable {
         this.itemGrade = StringFactory.getStrEleven(); // 11 하드코딩
 //        this.siteGb = lsdpsd.getSiteGb();
         this.ownerId = lsshpd.getOwnerId();
+        this.vendorId = lsshpd.getItasrt().getVendorId();
         super.setRegId(regId);
         super.setUpdId(regId);
     }
