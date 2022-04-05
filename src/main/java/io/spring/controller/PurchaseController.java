@@ -411,5 +411,16 @@ public class PurchaseController {
                 purchaseKey);
         return ResponseEntity.ok(res);
     }
+
+    /**
+     * 발주 디테일 취소
+     */
+    @PostMapping(path = "/cancel/{purchaseNo}/{purchaseSeq}")
+    public ResponseEntity cancelPurchaseDetail(@PathVariable String purchaseNo, @PathVariable String purchaseSeq, @RequestParam String userId){
+        boolean flag = jpaPurchaseService.cancelOrderPurchase(purchaseNo, purchaseSeq, userId);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
+                flag);
+        return ResponseEntity.ok(res);
+    }
 }
 
