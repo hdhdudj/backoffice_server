@@ -911,7 +911,6 @@ public class JpaMoveService {
 //				jpaLsshpmRepository.save(lsshpm);
 //				continue; // 상품이동지시여도 재고처리는 해야함.
 			}
-
 			List<Lsshpd> lsshpdList2 = jpaLsshpdRepository.findByShipId(shipId);
 
 
@@ -1226,6 +1225,18 @@ public class JpaMoveService {
 //        }
 //    }
 //여기까지 통채로 주석 2022-02-07
+
+    /**
+     * lsshpm의 상태가 변했을 때 lsshpm과 lsshps(이력)를 저장
+     */
+    private void updateLsshpms(Lsshpm lsshpm) {
+        Lsshps lsshps = jpaLsshpsRepository.findByShipIdAndEffEndDt(lsshpm.getShipId(), Utilities.strToLocalDateTime(StringFactory.getDoomDayT()));
+        lsshps.setEffEndDt(LocalDateTime.now());
+        Lsshps newLsshps = new Lsshps(lsshpm);
+        jpaLsshpmRepository.save(lsshpm);
+        jpaLsshpsRepository.save(lsshps);
+        jpaLsshpsRepository.save(newLsshps);
+    }
 
     /**
      * 이동지시리스트를 가져오는 함수

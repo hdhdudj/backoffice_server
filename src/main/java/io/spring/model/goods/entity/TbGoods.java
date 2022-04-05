@@ -42,6 +42,8 @@ public class TbGoods extends CommonProps implements Serializable {
 	public TbGoods(GoodsPostRequestData goodsPostRequestData) {
 		this.assortId = goodsPostRequestData.getAssortId();
 		this.assortNm = goodsPostRequestData.getAssortNm();
+		this.assortDnm = goodsPostRequestData.getAssortDnm();
+		this.assortEnm = goodsPostRequestData.getAssortEnm();
 		this.assortModel = goodsPostRequestData.getAssortModel();
 		this.taxGb = goodsPostRequestData.getTaxGb();
 		this.assortGb = goodsPostRequestData.getAssortGb();

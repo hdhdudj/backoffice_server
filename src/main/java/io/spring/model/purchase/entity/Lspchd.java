@@ -136,7 +136,6 @@ public class Lspchd extends CommonProps implements Serializable {
 		if (tbOrderDetail != null) {
 			this.orderId = tbOrderDetail.getOrderId();
 			this.orderSeq = tbOrderDetail.getOrderSeq();
-
 		}
 		// this.depositNo = lsdpsd.getDepositNo();
 		// this.depositSeq = lsdpsd.getDepositSeq();
@@ -172,6 +171,7 @@ public class Lspchd extends CommonProps implements Serializable {
         this.itemGrade = StringFactory.getStrEleven(); // 11 하드코딩
         this.siteGb = StringFactory.getGbOne(); // 01 (고도몰) 하드코딩
         this.ownerId = lspchd.getOwnerId();
+        this.vendorId = lspchd.getVendorId();
 //        this.orderId = tbOrderDetail.getOrderId();
 //        this.orderSeq = tbOrderDetail.getOrderSeq();
     }
@@ -217,6 +217,8 @@ public class Lspchd extends CommonProps implements Serializable {
     private String siteOrderNo;
     // 22-01-24 추가
     private LocalDate compleDt;
+    // 22-04-05 추가
+    private String vendorId;
 
     // 연관관계 : lspchb
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Lspchb.class)

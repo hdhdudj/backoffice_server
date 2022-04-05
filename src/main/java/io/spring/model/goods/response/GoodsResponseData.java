@@ -7,6 +7,7 @@ import io.spring.infrastructure.util.Utilities;
 import io.spring.model.goods.entity.Itaimg;
 import io.spring.model.goods.entity.Itvari;
 import io.spring.model.goods.entity.TbGoods;
+import io.spring.model.goods.entity.TbGoodsAddInfo;
 import io.spring.model.goods.entity.TbGoodsImage;
 import io.spring.model.goods.entity.TbGoodsOptionSupplier;
 import io.spring.model.goods.entity.TbGoodsOptionValue;
@@ -23,6 +24,8 @@ public class GoodsResponseData {
 	public GoodsResponseData(TbGoods tbGoods) {
 		this.assortId = tbGoods.getAssortId();
 		this.assortNm = tbGoods.getAssortNm();
+		this.assortEnm = tbGoods.getAssortEnm();
+		this.assortDnm = tbGoods.getAssortDnm();
 		this.assortGb = tbGoods.getAssortGb();
 		this.assortColor = tbGoods.getAssortColor();
 		this.brandId = tbGoods.getBrandId();
@@ -60,12 +63,15 @@ public class GoodsResponseData {
 		this.buyTax = tbGoods.getBuyTax();
 		this.mdTax = tbGoods.getMdTax();
 		this.vendorId = tbGoods.getVendorId();
-		System.out.println(tbGoods.getVendorId());
+
 //		this.brandNm = (tbGoods.getIfBrand() != null ? tbGoods.getIfBrand().getBrandNm() : ""); 바깥에서 set
 
 		this.optionUseYn = tbGoods.getOptionUseYn();
 
 		this.dispCategoryId = tbGoods.getDispCategoryId();
+
+		this.goodsDescription = tbGoods.getGoodsDescription();
+		this.shortDescription = tbGoods.getShortDescription();
 
 		// this.brandNm = itasr
 
@@ -83,6 +89,10 @@ public class GoodsResponseData {
 
 	// 상품기본설정 화면
 	private String assortNm; // 상품명
+
+	private String assortDnm; // 상품명
+	private String assortEnm; // 상품명
+
 	private String assortModel; // 모델번호
 	private String taxGb; // 과세/면세
 	private String assortState; // 상품상태 : 진행중(01), 일시중지(02), 단품(03), 품절(04)
@@ -141,6 +151,8 @@ public class GoodsResponseData {
 	private String goodsDescription;
 	private String shortDescription;
 
+	private List<AddInfo> addInfos;
+
 	// ititmm
 //	    @SerializedName("items")
 //	    @Expose
@@ -178,6 +190,8 @@ public class GoodsResponseData {
 		private String itemId;
 		private String supplierId;
 		private float salePrice;
+		private float offlineSalePrice;
+		private float overseasSalePrice;
 		private Long stockCnt;
 		private String saleYn;
 
@@ -189,6 +203,10 @@ public class GoodsResponseData {
 			this.salePrice = o.getSalePrice();
 			this.stockCnt = o.getStockCnt();
 			this.saleYn = o.getSaleYn();
+			
+			this.offlineSalePrice = o.getOfflineSalePrice();
+			this.overseasSalePrice = o.getOverseasSalePrice();
+
 
 		}
 
@@ -217,10 +235,13 @@ public class GoodsResponseData {
 
 		public UploadMainImage(TbGoodsImage o) {
 
-			this.uid = o.getItaimg() == null ? "" : o.getItaimg().getImageSeq().toString();
-			this.name = o.getItaimg() == null ? "" : o.getItaimg().getImageName();
-			this.imageGb = o.getItaimg() == null ? "" : o.getItaimg().getImageGb(); // itaimg.getImageGb();
-			this.status = o.getItaimg() == null ? "" : o.getItaimg().getImageStatus(); // itaimg.getImageStatus();
+			this.uid = o.getItaimg() == null ? "temp-" + o.getSno() : o.getItaimg().getImageSeq().toString();
+			// this.name = o.getItaimg() == null ? "" : o.getItaimg().getImageName();
+			this.name = o.getItaimg() == null ? o.getImageUrl().substring(o.getImageUrl().lastIndexOf("/") + 1)
+					: o.getItaimg().getImageName();
+
+			this.imageGb = o.getItaimg() == null ? "01" : o.getItaimg().getImageGb(); // itaimg.getImageGb();
+			this.status = o.getItaimg() == null ? "01" : o.getItaimg().getImageStatus(); // itaimg.getImageStatus();
 			this.url = o.getImageUrl();
 			this.sno = o.getSno();
 
@@ -250,10 +271,12 @@ public class GoodsResponseData {
 
 		public UploadAddImage(TbGoodsImage o) {
 
-			this.uid = o.getItaimg() == null ? "" : o.getItaimg().getImageSeq().toString();
-			this.name = o.getItaimg() == null ? "" : o.getItaimg().getImageName();
-			this.imageGb = o.getItaimg() == null ? "" : o.getItaimg().getImageGb(); // itaimg.getImageGb();
-			this.status = o.getItaimg() == null ? "" : o.getItaimg().getImageStatus(); // itaimg.getImageStatus();
+			this.uid = o.getItaimg() == null ? "temp-" + o.getSno() : o.getItaimg().getImageSeq().toString();
+			this.name = o.getItaimg() == null
+					? o.getImageUrl().substring(o.getImageUrl().lastIndexOf("/") + 1)
+					: o.getItaimg().getImageName();
+			this.imageGb = o.getItaimg() == null ? "02" : o.getItaimg().getImageGb(); // itaimg.getImageGb();
+			this.status = o.getItaimg() == null ? "01" : o.getItaimg().getImageStatus(); // itaimg.getImageStatus();
 			this.url = o.getImageUrl();
 			this.sno = o.getSno();
 
@@ -286,5 +309,21 @@ public class GoodsResponseData {
 		private String seq;
 		private String value;
 		private String variationGb;
+	}
+
+	@Getter
+	@Setter
+	public static class AddInfo {
+
+		public AddInfo(TbGoodsAddInfo tgai) {
+			this.sno = tgai.getSno();
+			this.infoTitle = tgai.getInfoTitle();
+			this.infoValue = tgai.getInfoValue();
+		}
+
+		private Long sno;
+		private String infoTitle;
+		private String infoValue;
+
 	}
 }

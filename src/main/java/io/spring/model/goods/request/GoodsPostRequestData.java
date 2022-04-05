@@ -32,6 +32,8 @@ public class GoodsPostRequestData {
 
 	// 상품기본설정 화면
 	private String assortNm; // 상품명
+	private String assortDnm; // 제휴 상품명
+	private String assortEnm; // 영문 상품명
 	private String assortModel; // 모델번호
 	private String taxGb; // 과세/면세
 	private String assortState; // 상품상태 : 진행중(01), 일시중지(02), 단품(03), 품절(04)
@@ -88,16 +90,16 @@ public class GoodsPostRequestData {
 	private String shortDescription;
 
 	// itasrd
-	private List<Description> description; // html (메모 상세) - long memo, text (메모 간략) - short memo
+//	private List<Description> description; // html (메모 상세) - long memo, text (메모 간략) - short memo
 
-	@Getter
-	@Setter
-	public static class Description {
-		private String seq;
-		private String ordDetCd;
-		private String textHtmlGb;
-		private String memo;
-	}
+//	@Getter
+//	@Setter
+//	public static class Description {
+//		private String seq;
+	// private String ordDetCd;
+//		private String textHtmlGb;
+//		private String memo;
+//	}
 
 	// ititmm
 //	@SerializedName("items")
@@ -137,6 +139,8 @@ public class GoodsPostRequestData {
 		private String itemId;
 		private String supplierId;
 		private float salePrice;
+		private float offlineSalePrice;
+		private float overseasSalePrice;
 		private Long stockCnt;
 		private String saleYn;
 
@@ -194,6 +198,7 @@ public class GoodsPostRequestData {
 
 	@Getter
 	@Setter
+	@ToString
 	public static class AddInfo {
 		private Long sno;
 		private String infoTitle;

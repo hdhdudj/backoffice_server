@@ -31,6 +31,8 @@ public class TbGoodsOptionSupplier extends CommonProps implements Serializable {
 		this.salePrice = o.getSalePrice();
 		this.stockCnt = o.getStockCnt();
 		this.saleYn = o.getSaleYn();
+		this.offlineSalePrice = o.getOfflineSalePrice();
+		this.overseasSalePrice = o.getOverseasSalePrice();
 
 	}
 
@@ -42,6 +44,9 @@ public class TbGoodsOptionSupplier extends CommonProps implements Serializable {
 	private String itemId;
 	private String supplierId;
 	private float salePrice;
+	private float offlineSalePrice;
+	private float overseasSalePrice;
+
 	private Long stockCnt;
 	private String saleYn;
 

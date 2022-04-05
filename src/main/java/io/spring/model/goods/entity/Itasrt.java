@@ -240,6 +240,8 @@ public class Itasrt extends CommonProps implements Serializable {
 	private Long stockCnt;
 	// 22-03-25 추가
 	private String channelGoodsNo;
+	// 22-04-05 추가
+	private String purchaseNm; // 매입처
 
 	//// 다른 테이블과 엮으면 나오는 프로퍼티들
 	@JoinColumn(name = "assortId", referencedColumnName = "assortId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))

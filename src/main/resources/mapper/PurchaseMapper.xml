@@ -267,7 +267,7 @@
     	<![CDATA[
 		select bbb1.order_id                                                     orderId,
 			   bbb1.order_seq                                                    orderSeq,
-			   bbb1.channel_order_no                                                    channelOrderNo,
+			   bbb1.channel_order_no                                             channelOrderNo,
 			   concat(bbb1.order_id, '-', bbb1.order_seq)                        orderCd,
 			   concat(bbb1.order_id, '-', bbb1.parent_order_seq)                 parentOrderCd,
 			   bbb1.vendor_id                                                    vendorId,
@@ -290,7 +290,8 @@
 			   bbb1.purchase_price                                               purchasePrice,
 			   bbb1.order_name                                              custNm,
 			   bbb1.origin                                               origin,
-			   bbb1.list_image_data                               imagePath
+			   bbb1.list_image_data                               imagePath,
+			   ifnull(bbb1.purchase_nm, '매입처없음') purchaseNm
 		from (select case
 						 when aaa.order_vendor_id <> '000000' then ifnull(aaa.order_vendor_id, '000000')
 						 else ifnull(bbb.vendor_id, '000000') end                                               vendor_id,
@@ -304,6 +305,7 @@
 					 bbb.buy_supply_discount,
 		             bbb.cust_category,
 		             bbb.main_image_url,
+		             bbb.purchase_nm,
 					 tom.order_date,
 					 tom.channel_order_no,
 					 aaa.*,
