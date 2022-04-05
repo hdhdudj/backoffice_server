@@ -1,5 +1,6 @@
 package io.spring.service.goods;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import io.spring.dao.goods.MyBatisGoodsDao;
 import io.spring.infrastructure.mapstruct.GoodsResponseDataMapper;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
+import io.spring.infrastructure.util.exception.ResourceNotFoundException;
 import io.spring.jparepos.category.JpaIfCategoryRepository;
 import io.spring.jparepos.common.JpaSequenceDataRepository;
 import io.spring.jparepos.goods.JpaIfBrandRepository;
@@ -51,6 +53,7 @@ import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.goods.request.GoodsPostRequestData;
 import io.spring.model.goods.response.GetStockListResponseData;
 import io.spring.model.goods.response.GoodsInsertResponseData;
+import io.spring.model.goods.response.GoodsListResponseData;
 import io.spring.model.goods.response.GoodsResponseData;
 import io.spring.model.goods.response.GoodsSelectDetailResponseData;
 import io.spring.model.vendor.entity.Cmvdmr;
@@ -166,7 +169,7 @@ public class JpaGoodsNewService {
 				
 				if (t1 != null) {
 					t1.setAssortId(assortId);
-					t1.setImageGb(o.getImageGb());
+					t1.setImageGb(o.getImageGb() == null ? "01" : o.getImageGb());
 					t1.setImageSeq(o.getUid());
 					t1.setImageUrl(o.getUrl());
 				}
@@ -221,7 +224,7 @@ public class JpaGoodsNewService {
 
 				if (t1 != null) {
 					t1.setAssortId(assortId);
-					t1.setImageGb(o.getImageGb());
+					t1.setImageGb(o.getImageGb() == null ? "02" : o.getImageGb());
 					t1.setImageSeq(o.getUid());
 					t1.setImageUrl(o.getUrl());
 				}
@@ -351,6 +354,10 @@ public class JpaGoodsNewService {
 //        TbGoods.setUpdDt(new Date());
 
 		tbGoods.setAssortNm(goodsPostRequestData.getAssortNm());
+
+		tbGoods.setAssortDnm(goodsPostRequestData.getAssortDnm());
+		tbGoods.setAssortEnm(goodsPostRequestData.getAssortEnm());
+
 		tbGoods.setAssortColor(
 				goodsPostRequestData.getAssortColor() == null || goodsPostRequestData.getAssortColor().trim().equals("")
 						? null
@@ -1324,6 +1331,10 @@ public class JpaGoodsNewService {
 
 		List<GoodsPostRequestData.AddInfo> itemList = goodsPostRequestData.getAddInfos();
 
+
+			System.out.println(itemList);
+
+
 		// supplier add
 		for (GoodsPostRequestData.AddInfo o : itemList) {
 
@@ -2154,13 +2165,34 @@ public class JpaGoodsNewService {
 		goodsResponseData
 				.setItems(makeItemsList(assortId));
 
+		goodsResponseData.setAddInfos(makeAddInfoList(TbGoods.getAssortId()));
 
 		goodsResponseData.setUploadMainImage(makeUploadMainImageList(TbGoods.getAssortId()));
 		goodsResponseData.setUploadAddImage(makeUploadAddImageList(TbGoods.getAssortId()));
 		goodsResponseData.setDeleteImage(new ArrayList<>());
 
+
 		goodsResponseData = goodsResponseDataMapper.nullToEmpty(goodsResponseData);
 		return goodsResponseData;
+	}
+
+	private List<GoodsResponseData.AddInfo> makeAddInfoList(String assortId) {
+		List<TbGoodsAddInfo> list = jpaTbGoodsAddInfoRepository.findByAssortId(assortId);
+
+		List<GoodsResponseData.AddInfo> r = new ArrayList<>();
+
+		if (list == null) {
+			log.debug("add image list 존재하지 않습니다.");
+			return r;
+		}
+		for (TbGoodsAddInfo o : list) {
+
+			GoodsResponseData.AddInfo add = new GoodsResponseData.AddInfo(o);
+			r.add(add);
+
+		}
+		return r;
+
 	}
 
 	private List<GoodsResponseData.UploadAddImage> makeUploadAddImageList(String assortId) {
@@ -2306,6 +2338,37 @@ public class JpaGoodsNewService {
 		return descriptionList;
 	}
 
+	public GoodsListResponseData getGoodsList2(String shortageYn, LocalDate regDtBegin, LocalDate regDtEnd,
+			String assortId, String assortNm) {
+		boolean isAssortIdExist = assortId != null && !assortId.trim().equals("");
+		boolean isAssortNmExist = assortNm != null && !assortNm.trim().equals("");
+
+		LocalDateTime start = isAssortIdExist || isAssortNmExist ? null : regDtBegin.atStartOfDay();
+		LocalDateTime end = isAssortIdExist || isAssortNmExist ? null : regDtEnd.atTime(23, 59, 59);
+		GoodsListResponseData goodsListResponseData = new GoodsListResponseData(shortageYn,
+				regDtBegin, regDtEnd, assortId, assortNm);
+
+		LocalDateTime oldDay = Utilities.strToLocalDateTime(StringFactory.getOldDayT());
+		LocalDateTime doomsDay = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());
+
+		List<TbGoods> tbGoodsList = jpaTbGoodsRepository.findMasterList(start, end, shortageYn, assortId, assortNm,
+				oldDay, doomsDay);// query.getResultList();
+		List<GoodsListResponseData.Goods> goodsList = new ArrayList<>();
+		if (tbGoodsList.size() == 0) {
+			log.debug("검색 조건을 만족하는 상품이 존재하지 않습니다.");
+			goodsListResponseData.setGoodsList(goodsList);
+			return goodsListResponseData;
+		}
+
+		for (TbGoods o : tbGoodsList) {
+			GoodsListResponseData.Goods goods = new GoodsListResponseData.Goods(o);
+			goodsList.add(goods);
+		}
+
+		goodsListResponseData.setGoodsList(goodsList);
+		return goodsListResponseData;
+	}
+
 	/**
 	 * 21-05-10 Pecan brandId, dispCategoryId, regDt, shortageYn, (이상 TbGoods)
 	 * dispCategoryId(itcatg), brandId(itbrnd) 로 list 목록 가져오는 함수
@@ -2313,6 +2376,7 @@ public class JpaGoodsNewService {
 	 * @param shortageYn, RegDtBegin, regDtEnd
 	 * @return GoodsSelectListResponseData
 	 */
+
 
 	// 2022-0329 리스트 조회 사용안함
 //	public GoodsSelectListResponseData getGoodsList(String shortageYn, LocalDate regDtBegin, LocalDate regDtEnd,
@@ -2433,6 +2497,40 @@ public class JpaGoodsNewService {
 
 		ret.setGoods(goodsList);
 		return ret;
+	}
+
+	@Transactional
+	public void deleteGoodsImage(Long sno) {
+
+		TbGoodsImage tgi = jpaTbGoodsImageRepository.findById(sno).orElse(null);
+
+		if (tgi != null) {
+			Long imageSeq = tgi.getImageSeq();
+
+			if (imageSeq != null) {
+				Itaimg r = jpaItaimgRepository.findById(imageSeq).orElse(null);
+
+				if (r != null) {
+					FileVo f = new FileVo();
+					f.setFilePath(r.getImagePath());
+					f.setFileName(r.getImageName());
+
+					String ret = fileService.deleteFile(f);
+
+					if (ret.equals("success")) {
+						jpaItaimgRepository.deleteById(imageSeq);
+					}
+				}
+
+					}
+
+			jpaTbGoodsImageRepository.delete(tgi);
+		} else {
+			throw new ResourceNotFoundException();
+		}
+
+
+
 	}
 
 	// 2022-03-29 사용안함

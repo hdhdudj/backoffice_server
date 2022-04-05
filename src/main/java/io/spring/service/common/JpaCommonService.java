@@ -1,19 +1,26 @@
 package io.spring.service.common;
 
-import io.spring.dao.common.MyBatisCommonDao;
-import io.spring.jparepos.common.JpaSequenceDataRepository;
-import io.spring.jparepos.common.JpaTestenum2Repository;
-import io.spring.model.common.entity.Testenum2;
-import io.spring.model.goods.entity.Ititmc;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.validation.constraints.NotNull;
+
+import io.spring.infrastructure.util.Utilities;
+import io.spring.jparepos.vendor.JpaVendorRepository;
+import io.spring.model.vendor.entity.Cmvdmr;
+import io.spring.model.vendor.request.VendorInsertRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.validation.constraints.NotNull;
-import java.util.List;
+import io.spring.dao.common.MyBatisCommonDao;
+import io.spring.jparepos.common.JpaSequenceDataRepository;
+import io.spring.jparepos.common.JpaSuppliersRepository;
+import io.spring.jparepos.common.JpaTestenum2Repository;
+import io.spring.model.common.entity.Suppliers;
+import io.spring.model.common.entity.Testenum2;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
@@ -24,6 +31,8 @@ public class JpaCommonService {
     private final MyBatisCommonDao myBatisCommonDao;
     private final JpaTestenum2Repository jpaTestenum2Repository;  
 	private final EntityManager em1;
+    private final JpaVendorRepository jpaVendorRepository;
+	private final JpaSuppliersRepository jpaSuppliersRepository;
 
 //    private final String seqStr = "seq";
 //    private final String seqNameStr = "seqName";
@@ -37,6 +46,13 @@ public class JpaCommonService {
 	        return p;
 	    }
 	
+		public List<Suppliers> getAllSuppliers() {
+
+			List<Suppliers> r = jpaSuppliersRepository.findAll();
+			return r;
+			
+		}
+
     public String getNumberId(@NotNull String id, String sequenceName, int size) {
 		if (id != null && !id.equals("")) {
             return id;
@@ -66,4 +82,19 @@ public class JpaCommonService {
 
 		return r.longValue();
 	}
+
+    /**
+     * vendor 삽입 함수
+     */
+    public String createVendor(VendorInsertRequest vendorInsertRequest) {
+        Cmvdmr cmvdmr = new Cmvdmr(vendorInsertRequest);
+        String maxId = jpaVendorRepository.findMaxId();
+        if(maxId == null){
+            maxId = "000001";
+        }
+        maxId = Utilities.plusOne(maxId, 6);
+        cmvdmr.setId(maxId);
+        jpaVendorRepository.save(cmvdmr);
+        return maxId;
+    }
 }

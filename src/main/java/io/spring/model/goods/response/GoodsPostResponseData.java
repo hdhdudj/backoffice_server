@@ -15,6 +15,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+//사용안함.
+
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,7 +33,7 @@ public class GoodsPostResponseData {
 		this.assortModel = goodsInsertRequestData.getAssortModel();
 		this.taxGb = goodsInsertRequestData.getTaxGb();
 		this.margin = goodsInsertRequestData.getMargin();
-		this.description = goodsInsertRequestData.getDescription();
+
 		this.attributesList = attributesList;
 		this.itemsList = itemsList;
 	}
@@ -40,6 +42,8 @@ public class GoodsPostResponseData {
 	private String assortColor;
 	// 상품기본설정 화면
 	private String assortNm; // 상품명
+	private String assortDnm; // 상품명
+	private String assortEnm; // 상품명
 	private String assortModel; // 모델번호
 	private String taxGb; // 과세/면세
 	private String assortState; // 상품상태 : 진행중(01), 일시중지(02), 단품(03), 품절(04)
@@ -80,9 +84,13 @@ public class GoodsPostResponseData {
 	private String mdMargin; // 정기마진율
 	private String buyExchangeRate; // 적용환율
 
-	private List<GoodsInsertRequestData.Description> description;
+	private String goodsDescription;
+	private String shortDescription;
+
 	private List<Attributes> attributesList;
 	private List<Items> itemsList;
+
+	private List<AddInfo> addInfos;
 
 	@Getter
 	@Setter
@@ -125,4 +133,14 @@ public class GoodsPostResponseData {
 		private String addPrice;
 		private String shortYn;
 	}
+
+	@Getter
+	@Setter
+	public static class AddInfo {
+		private Long sno;
+		private String infoTitle;
+		private String infoValue;
+
+	}
+
 }

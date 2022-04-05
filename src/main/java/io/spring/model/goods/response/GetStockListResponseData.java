@@ -44,6 +44,7 @@ public class GetStockListResponseData {
 			this.effStaDt = Utilities.removeTAndTransToStr(ititmc.getEffStaDt());
 //	            this.brandNm = itasrt.getIfBrand().getBrandNm(); 바깥에서 set
 			this.qty = ititmc.getQty() == null ? 0l : ititmc.getQty();
+			this.shipIndicateQty = ititmc.getShipIndicateQty() == null ? null : (Long) ititmc.getShipIndicateQty();
 			this.availableQty = ititmc.getShipIndicateQty() == null ? this.qty : this.qty - ititmc.getShipIndicateQty();
 			this.cost = ititmc.getStockAmt();
 //	            this.storeCd = storeCd; // 바깥에서 set
@@ -77,7 +78,7 @@ public class GetStockListResponseData {
 					: Utilities.removeTAndTransToStr((LocalDateTime) o.get("effStaDt"));
 //	            this.brandNm = itasrt.getIfBrand().getBrandNm(); 바깥에서 set
 			this.qty = o.get("qty") == null ? null : (Long) o.get("qty");
-
+			this.shipIndicateQty = o.get("shipIndicateQty") == null ? null : (Long) o.get("shipIndicateQty");
 
 			this.availableQty = o.get("availableQty") == null ? null : (Long) o.get("availableQty");
 
@@ -109,6 +110,7 @@ public class GetStockListResponseData {
 		private String optionNm3;
 		private String channelId;
 		private Long qty;
+		private Long shipIndicateQty;
 		private Long orderQty;
 		private Long availableQty;
 		private Long moveQty;

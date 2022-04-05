@@ -121,8 +121,7 @@ public class PurchaseController {
 //
 //		}
 
-
-		List<HashMap<String, Object>> responseData = myBatisPurchaseService.getOrderListByPurchaseVendorItem(param);
+        List<HashMap<String, Object>> responseData = myBatisPurchaseService.getOrderListByPurchaseVendorItem(param);
         for(HashMap<String, Object> map : responseData){
             Utilities.changeNullToEmpty(map);
             if(map.get(StringFactory.getStrOrderDate()) != null){
@@ -186,7 +185,7 @@ public class PurchaseController {
 	public ResponseEntity savePurchaseJpa(@RequestBody @Valid PurchaseInsertRequestData purchaseInsertRequestData) {
         log.debug("insert purchase by jpa");
 
-		String purchaseNo = jpaPurchaseService.createPurchaseSquence(null, purchaseInsertRequestData);
+		String purchaseNo = jpaPurchaseService.createPurchaseSquence(purchaseInsertRequestData.getPurchaseId(), purchaseInsertRequestData);
 
 		// jpaOrderService.updateStatusCd("O2106100714498480", "0001", "B02");
 
@@ -401,5 +400,27 @@ public class PurchaseController {
 		return ResponseEntity.ok(res);
 	}
 
+    /**
+     * 발주 디테일 구매처(vendorId) 업데이트
+     */
+    @PostMapping(path="/{purchaseNo}/{purchaseSeq}/vendor/{vendorId}")
+    public ResponseEntity updateVendorId(@PathVariable String purchaseNo, @PathVariable String purchaseSeq, @PathVariable String vendorId,
+                                         @RequestParam String userId) {
+        String purchaseKey = jpaPurchaseService.updateVendorId(purchaseNo, purchaseSeq, vendorId, userId);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
+                purchaseKey);
+        return ResponseEntity.ok(res);
+    }
+
+    /**
+     * 발주 디테일 취소
+     */
+    @PostMapping(path = "/cancel/{purchaseNo}/{purchaseSeq}")
+    public ResponseEntity cancelPurchaseDetail(@PathVariable String purchaseNo, @PathVariable String purchaseSeq, @RequestParam String userId){
+        boolean flag = jpaPurchaseService.cancelOrderPurchase(purchaseNo, purchaseSeq, userId);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
+                flag);
+        return ResponseEntity.ok(res);
+    }
 }
 

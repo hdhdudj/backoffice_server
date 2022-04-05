@@ -3,13 +3,7 @@ package io.spring.service.purchase;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -1820,7 +1814,15 @@ public class JpaPurchaseService {
         return depositPlanId;
     }
 
-//	@Transactional
+    public boolean cancelOrderPurchase(String purchaseNo, String purchaseSeq, String userId) {
+        Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(purchaseNo, purchaseSeq);
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("orderId", lspchd.getOrderId());
+        map.put("orderSeq", lspchd.getOrderSeq());
+        return this.cancelOrderPurchase(map, userId);
+    }
+
+	@Transactional
 	public boolean cancelOrderPurchase(HashMap<String, Object> param, String userId) {
 
 		// 주문번호
@@ -1830,11 +1832,11 @@ public class JpaPurchaseService {
 
 		String orderId = param.get("orderId").toString();
 		String orderSeq = param.get("orderSeq").toString();
-		String cancelGb = param.get("cancelGb").toString();
-		String cancelMsg = param.get("cancelMsg").toString();
+//		String cancelGb = param.get("cancelGb").toString();
+//		String cancelMsg = param.get("cancelMsg").toString();
 
 		//주문번호에 해당하는 발주조회
-		List<Lspchd> l = jpaLspchdRepository.findItemByOrderIdAndOrderSeq(orderId, orderSeq);
+		List<Lspchd> l = jpaLspchdRepository.findItemByOrderIdAndOrderSeq2(orderId, orderSeq);
 
 		if (l.size() != 1) {
 			System.out.println("발주데이타 이상!!!");
@@ -1919,11 +1921,16 @@ public class JpaPurchaseService {
 
 		// 주문상태 업데이트
 		this.updateOrderStatusCd(o.getOrderId(), o.getOrderSeq(), StringFactory.getStrB01(), userId);
-
-
-
 		return true;
 	}
 
-
+    /**
+     * 발주 디테일 구매처(vendorId) 업데이트
+     */
+    public String updateVendorId(String purchaseNo, String purchaseSeq, String vendorId, String userId) {
+        Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(purchaseNo, purchaseSeq);
+        lspchd.setVendorId(vendorId);
+        this.updateLspchbd(lspchd, lspchd.getPurchaseQty(), userId);
+        return Utilities.addDashInMiddle(lspchd.getPurchaseNo(), lspchd.getPurchaseSeq());
+    }
 }

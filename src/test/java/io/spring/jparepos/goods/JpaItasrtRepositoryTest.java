@@ -19,7 +19,11 @@ class JpaItasrtRepositoryTest {
     public void initTables(){
         try {
             String hibernateVersion = org.hibernate.annotations.common.Version.getVersionString();
+            String springBootVersion = org.springframework.boot.SpringBootVersion.getVersion();
+            String gradleVersion = org.springframework.boot.SpringBootVersion.getVersion();
             System.out.println("Hibernate Version: "+ hibernateVersion);
+            System.out.println("Spring Boot Version: "+ springBootVersion);
+            System.out.println("Spring Boot Version: "+ springBootVersion);
         } catch (Exception e) {
             e.printStackTrace();
         }

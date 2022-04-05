@@ -227,9 +227,10 @@
 			,iv3.option_nm optionNm3
 			,it.vendor_id channelId
 			,ifnull(aa.qty,0) qty
-			,0 orderQty
+			,ifnull(aa.ship_indicate_qty,0) shipIndicateQty
 			,ifnull(aa.qty,0) - ifnull(aa.ship_indicate_qty,0)  availableQty
 			,0 moveQty
+			,0 orderQty
 			,aa.stock_amt cost
 			,aa.item_grade itemGrade
 			,tm.channel_goods_no channelGoodsNo
