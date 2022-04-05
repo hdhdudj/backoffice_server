@@ -328,6 +328,7 @@ public class JpaPurchaseService {
                 log.debug("purchaseQty 또는 purchaseUnitAmt가 null 입니다.");
             }
 //            else{
+                item.setPurchaseUnitAmt(item.getPurchaseUnitAmt() == null? null:item.getPurchaseUnitAmt());
                 lspchd.setPurchaseItemAmt(lspchd.getPurchaseQty()*item.getPurchaseUnitAmt());
 //            }
 				// lspchd.setUpdId(purchaseInsertRequestData.getUserId());
