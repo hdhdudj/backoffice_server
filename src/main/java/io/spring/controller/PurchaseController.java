@@ -121,8 +121,7 @@ public class PurchaseController {
 //
 //		}
 
-
-		List<HashMap<String, Object>> responseData = myBatisPurchaseService.getOrderListByPurchaseVendorItem(param);
+        List<HashMap<String, Object>> responseData = myBatisPurchaseService.getOrderListByPurchaseVendorItem(param);
         for(HashMap<String, Object> map : responseData){
             Utilities.changeNullToEmpty(map);
             if(map.get(StringFactory.getStrOrderDate()) != null){
@@ -401,5 +400,16 @@ public class PurchaseController {
 		return ResponseEntity.ok(res);
 	}
 
+    /**
+     * 발주 디테일 구매처(vendorId) 업데이트
+     */
+    @PostMapping(path="/{purchaseNo}/{purchaseSeq}/vendor/{vendorId}")
+    public ResponseEntity updateVendorId(@PathVariable String purchaseNo, @PathVariable String purchaseSeq, @PathVariable String vendorId,
+                                         @RequestParam String userId) {
+        String purchaseKey = jpaPurchaseService.updateVendorId(purchaseNo, purchaseSeq, vendorId, userId);
+        ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
+                purchaseKey);
+        return ResponseEntity.ok(res);
+    }
 }
 

@@ -4,13 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import io.spring.model.vendor.request.VendorInsertRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.model.common.entity.Suppliers;
@@ -242,6 +239,17 @@ public class CommonController {
 		} else {
 			res = new ApiResponseMessage<HashMap<String, Object>>("ERROR", "ERROR", null);
 		}
+
+		return ResponseEntity.ok(res);
+	}
+
+	/**
+	 * new 거래처 정보 추가
+	 */
+	@PostMapping(path = "/vendor")
+	public ResponseEntity createVendor(@RequestBody VendorInsertRequest vendorInsertRequest){
+		String id = jpaCommonService.createVendor(vendorInsertRequest);
+		ApiResponseMessage res = new ApiResponseMessage("SUCCESS", "", id);
 
 		return ResponseEntity.ok(res);
 	}

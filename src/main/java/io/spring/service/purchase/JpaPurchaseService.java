@@ -1922,11 +1922,16 @@ public class JpaPurchaseService {
 
 		// 주문상태 업데이트
 		this.updateOrderStatusCd(o.getOrderId(), o.getOrderSeq(), StringFactory.getStrB01(), userId);
-
-
-
 		return true;
 	}
 
-
+    /**
+     * 발주 디테일 구매처(vendorId) 업데이트
+     */
+    public String updateVendorId(String purchaseNo, String purchaseSeq, String vendorId, String userId) {
+        Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(purchaseNo, purchaseSeq);
+        lspchd.setVendorId(vendorId);
+        this.updateLspchbd(lspchd, lspchd.getPurchaseQty(), userId);
+        return Utilities.addDashInMiddle(lspchd.getPurchaseNo(), lspchd.getPurchaseSeq());
+    }
 }
