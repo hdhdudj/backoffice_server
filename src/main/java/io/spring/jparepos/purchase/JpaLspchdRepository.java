@@ -56,6 +56,16 @@ public interface JpaLspchdRepository extends JpaRepository<Lspchd, LspchdId> {
 			+ "and bb.purchase_status ='01' ", nativeQuery = true)
 	List<Lspchd> findItemByOrderIdAndOrderSeq(@Param("orderId") String orderId, @Param("orderSeq") String orderSeq);
 
+    /**
+     * 취소되지 않은 애들 가져오기
+     */
+    @Query("select ld from Lspchd ld " +
+            "join fetch ld.lspchb lb " +
+            "where ld.orderId =:orderId " +
+            "and ld.orderSeq =:orderSeq " +
+            "and lb.effEndDt ='9999-12-31 23:59:59' " +
+            "and lb.purchaseStatus <> '05'")
+    List<Lspchd> findItemByOrderIdAndOrderSeq2(@Param("orderId") String orderId, @Param("orderSeq") String orderSeq);
 
     /**
      * 발주리스트

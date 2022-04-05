@@ -1839,7 +1839,7 @@ public class JpaPurchaseService {
 //		String cancelMsg = param.get("cancelMsg").toString();
 
 		//주문번호에 해당하는 발주조회
-		List<Lspchd> l = jpaLspchdRepository.findItemByOrderIdAndOrderSeq(orderId, orderSeq);
+		List<Lspchd> l = jpaLspchdRepository.findItemByOrderIdAndOrderSeq2(orderId, orderSeq);
 
 		if (l.size() != 1) {
 			System.out.println("발주데이타 이상!!!");
