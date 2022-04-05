@@ -57,7 +57,7 @@ public class PurchaseInsertRequestData {
      * (무슨 화면인지 애매함.. 확인 필요)
       */
     // 여러 테이블에서 쓰는 변수
-    private String purchaseId; // lspchm, lspchs
+    private String purchaseNo; // lspchm, lspchs
     private String purchaseStatus; // lspchm, lspchs, lspchb
     @JsonDeserialize(using = CustomLocalDateTimeDeSerializer.class)
     private LocalDateTime effEndDt; // lspchm, lspchs

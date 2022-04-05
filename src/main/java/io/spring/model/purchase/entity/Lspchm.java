@@ -1,7 +1,6 @@
 package io.spring.model.purchase.entity;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -21,9 +20,7 @@ import io.spring.model.goods.entity.Itasrt;
 import io.spring.model.order.entity.TbOrderDetail;
 import io.spring.model.purchase.request.PurchaseInsertRequestData;
 import io.spring.model.ship.entity.Lsshpm;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -67,7 +64,7 @@ public class Lspchm extends CommonProps {
         this.dealtypeCd = purchaseInsertRequestData.getDealtypeCd();
     }
     public Lspchm(PurchaseInsertRequestData purchaseInsertRequestData){
-        this.purchaseNo = purchaseInsertRequestData.getPurchaseId();
+        this.purchaseNo = purchaseInsertRequestData.getPurchaseNo();
         this.purchaseDt = purchaseInsertRequestData.getPurchaseDt();
         this.effEndDt = Utilities.strToLocalDateTime(StringFactory.getDoomDayT());
         this.purchaseStatus = purchaseInsertRequestData.getPurchaseStatus(); // 01 : 발주, 05 : 취소

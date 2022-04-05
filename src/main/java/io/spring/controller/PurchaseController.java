@@ -186,7 +186,7 @@ public class PurchaseController {
 	public ResponseEntity savePurchaseJpa(@RequestBody @Valid PurchaseInsertRequestData purchaseInsertRequestData) {
         log.debug("insert purchase by jpa");
 
-		String purchaseNo = jpaPurchaseService.createPurchaseSquence(purchaseInsertRequestData.getPurchaseId(), purchaseInsertRequestData);
+		String purchaseNo = jpaPurchaseService.createPurchaseSquence(purchaseInsertRequestData.getPurchaseNo(), purchaseInsertRequestData);
 
 		// jpaOrderService.updateStatusCd("O2106100714498480", "0001", "B02");
 
