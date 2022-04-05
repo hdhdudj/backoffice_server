@@ -1104,7 +1104,7 @@ public class JpaOrderService {
 
 			if (od.getStatusCd().equals("B01") || od.getStatusCd().equals("B02") || od.getStatusCd().equals("A01")) {
 				if (od.getStatusCd().equals("B02")) {
-					boolean r = jpaPurchaseService.cancelOrderPurchase(p, userId);
+					boolean r = jpaPurchaseService.innerCancelOrderPurchase(p, userId);
 
 					System.out.println(r);
 

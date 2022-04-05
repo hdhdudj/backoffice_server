@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import io.spring.model.purchase.response.PurchaseDetailCancelResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -1819,11 +1820,29 @@ public class JpaPurchaseService {
         HashMap<String, Object> map = new HashMap<>();
         map.put("orderId", lspchd.getOrderId());
         map.put("orderSeq", lspchd.getOrderSeq());
-        return this.cancelOrderPurchase(map, userId);
+        return this.innerCancelOrderPurchase(map, userId);
     }
 
-	@Transactional
-	public boolean cancelOrderPurchase(HashMap<String, Object> param, String userId) {
+    /**
+     * 발주 취소
+     */
+    @Transactional
+    public void cancelOrderPurchase(PurchaseDetailCancelResponse purchaseDetailCancelResponse){
+        List<String> seqList = new ArrayList<>();
+        for (int i = 0; i < purchaseDetailCancelResponse.getItems().size() ; i++) {
+            seqList.add(purchaseDetailCancelResponse.getItems().get(i).getPurchaseSeq());
+        }
+        List<Lspchd> lspchdList = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq2(purchaseDetailCancelResponse.getPurchaseNo(),
+                seqList);
+        for(Lspchd l : lspchdList){
+            HashMap<String , Object> map = new HashMap<>();
+            map.put("orderId", l.getOrderId());
+            map.put("orderSeq", l.getOrderSeq());
+            this.innerCancelOrderPurchase(map, purchaseDetailCancelResponse.getUserId());
+        }
+    }
+//	@Transactional
+	public boolean innerCancelOrderPurchase(HashMap<String, Object> param, String userId) {
 
 		// 주문번호
 		// 주문순변
