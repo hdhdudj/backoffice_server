@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import io.spring.model.purchase.response.PurchaseDetailCancelResponse;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -185,7 +186,7 @@ public class PurchaseController {
 	public ResponseEntity savePurchaseJpa(@RequestBody @Valid PurchaseInsertRequestData purchaseInsertRequestData) {
         log.debug("insert purchase by jpa");
 
-		String purchaseNo = jpaPurchaseService.createPurchaseSquence(purchaseInsertRequestData.getPurchaseId(), purchaseInsertRequestData);
+		String purchaseNo = jpaPurchaseService.createPurchaseSquence(purchaseInsertRequestData.getPurchaseNo(), purchaseInsertRequestData);
 
 		// jpaOrderService.updateStatusCd("O2106100714498480", "0001", "B02");
 
@@ -415,11 +416,11 @@ public class PurchaseController {
     /**
      * 발주 디테일 취소
      */
-    @PostMapping(path = "/cancel/{purchaseNo}/{purchaseSeq}")
-    public ResponseEntity cancelPurchaseDetail(@PathVariable String purchaseNo, @PathVariable String purchaseSeq, @RequestParam String userId){
-        boolean flag = jpaPurchaseService.cancelOrderPurchase(purchaseNo, purchaseSeq, userId);
+    @PostMapping(path = "/cancel")
+    public ResponseEntity cancelPurchaseDetail(@RequestBody PurchaseDetailCancelResponse purchaseDetailCancelResponse){
+        jpaPurchaseService.cancelOrderPurchase(purchaseDetailCancelResponse);
         ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(),
-                flag);
+                true);
         return ResponseEntity.ok(res);
     }
 }

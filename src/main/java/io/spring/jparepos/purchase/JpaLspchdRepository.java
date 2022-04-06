@@ -20,6 +20,11 @@ public interface JpaLspchdRepository extends JpaRepository<Lspchd, LspchdId> {
 
     Lspchd findByPurchaseNoAndPurchaseSeq(String purchaseNo, String purchaseSeq);
 
+    @Query("select l from Lspchd l where l.purchaseNo=:purchaseNo and " +
+            "l.purchaseSeq in :purchaseSeqList")
+    List<Lspchd> findByPurchaseNoAndPurchaseSeq2(@Param("purchaseNo") String purchaseNo,
+                                                 @Param("purchaseSeqList") List<String> purchaseSeq);
+
 
     /**
      * 해외입고처리 - 발주선택창 조회 쿼리

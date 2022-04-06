@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import io.spring.model.purchase.response.PurchaseDetailCancelResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -106,7 +107,7 @@ public class JpaPurchaseService {
         if(purchaseNo == null){
             purchaseNo = this.getPurchaseNo();
         }
-        purchaseInsertRequestData.setPurchaseId(purchaseNo);
+        purchaseInsertRequestData.setPurchaseNo(purchaseNo);
         // lspchd (발주 디테일)
 		List<Lspchd> lspchdList = this.saveLspchd(purchaseInsertRequestData, userId);
         // lspchm (발주마스터)
@@ -222,7 +223,7 @@ public class JpaPurchaseService {
 	private Lspchm saveLspchm(PurchaseInsertRequestData purchaseInsertRequestData, List<Lspchd> lspchdList,
 			String userId) {
 
-        Lspchm lspchm = jpaLspchmRepository.findByPurchaseNo(purchaseInsertRequestData.getPurchaseId()).orElseGet(() -> null);
+        Lspchm lspchm = jpaLspchmRepository.findByPurchaseNo(purchaseInsertRequestData.getPurchaseNo()).orElseGet(() -> null);
         if(lspchm == null){ // insert
             if(lspchdList.size() == 0){
                 log.debug("저장할 발주 목록이 존재하지 않습니다.");
@@ -305,16 +306,16 @@ public class JpaPurchaseService {
         List<Lspchd> lspchdList = new ArrayList<>();
 
         for(PurchaseInsertRequestData.Items item : purchaseInsertRequestData.getItems()){
-            Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequestData.getPurchaseId(), item.getPurchaseSeq() == null? null:item.getPurchaseSeq());
+            Lspchd lspchd = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequestData.getPurchaseNo(), item.getPurchaseSeq() == null? null:item.getPurchaseSeq());
             if(lspchd == null){ // insert
-                String purchaseSeq = jpaLspchdRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequestData.getPurchaseId());
+                String purchaseSeq = jpaLspchdRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequestData.getPurchaseNo());
                 if(purchaseSeq == null){
                     purchaseSeq = StringFactory.getFourStartCd();
                 }
                 else {
                     purchaseSeq = Utilities.plusOne(purchaseSeq, 4);
                 }
-                lspchd = new Lspchd(purchaseInsertRequestData.getPurchaseId(), purchaseSeq, item);
+                lspchd = new Lspchd(purchaseInsertRequestData.getPurchaseNo(), purchaseSeq, item);
 				lspchd.setRegId(userId);
 //                lspchd.setUpdId(purchaseInsertRequestData.getUserId());
             }
@@ -327,6 +328,7 @@ public class JpaPurchaseService {
                 log.debug("purchaseQty 또는 purchaseUnitAmt가 null 입니다.");
             }
 //            else{
+                item.setPurchaseUnitAmt(item.getPurchaseUnitAmt() == null? null:item.getPurchaseUnitAmt());
                 lspchd.setPurchaseItemAmt(lspchd.getPurchaseQty()*item.getPurchaseUnitAmt());
 //            }
 				// lspchd.setUpdId(purchaseInsertRequestData.getUserId());
@@ -384,11 +386,11 @@ public class JpaPurchaseService {
 	private List<Lsdpsp> saveLsdpsp(PurchaseInsertRequestData purchaseInsertRequestData, String userId) {
         List<Lsdpsp> lsdpspList = new ArrayList<>();
         for(PurchaseInsertRequestData.Items items : purchaseInsertRequestData.getItems()){
-            Lsdpsp lsdpsp = items.getPurchaseSeq() == null || items.getPurchaseSeq().equals("")? null : jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequestData.getPurchaseId(), items.getPurchaseSeq());
+            Lsdpsp lsdpsp = items.getPurchaseSeq() == null || items.getPurchaseSeq().equals("")? null : jpaLsdpspRepository.findByPurchaseNoAndPurchaseSeq(purchaseInsertRequestData.getPurchaseNo(), items.getPurchaseSeq());
             if(lsdpsp == null){ // insert
                 String depositPlanId = jpaCommonService.getNumberId(purchaseInsertRequestData.getDepositPlanId(), StringFactory.getStrSeqLsdpsp(), StringFactory.getIntNine());
                 purchaseInsertRequestData.setDepositPlanId(depositPlanId); // depositPlanId 채번
-                String seq = jpaLsdpspRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequestData.getPurchaseId());
+                String seq = jpaLsdpspRepository.findMaxPurchaseSeqByPurchaseNo(purchaseInsertRequestData.getPurchaseNo());
                 if(seq == null){
                     seq = StringFactory.getFourStartCd();
                 }
@@ -1819,11 +1821,29 @@ public class JpaPurchaseService {
         HashMap<String, Object> map = new HashMap<>();
         map.put("orderId", lspchd.getOrderId());
         map.put("orderSeq", lspchd.getOrderSeq());
-        return this.cancelOrderPurchase(map, userId);
+        return this.innerCancelOrderPurchase(map, userId);
     }
 
-	@Transactional
-	public boolean cancelOrderPurchase(HashMap<String, Object> param, String userId) {
+    /**
+     * 발주 취소
+     */
+    @Transactional
+    public void cancelOrderPurchase(PurchaseDetailCancelResponse purchaseDetailCancelResponse){
+        List<String> seqList = new ArrayList<>();
+        for (int i = 0; i < purchaseDetailCancelResponse.getItems().size() ; i++) {
+            seqList.add(purchaseDetailCancelResponse.getItems().get(i).getPurchaseSeq());
+        }
+        List<Lspchd> lspchdList = jpaLspchdRepository.findByPurchaseNoAndPurchaseSeq2(purchaseDetailCancelResponse.getPurchaseNo(),
+                seqList);
+        for(Lspchd l : lspchdList){
+            HashMap<String , Object> map = new HashMap<>();
+            map.put("orderId", l.getOrderId());
+            map.put("orderSeq", l.getOrderSeq());
+            this.innerCancelOrderPurchase(map, purchaseDetailCancelResponse.getUserId());
+        }
+    }
+//	@Transactional
+	public boolean innerCancelOrderPurchase(HashMap<String, Object> param, String userId) {
 
 		// 주문번호
 		// 주문순변

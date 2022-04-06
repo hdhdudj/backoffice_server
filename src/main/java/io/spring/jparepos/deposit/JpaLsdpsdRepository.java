@@ -38,7 +38,6 @@ public interface JpaLsdpsdRepository extends JpaRepository<Lsdpsd, LsdpsdId> {
             "and (:assortNm is null or trim(:assortNm)='' or it.assortNm like concat('%', :assortNm, '%')) " +
             "and (:vendorId is null or trim(:vendorId)='' or lm.vendorId=:vendorId) " +
             "and (:storageId is null or trim(:storageId)='' or lm.storeCd=:storageId) " +
-            "and (:storageId is null or trim(:storageId)='' or lm.storeCd=:storageId) " +
             "order by ld.depositNo asc, ld.depositSeq asc")
     List<Lsdpsd> findDepositList(@Param("start") LocalDateTime start,
                                  @Param("end") LocalDateTime end,

@@ -26,6 +26,4 @@ public class RefreshToken {
 	@OneToOne
 	@JoinColumn(name = "userId", referencedColumnName = "id", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
 	private User user;
-
-
 }

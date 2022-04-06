@@ -24,7 +24,7 @@ import java.time.format.DateTimeFormatter;
 public class Lspchs extends CommonProps {
     private final static Logger logger = LoggerFactory.getLogger(Lspchs.class);
     public Lspchs(PurchaseInsertRequestData purchaseInsertRequestData){
-        this.purchaseNo = purchaseInsertRequestData.getPurchaseId();
+        this.purchaseNo = purchaseInsertRequestData.getPurchaseNo();
 		this.effEndDt = LocalDateTime.parse(StringFactory.getDoomDay(),
 				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         this.purchaseStatus = purchaseInsertRequestData.getPurchaseStatus();
