@@ -1,7 +1,5 @@
 package io.spring.controller;
 
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -9,7 +7,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -27,11 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.goods.MyBatisGoodsDao;
-import io.spring.dao.user.Test;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
-import io.spring.model.common.entity.TestObjectRequest;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.goods.request.GoodsPostRequestData;
 import io.spring.model.goods.request.ProductsMasterPostRequestData;
@@ -465,30 +460,5 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 	}
 
-	@RequestMapping(path = "/test33", method = POST)
-	public ResponseEntity saveTest3(@RequestBody TestObjectRequest req) {
 
-		List<TestObjectRequest.Item> l = req.getItems();
-		for (TestObjectRequest.Item o : l) {
-
-			System.out.println(o.getLabel());
-			System.out.println(o.getValue().getClass().getName());
-			System.out.println(o.getValue().toString());
-		}
-
-		return ResponseEntity.status(201).body(new ApiResponseMessage<Optional<Test>>("SUCCES", "", null));
-	}
-
-	@RequestMapping(path = "/test44", method = POST)
-	public ResponseEntity saveTest4(@RequestBody Map<String, Object> req) {
-
-		// 방법 01 : entrySet()
-		for (Map.Entry<String, Object> entry : req.entrySet()) {
-			System.out.println("[key]:" + entry.getKey() + ", [value]:" + entry.getValue());
-		}
-
-
-		return ResponseEntity.status(201).body(new ApiResponseMessage<Optional<Test>>("SUCCES", "", null));
-
-	}
 }
