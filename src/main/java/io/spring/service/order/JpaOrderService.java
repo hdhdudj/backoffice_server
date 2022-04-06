@@ -137,9 +137,10 @@ public class JpaOrderService {
         String prevStatus = tbOrderDetail.getStatusCd();
 //        TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
         String assortGb = itasrt.getAssortGb();
+		String parentOrderSeq = tbOrderDetail.getParentOrderSeq();
 
-        if(assortGb == null){ // add_goods인 경우 자체 assortGb가 존재하지 않아, 부모 상품의 것을 따른다.
-            itasrt = this.getParentAssortGb(orderId, orderSeq, itasrt);
+		if (tbOrderDetail.getAssortGb().equals("002")) { // add_goods인 경우 자체 assortGb가 존재하지 않아, 부모 상품의 것을 따른다.
+			assortGb = this.getParentAssortGb2(orderId, parentOrderSeq);
         }
 
 		tbOrderDetail.setUpdId(userId);
@@ -217,6 +218,15 @@ public class JpaOrderService {
         itasrt.setAssortGb(parentItasrt.getAssortGb());
         return itasrt;
     }
+
+	private String getParentAssortGb2(String orderId, String orderSeq) {
+
+		TbOrderDetail td = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(orderId, orderSeq);
+
+		Itasrt parentItasrt = jpaItasrtRepository.findByAssortId(td.getAssortId());
+
+		return parentItasrt.getAssortGb();
+	}
 
     /**
      * tbOrderDetail.statusCd가 변동될 때마다 로그를 기록함.
