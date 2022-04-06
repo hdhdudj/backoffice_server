@@ -58,7 +58,7 @@ where b2.assort_id=tod.assort_id
  join tb_member_address tma on tom.deli_id = tma.deli_id
  left join tmmapi tm on tm.assort_id = ld.assort_id and tm.channel_gb='01' 
 where 1=1
-and lm.receipt_dt between #{startDt} and #{endDt}
+and tom.order_date between #{startDt} and #{endDt}
 and lm.ship_status='01'
 and tod.status_cd ='C04'
     	 ]]>
