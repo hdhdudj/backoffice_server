@@ -1,7 +1,5 @@
 package io.spring.controller;
 
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -9,7 +7,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -27,11 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.spring.dao.common.MyBatisCommonDao;
 import io.spring.dao.goods.MyBatisGoodsDao;
-import io.spring.dao.user.Test;
 import io.spring.infrastructure.util.ApiResponseMessage;
 import io.spring.infrastructure.util.StringFactory;
 import io.spring.infrastructure.util.Utilities;
-import io.spring.model.common.entity.TestObjectRequest;
 import io.spring.model.goods.request.GoodsInsertRequestData;
 import io.spring.model.goods.request.GoodsPostRequestData;
 import io.spring.model.goods.request.ProductsMasterPostRequestData;
@@ -41,6 +36,9 @@ import io.spring.model.goods.response.GoodsListResponseData;
 import io.spring.model.goods.response.GoodsResponseData;
 import io.spring.model.goods.response.GoodsSelectDetailResponseData;
 import io.spring.model.goods.response.GoodsSelectListResponseData;
+import io.spring.model.goods.response.ProductsListResponseData;
+import io.spring.model.goods.response.ProductsMasterListResponseData;
+import io.spring.model.goods.response.ProductsMasterResponseData;
 import io.spring.model.goods.response.ProductsResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.common.MyBatisCommonService;
@@ -166,6 +164,30 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 	}
 
+	@GetMapping(path = "/v3/masters/{masterId}")
+	public ResponseEntity getMaster(@PathVariable("masterId") Long masterId) {
+
+		ProductsMasterResponseData r = jpaProductService.getMasterItem(masterId);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
+
+		return ResponseEntity.ok(res);
+
+	}
+
+	@GetMapping(path = "/v3/masters")
+	public ResponseEntity getMaster(@RequestParam @Nullable String masterNm) {
+		if (masterNm == null) {
+			masterNm = "";
+		}
+		ProductsMasterListResponseData r = jpaProductService.getMasterItemList(masterNm);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
+
+		return ResponseEntity.ok(res);
+
+	}
+
 	@GetMapping(path = "/v3/products/{productId}")
 	public ResponseEntity getProduct(@PathVariable("productId") Long productId) {
 
@@ -177,6 +199,31 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 
 	}
+
+	@GetMapping(path = "/v3/products")
+	public ResponseEntity getProductList(
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate regDtBegin,
+			@DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam LocalDate regDtEnd,
+			@RequestParam @Nullable String saleYn, @RequestParam @Nullable String displayYn,
+			@RequestParam @Nullable Long productId, @RequestParam @Nullable String productNm,
+			@RequestParam @Nullable Long masterId, @RequestParam @Nullable String masterNm) {
+		log.debug("get goods list data");
+		// ProductsListResponseData r = jpaProductService.getItemList(regDtBegin,
+		// regDtEnd, saleYn, displayYn,
+		// productId, productNm, masterId, masterNm);
+
+		ProductsListResponseData r = myBatisGoodsService.getItemList(regDtBegin, regDtEnd, saleYn, displayYn,
+				productId, productNm, masterId, masterNm);
+
+		// List<GoodsListResponseData.Goods> responseData = null;
+		// if (goodsListResponseData != null) {
+		// responseData = goodsListResponseData.getGoodsList();
+		// }
+		ApiResponseMessage res = new ApiResponseMessage("ok", "success", r);
+
+		return ResponseEntity.ok(res);
+	}
+
 
 	@PostMapping(path = "/v3/master")
 	public ResponseEntity saveMaster(@RequestBody @Valid ProductsMasterPostRequestData req) {
@@ -465,30 +512,5 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 	}
 
-	@RequestMapping(path = "/test33", method = POST)
-	public ResponseEntity saveTest3(@RequestBody TestObjectRequest req) {
 
-		List<TestObjectRequest.Item> l = req.getItems();
-		for (TestObjectRequest.Item o : l) {
-
-			System.out.println(o.getLabel());
-			System.out.println(o.getValue().getClass().getName());
-			System.out.println(o.getValue().toString());
-		}
-
-		return ResponseEntity.status(201).body(new ApiResponseMessage<Optional<Test>>("SUCCES", "", null));
-	}
-
-	@RequestMapping(path = "/test44", method = POST)
-	public ResponseEntity saveTest4(@RequestBody Map<String, Object> req) {
-
-		// 방법 01 : entrySet()
-		for (Map.Entry<String, Object> entry : req.entrySet()) {
-			System.out.println("[key]:" + entry.getKey() + ", [value]:" + entry.getValue());
-		}
-
-
-		return ResponseEntity.status(201).body(new ApiResponseMessage<Optional<Test>>("SUCCES", "", null));
-
-	}
 }

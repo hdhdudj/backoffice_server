@@ -1,5 +1,7 @@
 package io.spring.service.goods;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +23,9 @@ import io.spring.model.goods.entity.ProductsImage;
 import io.spring.model.goods.entity.ProductsMaster;
 import io.spring.model.goods.request.ProductsMasterPostRequestData;
 import io.spring.model.goods.request.ProductsPostRequestData;
+import io.spring.model.goods.response.ProductsListResponseData;
+import io.spring.model.goods.response.ProductsMasterListResponseData;
+import io.spring.model.goods.response.ProductsMasterResponseData;
 import io.spring.model.goods.response.ProductsResponseData;
 import io.spring.service.file.FileService;
 import lombok.RequiredArgsConstructor;
@@ -64,6 +69,51 @@ public class JpaProductsService {
 
 		return r;
 
+
+	}
+
+	public ProductsListResponseData getItemList(LocalDate start, LocalDate end, String saleYn,
+			String displayYn, Long productId, String productNm, Long masterId, String masterNm) {
+
+		LocalDateTime startDt = start.atStartOfDay();
+		LocalDateTime endDt = end.atTime(23, 59, 59);
+
+		ProductsListResponseData r = new ProductsListResponseData(start, end, saleYn, displayYn, productId, productNm,
+				masterId, masterNm);
+
+
+		// List<ProductsResponseData> l = getProductsList(startDt, endDt, saleYn,
+		// displayYn, productId, productNm,
+		// masterId,
+		// masterNm);
+
+
+		// r.setProductsList(l);
+		return r;
+
+	}
+
+	private List<ProductsResponseData> getProductsList(LocalDateTime start, LocalDateTime end, String saleYn,
+			String displayYn, Long productId, String productNm, Long masterId, String masterNm) {
+
+		List<Products> l = jpaProductsRepository.findList(start, end, saleYn, displayYn, productId, productNm,
+				masterId, masterNm);
+
+		List<ProductsResponseData> r = new ArrayList<>();
+
+		for (Products o : l) {
+			ProductsResponseData v = new ProductsResponseData(o);
+
+			v.setMainImage(getProductMainImage(o.getProductId()));
+			v.setAddImage(getProductAddImage(o.getProductId()));
+			v.setAddInfos(getProductAddInfo(o.getProductId()));
+
+			r.add(v);
+		}
+
+		// r.setProductsList(l);
+
+		return r;
 
 	}
 
@@ -384,5 +434,51 @@ public class JpaProductsService {
 
 		}
 
+	}
+
+	public ProductsMasterResponseData getMasterItem(Long masterId) {
+
+		ProductsMasterResponseData r = getMaster(masterId);
+
+
+		return r;
+
+	}
+
+	private ProductsMasterResponseData getMaster(Long masterId) {
+
+		ProductsMaster v = jpaProductsMasterRepository.findById(masterId).orElse(null);
+		if (v != null) {
+			ProductsMasterResponseData r = new ProductsMasterResponseData(v);
+			return r;
+		} else {
+
+			return null;
+		}
+
+
+	}
+
+	public ProductsMasterListResponseData getMasterItemList(String masterNm) {
+
+		List<ProductsMasterListResponseData.Master> l = getMastersList(masterNm);
+
+		ProductsMasterListResponseData r = new ProductsMasterListResponseData(masterNm);
+
+		r.setMastersList(l);
+
+		return r;
+
+	}
+
+	private List<ProductsMasterListResponseData.Master> getMastersList(String masterNm) {
+		List<ProductsMaster> l = jpaProductsMasterRepository.findList(masterNm);
+
+		List<ProductsMasterListResponseData.Master> r = new ArrayList<>();
+		for (ProductsMaster o : l) {
+			ProductsMasterListResponseData.Master v = new ProductsMasterListResponseData.Master(o);
+			r.add(v);
+		}
+		return r;
 	}
 }

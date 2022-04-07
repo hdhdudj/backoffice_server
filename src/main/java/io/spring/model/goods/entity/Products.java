@@ -111,4 +111,8 @@ public class Products extends CommonProps implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Itbrnd itbrnd; // cmvdmr 연관관계
 
+	@JoinColumn(name = "masterId", referencedColumnName = "masterId", insertable = false, updatable = false, foreignKey = @javax.persistence.ForeignKey(name = "none"))
+	@ManyToOne(fetch = FetchType.LAZY)
+	private ProductsMaster productsMaster; // cmvdmr 연관관계
+
 }
