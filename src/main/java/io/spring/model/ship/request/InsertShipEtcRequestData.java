@@ -31,6 +31,7 @@ public class InsertShipEtcRequestData {
 	private String memo;
 	@NotNull(message = "userId는 필수 값입니다.")
 	private String userId;
+	private Float deliFee;
 
 	@Getter
 	@Setter

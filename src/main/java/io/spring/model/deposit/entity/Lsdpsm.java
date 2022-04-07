@@ -72,6 +72,7 @@ public class Lsdpsm extends CommonProps {
 		this.finishYymm = LocalDateTime.parse(StringFactory.getDoomDay(),
 				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 		this.depositType = p.getDepositType();
+		this.deliFee = p.getDeliFee() == null? 0f : p.getDeliFee();
 		this.setRegId(p.getUserId());
 		this.setUpdId(p.getUserId());
 		// this.ownerId =
@@ -106,6 +107,8 @@ public class Lsdpsm extends CommonProps {
     private String depositType;
     private String storeCd;
     private String ownerId;
+	// 22-04-07 추가
+	private Float deliFee;
 
     // 연관 관계
     @ManyToOne(fetch = FetchType.LAZY)
