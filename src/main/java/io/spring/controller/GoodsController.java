@@ -36,6 +36,7 @@ import io.spring.model.goods.response.GoodsListResponseData;
 import io.spring.model.goods.response.GoodsResponseData;
 import io.spring.model.goods.response.GoodsSelectDetailResponseData;
 import io.spring.model.goods.response.GoodsSelectListResponseData;
+import io.spring.model.goods.response.ProductsListResponseData;
 import io.spring.model.goods.response.ProductsResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.common.MyBatisCommonService;
@@ -172,6 +173,26 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 
 	}
+
+	@GetMapping(path = "/v3/products")
+	public ResponseEntity getProductList(
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate regDtBegin,
+			@DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam LocalDate regDtEnd,
+			@RequestParam @Nullable String saleYn, @RequestParam @Nullable String displayYn,
+			@RequestParam @Nullable Long productId, @RequestParam @Nullable String productNm,
+			@RequestParam @Nullable Long masterId, @RequestParam @Nullable String masterNm) {
+		log.debug("get goods list data");
+		ProductsListResponseData r = jpaProductService.getItemList(regDtBegin, regDtEnd, saleYn, displayYn,
+				productId, productNm, masterId, masterNm);
+		// List<GoodsListResponseData.Goods> responseData = null;
+		// if (goodsListResponseData != null) {
+		// responseData = goodsListResponseData.getGoodsList();
+		// }
+		ApiResponseMessage res = new ApiResponseMessage("ok", "success", r);
+
+		return ResponseEntity.ok(res);
+	}
+
 
 	@PostMapping(path = "/v3/master")
 	public ResponseEntity saveMaster(@RequestBody @Valid ProductsMasterPostRequestData req) {
