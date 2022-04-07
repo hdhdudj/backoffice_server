@@ -164,6 +164,7 @@ public class JpaPurchaseService {
         lspchm.setDelivery(purchaseInsertRequestData.getDelivery());
         lspchm.setPayment(purchaseInsertRequestData.getPayment());
         lspchm.setCarrier(purchaseInsertRequestData.getCarrier());
+        lspchm.setInnerPurchaseStatus(purchaseInsertRequestData.getInnerPurchaseStatus());
 
         lspchm.setPiNo(purchaseInsertRequestData.getPiNo());
         lspchm.setMemo(purchaseInsertRequestData.getMemo());

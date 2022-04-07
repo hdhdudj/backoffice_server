@@ -97,6 +97,8 @@ public class PurchaseInsertRequestData {
     private String memo;
     // 22-01-07 추가
     private String deliFee;
+    // 22-04-07 추가
+    private String innerPurchaseStatus;
 
 	private List<Items> items;
 
