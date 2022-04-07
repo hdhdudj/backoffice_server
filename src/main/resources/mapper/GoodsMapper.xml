@@ -512,4 +512,83 @@
 			 ]]>
 			</if>						
 	</select>
+	
+	
+	<select id="getProductsList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	 <![CDATA[	
+					select  
+					p.product_id productId
+					,p.product_nm productNm
+					,p.product_dnm productDnm
+					,p.product_enm productEnm
+					,p.product_model productModel
+					,p.sale_price salePrice
+					,p.offline_sale_price offlineSalePrice
+					,p.overseas_sale_price overseasSalePrice
+					,p.option_value1 optionValue1
+					,p.option_value2 optionValue2
+					,p.option_value3 optionValue3
+					,p.option_value4 optionValue4
+					,p.option_value5 optionValue5
+					,p.goods_description goodsDescription
+					,p.short_description shortDescription
+					,p.supplier_id supplierId
+					,sp.supplier_nm supplierNm
+					,p.vendor_id vendorId
+					,p.master_id masterId
+					,pm.master_nm masterNm
+					,p.brand_id brandId
+					,ib.brand_nm brandNm
+					,p.category_id categoryId
+					,p.stock_cnt stockCnt
+					,p.sale_yn saleYn
+					,p.display_yn displayYn
+					,pi2.image_url imageUrl 
+					from products p 
+					   LEFT OUTER JOIN products_image pi2  ON pi2.product_id = p.product_id AND pi2.image_gb ='01'
+					    LEFT OUTER JOIN products_master pm  ON pm.master_id = p.master_id 
+					      LEFT OUTER JOIN itbrnd ib  ON ib.brand_id = p.brand_id 
+					         LEFT OUTER JOIN suppliers sp  ON sp.supplier_id = p.supplier_id 
+					where 1=1
+			
+			 ]]>
+			<if test='start != null '>
+			 <![CDATA[		
+					and p.reg_dt between #{start} and #{end}
+			 ]]>
+			</if>	
+			<if test='saleYn != null and saleYn.trim() != ""'>
+			 <![CDATA[		
+					and p.sale_yn =#{saleYn}
+			 ]]>
+			</if>	
+			<if test='displayYn != null and displayYn.trim() != ""'>
+			 <![CDATA[		
+					and p.display_yn =#{displayYn}
+			 ]]>
+			</if>		
+			<if test='masterId != null'>
+			 <![CDATA[		
+					and pm.master_id =#{masterId}
+			 ]]>
+			 </if>	
+		<if test='masterNm != null and masterNm.trim() != ""'>
+			 <![CDATA[		
+					and pm.master_nm  like concat('%',#{masterNm},'%')
+			 ]]>
+			</if>		
+		<if test='productNm != null and productNm.trim() != ""'>
+			 <![CDATA[		
+					and p.product_nm like concat('%',#{productNm},'%')
+			 ]]>
+			</if>		
+						<if test='productId != null'>
+			 <![CDATA[		
+					and p.product_id =#{productId}
+			 ]]>			
+			 </if>					
+			</select>
+			
+			
+			
 </mapper>

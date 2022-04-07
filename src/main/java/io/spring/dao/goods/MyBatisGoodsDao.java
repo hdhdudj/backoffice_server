@@ -31,4 +31,6 @@ public interface MyBatisGoodsDao {
 
 	List<HashMap<String, Object>> getItitmc(HashMap<String, Object> param);
 
+	List<HashMap<String, Object>> getProductsList(HashMap<String, Object> param);
+
 }

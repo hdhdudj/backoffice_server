@@ -24,6 +24,8 @@ import io.spring.model.goods.entity.ProductsMaster;
 import io.spring.model.goods.request.ProductsMasterPostRequestData;
 import io.spring.model.goods.request.ProductsPostRequestData;
 import io.spring.model.goods.response.ProductsListResponseData;
+import io.spring.model.goods.response.ProductsMasterListResponseData;
+import io.spring.model.goods.response.ProductsMasterResponseData;
 import io.spring.model.goods.response.ProductsResponseData;
 import io.spring.service.file.FileService;
 import lombok.RequiredArgsConstructor;
@@ -80,12 +82,13 @@ public class JpaProductsService {
 				masterId, masterNm);
 
 
-		List<ProductsResponseData> l = getProductsList(startDt, endDt, saleYn, displayYn, productId, productNm,
-				masterId,
-				masterNm);
+		// List<ProductsResponseData> l = getProductsList(startDt, endDt, saleYn,
+		// displayYn, productId, productNm,
+		// masterId,
+		// masterNm);
 
 
-		r.setProductsList(l);
+		// r.setProductsList(l);
 		return r;
 
 	}
@@ -431,5 +434,51 @@ public class JpaProductsService {
 
 		}
 
+	}
+
+	public ProductsMasterResponseData getMasterItem(Long masterId) {
+
+		ProductsMasterResponseData r = getMaster(masterId);
+
+
+		return r;
+
+	}
+
+	private ProductsMasterResponseData getMaster(Long masterId) {
+
+		ProductsMaster v = jpaProductsMasterRepository.findById(masterId).orElse(null);
+		if (v != null) {
+			ProductsMasterResponseData r = new ProductsMasterResponseData(v);
+			return r;
+		} else {
+
+			return null;
+		}
+
+
+	}
+
+	public ProductsMasterListResponseData getMasterItemList(String masterNm) {
+
+		List<ProductsMasterListResponseData.Master> l = getMastersList(masterNm);
+
+		ProductsMasterListResponseData r = new ProductsMasterListResponseData(masterNm);
+
+		r.setMastersList(l);
+
+		return r;
+
+	}
+
+	private List<ProductsMasterListResponseData.Master> getMastersList(String masterNm) {
+		List<ProductsMaster> l = jpaProductsMasterRepository.findList(masterNm);
+
+		List<ProductsMasterListResponseData.Master> r = new ArrayList<>();
+		for (ProductsMaster o : l) {
+			ProductsMasterListResponseData.Master v = new ProductsMasterListResponseData.Master(o);
+			r.add(v);
+		}
+		return r;
 	}
 }

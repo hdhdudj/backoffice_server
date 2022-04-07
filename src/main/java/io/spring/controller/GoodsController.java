@@ -37,6 +37,8 @@ import io.spring.model.goods.response.GoodsResponseData;
 import io.spring.model.goods.response.GoodsSelectDetailResponseData;
 import io.spring.model.goods.response.GoodsSelectListResponseData;
 import io.spring.model.goods.response.ProductsListResponseData;
+import io.spring.model.goods.response.ProductsMasterListResponseData;
+import io.spring.model.goods.response.ProductsMasterResponseData;
 import io.spring.model.goods.response.ProductsResponseData;
 import io.spring.service.common.JpaCommonService;
 import io.spring.service.common.MyBatisCommonService;
@@ -162,6 +164,30 @@ public class GoodsController {
 		return ResponseEntity.ok(res);
 	}
 
+	@GetMapping(path = "/v3/masters/{masterId}")
+	public ResponseEntity getMaster(@PathVariable("masterId") Long masterId) {
+
+		ProductsMasterResponseData r = jpaProductService.getMasterItem(masterId);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
+
+		return ResponseEntity.ok(res);
+
+	}
+
+	@GetMapping(path = "/v3/masters")
+	public ResponseEntity getMaster(@RequestParam @Nullable String masterNm) {
+		if (masterNm == null) {
+			masterNm = "";
+		}
+		ProductsMasterListResponseData r = jpaProductService.getMasterItemList(masterNm);
+
+		ApiResponseMessage res = new ApiResponseMessage(StringFactory.getStrOk(), StringFactory.getStrSuccess(), r);
+
+		return ResponseEntity.ok(res);
+
+	}
+
 	@GetMapping(path = "/v3/products/{productId}")
 	public ResponseEntity getProduct(@PathVariable("productId") Long productId) {
 
@@ -182,8 +208,13 @@ public class GoodsController {
 			@RequestParam @Nullable Long productId, @RequestParam @Nullable String productNm,
 			@RequestParam @Nullable Long masterId, @RequestParam @Nullable String masterNm) {
 		log.debug("get goods list data");
-		ProductsListResponseData r = jpaProductService.getItemList(regDtBegin, regDtEnd, saleYn, displayYn,
+		// ProductsListResponseData r = jpaProductService.getItemList(regDtBegin,
+		// regDtEnd, saleYn, displayYn,
+		// productId, productNm, masterId, masterNm);
+
+		ProductsListResponseData r = myBatisGoodsService.getItemList(regDtBegin, regDtEnd, saleYn, displayYn,
 				productId, productNm, masterId, masterNm);
+
 		// List<GoodsListResponseData.Goods> responseData = null;
 		// if (goodsListResponseData != null) {
 		// responseData = goodsListResponseData.getGoodsList();
