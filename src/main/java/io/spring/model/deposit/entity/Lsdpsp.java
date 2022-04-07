@@ -72,7 +72,7 @@ public class Lsdpsp extends CommonProps implements Serializable {
         this.purchaseSeq = items.getPurchaseSeq();
         this.claimItemYn = StringFactory.getGbTwo(); // 02
 		this.purchaseGb = purchaseInsertRequestData.getPurchaseGb();
-		this.dealtypeCd = purchaseInsertRequestData.getDealtypeCd();
+		this.dealtypeCd = items.getDealtypeCd();
 		this.planStatus = StringFactory.getGbOne();
 		this.setRegId(purchaseInsertRequestData.getUserId());
 		this.setUpdId(purchaseInsertRequestData.getUserId());
