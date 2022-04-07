@@ -96,6 +96,7 @@ public class Lspchd extends CommonProps implements Serializable {
         this.siteGb = (StringFactory.getGbOne()); // 01 하드코딩
         this.ownerId = (StringUtils.leftPad(StringFactory.getStrOne(), 6, '0')); // 000001 하드코딩
         this.vendorId = item.getVendorId();
+        this.dealtypeCd = item.getDealtypeCd();
     }
 
     /**
@@ -118,6 +119,7 @@ public class Lspchd extends CommonProps implements Serializable {
         this.orderSeq = tbOrderDetail.getOrderSeq();
 		// this.depositNo = lsdpsd.getDepositNo();
 		// this.depositSeq = lsdpsd.getDepositSeq();
+        this.dealtypeCd = StringFactory.getGbThree();
         this.vendorId = lsdpsd.getItasrt().getVendorId();
     }
 
@@ -142,6 +144,7 @@ public class Lspchd extends CommonProps implements Serializable {
 		}
 		// this.depositNo = lsdpsd.getDepositNo();
 		// this.depositSeq = lsdpsd.getDepositSeq();
+        this.dealtypeCd = StringFactory.getGbThree();
         this.vendorId = lsshpd.getItasrt().getVendorId();
 	}
 
@@ -160,6 +163,7 @@ public class Lspchd extends CommonProps implements Serializable {
 //        this.siteGb = lsdpsd.getSiteGb();
         this.ownerId = lsshpd.getOwnerId();
         this.vendorId = lsshpd.getItasrt().getVendorId();
+        this.dealtypeCd = StringFactory.getGbThree();
         super.setRegId(regId);
         super.setUpdId(regId);
     }
@@ -224,6 +228,8 @@ public class Lspchd extends CommonProps implements Serializable {
     private LocalDate compleDt;
     // 22-04-05 추가
     private String vendorId;
+    // 22-04-07 추가
+    private String dealtypeCd;
 
     // 연관관계 : lspchb
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Lspchb.class)

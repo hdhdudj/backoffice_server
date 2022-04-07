@@ -160,6 +160,8 @@ public class PurchaseInsertRequestData {
         private LocalDate compleDt;
         // 22-04-05 추가
         private String vendorId;
+        // 22-04-07 추가
+        private String dealtypeCd;
     }
 
 }
