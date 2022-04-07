@@ -240,8 +240,10 @@ public interface JpaLsshpdRepository extends JpaRepository<Lsshpd, LsshpdId> {
             "join fetch ld.lsshpm lm " +
             "left join fetch ld.tbOrderDetail td " +
             "join fetch ld.itasrt it " +
-			"join fetch ld.ititmm itm " + "left join fetch itm.itvari1 itv1 " + "left join fetch itm.itvari2 itv2 "
-			+ "left join fetch itm.itvari3 itv3 " +
+			"join fetch ld.ititmm itm " +
+            "left join fetch itm.itvari1 itv1 " +
+            "left join fetch itm.itvari2 itv2 " +
+			"left join fetch itm.itvari3 itv3 " +
 			// "join fetch it.itvariList ivs " +
             "where lm.receiptDt between :start and :end " +
             "and (:shipId is null or trim(:shipId)='' or ld.shipId=:shipId) " +

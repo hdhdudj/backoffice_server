@@ -132,7 +132,7 @@ public class JpaPurchaseService {
      * 발주등록(주문) 저장 후 tbOrderDetail의 statusCd를 B01에서 B02로 변경해주는 함수
      */
 	private void changeStatusCdOfTbOrderDetail(List<Lspchd> lspchdList, String userId) {
-        lspchdList = lspchdList.stream().filter(x->x.getDealtypeCd().equals(StringFactory.getGbOne())).collect(Collectors.toList());
+        lspchdList = lspchdList.stream().filter(x->StringFactory.getGbOne().equals(x.getDealtypeCd())).collect(Collectors.toList());
         for(Lspchd lspchd : lspchdList){
 //            TbOrderDetail tbOrderDetail = jpaTbOrderDetailRepository.findByOrderIdAndOrderSeq(lspchd.getOrderId(),lspchd.getOrderSeq());
 //            if(tbOrderDetail != null){ // 01 : 주문이동, 02 : 상품이동
